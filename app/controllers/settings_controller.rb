@@ -9,7 +9,7 @@ class SettingsController < ApplicationController
         set_metrics(params)
         set_cookie
 
-        render 'forecast/hourly'
+        redirect_to '/forecast/hourly'
     end
 
     def change

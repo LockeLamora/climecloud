@@ -1,5 +1,4 @@
 class ForecastController < ApplicationController
-
     def hourly
         if !cookies[:lat]
             redirect_to '/settings'
@@ -28,7 +27,8 @@ class ForecastController < ApplicationController
              :timezone => cookies[:timezone_name]
             }
 
-        params[period.to_sym] = %w(temperature_2m, apparent_temperature,precipitation_probability,snowfall,rain,wind_speed_10m) 
+        params[period.to_sym] = %w(temperature_2m apparent_temperature
+        precipitation_probability snowfall rain,wind_speed_10m) 
 
         period == 'hourly' ? forecast_days = 1 : forecast_days = 7
         params[:forecast_days] = forecast_days
@@ -74,6 +74,11 @@ class ForecastController < ApplicationController
         @rain_prob = data["hourly"]["precipitation_probability"]
         @rain = data["hourly"]["rain"]
         @wind = data["hourly"]["wind_speed_10m"]
+
+        @units={}
+        @units[:rain] = data["hourly_units"]["rain"]
+        @units[:temp] = data["hourly_units"]["temperature_2m"]
+        @units[:wind] = data["hourly_units"]["wind_speed_10m"].gsub('/','')
     end
 
 
