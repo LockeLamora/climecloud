@@ -1,0 +1,19 @@
+Change your settings:<br /><br />
+
+<%= form_with url:"settings_save", method: :get, local: true do |f| %>
+    <%= f.label "Post/zip code" %>
+    <%= f.text_field :postcode %>
+    <br /><br />
+    <%= f.label "Country" %>
+    <%= f.country_select :country_code, priority_countries: ["GB", "US"],selected: "GB" %>
+    <br /><br />
+
+    <b>Metrics</b><br />
+    <%= f.radio_button :metrics, 'imperial' %> Imperial (°F, in, mph)<br />
+    <%= f.radio_button :metrics, 'metric' %> Metric (°C, mm, Km/h) <br />
+    <%= f.radio_button :metrics, 'hybrid' %> Hybrid (°C, mm, mph) <br />
+
+    <br />
+    <%= f.submit %>
+  
+  <% end %>
