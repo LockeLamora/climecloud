@@ -1,0 +1,25 @@
+<h1>Hourly forecast</h1>
+
+<table>
+<thead>
+    <tr>
+      <th>Time</th>
+      <th>Temp</th>
+      <th>Wind</th>
+      <th>Precip</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% (@times.length).times do |i| %>
+    <tr>
+    <td> <%= @times[i].split('T')[1] %></td>
+    <td> <%= "#{@temps[i]} (#{@feels_like[i]})"%></td>
+    <td> <%= @wind[i] %></td>
+    <td> <%= "#{@rain[i]} (#{@rain_prob[i]}%)"%></td>
+    </tr>
+    <% end %>
+    
+
+  </tbody>
+  </table>

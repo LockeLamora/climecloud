@@ -1,0 +1,12 @@
+table {
+    width:230px;
+}
+
+th {
+    background-color: #04AA6D;
+    color: white;
+  }
+
+th, td {
+    border-bottom: 1px solid #ddd;
+  }
