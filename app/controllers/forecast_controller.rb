@@ -53,7 +53,6 @@ class ForecastController < ApplicationController
         params.merge! get_metrics_units
 
         uri.query = URI.encode_www_form(params)
-puts uri
         uri
     end
 
