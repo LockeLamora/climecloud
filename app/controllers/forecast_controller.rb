@@ -1,3 +1,7 @@
+require 'uri'
+require 'net/http'
+require 'json'
+
 class ForecastController < ApplicationController
     def hourly
         if !cookies[:lat]
@@ -10,12 +14,23 @@ class ForecastController < ApplicationController
         render :hourly
     end
 
+    def daily
+        if !cookies[:lat]
+            redirect_to '/settings'
+            return
+        end
+
+        get_data('daily')
+
+        render :daily
+    end
+
     private
 
     def get_data(period = 'hourly')
         uri = build_api_query(period)
         data = get_forecast_data_from_api(uri)
-        parse_forecast_data(data)
+        parse_forecast_data(data, period)
     end
 
     def build_api_query(period = 'hourly')
@@ -27,17 +42,18 @@ class ForecastController < ApplicationController
              :timezone => cookies[:timezone_name]
             }
 
-        params[period.to_sym] = %w(temperature_2m apparent_temperature
-        precipitation_probability snowfall rain,wind_speed_10m) 
-
-        period == 'hourly' ? forecast_days = 1 : forecast_days = 7
-        params[:forecast_days] = forecast_days
+        if period == 'hourly'    
+            params[period.to_sym] = %w(temperature_2m,apparent_temperature,precipitation_probability,snowfall,rain,wind_speed_10m) 
+        elsif period == 'daily'
+            params[period.to_sym] = %w(temperature_2m_max temperature_2m_min
+            precipitation_probability_mean snowfall_sum rain_sum wind_speed_10m_max wind_speed_10m_min) 
+        end
+        period == 'hourly' ? params[:forecast_hours] = 24 : params[:forecast_days] = 7
 
         params.merge! get_metrics_units
 
         uri.query = URI.encode_www_form(params)
-        puts uri
-
+puts uri
         uri
     end
 
@@ -63,24 +79,35 @@ class ForecastController < ApplicationController
 
     def get_forecast_data_from_api(uri)
         res = Net::HTTP.get_response(uri)
-        puts res.body
         body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
     end
 
-    def parse_forecast_data(data)
-        @times = data["hourly"]["time"]
-        @temps = data["hourly"]["temperature_2m"]
-        @feels_like = data["hourly"]["apparent_temperature"]
-        @rain_prob = data["hourly"]["precipitation_probability"]
-        @rain = data["hourly"]["rain"]
-        @wind = data["hourly"]["wind_speed_10m"]
+    def parse_forecast_data(data, period)
+        if period == 'hourly'
+            @times = data[period]["time"]
+            @temps = data[period]["temperature_2m"]
+            @feels_like = data[period]["apparent_temperature"]
+            @rain_prob = data[period]["precipitation_probability"]
+            @rain = data[period]["rain"]
+            @wind = data[period]["wind_speed_10m"]
 
-        @units={}
-        @units[:rain] = data["hourly_units"]["rain"]
-        @units[:temp] = data["hourly_units"]["temperature_2m"]
-        @units[:wind] = data["hourly_units"]["wind_speed_10m"].gsub('/','')
+            @units={}
+            @units[:rain] = data["#{period}_units"]["rain"]
+            @units[:temp] = data["#{period}_units"]["temperature_2m"]
+            @units[:wind] = data["#{period}_units"]["wind_speed_10m"].gsub('/','')
+        elsif period == 'daily'
+            @times = data[period]["time"]
+            @temps_max = data[period]["temperature_2m_max"]
+            @temps_min = data[period]["temperature_2m_min"]
+            @rain_prob = data[period]["precipitation_probability_mean"]
+            @rain = data[period]["rain_sum"]
+            @wind_max = data[period]["wind_speed_10m_max"]
+            @wind_min = data[period]["wind_speed_10m_min"]
+
+            @units={}
+            @units[:rain] = data["#{period}_units"]["rain_sum"]
+            @units[:temp] = data["#{period}_units"]["temperature_2m_max"]
+            @units[:wind] = data["#{period}_units"]["wind_speed_10m_max"].gsub('/','')
+        end
     end
-
-
-    
 end

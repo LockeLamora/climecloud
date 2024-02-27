@@ -1,10 +1,11 @@
-<h1>Hourly forecast</h1>
+<h1>Daily forecast</h1>
 <%= "#{cookies["city"]}, #{cookies["state"]}"%><%=link_to "(change)", "/settings" %>
-<%=link_to "(Switch to Daily)", "/forecast/daily" %>
+<%=link_to "(Switch to Hourly)", "/forecast/hourly" %>
+
 <table>
 <thead>
     <tr>
-      <th>Time</th>
+      <th>Date</th>
       <th>Temp <%= @units[:temp]%></th>
       <th>Wind</th>
       <th>Precip <%= @units[:rain]%></th>
@@ -14,9 +15,9 @@
   <tbody>
   <% (@times.length).times do |i| %>
     <tr>
-    <td> <%= @times[i].split('T')[0] %></td>
-    <td> <%= "#{@temps[i].round}#{@units[:temp]} (#{@feels_like[i].round})"%></td>
-    <td> <%= "#{@wind[i].round}\n#{@units[:wind]}" %></td>
+    <td> <%= @times[i] %></td>
+    <td> <%= "#{@temps_min[i].round}#{@units[:temp]} - #{@temps_max[i].round}#{@units[:temp]}"%></td>
+    <td> <%= "#{@wind_min[i].round}#{@units[:wind]} - #{@wind_max[i].round}#{@units[:wind]}" %></td>
     <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
     </tr>
     <% end %>
@@ -24,3 +25,5 @@
 
   </tbody>
   </table>
+
+  

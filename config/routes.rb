@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get "settings" => "settings#change"
   get "settings_save" => "settings#set"
   get "forecast/hourly" => "forecast#hourly"
+  get "forecast/daily" => "forecast#daily"
   # Defines the root path route ("/")
   # root "posts#index"
 end
