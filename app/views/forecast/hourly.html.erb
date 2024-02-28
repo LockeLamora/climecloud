@@ -14,7 +14,7 @@
   <tbody>
   <% (@times.length).times do |i| %>
     <tr>
-    <td> <%= @times[i].split('T')[0] %></td>
+    <td> <%= @times[i].split('T')[1] %></td>
     <td> <%= "#{@temps[i].round}#{@units[:temp]} (#{@feels_like[i].round})"%></td>
     <td> <%= "#{@wind[i].round}\n#{@units[:wind]}" %></td>
     <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
