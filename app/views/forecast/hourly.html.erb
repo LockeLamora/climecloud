@@ -1,5 +1,6 @@
 <h1>Hourly forecast</h1>
-<%= "#{cookies["city"]}, #{cookies["state"]}"%><%=link_to "(change)", "/settings" %>
+<%= "#{cookies["city"]}, #{cookies["state"]}"%><br />
+<%=link_to "(change)", "/settings" %><br />
 <%=link_to "(Switch to Daily)", "/forecast/daily" %>
 <table>
 <thead>
@@ -20,7 +21,7 @@
     <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
     </tr>
     <% end %>
-    
-
   </tbody>
   </table>
+  <br /><br />
+  <a href="https://open-meteo.com" target="_blank">Weather data by Open-Meteo.com</a>
