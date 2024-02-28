@@ -1,0 +1,23 @@
+databases:
+  - name: climecloud
+    databaseName: climecloude
+    user: climecloud
+    plan: free
+
+services:
+  - type: web
+    name: climecloud
+    runtime: ruby
+    plan: free
+    buildCommand: "./bin/render-build.sh"
+    # preDeployCommand: "bundle exec rails db:migrate" # preDeployCommand only available on paid instance types
+    startCommand: "bundle exec rails server"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: climecloud
+          property: connectionString
+      - key: b2fd326dc6056940411ed89d411fa0896f6de6c7f1fd8cb0811a957fab05ded8b97b0de49d0c1f50b4b4f3518c0b6a4d55d2615dd885c815867e96262f03ed92
+        sync: false
+      - key: WEB_CONCURRENCY
+        value: 2 # sensible default
