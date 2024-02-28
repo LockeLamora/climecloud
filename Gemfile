@@ -9,7 +9,7 @@ gem "rails", "~> 7.1.3", ">= 7.1.3.2"
 gem "sprockets-rails"
 
 # Use sqlite3 as the database for Active Record
-gem "pg"
+gem "pg", '~> 1.5.5'
 
 # required for country selection dropdown
 gem 'country_select', '~> 8.0'
