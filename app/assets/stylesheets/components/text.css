@@ -1,3 +1,7 @@
 a, a:visited, a:hover, a:active {
     color: inherit;
   }
+
+  .route {
+    width: 220px;
+  }

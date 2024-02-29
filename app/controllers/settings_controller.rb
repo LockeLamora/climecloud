@@ -10,6 +10,7 @@ class SettingsController < ApplicationController
         uri = build_geoapify_api_query(params)
         get_parameters_from_geoapify_api(uri)
         set_metrics(params)
+        set_show_map(params)
         set_cookie
 
         redirect_to '/'
@@ -47,6 +48,10 @@ class SettingsController < ApplicationController
         @metrics = params[:metrics]
     end
 
+    def set_show_map(params)
+        @show_map = params[:mapimages]
+    end
+
     def set_cookie
         cookies.permanent[:lat] = @lat
         cookies.permanent[:lon] = @lon
@@ -55,6 +60,7 @@ class SettingsController < ApplicationController
         cookies.permanent[:timezone_name] = @timezone_name
         cookies.permanent[:metrics] = @metrics
         cookies.permanent[:country_code] = @country_code
+        cookies.permanent[:show_map] = @show_map
     end
 
     def get_parameters_from_geoapify_api(uri)

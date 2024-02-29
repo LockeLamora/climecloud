@@ -1,0 +1,13 @@
+<div class='route'>
+<%= "#{@start} to #{@end}" %><br />
+<% if cookies["show_map"] == '1' %>
+<br />
+<img src="data:image/png;base64,<%= @image %>" />
+<br /><br />
+<% end %>
+<% @steps.each_with_index do |step, i| %>
+    <ol>
+<%= "<b>#{i}</b>- #{step["distance"]["text"]}(#{step["duration"]["text"]})<br /> - #{step["html_instructions"]}".html_safe %>
+    </ol>
+<% end %>
+</div>
