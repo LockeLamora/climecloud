@@ -1,0 +1,14 @@
+<h1>Directions</h1>
+<%= form_with url:"directions_plan", method: :get, local: true do |f| %>
+    <%= f.label "From:" %>
+    <%= f.text_field :origin, class: "big_text_field" %>
+    <br /><br />
+    <%= f.label "To:" %>
+    <%= f.text_field :destination, class: "big_text_field" %>
+    <br /><br />
+
+    <%= f.label "How are you travelling?" %><br />
+    <%= f.select :mode, options_for_select([['On foot', 'walking'], ['Driving', 'driving'], ['Public transport', 'transit']]) %><br />
+    <br /><br />
+    <%= f.submit %>
+  <% end %>

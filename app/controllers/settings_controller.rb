@@ -32,14 +32,12 @@ class SettingsController < ApplicationController
             }
 
         uri.query = URI.encode_www_form(params)
-puts uri
         uri
     end
 
     def get_parameters_from_google_geocode_api(uri)
         res = Net::HTTP.get_response(uri)
         body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-        puts res.body
         @lat = body["results"][0]["geometry"]["location"]["lat"].to_s
         @lon = body["results"][0]["geometry"]["location"]["lng"].to_s
     end
@@ -62,9 +60,7 @@ puts uri
     def get_parameters_from_geoapify_api(uri)
         res = Net::HTTP.get_response(uri)
         body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-puts res.body
-        @lat = body["features"][0]["properties"]["lat"].to_s
-        @lon = body["features"][0]["properties"]["lon"].to_s
+
         @city = body["features"][0]["properties"]["city"]
         @state = body["features"][0]["properties"]["state"]
         @timezone_name = body["features"][0]["properties"]["timezone"]["name"] 
@@ -81,7 +77,6 @@ puts res.body
             }
 
         uri.query = URI.encode_www_form(params)
-puts uri
         uri
     end
 end

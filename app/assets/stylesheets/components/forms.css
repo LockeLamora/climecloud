@@ -5,3 +5,7 @@
 .text_field {
     width: 75px;
 }
+
+.big_text_field {
+    width: 200px;
+}

@@ -12,10 +12,11 @@ Change your settings:<br /><br />
     <%= f.radio_button :metrics, 'imperial' %> Imperial (°F, in, mph)<br />
     <%= f.radio_button :metrics, 'metric' %> Metric (°C, mm, Km/h) <br />
     <%= f.radio_button :metrics, 'hybrid', checked: true %> Hybrid (°C, mm, mph) <br />
-
     <br />
+    <b>Maps</b></br />
+    <%= f.check_box :mapimages %>Show small map image in results<br /><br />
     <%= f.submit %>
-  
   <% end %>
-
+  <br />
+<br />
   <a href="https://open-meteo.com" target="_blank">Weather data by Open-Meteo.com</a>
