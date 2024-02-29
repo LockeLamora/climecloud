@@ -1,3 +1,5 @@
+require 'wombat'
+
 class NewsController < ApplicationController
     def news
         get_articles
@@ -6,12 +8,20 @@ class NewsController < ApplicationController
 
     def article
         get_articles
-        @article = @articles[params[:article].to_i]["content"]
+        article_url = @articles[params[:article].to_i]["url"]
+        @article = scrape_article(article_url)["text"]
         render :article
     end
 
 
     private
+
+    def scrape_article(url)
+        Wombat.crawl do
+            base_url url
+            text css:"p"
+        end
+    end
 
     def get_articles
         resolve_location
