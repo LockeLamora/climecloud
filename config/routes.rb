@@ -3,8 +3,6 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
   get "settings" => "settings#change"
   get "settings_save" => "settings#set"
   get "forecast/hourly" => "forecast#hourly"
@@ -13,6 +11,7 @@ Rails.application.routes.draw do
   get "directions" => "directions#search"
   get "directions_plan" => "directions#plan"
   get "news" => "news#news"
+  get "news_article" => "news#article"
   # Defines the root path route ("/")
   root "index#index"
 end

@@ -1,6 +1,7 @@
 <h1>News headlines</h1>
 <div class="news">
-<% @articles.each do |article| %>
+<% @articles.each_with_index do |article, i| %>
+    <%=link_to "<b>#{article["title"]}</b>".html_safe, news_article_path(article:i) %><br /><br />
     <b><%= article["title"] %></b><br />
     <%= article["description"] %><br />
     <br />
