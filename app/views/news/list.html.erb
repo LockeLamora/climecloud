@@ -1,0 +1,8 @@
+<h1>News headlines</h1>
+<div class="news">
+<% @articles.each do |article| %>
+    <b><%= article["title"] %></b><br />
+    <%= article["description"] %><br />
+    <br />
+<% end %>
+</div>

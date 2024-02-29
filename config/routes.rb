@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   get "directions" => "directions#search"
   get "directions_plan" => "directions#plan"
+  get "news" => "news#news"
   # Defines the root path route ("/")
   root "index#index"
 end

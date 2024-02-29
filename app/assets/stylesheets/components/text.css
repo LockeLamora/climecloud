@@ -2,7 +2,7 @@ a, a:visited, a:hover, a:active {
     color: blue;
   }
 
-.route {
+.route, .news {
     width: 220px;
   }
 
