@@ -5,7 +5,7 @@ class DirectionsController < ApplicationController
 
     def plan
         uri = build_google_maps_uri(params)
-        get_routes_rom_google_maps_uri(uri)
+        get_routes_from_google_maps_uri(uri)
         if cookies["show_map"] == '1'
             uri = build_google_map_static_image_api
             get_static_map_image(uri)
@@ -48,7 +48,7 @@ class DirectionsController < ApplicationController
         uri
     end   
 
-    def get_routes_rom_google_maps_uri(uri)
+    def get_routes_from_google_maps_uri(uri)
         res = Net::HTTP.get_response(uri)
         body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
 
@@ -56,10 +56,11 @@ class DirectionsController < ApplicationController
         @overview_polyline = body["routes"][0]["overview_polyline"]["points"]
         @start = body["routes"][0]["legs"][0]["start_address"]
         @end = body["routes"][0]["legs"][0]["end_address"]
+        @overall_time = body["routes"][0]["legs"][0]["duration"]["text"]
     end
 
     def resolve_unit
-        case cookies[:metris]
+        case cookies["metrics"]
         when 'imperial'
             return 'imperial'
         when 'metric'
