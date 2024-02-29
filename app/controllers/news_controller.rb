@@ -1,6 +1,9 @@
-require 'wombat'
+require 'nokogiri'
+require "open-uri"
+require 'action_view'
 
 class NewsController < ApplicationController
+    include ActionView::Helpers::SanitizeHelper
     def news
         get_articles
         render :list
@@ -9,7 +12,8 @@ class NewsController < ApplicationController
     def article
         get_articles
         article_url = @articles[params[:article].to_i]["url"]
-        @article = scrape_article(article_url)["text"]
+        puts article_url
+        @article = scrape_article(article_url).html_safe
         render :article
     end
 
@@ -17,10 +21,20 @@ class NewsController < ApplicationController
     private
 
     def scrape_article(url)
-        Wombat.crawl do
-            base_url url
-            text css:"p"
-        end
+        html = Nokogiri::HTML(URI.open(url))
+        html = html.css("p")
+        html = sanitize(html, tags: %w(br p))
+        html = dosubs(html)
+        html
+    end
+
+    def dosubs(html)
+        html.gsub!( "‘", "'" )    
+        html.gsub!( "’", "'" )  
+        html.gsub!( "“", '"' )
+        html.gsub!( "”", '"' )
+        html.gsub!( "–", '-' )
+        html
     end
 
     def get_articles
