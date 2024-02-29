@@ -1,9 +1,9 @@
 <h2>Climecloud</h1><br />
-Dumbphone utilities dashboard<br />
+<b>Dumbphone utilities dashboard</b><br />
 <br />
 
     <%=link_to "Weather forecast", "/forecast/hourly" %><br /><br />
     <%=link_to "Map directions", "/directions" %><br /><br />
     <%=link_to "News", "https://68k.news/index.php?section=national&loc=#{cookies[:country_code]}" %><br /><br />
-    <%=link_to "Change settings", "/settings" %><br /><br />
+    <%=link_to "Change settings", "/settings", :class=>'change-settings' %><br /><br />
   

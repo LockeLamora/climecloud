@@ -2,6 +2,10 @@ a, a:visited, a:hover, a:active {
     color: blue;
   }
 
-  .route {
+.route {
     width: 220px;
+  }
+
+a.change-settings {
+    color: green;
   }
