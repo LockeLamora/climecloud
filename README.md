@@ -19,3 +19,9 @@ The next feature being implemented is a text-based news feed.
 - <https://www.geoapify.com/>
 - <https://68k.news>
 - Ruby on rails
+
+**Sample images**
+
+![Weather forecast screen](images/2tn.jpeg)
+
+![Directions screen](images/7tn.jpeg)
