@@ -17,7 +17,6 @@ The next feature being implemented is a text-based news feed.
 - Google maps
 - <https://open-meteo.com>
 - <https://www.geoapify.com/>
-- <https://68k.news>
 - Ruby on rails
 
 **Sample images**
