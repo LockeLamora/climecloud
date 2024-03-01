@@ -22,6 +22,6 @@ The next feature being implemented is a text-based news feed.
 
 **Sample images**
 
-![Weather forecast screen](images/2tn.jpeg)
+![Weather forecast screen](images/3tn.jpeg)
 
 ![Directions screen](images/7tn.jpeg)
