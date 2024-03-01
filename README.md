@@ -4,7 +4,7 @@
 
 It is primarily tested through everyday use on my Nokia 2660.
 
-Current functionality includes directions and weather forecasting.
+Current functionality includes route navigation via maps and weather forecasting.
 
 This is all in a lightweight text-based format which is  sized to suit screens of 240x320px with minimal user interaction required due to the lack of touchscreen controls or a qwerty keyboard.
 
