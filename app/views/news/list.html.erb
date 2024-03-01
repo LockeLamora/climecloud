@@ -1,7 +1,7 @@
 <h1>News headlines</h1>
 <div class="news">
 <% @articles.each_with_index do |item, i| %>
-        <%= item["title"] %><br />
+        <%= item["title"].split('-')[0] %><br />
         <%= item["description"].html_safe %><br />
 <% end %>
 </div>

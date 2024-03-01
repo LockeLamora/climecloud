@@ -3,7 +3,6 @@ require 'uri'
 require "open-uri"
 require 'action_view'
 require 'net/http'
-require 'crack'
 
 class NewsController < ApplicationController
     include ActionView::Helpers::SanitizeHelper
