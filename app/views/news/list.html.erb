@@ -2,7 +2,7 @@
 <div class="news">
 <% @articles.each_with_index do |item, i| %>
         <b><%= item["title"].split('-')[0] %></b><br />
-        <% (item["description"].gsub('/li\u003e','/li\\u003esplitme').split('splitme')).each do |article| %>
+        <% (item["description"].gsub('<ol>','').gsub('</ol>', '').gsub('</li>','</li>splitme').split('splitme')).each do |article| %>
             <%= link_to strip_links(article).html_safe, news_article_path(article: URI.extract(article)[0]) %>
         <% end %>
         <br />
