@@ -12,7 +12,6 @@ class NewsController < ApplicationController
     end
 
     def article
-        puts 'ARTICLE IS : ' + params[:article]
         @article_url = params[:article]
         @article = scrape_article(@article_url).html_safe
         render :article
@@ -38,7 +37,8 @@ class NewsController < ApplicationController
         url = Base64.decode64(url)
         url = URI.extract(url, /http(s)?|mailto/)[0]
         @article_url = url
-        res = Net::HTTP.get_response(URI(url))
+        useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+        res = Net::HTTP::get_response(URI(url), {'user-agent' => useragent})  
         return "Cannot load page" if !res.code.start_with?('2', '3')
         rule = resolve_article_rules(url)
         
@@ -73,11 +73,12 @@ class NewsController < ApplicationController
 
     def build_news_uri
         uri = URI("https://news.google.com/rss")
-        
+        lang = resolve_lang
+        ceid = resolve_ceid(lang)
         params = {
-             :hl => 'en-GB',
+             :hl => lang,
              :gl => @loc.upcase,
-             :ceid => 'GB:en'
+             :ceid => ceid
             }
 
         uri.query = URI.encode_www_form(params)
@@ -98,5 +99,40 @@ class NewsController < ApplicationController
         else
             @loc = 'us'
         end
+    end
+
+    def resolve_lang
+        case cookies["country_code"]
+        when 'fr'
+            return 'fr'
+        when 'in'
+            return 'hi'   
+        when 'us'
+            return 'en-US'
+        when 'gb'
+            return 'en-GB'
+        when 'au'
+            return 'en-AU'
+        when 'ru'
+            return 'ru'          
+        end     
+    end
+
+    def resolve_ceid(lang)
+        c = cookies["country_code"].upcase
+        case c
+        when 'FR'
+            return c + ':' + lang
+        when 'IN'
+            return c + ':' + lang   
+        when 'US'
+            return c + ':en' 
+        when 'GB'
+            return c + ':en'
+        when 'AU'
+            return c + ':en'
+        when 'RU'
+            return c + ':' + lang         
+        end 
     end
 end
