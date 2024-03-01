@@ -1,24 +1,19 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+<https://Climecloud.com> is a web application designed to add convenient functionality to 4g feature phones (Also known as dumbphones) in a convenient and lightweight dashboard.
 
-Things you may want to cover:
+It is primarily tested through everyday use on my Nokia 2660.
 
-* Ruby version
+Current functionality includes directions and weather forecasting.
 
-* System dependencies
+This is all in a lightweight text-based format which is  sized to suit screens of 240x320px with minimal user interaction required due to the lack of touchscreen controls or a qwerty keyboard.
 
-* Configuration
+The next feature being implemented is a text-based news feed.
 
-* Database creation
+**Technologies used**
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- Google maps
+- <https://open-meteo.com>
+- <https://www.geoapify.com/>
+- <https://68k.news>
+- Ruby on rails
