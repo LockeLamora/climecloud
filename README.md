@@ -1,6 +1,6 @@
 # README
 
-<https://Climecloud.com> is a web application designed to add convenient functionality to 4g feature phones (Also known as dumbphones) in a convenient and lightweight dashboard.
+<https://Climecloud.com> is a web application designed to add convenient functionality to 4g feature phones (Also known as dumbphones) via a lightweight dashboard.
 
 It is primarily tested through everyday use on my Nokia 2660.
 
