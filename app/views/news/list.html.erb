@@ -1,7 +1,10 @@
 <h1>News headlines</h1>
 <div class="news">
 <% @articles.each_with_index do |item, i| %>
-        <%= item["title"].split('-')[0] %><br />
-        <%= item["description"].html_safe %><br />
+        <b><%= item["title"].split('-')[0] %></b><br />
+        <% (item["description"].gsub('/li\u003e','/li\\u003esplitme').split('splitme')).each do |article| %>
+            <%= link_to strip_links(article).html_safe, news_article_path(article: URI.extract(article)[0]) %>
+        <% end %>
+        <br />
 <% end %>
 </div>

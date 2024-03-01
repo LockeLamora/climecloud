@@ -12,10 +12,9 @@ class NewsController < ApplicationController
     end
 
     def article
-        get_articles
-        @article_url = @articles[params[:article].to_i]["url"]
+        puts 'ARTICLE IS : ' + params[:article]
+        @article_url = params[:article]
         @article = scrape_article(@article_url).html_safe
-        puts @articles
         render :article
     end
 
@@ -26,12 +25,19 @@ class NewsController < ApplicationController
             return ".PageBuilder-article p"
         elsif ['bbc.com', 'bbc.co.uk', 'ap.com',].any? { |provider| url.include? provider }
             return "p"
+        elsif url.include? 'independend.co.uk'
+            return "#main"    
         else
             return "p"
         end
     end
 
     def scrape_article(url)
+        url.gsub!('https://news.google.com/rss/articles/','')
+        url.gsub!('?oc=5','')
+        url = Base64.decode64(url)
+        url = URI.extract(url, /http(s)?|mailto/)[0]
+        @article_url = url
         res = Net::HTTP.get_response(URI(url))
         return "Cannot load page" if !res.code.start_with?('2', '3')
         rule = resolve_article_rules(url)
