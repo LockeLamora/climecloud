@@ -24,8 +24,10 @@ class NewsController < ApplicationController
             return ".PageBuilder-article p"
         elsif ['bbc.com', 'bbc.co.uk', 'ap.com',].any? { |provider| url.include? provider }
             return "p"
-        elsif url.include? 'independend.co.uk'
+        elsif url.include? 'independent.co.uk'
             return "#main"    
+        elsif url.include? 'cnn.com'
+            return ".article__content"    
         else
             return "p"
         end
