@@ -1,24 +1,27 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+<https://clime.cloud> is a web application designed to add convenient functionality to 4g feature phones (Also known as dumbphones) via a lightweight dashboard.
 
-Things you may want to cover:
+It is primarily tested through everyday use on my Nokia 2660.
 
-* Ruby version
+All user information is stored client-side, meaning that there is no user data stored on climecloud servers.
 
-* System dependencies
+Current functionality includes route navigation via maps and weather forecasting.
 
-* Configuration
+This is all in a lightweight text-based format which is  sized to suit screens of 240x320px with minimal user interaction required due to the lack of touchscreen controls or a qwerty keyboard.
 
-* Database creation
+The next feature being implemented is a text-based news feed.
 
-* Database initialization
+**Technologies used**
 
-* How to run the test suite
+- Google maps
+- <https://open-meteo.com>
+- <https://www.geoapify.com/>
+- <https://68k.news>
+- Ruby on rails
 
-* Services (job queues, cache servers, search engines, etc.)
+**Sample images**
 
-* Deployment instructions
+![Weather forecast screen](images/3tn.jpeg)
 
-* ...
+![Directions screen](images/7tn.jpeg)
