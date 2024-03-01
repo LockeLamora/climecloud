@@ -305,7 +305,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
-  wombat (~> 3.0.0)
+  wombat
 
 RUBY VERSION
    ruby 3.3.0p0

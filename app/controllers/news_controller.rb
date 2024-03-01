@@ -1,6 +1,7 @@
-require 'nokogiri'
+require 'wombat'
 require "open-uri"
 require 'action_view'
+require 'net/http'
 
 class NewsController < ApplicationController
     include ActionView::Helpers::SanitizeHelper
@@ -11,21 +12,40 @@ class NewsController < ApplicationController
 
     def article
         get_articles
-        article_url = @articles[params[:article].to_i]["url"]
-        puts article_url
-        @article = scrape_article(article_url).html_safe
+        @article_url = @articles[params[:article].to_i]["url"]
+        @article = scrape_article(@article_url).html_safe
         render :article
     end
 
-
     private
 
+    def resolve_article_rules(url)
+        if url.include?'cnbc.com'
+            return ".PageBuilder-article p"
+        elsif ['bbc.com', 'bbc.co.uk', 'ap.com',].any? { |provider| url.include? provider }
+            return "p"
+        else
+            return "p"
+        end
+    end
+
     def scrape_article(url)
-        html = Nokogiri::HTML(URI.open(url))
-        html = html.css("p")
-        html = sanitize(html, tags: %w(br p))
-        html = dosubs(html)
-        html
+        res = Net::HTTP.get_response(URI(url))
+        return "Cannot load page" if !res.code.start_with?('2', '3')
+        rule = resolve_article_rules(url)
+        
+        begin
+            out = Wombat.crawl do
+                base_url url
+                path "/"
+            
+                text({css:rule}, :list)
+            end
+        rescue 
+            return "Cannot load page"
+        end
+        
+        out["text"].join("<br /><br />") 
     end
 
     def dosubs(html)
