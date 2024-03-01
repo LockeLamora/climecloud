@@ -98,6 +98,9 @@ GEM
       unaccent (~> 0.3)
     country_select (8.0.3)
       countries (~> 5.0)
+    crack (1.0.0)
+      bigdecimal
+      rexml
     crass (1.0.6)
     date (3.3.4)
     debug (1.9.1)
@@ -293,6 +296,7 @@ DEPENDENCIES
   bootsnap
   capybara
   country_select (~> 8.0)
+  crack (~> 1.0.0)
   debug
   importmap-rails
   jbuilder
@@ -305,7 +309,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
-  wombat
+  wombat (~> 3.0.0)
 
 RUBY VERSION
    ruby 3.3.0p0

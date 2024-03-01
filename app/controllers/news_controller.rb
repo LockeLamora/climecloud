@@ -1,7 +1,9 @@
 require 'wombat'
+require 'uri'
 require "open-uri"
 require 'action_view'
 require 'net/http'
+require 'crack'
 
 class NewsController < ApplicationController
     include ActionView::Helpers::SanitizeHelper
@@ -14,6 +16,7 @@ class NewsController < ApplicationController
         get_articles
         @article_url = @articles[params[:article].to_i]["url"]
         @article = scrape_article(@article_url).html_safe
+        puts @articles
         render :article
     end
 
@@ -64,14 +67,23 @@ class NewsController < ApplicationController
     end
 
     def build_news_uri
-        uri = URI("https://saurav.tech/NewsAPI/top-headlines/category/general/#{@loc}.json")
+        uri = URI("https://news.google.com/rss")
+        
+        params = {
+             :hl => 'en-GB',
+             :gl => @loc.upcase,
+             :ceid => 'GB:en'
+            }
+
+        uri.query = URI.encode_www_form(params)
         uri
     end
 
     def get_news_from_api(uri)
         res = Net::HTTP.get_response(uri)
-        body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-        @articles = body["articles"]
+        body = res.body if res.is_a?(Net::HTTPSuccess)
+        body = JSON.parse(Hash.from_xml(body).to_json)
+        @articles = body["rss"]["channel"]["item"]
     end
 
     def resolve_location

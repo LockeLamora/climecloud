@@ -11,7 +11,9 @@ gem "sprockets-rails"
 # Use sqlite3 as the database for Active Record
 gem "pg", '~> 1.5.5'
 
-gem 'wombat'
+# For webscraping news
+gem 'wombat', '~> 3.0.0'
+
 # required for country selection dropdown
 gem 'country_select', '~> 8.0'
 
