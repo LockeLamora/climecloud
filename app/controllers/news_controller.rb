@@ -8,6 +8,16 @@ class NewsController < ApplicationController
     include ActionView::Helpers::SanitizeHelper
     def news
         get_articles
+        @news_items = []
+        @articles.each_with_index do |item, i|
+            @news_items[i] = {:item_title => item["title"].rpartition('-')[0] }
+            @item_articles = []
+                item["description"].gsub('<ol>','').gsub('</ol>', '').gsub('</li>','</li>splitme').split('splitme').each do |article| 
+                    @item_articles << {:article_title => strip_links(article).html_safe, :article_url => URI.extract(article, /http(s)?/)[0]}
+                end
+            @news_items[i][:articles] = @item_articles
+        end 
+
         render :list
     end
 
@@ -27,7 +37,7 @@ class NewsController < ApplicationController
         elsif url.include? 'independent.co.uk'
             return "#main"    
         elsif url.include? 'cnn.com'
-            return ".article__content"    
+            return ".article__content p"    
         else
             return "p"
         end
@@ -37,7 +47,7 @@ class NewsController < ApplicationController
         url.gsub!('https://news.google.com/rss/articles/','')
         url.gsub!('?oc=5','')
         url = Base64.decode64(url)
-        url = URI.extract(url, /http(s)?|mailto/)[0]
+        url = URI.extract(url, /http(s)?/)[0]
         @article_url = url
         useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
         res = Net::HTTP::get_response(URI(url), {'user-agent' => useragent})  
