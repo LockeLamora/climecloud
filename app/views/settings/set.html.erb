@@ -8,13 +8,14 @@ Change your settings:<br /><br />
     <%= f.country_select :country_code, {priority_countries: ["GB", "US"],selected: "GB"},class: "country_select" %>
     <br /><br />
 
-    <b>Metrics</b><br />
+    <b>Weather metrics</b><br />
     <%= f.radio_button :metrics, 'imperial' %> Imperial (°F, in, mph)<br />
     <%= f.radio_button :metrics, 'metric' %> Metric (°C, mm, Km/h) <br />
     <%= f.radio_button :metrics, 'hybrid', checked: true %> Hybrid (°C, mm, mph) <br />
     <br />
     <b>Maps</b></br />
     <%= f.check_box :mapimages %>Show small map image in results<br /><br />
+    <br />
     <%= f.submit %>
   <% end %>
   <br />
