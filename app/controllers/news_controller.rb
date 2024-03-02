@@ -13,6 +13,7 @@ class NewsController < ApplicationController
             @news_items[i] = {:item_title => item["title"].rpartition('-')[0] }
             @item_articles = []
                 item["description"].gsub('<ol>','').gsub('</ol>', '').gsub('</li>','</li>splitme').split('splitme').each do |article| 
+                    next if (get_blacklist.any? { |news_site| article.include? news_site })
                     @item_articles << {:article_title => strip_links(article).html_safe, :article_url => URI.extract(article, /http(s)?/)[0]}
                 end
             @news_items[i][:articles] = @item_articles
@@ -29,15 +30,23 @@ class NewsController < ApplicationController
 
     private
 
+    def get_blacklist
+        ['Financial Times']
+    end
+
     def resolve_article_rules(url)
         if url.include?'cnbc.com'
             return ".PageBuilder-article p"
         elsif ['bbc.com', 'bbc.co.uk', 'ap.com',].any? { |provider| url.include? provider }
             return "p"
         elsif url.include? 'independent.co.uk'
-            return "#main"    
+            return "#main p"    
         elsif url.include? 'cnn.com'
-            return ".article__content p"    
+            return ".article__content p" 
+        elsif url.include? 'politicshome.com'
+            return ".newsview p"    
+        elsif url.include? 'gov.uk'
+            return ".news-article p" 
         else
             return "p"
         end
