@@ -3,6 +3,7 @@ require 'uri'
 require "open-uri"
 require 'action_view'
 require 'net/http'
+require 'domainatrix'
 
 class NewsController < ApplicationController
     include ActionView::Helpers::SanitizeHelper
@@ -31,25 +32,50 @@ class NewsController < ApplicationController
     private
 
     def get_blacklist
-        ['Financial Times']
+        ['Financial Times',
+        'Bloomberg',
+        'Times of Israel',
+        'Times of India',
+        'Reuters',
+        'Daily Record',
+        'Live updates',
+        'Wall Street Journal',
+        'Fox News',
+        'USA TODAY',
+        'Axios',
+        'SFGATE',
+        'Ynetnews',
+        'KABC-TV'
+        ]
     end
 
     def resolve_article_rules(url)
-        if url.include?'cnbc.com'
-            return ".PageBuilder-article p"
-        elsif ['bbc.com', 'bbc.co.uk', 'ap.com',].any? { |provider| url.include? provider }
-            return "p"
-        elsif url.include? 'independent.co.uk'
-            return "#main p"    
-        elsif url.include? 'cnn.com'
-            return ".article__content p" 
-        elsif url.include? 'politicshome.com'
-            return ".newsview p"    
-        elsif url.include? 'gov.uk'
-            return ".news-article p" 
-        else
-            return "p"
-        end
+        parsedurl = Domainatrix.parse(url)
+        domain = parsedurl.domain + '.' + parsedurl.public_suffix
+
+        rules = {
+            'cnbc.com' => ".PageBuilder-article p",
+            'independent.co.uk' => "#main p",
+            'cnn.com' => ".article__content p",
+            'politicshome.com' => ".newsview p",
+            'gov.uk' => ".news-article p",
+            'itv.com' => "#main-content p",
+            'newscientist.com' => ".ArticleContent p",
+            'dailymail.co.uk' => "[itemprop='articleBody'] p",
+            'indiatimes.com' => ".clearfix *",
+            'politico.eu' => ".article__content p",
+            'dailyrecord.co.uk' => ".article-body p",
+            'foxnews.com' => ".article-body p",
+            'iflscience.com' => ".article-content p",
+            'nytimes.com' => ".StoryBodyCompanionColumn p",
+            'businessinsider.com' => ".content-lock-content p",
+            'usatoday.com' => ".content-well p",
+            'cbsnews.com' => ".content__body p",
+            'nypost.com' => ".entry-content p",
+            'ynetnews.com' => ".public-DraftEditor-content",
+            'pbs.org' => ".body-text p"
+        }
+        rules.key?(domain) ? rules[domain] : "p"
     end
 
     def scrape_article(url)
@@ -57,13 +83,21 @@ class NewsController < ApplicationController
         url.gsub!('?oc=5','')
         url = Base64.decode64(url)
         url = URI.extract(url, /http(s)?/)[0]
+        url.gsub!('$','')
         @article_url = url
-        useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
-        res = Net::HTTP::get_response(URI(url), {'user-agent' => useragent})  
-        return "Cannot load page" if !res.code.start_with?('2', '3')
+        @useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+        res = Net::HTTP::get_response(URI(url), {'user-agent' => @useragent})  
+        if !res.code.start_with?('2', '3')
+            puts @article_url
+            puts res.code
+            puts res.body if !res.body.nil?
+            return "Cannot load page" 
+        end
+
         rule = resolve_article_rules(url)
         
         begin
+            Wombat.set_user_agent(@useragent)
             out = Wombat.crawl do
                 base_url url
                 path "/"
@@ -71,7 +105,8 @@ class NewsController < ApplicationController
                 text({css:rule}, :list)
             end
         rescue 
-            return "Cannot load page"
+            puts url
+            return "Cannot parse page"
         end
         
         out["text"].join("<br /><br />") 

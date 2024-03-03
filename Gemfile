@@ -14,6 +14,7 @@ gem "pg", '~> 1.5.5'
 # For webscraping news
 gem 'wombat', '~> 3.0.0'
 gem 'rexml', '~> 3.2.6'
+gem 'domainatrix', '~> 0.0.11'
 
 # required for country selection dropdown
 gem 'country_select', '~> 8.0'
