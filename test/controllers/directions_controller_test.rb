@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class DirectionsControllerTest < ActionDispatch::IntegrationTest
   test 'should load the drections search page successfully when cookie is set' do

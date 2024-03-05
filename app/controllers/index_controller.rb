@@ -1,10 +1,12 @@
-class IndexController < ApplicationController
-    def index
-        if !cookies[:lat]
-            redirect_to '/settings'
-            return
-        end
+# frozen_string_literal: true
 
-        render :index
+class IndexController < ApplicationController
+  def index
+    unless cookies[:lat]
+      redirect_to '/settings'
+      return
     end
+
+    render :index
+  end
 end

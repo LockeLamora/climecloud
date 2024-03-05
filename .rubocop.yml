@@ -1,0 +1,22 @@
+# .rubocop.yml
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false  
+
+Metrics/ClassLength:
+  Enabled: false  
+
+Naming/AccessorMethodName:
+  Enabled: false  
+
+Metrics/AbcSize:
+  Enabled: false  
+
+AllCops:
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'bin/**/*' 

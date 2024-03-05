@@ -1,8 +1,10 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class IndexControllerTest < ActionDispatch::IntegrationTest
   test 'should load the index page successfully when the cookie is set' do
-    get root_url, headers: {"COOKIE" => "lat=57;"}
+    get root_url, headers: { 'COOKIE' => 'lat=57;' }
     assert_response :success
     assert_match 'Weather forecast', @response.body
     assert_match 'Map directions', @response.body
