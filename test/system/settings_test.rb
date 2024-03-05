@@ -7,11 +7,11 @@ class SettingsTest < ApplicationSystemTestCase
     visit settings_url
     assert_text 'Change your settings:'
 
-    find_field(:name => "postcode").set('78000')
+    find_field(name: 'postcode').set('78000')
     select('France', from: 'country_code')
     choose(option: 'metric')
-    check(:name => 'mapimages')
-    click_button(:name => 'commit')
+    check(name: 'mapimages')
+    click_button(name: 'commit')
 
     sleep 2
     assert_match(page.driver.browser.manage.cookie_named('lat')[:value], '48.8051741')
@@ -28,8 +28,8 @@ class SettingsTest < ApplicationSystemTestCase
     visit settings_url
     assert_text 'Change your settings:'
 
-    find_field(:name => "postcode").set('abcdefg')
-    click_button(:name => 'commit')
+    find_field(name: 'postcode').set('abcdefg')
+    click_button(name: 'commit')
 
     sleep 2
     assert_text('Could not determine location, please try again')
