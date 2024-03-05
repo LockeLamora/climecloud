@@ -18,6 +18,6 @@ class IndexTest < ApplicationSystemTestCase
   test "visiting the index without the cookie set" do
     page.driver.browser.manage.delete_cookie('lat')
     visit root_url
-    assert_text "Change your settings:"
+    assert_text "Changes your settings:"
   end
 end
