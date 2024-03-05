@@ -21,3 +21,8 @@ AllCops:
     - 'config/**/*'
     - 'bin/**/*' 
     - 'vendor/**/*'
+    - 'app/channels/**/*'
+    - 'app/helpers/**/*'
+    - 'app/jobs/**/*'
+    - 'app/mailers/**/*'
+    - 'app/models/**/*'
