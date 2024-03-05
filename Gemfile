@@ -77,4 +77,5 @@ group :test do
   gem 'capybara'
   gem 'rubocop'
   gem 'selenium-webdriver'
+  gem 'webmock'
 end
