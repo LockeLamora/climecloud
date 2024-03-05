@@ -1,5 +1,5 @@
-Change your settings:<br /><br />
-
+<%= @error.nil? ? "Change your settings:" : "<span class='error'>#{@error}</span>".html_safe %>
+<br /><br />
 <%= form_with url:"settings_save", method: :get, local: true do |f| %>
     <%= f.label "Post/zip code" %>
     <%= f.text_field :postcode, class: "text_field" %>

@@ -9,3 +9,7 @@ a, a:visited, a:hover, a:active {
 a.change-settings {
     color: green;
   }
+
+.error {
+  color: red;
+}

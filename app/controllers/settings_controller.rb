@@ -6,6 +6,10 @@ class SettingsController < ApplicationController
     def set 
         uri = build_google_geocode_uri(params)
         get_parameters_from_google_geocode_api(uri)
+        if @error != nil
+            render :set
+            return
+        end
 
         uri = build_geoapify_api_query(params)
         get_parameters_from_geoapify_api(uri)
@@ -39,6 +43,13 @@ class SettingsController < ApplicationController
     def get_parameters_from_google_geocode_api(uri)
         res = Net::HTTP.get_response(uri)
         body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+        puts body
+        puts res.code
+        puts body["status"]
+        if body["status"] == "ZERO_RESULTS"
+            @error = "Could not determine location, please try again"
+           return
+        end
         @lat = body["results"][0]["geometry"]["location"]["lat"].to_s
         @lon = body["results"][0]["geometry"]["location"]["lng"].to_s
     end
