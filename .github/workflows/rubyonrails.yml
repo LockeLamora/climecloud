@@ -25,7 +25,6 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: "postgres://rails:password@localhost:5432/rails_test"
-      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }} 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -41,6 +40,8 @@ jobs:
       - name: Run tests
         run: bin/rake
       - name: Run UI tests
+        env:
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }} 
         run: bundle exec rails test:system
 
   lint:
