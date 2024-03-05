@@ -17,6 +17,6 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     'bmVzcy9saXZlLzIwMjQvbWFyLzA1L2plcmVteS1odW50LWZyZWV6ZS1mdWVsLWR1dHktYnVkZ2V0LXVrLWNhci1zYWx'\
     'lcy1mZWJydWFyeS1zZXJ2aWNlcy1yZWNlc3Npb24tYml0Y29pbi1nb2xkLWJ1c2luZXNzLWxpdmU?oc=5' }
     assert_response :success
-    assert_match 'Rolling coverage of the latest', @response.body
+    assert_match 'national insurance', @response.body
   end
 end
