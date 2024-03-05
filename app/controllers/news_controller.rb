@@ -158,7 +158,7 @@ class NewsController < ApplicationController
     end
 
     def resolve_lang
-        case cookies["country_code"]
+        case @loc
         when 'fr'
             return 'fr'
         when 'in'
@@ -175,7 +175,7 @@ class NewsController < ApplicationController
     end
 
     def resolve_ceid(lang)
-        c = cookies["country_code"].upcase
+        c = @loc.upcase
         case c
         when 'FR'
             return c + ':' + lang
