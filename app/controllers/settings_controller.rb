@@ -43,9 +43,6 @@ class SettingsController < ApplicationController
     def get_parameters_from_google_geocode_api(uri)
         res = Net::HTTP.get_response(uri)
         body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-        puts body
-        puts res.code
-        puts body["status"]
         if body["status"] == "ZERO_RESULTS"
             @error = "Could not determine location, please try again"
            return

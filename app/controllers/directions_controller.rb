@@ -6,6 +6,10 @@ class DirectionsController < ApplicationController
     def plan
         uri = build_google_maps_uri(params)
         get_routes_from_google_maps_uri(uri)
+        if @error != nil
+            render :search
+            return
+        end
         if cookies["show_map"] == '1'
             uri = build_google_map_static_image_api
             get_static_map_image(uri)
@@ -51,7 +55,10 @@ class DirectionsController < ApplicationController
     def get_routes_from_google_maps_uri(uri)
         res = Net::HTTP.get_response(uri)
         body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-
+        if body["status"] == "NOT_FOUND"
+            @error = "could not plan route, please provide more detail and try again"
+            return
+        end
         @steps = body["routes"][0]["legs"][0]["steps"]
         @overview_polyline = body["routes"][0]["overview_polyline"]["points"]
         @start = body["routes"][0]["legs"][0]["start_address"]
