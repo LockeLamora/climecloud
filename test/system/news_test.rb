@@ -10,7 +10,7 @@ class NewsTest < ApplicationSystemTestCase
     visit news_url
     assert_text 'Budget 2024 live: Jeremy Hunt'
     first('.news > ul > a').click
-    assert_text "We've already taken you through"
+    assert_text 'BBC programmes on iPlayer'
   end
 
   test 'visiting the index and clicking on a topic' do
