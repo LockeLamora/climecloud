@@ -152,16 +152,13 @@ class NewsController < ApplicationController
           else
             URI('https://news.google.com/rss')
           end
-
     uri.query = URI.encode_www_form(params)
     uri
   end
 
   def get_news_from_api(uri)
     @res = Net::HTTP.get_response(uri)
-    if @res.code.start_with?('3')
-      @res = Net::HTTP.get_response(URI.parse(@res['location']))
-    end
+    @res = Net::HTTP.get_response(URI.parse(@res['location'])) if @res.code.start_with?('3')
     body = @res.body if @res.is_a?(Net::HTTPSuccess)
     body = JSON.parse(Hash.from_xml(body).to_json)
     @articles = body['rss']['channel']['item']
