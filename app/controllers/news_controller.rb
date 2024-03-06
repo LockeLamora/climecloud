@@ -10,6 +10,7 @@ require 'domainatrix'
 class NewsController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
   def news
+    change_section
     get_articles
     @news_items = []
     @articles.each_with_index do |item, i|
@@ -32,6 +33,10 @@ class NewsController < ApplicationController
     @article_url = params[:article]
     @article = scrape_article(@article_url).html_safe
     render :article
+  end
+
+  def change_section
+    @section = params[:section] || cookies['news_default_section']
   end
 
   private
@@ -133,7 +138,7 @@ class NewsController < ApplicationController
   end
 
   def build_news_uri
-    uri = URI('https://news.google.com/rss')
+    URI('https://news.google.com/rss')
     lang = resolve_lang
     ceid = resolve_ceid(lang)
     params = {
@@ -142,13 +147,22 @@ class NewsController < ApplicationController
       ceid:
     }
 
+    uri = if !@section.nil? && @section != 'HEADLINES'
+            URI("https://news.google.com/rss/headlines/section/topic/#{@section.upcase}")
+          else
+            URI('https://news.google.com/rss')
+          end
+
     uri.query = URI.encode_www_form(params)
     uri
   end
 
   def get_news_from_api(uri)
-    res = Net::HTTP.get_response(uri)
-    body = res.body if res.is_a?(Net::HTTPSuccess)
+    @res = Net::HTTP.get_response(uri)
+    if @res.code.start_with?('3')
+      @res = Net::HTTP.get_response(URI.parse(@res['location']))
+    end
+    body = @res.body if @res.is_a?(Net::HTTPSuccess)
     body = JSON.parse(Hash.from_xml(body).to_json)
     @articles = body['rss']['channel']['item']
   end
