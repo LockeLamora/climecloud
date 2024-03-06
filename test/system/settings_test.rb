@@ -24,7 +24,6 @@ class SettingsTest < ApplicationSystemTestCase
     assert_match(page.driver.browser.manage.cookie_named('show_map')[:value], '1')
     assert_match(page.driver.browser.manage.cookie_named('country_code')[:value], 'fr')
     assert_match(page.driver.browser.manage.cookie_named('news_default_section')[:value], 'Headlines')
-
   end
 
   test 'unsuccessfully sets user settings and an error is displayed' do
