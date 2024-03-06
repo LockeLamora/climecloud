@@ -12,6 +12,7 @@ class SettingsTest < ApplicationSystemTestCase
     choose(option: 'metric')
     check(name: 'mapimages')
     click_button(name: 'commit')
+    select('Headlines', from: 'news_default_section')
 
     sleep 2
     assert_match(page.driver.browser.manage.cookie_named('lat')[:value], '48.8051741')
@@ -22,9 +23,10 @@ class SettingsTest < ApplicationSystemTestCase
     assert_match(page.driver.browser.manage.cookie_named('state')[:value], 'Ile-de-France')
     assert_match(page.driver.browser.manage.cookie_named('show_map')[:value], '1')
     assert_match(page.driver.browser.manage.cookie_named('country_code')[:value], 'fr')
+    assert_match(page.driver.browser.manage.cookie_named('news_default_section')[:value], 'Headlines')
   end
 
-  test 'usuccessfully sets user settings and an error is displayed' do
+  test 'unsuccessfully sets user settings and an error is displayed' do
     visit settings_url
     assert_text 'Change your settings:'
 

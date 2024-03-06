@@ -17,6 +17,7 @@ class SettingsController < ApplicationController
     get_parameters_from_geoapify_api(uri)
     set_metrics(params)
     set_show_map(params)
+    set_news(params)
     set_cookie
 
     redirect_to '/'
@@ -60,6 +61,10 @@ class SettingsController < ApplicationController
     @show_map = params[:mapimages]
   end
 
+  def set_news(params)
+    @news_default_section = params[:news_default_section]
+  end
+
   def set_cookie
     cookies.permanent[:lat] = @lat
     cookies.permanent[:lon] = @lon
@@ -69,6 +74,7 @@ class SettingsController < ApplicationController
     cookies.permanent[:metrics] = @metrics
     cookies.permanent[:country_code] = @country_code
     cookies.permanent[:show_map] = @show_map
+    cookies.permanent[:news_default_section] = @news_default_section
   end
 
   def get_parameters_from_geoapify_api(uri)

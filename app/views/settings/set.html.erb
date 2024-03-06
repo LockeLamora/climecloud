@@ -16,6 +16,10 @@
     <b>Maps</b></br />
     <%= f.check_box :mapimages %>Show small map image in results<br /><br />
     <br />
+    <b>News</b><br />
+    <%= f.label "Default news section" %>
+    <%= f.select :news_default_section, options_for_select(['Headlines','World','Nation','Business','Technology','Entertainment','Science','Sports','Health']) %>
+    <br /><br />
     <%= f.submit %>
   <% end %>
   <br />
