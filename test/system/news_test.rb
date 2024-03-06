@@ -3,9 +3,7 @@
 require 'application_system_test_case'
 
 class NewsTest < ApplicationSystemTestCase
-  def setup
-    
-  end
+  def setup; end
 
   test 'visiting the index and then an article' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
