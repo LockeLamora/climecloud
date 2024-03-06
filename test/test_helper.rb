@@ -19,7 +19,7 @@ module ActiveSupport
               'api.geoapify.com',
               'api.open-meteo.com',
               'www.theguardian.com',
-            'www.bbc.com']
+              'www.bbc.com']
     )
   end
 end

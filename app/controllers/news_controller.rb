@@ -146,8 +146,7 @@ class NewsController < ApplicationController
       gl: @loc.upcase,
       ceid:
     }
-
-    uri = if !@section.nil? && @section != 'HEADLINES'
+    uri = if !@section.nil? && @section.upcase != 'HEADLINES'
             URI("https://news.google.com/rss/headlines/section/topic/#{@section.upcase}")
           else
             URI('https://news.google.com/rss')
@@ -162,6 +161,11 @@ class NewsController < ApplicationController
     body = @res.body if @res.is_a?(Net::HTTPSuccess)
     body = JSON.parse(Hash.from_xml(body).to_json)
     @articles = body['rss']['channel']['item']
+    @title = if !@section.nil? && @section.upcase != 'HEADLINES'
+               body['rss']['channel']['title']
+             else
+               'Headlines - Latest - Google News'
+             end
   end
 
   def resolve_location

@@ -1,5 +1,6 @@
-<h1>News headlines</h1>
+
 <div class='news_topics'>
+<%= @title %><br /><br />
     <%= link_to 'Headlines', news_path({section: 'HEADLINES'}) %> |
     <%= link_to 'World', news_path({section: 'WORLD'}) %> |  <%= link_to 'Nation', news_path({section:'NATION'}) %> |
     <%= link_to 'Business', news_path({section: 'BUSINESS'}) %> |  <%= link_to 'Technology', news_path({section:'TECHNOLOGY'}) %> |

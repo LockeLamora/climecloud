@@ -7,7 +7,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
     get news_url, headers: { 'COOKIE' => 'country_code=gb;' }
     assert_response :success
-    assert_match 'News headlines', @response.body
+    assert_match 'Headlines - Latest', @response.body
   end
 
   test 'should render a news article successfully' do
