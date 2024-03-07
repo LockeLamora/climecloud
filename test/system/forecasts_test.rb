@@ -14,6 +14,7 @@ class ForecastsTest < ApplicationSystemTestCase
     assert_text 'feels like'
     assert_text '18:00'
     assert_text '6°C (3)'
+    assert_text 'snow: 53.45cm'
   end
 
   test 'visiting the hourly forecast and clicking on daily' do
@@ -22,5 +23,6 @@ class ForecastsTest < ApplicationSystemTestCase
     assert_text 'Temp'
     assert_text '2024-03-06'
     assert_text '2mph - 11mph'
+    assert_text 'snow: 53.45cm'
   end
 end

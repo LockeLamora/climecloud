@@ -18,11 +18,13 @@
     <td> <%= @times[i] %></td>
     <td> <%= "#{@temps_min[i].round}#{@units[:temp]} - #{@temps_max[i].round}#{@units[:temp]}"%></td>
     <td> <%= "#{@wind_min[i].round}#{@units[:wind]} - #{@wind_max[i].round}#{@units[:wind]}" %></td>
-    <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
+    <% if @snow[i] > 0 %>
+      <td> <%= "<b>snow</b>: #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
+    <% else %>
+      <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
+    <% end %>
     </tr>
     <% end %>
-    
-
   </tbody>
   </table>
   <br /><br />

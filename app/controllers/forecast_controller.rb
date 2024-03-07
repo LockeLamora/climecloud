@@ -99,11 +99,13 @@ class ForecastController < ApplicationController
       @rain_prob = data[period]['precipitation_probability']
       @rain = data[period]['rain']
       @wind = data[period]['wind_speed_10m']
+      @snow = data[period]['snowfall']
 
       @units = {}
       @units[:rain] = data["#{period}_units"]['rain']
       @units[:temp] = data["#{period}_units"]['temperature_2m']
       @units[:wind] = data["#{period}_units"]['wind_speed_10m'].gsub('/', '')
+      @units[:snowfall] = data["#{period}_units"]['snowfall']
     elsif period == 'daily'
       @times = data[period]['time']
       @temps_max = data[period]['temperature_2m_max']
@@ -112,11 +114,13 @@ class ForecastController < ApplicationController
       @rain = data[period]['rain_sum']
       @wind_max = data[period]['wind_speed_10m_max']
       @wind_min = data[period]['wind_speed_10m_min']
+      @snow = data[period]['snowfall_sum']
 
       @units = {}
       @units[:rain] = data["#{period}_units"]['rain_sum']
       @units[:temp] = data["#{period}_units"]['temperature_2m_max']
       @units[:wind] = data["#{period}_units"]['wind_speed_10m_max'].gsub('/', '')
+      @units[:snowfall] = data["#{period}_units"]['snowfall_sum']
     end
   end
 end

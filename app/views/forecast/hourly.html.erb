@@ -17,9 +17,13 @@
     <td> <%= @times[i].split('T')[1] %></td>
     <td> <%= "#{@temps[i].round}#{@units[:temp]} (#{@feels_like[i].round})"%></td>
     <td> <%= "#{@wind[i].round}\n#{@units[:wind]}" %></td>
+    <% if @snow[i] > 0 %>
+    <td> <%= "<b>snow:</b> #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
+      <% else %>
     <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
-    </tr>
     <% end %>
+    </tr>
+  <% end %>
   </tbody>
   </table>
   <br /><br />
