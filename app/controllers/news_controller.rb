@@ -98,9 +98,7 @@ class NewsController < ApplicationController
      'Chrome/122.0.0.0 Safari/537.36'
     res = Net::HTTP.get_response(URI(url), { 'user-agent' => @useragent })
     unless res.code.start_with?('2', '3')
-      puts @article_url
-      puts res.code
-      puts res.body unless res.body.nil?
+      Rails.logger.warn("Cannot load page - response #{res.code} - url #{@article_url}")
       return 'Cannot load page'
     end
 
@@ -115,7 +113,7 @@ class NewsController < ApplicationController
         text({ css: rule }, :list)
       end
     rescue StandardError
-      puts url
+      Rails.logger.warn("Cannot parse page - url #{url}")
       return 'Cannot parse page'
     end
 
