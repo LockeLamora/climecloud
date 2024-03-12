@@ -13,8 +13,9 @@ This is all in a lightweight text-based format which is  sized to suit screens o
 **Technologies used**
 
 - Google maps
-- <https://open-meteo.com>
-- <https://www.geoapify.com/>
+- <https://www.newscatcherapi.com/> (For your News feeds)
+- <https://open-meteo.com> (For your Weather forecasting)
+- <https://www.geoapify.com/> (To help determine your location)
 - Ruby on rails
 
 **Sample images**
