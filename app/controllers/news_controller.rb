@@ -12,19 +12,7 @@ class NewsController < ApplicationController
   def news
     change_section
     get_articles
-    @news_items = []
-    @articles.each_with_index do |item, i|
-      @news_items[i] = { item_title: item['title'].rpartition('-')[0] }
-      @item_articles = []
-      item['description'].gsub('<ol>', '').gsub('</ol>', '').gsub('</li>',
-                                                                  '</li>splitme').split('splitme').each do |article|
-        next if get_blacklist.any? { |news_site| article.include? news_site }
-
-        @item_articles << { article_title: strip_links(article).html_safe,
-                            article_url: URI.extract(article, /http(s)?/)[0] }
-      end
-      @news_items[i][:articles] = @item_articles
-    end
+    prepare_articles
 
     render :list
   end
@@ -39,7 +27,30 @@ class NewsController < ApplicationController
     @section = params[:section] || cookies['news_default_section']
   end
 
+  def search
+    @search_query = params[:search_query]
+    get_articles
+    prepare_articles
+    render :list
+  end
+
   private
+
+  def prepare_articles
+    @news_items = []
+    @articles.each_with_index do |item, i|
+      @news_items[i] = { item_title: item['title'].rpartition('-')[0] }
+      @item_articles = []
+      item['description'].gsub('<ol>', '').gsub('</ol>', '').gsub('</li>',
+                                                                  '</li>splitme').split('splitme').each do |article|
+        next if get_blacklist.any? { |news_site| article.include? news_site }
+
+        @item_articles << { article_title: strip_links(article).html_safe,
+                            article_url: URI.extract(article, /http(s)?/)[0] }
+      end
+      @news_items[i][:articles] = @item_articles
+    end
+  end
 
   def get_blacklist
     ['Financial Times',
@@ -120,15 +131,6 @@ class NewsController < ApplicationController
     out['text'].join('<br /><br />')
   end
 
-  def dosubs(html)
-    html.gsub!('‘', "'")
-    html.gsub!('’', "'")
-    html.gsub!('“', '"')
-    html.gsub!('”', '"')
-    html.gsub!('–', '-')
-    html
-  end
-
   def get_articles
     resolve_location
     uri = build_news_uri
@@ -144,11 +146,16 @@ class NewsController < ApplicationController
       gl: @loc.upcase,
       ceid:
     }
-    uri = if !@section.nil? && @section.upcase != 'HEADLINES'
-            URI("https://news.google.com/rss/headlines/section/topic/#{@section.upcase}")
-          else
-            URI('https://news.google.com/rss')
-          end
+    uri = nil
+
+    if @search_query
+      uri = URI('https://news.google.com/rss/search')
+      params[:q] = @search_query
+    elsif !@section.nil? && @section.upcase != 'HEADLINES'
+      uri = URI("https://news.google.com/rss/headlines/section/topic/#{@section.upcase}")
+    else
+      uri = URI('https://news.google.com/rss')
+    end
     uri.query = URI.encode_www_form(params)
     uri
   end

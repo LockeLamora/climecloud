@@ -7,6 +7,15 @@
     <%= link_to 'Entertainment', news_path({section: 'ENTERTAINMENT'}) %> |  <%= link_to 'Science', news_path({section:'SCIENCE'}) %> |
     <%= link_to 'Sports', news_path({section: 'SPORTS'}) %> |  <%= link_to 'Health', news_path({section:'HEALTH'}) %>
 </div>
+<br />
+<div class='news_search'>
+<%= form_with url:"news_search", method: :get, local: true do |f| %>
+    <%= f.label "Search news" %>
+    <%= f.text_field :search_query, class: "text_field" %>
+    <br /><br />
+    <%= f.submit "Search" %>
+  <% end %>
+</div>
 <br /><br />
 <div class="news">
     <% @news_items.each do |item| %>
