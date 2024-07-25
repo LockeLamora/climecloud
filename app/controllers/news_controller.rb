@@ -101,9 +101,7 @@ class NewsController < ApplicationController
   def scrape_article(url)
     url.gsub!('https://news.google.com/rss/articles/', '')
     url.gsub!('?oc=5', '')
-    url = Base64.decode64(url)
-    url = URI.extract(url, /http(s)?/)[0]
-    url.gsub!('$', '')
+    url = google_rss_to_url(url)
     @article_url = url
     @useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'\
      'Chrome/122.0.0.0 Safari/537.36'
@@ -129,6 +127,14 @@ class NewsController < ApplicationController
     end
 
     out['text'].join('<br /><br />')
+  end
+
+  def google_rss_to_url(url)
+    uri = "https://news.google.com/_/DotsSplashUi/data/batchexecute"
+    req = '[[["Fbv4je","[\"garturlreq\",[[\"en-GB\",\"GB\",[\"FINANCE_TOP_INDICES\",\"WEB_TEST_1_0_0\"],null,null,1,1,\"GB:en\",null,60,null,null,null,null,null,0,5],\"en-GB\",\"GB\",1,[2,4,8],1,1,\"655649850\",0,0,null,0],\"'+url+'\"]",null,"generic"]]]'
+    res = Net::HTTP.post_form URI(uri), {"f.req" => req}
+    url = URI.extract(res.body, ['http', 'https'])
+    url[0]
   end
 
   def get_articles
