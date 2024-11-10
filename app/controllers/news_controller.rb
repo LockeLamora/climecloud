@@ -98,13 +98,32 @@ class NewsController < ApplicationController
     rules.key?(domain) ? rules[domain] : 'p'
   end
 
+  def get_signature(html_source)
+      match = html_source.match(/data-n-a-sg="([^"]+)"/)
+      match ? match[1] : nil
+    end
+
+    def get_timestamp(html_source)
+      match = html_source.match(/data-n-a-ts="([^"]+)"/)
+      match ? match[1] : nil
+    end
+
   def scrape_article(url)
-    url.gsub!('https://news.google.com/rss/articles/', '')
-    url.gsub!('?oc=5', '')
-    url = google_rss_to_url(url)
-    @article_url = url
     @useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'\
      'Chrome/122.0.0.0 Safari/537.36'
+    res = Net::HTTP.get_response(URI(url), { 'user-agent' => @useragent })
+    while res.code.start_with?('3')
+      res = Net::HTTP.get_response(URI(res.to_hash['location'][0]), { 'user-agent' => @useragent })
+    end
+
+    timestamp = get_timestamp(res.body)
+    signature = get_signature(res.body)
+
+    url.gsub!('https://news.google.com/rss/articles/', '')
+    url.gsub!('?oc=5', '')
+    url = google_rss_to_url(url, timestamp, signature)
+
+    @article_url = url
     res = Net::HTTP.get_response(URI(url), { 'user-agent' => @useragent })
     unless res.code.start_with?('2', '3')
       Rails.logger.warn("Cannot load page - response #{res.code} - url #{@article_url}")
@@ -129,9 +148,9 @@ class NewsController < ApplicationController
     out['text'].join('<br /><br />')
   end
 
-  def google_rss_to_url(url)
-    uri = "https://news.google.com/_/DotsSplashUi/data/batchexecute"
-    req = '[[["Fbv4je","[\"garturlreq\",[[\"en-GB\",\"GB\",[\"FINANCE_TOP_INDICES\",\"WEB_TEST_1_0_0\"],null,null,1,1,\"GB:en\",null,60,null,null,null,null,null,0,5],\"en-GB\",\"GB\",1,[2,4,8],1,1,\"655649850\",0,0,null,0],\"'+url+'\"]",null,"generic"]]]'
+  def google_rss_to_url(url, timestamp, signature)
+    uri = "https://news.google.com/_/DotsSplashUi/data/batchexecute"#?rpcids=Fbv4je"
+    req = '[[["Fbv4je","[\"garturlreq\",[[\"en-GB\",\"GB\",[\"FINANCE_TOP_INDICES\",\"WEB_TEST_1_0_0\"],null,null,1,1,\"GB:en\",null,0,null,null,null,null,null,0,5],\"en-GB\",\"GB\",1,[2,4,8],1,1,\"691331303\",0,0,null,0],\"'+url+'\",'+timestamp+',\"'+signature+'\"]",null,"generic"]]]'
     res = Net::HTTP.post_form URI(uri), {"f.req" => req}
     url = URI.extract(res.body, ['http', 'https'])
     url[0]
