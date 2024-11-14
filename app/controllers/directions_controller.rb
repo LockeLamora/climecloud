@@ -15,7 +15,6 @@ class DirectionsController < ApplicationController
     })
 
     plan = session["maps"].get_routes
-    pp plan.inspect
     @steps = plan[:steps]
     @overall_time = plan[:overall_time]
     @start = plan[:start]
