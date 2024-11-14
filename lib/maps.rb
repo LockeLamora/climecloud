@@ -20,22 +20,6 @@ class Maps
         get_static_map_image(url)
     end
 
-    def get_steps
-        @steps
-    end
-
-    def get_overall_time
-        @overall_time
-    end
-
-    def get_start
-        @start
-    end
-
-    def get_end
-        @end
-    end
-
     private
 
     def build_google_map_static_image_api(overview_polyline)
