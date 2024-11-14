@@ -3,6 +3,7 @@
 require 'uri'
 require 'net/http'
 require 'json'
+require 'weather'
 
 class ForecastController < ApplicationController
   def hourly
@@ -11,7 +12,8 @@ class ForecastController < ApplicationController
       return
     end
 
-    get_data('hourly')
+    data = weather.get_forecast('hourly')
+    parse_forecast_data(data, 'hourly')
 
     render :hourly
   end
@@ -22,49 +24,13 @@ class ForecastController < ApplicationController
       return
     end
 
-    get_data('daily')
+    data = weather.get_forecast('daily')
+    parse_forecast_data(data, 'daily')
 
     render :daily
   end
 
   private
-
-  def get_data(period = 'hourly')
-    uri = build_api_query(period)
-    data = get_forecast_data_from_api(uri)
-    parse_forecast_data(data, period)
-  end
-
-  def build_api_query(period = 'hourly')
-    uri = URI('https://api.open-meteo.com/v1/forecast')
-
-    params = get_params_by_locale
-
-    params[period.to_sym] = get_params_by_period(period)
-    period == 'hourly' ? params[:forecast_hours] = 24 : params[:forecast_days] = 7
-
-    params.merge! get_metrics_units
-
-    uri.query = URI.encode_www_form(params)
-    uri
-  end
-
-  def get_params_by_locale
-    {
-      latitude: cookies[:lat],
-      longitude: cookies[:lon],
-      timezone: cookies[:timezone_name]
-    }
-  end
-
-  def get_params_by_period(period)
-    if period == 'hourly'
-      %w[temperature_2m,apparent_temperature,precipitation_probability,snowfall,rain,wind_speed_10m]
-    elsif period == 'daily'
-      %w[temperature_2m_max temperature_2m_min
-         precipitation_probability_mean snowfall_sum rain_sum wind_speed_10m_max wind_speed_10m_min]
-    end
-  end
 
   def get_metrics_units
     metrics = {}
@@ -84,11 +50,6 @@ class ForecastController < ApplicationController
     end
 
     metrics
-  end
-
-  def get_forecast_data_from_api(uri)
-    res = Net::HTTP.get_response(uri)
-    JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
   end
 
   def parse_forecast_data(data, period)
@@ -122,5 +83,14 @@ class ForecastController < ApplicationController
       @units[:wind] = data["#{period}_units"]['wind_speed_10m_max'].gsub('/', '')
       @units[:snowfall] = data["#{period}_units"]['snowfall_sum']
     end
+  end
+
+  def weather 
+    @weather ||= Weather.new({
+      latitude: cookies[:lat],
+      longitude: cookies[:lon],
+      timezone: cookies[:timezone_name],
+      metrics_units: get_metrics_units
+    }) 
   end
 end
