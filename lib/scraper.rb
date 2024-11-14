@@ -28,23 +28,6 @@ def self.scrape_article(url, useragent)
     out['text'].join('<br /><br />')
 end
 
-def self.get_blacklist
-    ['Financial Times',
-    'Bloomberg',
-    'Times of Israel',
-    'Times of India',
-    'Reuters',
-    'Daily Record',
-    'Live updates',
-    'Wall Street Journal',
-    'Fox News',
-    'USA TODAY',
-    'Axios',
-    'SFGATE',
-    'Ynetnews',
-    'KABC-TV']
-end
-
 private  
 
     def self.resolve_article_rules(url)

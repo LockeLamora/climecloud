@@ -39,6 +39,23 @@ class NewsController < ApplicationController
 
   private
 
+  def get_blacklist
+    ['Financial Times',
+    'Bloomberg',
+    'Times of Israel',
+    'Times of India',
+    'Reuters',
+    'Daily Record',
+    'Live updates',
+    'Wall Street Journal',
+    'Fox News',
+    'USA TODAY',
+    'Axios',
+    'SFGATE',
+    'Ynetnews',
+    'KABC-TV']
+end
+
   def prepare_articles
     @news_items = []
     @articles.each_with_index do |item, i|
@@ -46,7 +63,7 @@ class NewsController < ApplicationController
       @item_articles = []
       item['description'].gsub('<ol>', '').gsub('</ol>', '').gsub('</li>',
                                                                   '</li>splitme').split('splitme').each do |article|
-        next if Scraper.get_blacklist.any? { |news_site| article.include? news_site }
+        next if get_blacklist.any? { |news_site| article.include? news_site }
 
         @item_articles << { article_title: strip_links(article).html_safe,
                             article_url: URI.extract(article, /http(s)?/)[0] }
