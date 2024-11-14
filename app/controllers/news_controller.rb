@@ -11,7 +11,7 @@ class NewsController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
   include Scraper
   def news
-    gnews
+    @gnews = gnews
     change_section
     get_articles
     prepare_articles
@@ -27,7 +27,7 @@ class NewsController < ApplicationController
 
   def change_section
     @section = params[:section] || cookies['news_default_section']
-    gnews.change_section(@section)
+    @gnews.change_section(@section)
   end
 
   def search
@@ -84,9 +84,11 @@ end
   end
 
   def gnews
-    Gnews.new({
+    @gnews = Gnews.new({
       section: cookies['news_default_section'],
       country_code: cookies['country_code']
-    })
+    }) unless @gnews
+
+    @gnews
   end
 end
