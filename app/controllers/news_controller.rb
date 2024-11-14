@@ -27,7 +27,7 @@ class NewsController < ApplicationController
 
   def change_section
     @section = params[:section] || cookies['news_default_section']
-    @gnews.change_section(@section)
+    gnews.change_section(@section)
   end
 
   def search
@@ -84,11 +84,9 @@ end
   end
 
   def gnews
-    @gnews = Gnews.new({
+    @gnews ||= Gnews.new({
       section: cookies['news_default_section'],
       country_code: cookies['country_code']
-    }) unless @gnews
-
-    @gnews
+    })
   end
 end
