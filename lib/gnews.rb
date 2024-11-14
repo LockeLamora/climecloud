@@ -16,6 +16,10 @@ def change_section(section)
     @section = section
 end
 
+def get_useragent
+    @useragent
+end
+
 def get_article(url)
     res = Net::HTTP.get_response(URI(url), { 'user-agent' => @useragent })
     while res.code.start_with?('3')
