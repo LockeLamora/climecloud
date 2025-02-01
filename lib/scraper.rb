@@ -54,7 +54,8 @@ private
             'cbsnews.com' => '.content__body p',
             'nypost.com' => '.entry-content p',
             'ynetnews.com' => '.public-DraftEditor-content',
-            'pbs.org' => '.body-text p'
+            'pbs.org' => '.body-text p',
+            'telegraph.co.uk' => '.articleBodyText'
         }
         rules.key?(domain) ? rules[domain] : 'p'
     end
