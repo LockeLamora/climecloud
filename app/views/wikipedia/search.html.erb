@@ -1,0 +1,26 @@
+<div class='news'>
+<h2>Wikipedia</h2>
+<%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
+<%= form_with url: "wikipedia", method: :get, local: true do |f| %>
+    <%= f.label "Search:" %>
+    <%= f.text_field :query, value: @query, class: "big_text_field" %>
+    <br /><br />
+    <%= f.submit "Search" %>
+<% end %>
+<% if @results.present? %>
+<br />
+<ol>
+<% @results.each_with_index do |result, index| %>
+    <li><%= link_to "#{index + 1} #{result[:title]}",
+                    wikipedia_article_path(title: result[:title]),
+                    accesskey: (index + 1).to_s %><br />
+    <%= result[:snippet] %></li>
+<% end %>
+</ol>
+<% elsif @query.present? && @error.nil? %>
+<br />
+Nothing found for <b><%= @query %></b><br />
+<% end %>
+<br />
+<%= link_to "0 Back to menu", root_path, accesskey: "0" %>
+</div>

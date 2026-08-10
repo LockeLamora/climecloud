@@ -24,6 +24,8 @@ Rails.application.routes.draw do
   get 'places_list' => 'places#list'
   get 'places_search' => 'places#search'
   get 'places_forget' => 'places#forget'
+  get 'wikipedia' => 'wikipedia#search'
+  get 'wikipedia_article' => 'wikipedia#article'
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'
   get 'news_search' => 'news#search'
