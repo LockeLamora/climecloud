@@ -4,6 +4,7 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 require 'webmock/minitest'
+require 'minitest/mock'
 
 module ActiveSupport
   class TestCase
@@ -18,6 +19,7 @@ module ActiveSupport
       allow: ['maps.googleapis.com',
               'api.geoapify.com',
               'api.open-meteo.com',
+              'news.google.com',
               'www.theguardian.com',
               'www.bbc.com']
     )
