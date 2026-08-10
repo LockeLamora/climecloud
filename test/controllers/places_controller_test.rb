@@ -15,6 +15,31 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'remembers a place typed in by hand so it need not be typed again' do
+    get '/places', params: { lat: '53.4', lon: '-2.6', place: 'Othertown, UK' },
+                   headers: { 'COOKIE' => LOCATION_COOKIES }
+
+    assert_response :success
+    assert_match 'Saved places', @response.body
+    assert_match 'Othertown, UK', @response.body
+
+    get '/places', headers: { 'COOKIE' => "#{LOCATION_COOKIES};#{cookies_header}" }
+
+    assert_response :success
+    assert_match 'Othertown, UK', @response.body
+    assert_match 'Forget saved places', @response.body
+  end
+
+  test 'forgets every saved place when asked' do
+    get '/places', params: { lat: '53.4', lon: '-2.6', place: 'Othertown, UK' },
+                   headers: { 'COOKIE' => LOCATION_COOKIES }
+    get '/places_forget', headers: { 'COOKIE' => "#{LOCATION_COOKIES};#{cookies_header}" }
+
+    assert_redirected_to '/places'
+    follow_redirect!
+    assert_no_match(/Othertown, UK/, @response.body)
+  end
+
   test 'sends a visitor with no saved location to settings' do
     get '/places'
 
@@ -52,6 +77,58 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
         # Geoapify wants longitude before latitude here.
         request.uri.query.include?('circle:1.17,52.3')
     end
+  end
+
+  test 'shows what each result actually is' do
+    stub_places([{ 'properties' => { 'name' => 'Testville Central', 'distance' => 300,
+                                     'categories' => %w[public_transport public_transport.train],
+                                     'lat' => 52.31, 'lon' => 1.18 } }])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'transport' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'Train station', @response.body
+  end
+
+  test 'keeps bus stations but drops the poles on every corner' do
+    stub_places([
+                  { 'properties' => { 'name' => 'Testville Bus Station', 'distance' => 500,
+                                      'categories' => %w[public_transport public_transport.bus],
+                                      'lat' => 52.32, 'lon' => 1.19 } },
+                  { 'properties' => { 'name' => 'Test Rd.-Other La.', 'distance' => 31,
+                                      'categories' => %w[public_transport public_transport.bus],
+                                      'lat' => 52.301, 'lon' => 1.171 } }
+                ])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'transport' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'Testville Bus Station', @response.body
+    assert_no_match(/Test Rd\.-Other La\./, @response.body)
+  end
+
+  test 'collapses a pair of stops sharing a name and keeps the nearer' do
+    stub_places([
+                  { 'properties' => { 'name' => 'Testville Interchange', 'distance' => 281,
+                                      'categories' => %w[public_transport.bus],
+                                      'lat' => 52.32, 'lon' => 1.19 } },
+                  { 'properties' => { 'name' => 'Testville Interchange', 'distance' => 268,
+                                      'categories' => %w[public_transport.bus],
+                                      'lat' => 52.319, 'lon' => 1.189 } }
+                ])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'transport' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_equal 1, @response.body.scan('Testville Interchange').length
+    assert_match '268m', @response.body
+    assert_no_match(/281m/, @response.body)
   end
 
   test 'falls back to an address when a place has no name' do
@@ -108,6 +185,11 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  # The saved list lives in a cookie, so it has to be handed back on the next request.
+  def cookies_header
+    "places_recent=#{cookies['places_recent']}"
+  end
 
   def stub_places(features = nil)
     features ||= [

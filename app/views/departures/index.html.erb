@@ -1,0 +1,16 @@
+<div class='route'>
+<h2>Departures</h2>
+<% if @stops.present? %>
+<% @stops.each do |stop| %>
+<%= link_to stop['name'], departures_stop_path(id: stop['id']) %><br />
+<% end %>
+<br />
+<%= link_to "(Add another stop)", departures_add_path %><br />
+<%= link_to "(Forget saved stops)", departures_forget_path %>
+<% else %>
+No stops saved yet.<br /><br />
+<%= link_to "Find stops near me", departures_add_path %>
+<% end %>
+<br /><br />
+<%= link_to "(Back to menu)", root_path %>
+</div>

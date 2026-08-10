@@ -1,0 +1,23 @@
+<div class='route'>
+<b><%= @stop['name'] %></b><br />
+<%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
+<% if @departures.empty? && @error.nil? %>
+Nothing due in the next couple of hours<br />
+<% end %>
+<table>
+<% @departures.each do |departure| %>
+  <tr>
+    <td><%= departure[:time] %></td>
+    <td><%= departure[:route] %></td>
+    <td><%= departure[:live] ? 'live' : 'timetable' %></td>
+  </tr>
+  <% if departure[:towards].present? %>
+  <tr><td colspan="3"><%= departure[:towards] %></td></tr>
+  <% end %>
+<% end %>
+</table>
+<br />
+<%= link_to "(Refresh)", departures_stop_path(id: @stop['id']) %><br />
+<%= link_to "(All stops)", departures_path %><br />
+<%= link_to "(Back to menu)", root_path %>
+</div>

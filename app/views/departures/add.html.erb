@@ -1,0 +1,15 @@
+<div class='route'>
+Stops near <%= cookies['city'].presence || 'your saved location' %><br />
+<%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
+<% if @nearby.empty? && @error.nil? %>
+No stops found within <%= Departures::NEARBY_RADIUS_METRES %>m<br />
+<% end %>
+<ol>
+<% @nearby.each do |stop| %>
+    <li><%= link_to stop[:name], departures_save_path(id: stop[:id], name: stop[:name]) %></li>
+<% end %>
+</ol>
+<br />
+<%= link_to "(Somewhere else? Change your postcode)", settings_path %><br />
+<%= link_to "(Back to departures)", departures_path %>
+</div>

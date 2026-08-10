@@ -4,10 +4,19 @@ require 'places'
 require 'geocode'
 
 class PlacesController < ApplicationController
+  MAX_SAVED_PLACES = 5
+
   def index
     return unless location_known?
 
+    remember_place if params[:place].present?
+    @saved = saved_places
     render :index
+  end
+
+  def forget
+    cookies.delete(:places_recent)
+    redirect_to places_path
   end
 
   # Somewhere typed in by hand. Nothing is remembered between visits: the choice is
@@ -64,6 +73,21 @@ class PlacesController < ApplicationController
 
     redirect_to '/settings'
     false
+  end
+
+  # Typed in places are kept client side like every other setting, so somewhere
+  # visited twice does not have to be typed twice on a keypad.
+  def saved_places
+    JSON.parse(cookies[:places_recent].presence || '[]')
+  rescue JSON::ParserError
+    []
+  end
+
+  def remember_place
+    entry = { 'place' => params[:place], 'lat' => @lat, 'lon' => @lon }
+    others = saved_places.reject { |saved| saved['place'] == entry['place'] }
+
+    cookies.permanent[:places_recent] = ([entry] + others).first(MAX_SAVED_PLACES).to_json
   end
 
   def place_params(candidate)

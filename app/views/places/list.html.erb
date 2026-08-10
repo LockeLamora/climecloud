@@ -8,8 +8,8 @@ Nothing found within <%= Places::RADIUS_METRES / 1000 %>km<br />
 <% @places.each do |place| %>
     <li><%= link_to place[:name], directions_plan_path(origin: "#{@lat},#{@lon}",
                                                        destination: "#{place[:lat]},#{place[:lon]}",
-                                                       mode: 'walking') %>
-    <%= place_distance(place[:distance]) %></li>
+                                                       mode: 'walking') %><br />
+    <%= [place[:kind], place_distance(place[:distance])].compact.join(', ') %></li>
 <% end %>
 </ol>
 <br />

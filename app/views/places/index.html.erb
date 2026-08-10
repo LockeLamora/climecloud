@@ -9,6 +9,14 @@ Near <%= @place %><br />
 <%= link_to details[:label], places_list_path(carried_location.merge(kind: kind)) %><br />
 <% end %>
 <br />
+<% if @saved.present? %>
+<b>Saved places</b><br />
+<% @saved.each do |saved| %>
+<%= link_to saved['place'], places_path(lat: saved['lat'], lon: saved['lon'], place: saved['place']) %><br />
+<% end %>
+<%= link_to "(Forget saved places)", places_forget_path %>
+<br /><br />
+<% end %>
 <%= form_with url: "places_search", method: :get, local: true do |f| %>
     <%= f.label "Somewhere else:" %>
     <%= f.text_field :query, class: "big_text_field" %>

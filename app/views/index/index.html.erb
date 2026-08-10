@@ -5,6 +5,11 @@
 <% end %>
 <br />
 
+    <% if departures_available? %>
+    <%=link_to "Departures", "/departures" %><br /><br />
+    <% else %>
+    Departures (coming soon)<br /><br />
+    <% end %>
     <%=link_to "Weather forecast", "/forecast/hourly" %><br /><br />
     <%=link_to "Map directions", "/directions" %><br /><br />
     <%=link_to "Places nearby", "/places" %><br /><br />
