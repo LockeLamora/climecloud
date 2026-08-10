@@ -18,9 +18,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match 'Location saved as', @response.body
     assert_match 'See 1 other match', @response.body
-    assert_equal 'Newport', cookies['city']
+    assert_equal 'Testville', cookies['city']
     # The alternatives are a step away, not on this page.
-    assert_no_match(/Newport Pagnell/, @response.body)
+    assert_no_match(/Testville Magna/, @response.body)
   end
 
   test 'lists only the places that were not assumed' do
@@ -31,7 +31,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_match 'Newport Pagnell, UK', @response.body
+    assert_match 'Testville Magna, UK', @response.body
     assert_match 'lat=52.3', @response.body
     assert_match 'Search again', @response.body
   end
@@ -66,7 +66,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'Location saved as', @response.body
-    assert_equal 'Newport', cookies['city']
+    assert_equal 'Testville', cookies['city']
     assert_equal 'Europe/London', cookies['timezone_name']
     assert_equal 'gb', cookies['country_code']
     assert_equal '52.3', cookies['lat']
@@ -75,12 +75,12 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
   test 'saves the picked place without geocoding again' do
     stub_geoapify
 
-    save_settings(lat: '51.5', lon: '-3.0', place: 'Newport, UK', place_country: 'gb')
+    save_settings(lat: '52.5', lon: '1.5', place: 'Testville, UK', place_country: 'gb')
 
     assert_response :success
     assert_match 'Location saved as', @response.body
-    assert_equal '51.5', cookies['lat']
-    assert_equal '-3.0', cookies['lon']
+    assert_equal '52.5', cookies['lat']
+    assert_equal '1.5', cookies['lon']
     assert_not_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete}
   end
 
@@ -96,7 +96,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'auto', cookies['timezone_name']
     assert_equal 'gb', cookies['country_code']
     # Falls back to the geocoded address, which reads better than the raw postcode.
-    assert_equal 'Newport, UK', cookies['city']
+    assert_equal 'Testville, UK', cookies['city']
   end
 
   test 'reports a postcode that matches nothing' do
@@ -129,7 +129,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
   def stub_geoapify
     properties = {
-      'city' => 'Newport',
+      'city' => 'Testville',
       'state' => 'Wales',
       'timezone' => { 'name' => 'Europe/London' },
       'country_code' => 'gb'
@@ -142,11 +142,11 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def one_result
-    { 'features' => [geocode_result('Newport, UK')] }
+    { 'features' => [geocode_result('Testville, UK')] }
   end
 
   def two_results
-    { 'features' => [geocode_result('Newport, UK'), geocode_result('Newport Pagnell, UK')] }
+    { 'features' => [geocode_result('Testville, UK'), geocode_result('Testville Magna, UK')] }
   end
 
   def geocode_result(address)

@@ -83,9 +83,9 @@ class DirectionsController < ApplicationController
     render_candidates(field)
   end
 
-  # Search around the other end of the journey. "wesham to station road" has to look
-  # near Wesham, not near wherever the settings postcode happens to point, or the
-  # Station Road 200 metres away never appears at all.
+  # Search around the other end of the journey. A route from a town to a street name
+  # has to look near that town, not near wherever the settings postcode happens to
+  # point, or the matching street 200 metres away never appears at all.
   def bias_point(field)
     return [params[:bias_lat], params[:bias_lon]] if params[:bias_lat].present? && params[:bias_lon].present?
 
@@ -137,8 +137,10 @@ class DirectionsController < ApplicationController
   def render_turn
     @step_index = params[:step].to_i.clamp(0, @steps.length - 1)
     @step = @steps[@step_index]
+    @segments = session['maps'].step_segment_count(@step)
+    @segment = params[:segment].to_i.clamp(0, @segments - 1)
 
-    @image = session['maps'].get_static_map_step_image_api(@step) if cookies['show_map'] == '1'
+    @image = session['maps'].get_static_map_step_image_api(@step, @segment) if cookies['show_map'] == '1'
     render :turn
   end
 

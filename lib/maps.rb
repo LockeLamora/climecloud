@@ -20,7 +20,12 @@ class Maps
   # Hybrid imagery runs out above this in most places, leaving a blank tile.
   MAX_STEP_ZOOM = 19
   # Below this a 220px tile covers so much ground that street names are unreadable.
-  MIN_STEP_ZOOM = 16
+  # At 17 it covers roughly 150m, which is close enough to read the street you are
+  # standing on rather than the shape of the town.
+  MIN_STEP_ZOOM = 17
+  # Matched to what a tile shows at that zoom, so a window is one legible stretch.
+  SEGMENT_METRES = 150
+  METRES_PER_DEGREE = 111_320
 
   # unresolved lists the endpoints Google could not pin down, or matched only
   # loosely, so the user can be offered a list of places to pick from.
@@ -45,16 +50,26 @@ class Maps
     get_static_map_image(url)
   end
 
-  def get_static_map_step_image_api(step)
-    url = build_google_map_static_step_image_api(step)
+  def get_static_map_step_image_api(step, segment = 0)
+    url = build_google_map_static_step_image_api(step, segment)
     get_static_map_image(url)
+  end
+
+  # A long step framed whole is unreadable at two inches, and framed at its start it
+  # shows the first stretch and then nothing until the turn a kilometre later. Split
+  # it into windows the user can walk along instead.
+  def step_segment_count(step)
+    points = walkable_points(step)
+    return 1 if points.length < 2
+
+    [(polyline_length(points) / SEGMENT_METRES).ceil, 1].max
   end
 
   private
 
-  def build_google_map_static_step_image_api(step)
+  def build_google_map_static_step_image_api(step, segment)
     uri = URI('https://maps.googleapis.com/maps/api/staticmap')
-    centre, zoom = frame_for(step)
+    centre, zoom = frame_for(step, segment)
 
     params = {
       key: @key,
@@ -73,20 +88,14 @@ class Maps
     uri
   end
 
-  # Left to itself Google fits the step with enough padding that a single turn is
-  # a speck in the middle of a 220px tile. Frame it ourselves instead.
-  def frame_for(step)
-    points = step_points(step)
+  # Frame the window being walked right now rather than the whole step. Google's own
+  # fit leaves a single turn as a speck, and a long step fitted whole is unreadable.
+  # Centring each window means every stretch gets its own view, not just the first.
+  def frame_for(step, segment)
+    points = segment_points(step, segment)
     lats = points.map(&:first)
     lngs = points.map(&:last)
-    zoom = zoom_for(lats.min, lats.max, lngs.min, lngs.max)
-
-    # Fitting a long step whole leaves it too zoomed out to read a street name on a
-    # two inch screen. Past that point stop zooming out and centre on where the
-    # user is standing, since what they need is the road they are on right now.
-    if zoom < MIN_STEP_ZOOM
-      return [centre_of(step['start_location']['lat'], step['start_location']['lng']), MIN_STEP_ZOOM]
-    end
+    zoom = [zoom_for(lats.min, lats.max, lngs.min, lngs.max), MIN_STEP_ZOOM].max
 
     [centre_of((lats.min + lats.max) / 2, (lngs.min + lngs.max) / 2), zoom]
   end
@@ -95,11 +104,63 @@ class Maps
     format('%<lat>.6f,%<lng>.6f', lat: lat, lng: lng)
   end
 
-  def step_points(step)
+  # The stretch this window covers. The ends are interpolated so that a straight road
+  # recorded as just two points still yields a distinct view per window.
+  def segment_points(step, segment)
+    points = walkable_points(step)
+    return points if points.length < 2
+
+    from = segment * SEGMENT_METRES
+    to = from + SEGMENT_METRES
+
+    [point_at(points, from)] + points_between(points, from, to) + [point_at(points, to)]
+  end
+
+  def walkable_points(step)
     points = decode_polyline(step['polyline']['points'])
-    points << [step['start_location']['lat'], step['start_location']['lng']]
-    points << [step['end_location']['lat'], step['end_location']['lng']]
-    points
+    return points if points.length >= 2
+
+    [[step['start_location']['lat'], step['start_location']['lng']],
+     [step['end_location']['lat'], step['end_location']['lng']]]
+  end
+
+  def points_between(points, from, to)
+    travelled = 0.0
+    selected = []
+
+    points.each_with_index do |point, index|
+      travelled += metres_between(points[index - 1], point) if index.positive?
+      selected << point if travelled > from && travelled < to
+    end
+
+    selected
+  end
+
+  def point_at(points, distance)
+    travelled = 0.0
+
+    points.each_cons(2) do |from, to|
+      leg = metres_between(from, to)
+      if travelled + leg >= distance
+        ratio = leg.zero? ? 0.0 : (distance - travelled) / leg
+        return [from[0] + ((to[0] - from[0]) * ratio), from[1] + ((to[1] - from[1]) * ratio)]
+      end
+
+      travelled += leg
+    end
+
+    points.last
+  end
+
+  def polyline_length(points)
+    points.each_cons(2).sum { |from, to| metres_between(from, to) }
+  end
+
+  def metres_between(from, to)
+    delta_lat = (to[0] - from[0]) * METRES_PER_DEGREE
+    delta_lon = (to[1] - from[1]) * METRES_PER_DEGREE * Math.cos(from[0] * Math::PI / 180)
+
+    Math.sqrt((delta_lat * delta_lat) + (delta_lon * delta_lon))
   end
 
   def zoom_for(min_lat, max_lat, min_lng, max_lng)

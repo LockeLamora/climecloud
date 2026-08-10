@@ -46,6 +46,48 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/Next turn/, @response.body)
   end
 
+  test 'walks a long step in short chunks instead of jumping to the turn' do
+    stub_directions(directions_body(long_step: true))
+
+    plan_route(view: 'turn', step: '0')
+
+    assert_response :success
+    # Roughly a kilometre at 150m a window.
+    assert_match 'part 1 of 7', @response.body
+    assert_match 'Further along', @response.body
+    assert_no_match(/Next turn/, @response.body)
+  end
+
+  test 'reaches the next turn only after the last chunk of a long step' do
+    stub_directions(directions_body(long_step: true))
+
+    plan_route(view: 'turn', step: '0', segment: '6')
+
+    assert_response :success
+    assert_match 'part 7 of 7', @response.body
+    assert_match 'Next turn', @response.body
+    assert_match 'Back along', @response.body
+  end
+
+  test 'shows no chunking for a step short enough to fit one view' do
+    stub_directions(directions_body)
+
+    plan_route(view: 'turn', step: '0')
+
+    assert_response :success
+    assert_no_match(/part 1 of/, @response.body)
+    assert_match 'Next turn', @response.body
+  end
+
+  test 'clamps a chunk number past the end of a step' do
+    stub_directions(directions_body(long_step: true))
+
+    plan_route(view: 'turn', step: '0', segment: '99')
+
+    assert_response :success
+    assert_match 'part 7 of 7', @response.body
+  end
+
   test 'clamps a step number past the end of the route' do
     stub_directions(directions_body)
 
@@ -63,10 +105,10 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'did you mean', @response.body
-    assert_match 'High Street, Newport', @response.body
-    assert_match 'High Street, Newark', @response.body
+    assert_match 'High Street, Testville', @response.body
+    assert_match 'High Street, Otherton', @response.body
     # Coordinates, so the re-planned route cannot be read a second way.
-    assert_match 'destination=51.58%2C-2.99', @response.body
+    assert_match 'destination=52.0%2C1.0', @response.body
   end
 
   test 'returns to the search form when nothing matches at all' do
@@ -93,7 +135,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   test 'does not offer to re-pick an endpoint already pinned to a place' do
     stub_directions(directions_body)
 
-    plan_route(destination: '51.58,-2.99')
+    plan_route(destination: '52.0,1.0')
 
     assert_response :success
     assert_match 'field=origin', @response.body
@@ -121,20 +163,20 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   test 'offers one entry per street rather than a list of house numbers' do
     stub_directions(not_found_body)
     stub_geocode('features' => [
-                   house_on('Station Road', 'Clive', 410),
-                   house_on('Station Road', 'Clive', 255),
-                   house_on('Station Road', 'Clive', 231),
-                   house_on('Station Road', 'Haydock', 41)
+                   house_on('Test Road', 'Eastwick', 410),
+                   house_on('Test Road', 'Eastwick', 255),
+                   house_on('Test Road', 'Eastwick', 231),
+                   house_on('Test Road', 'Westwick', 41)
                  ])
 
     plan_route
 
     assert_response :success
-    assert_match 'Station Road, Clive', @response.body
-    assert_match 'Station Road, Haydock', @response.body
+    assert_match 'Test Road, Eastwick', @response.body
+    assert_match 'Test Road, Westwick', @response.body
     # Four results, two streets, and no door numbers left in the list.
-    assert_equal 2, @response.body.scan('Station Road,').length
-    assert_no_match(/\d+ Station Road/, @response.body)
+    assert_equal 2, @response.body.scan('Test Road,').length
+    assert_no_match(/\d+ Test Road/, @response.body)
   end
 
   test 'ranks candidates nearest the other end of the journey first' do
@@ -144,7 +186,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     plan_route(origin: '51.48,-3.18')
 
     assert_response :success
-    # Biased towards the origin, so the nearby Newport outranks the distant Newark.
+    # Biased towards the origin, so the nearby Testville outranks the distant Otherton.
     assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete} do |request|
       request.uri.query.include?('bias=proximity:-3.18,51.48')
     end
@@ -152,15 +194,15 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
 
   test 'places the other end first so a nearby street is searched for nearby' do
     stub_directions(not_found_body)
-    stub_geocode('features' => [geocode_result('Wesham, Kirkham', 53.78, -2.88)])
+    stub_geocode('features' => [geocode_result('Northtown, Northshire', 52.0, 1.0)])
 
     plan_route
 
     assert_response :success
-    # Wesham is geocoded first, then Station Road is searched around Wesham rather
+    # Northtown is geocoded first, then Test Road is searched around Northtown rather
     # than around the saved settings postcode hundreds of miles away.
     assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete} do |request|
-      request.uri.query.include?('bias=proximity:-2.88,53.78')
+      request.uri.query.include?('bias=proximity:1.0,52.0')
     end
   end
 
@@ -175,6 +217,44 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'bias_lon=1.17', @response.body
   end
 
+  test 'searches a tight radius around the other end before anywhere else' do
+    stub_directions(directions_body)
+    stub_geocode('features' => [geocode_result('Test Road, Northshire', 52.0, 1.01)])
+
+    with_api_credentials do
+      get '/directions_pick',
+          params: { origin: 'northtown', destination: 'test road', mode: 'walking',
+                    field: 'destination', bias_lat: '52.0', bias_lon: '1.0' },
+          headers: { 'COOKIE' => COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'Test Road, Northshire', @response.body
+    assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete} do |request|
+      request.uri.query.include?('filter=circle:1.0,52.0,30000')
+    end
+  end
+
+  test 'widens beyond the tight radius when nothing is nearby' do
+    stub_request(:get, %r{api\.geoapify\.com/v1/geocode/autocomplete.*filter=circle})
+      .to_return(status: 200, body: { 'features' => [] }.to_json,
+                 headers: { 'Content-Type' => 'application/json' })
+    stub_request(:get, %r{api\.geoapify\.com/v1/geocode/autocomplete.*filter=countrycode})
+      .to_return(status: 200,
+                 body: { 'features' => [geocode_result('Test Road, Faraway', 50.0, 2.0)] }.to_json,
+                 headers: { 'Content-Type' => 'application/json' })
+
+    with_api_credentials do
+      get '/directions_pick',
+          params: { origin: 'northtown', destination: 'test road', mode: 'walking',
+                    field: 'destination', bias_lat: '52.0', bias_lon: '1.0' },
+          headers: { 'COOKIE' => COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'Test Road, Faraway', @response.body
+  end
+
   test 'falls back to the saved location when the other end cannot be placed' do
     stub_directions(not_found_body)
     stub_geocode('features' => [])
@@ -182,7 +262,8 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     plan_route
 
     assert_response :success
-    assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete} do |request|
+    # Both the tight pass and the widened one carry the bias, hence at_least_times.
+    assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete}, at_least_times: 1 do |request|
       request.uri.query.include?('bias=proximity:1.17,52.3')
     end
   end
@@ -197,7 +278,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_match 'High Street, Newport', @response.body
+    assert_match 'High Street, Testville', @response.body
   end
 
   private
@@ -220,7 +301,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
       .to_return(status: 200, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
-  def directions_body(partial_match: false)
+  def directions_body(partial_match: false, long_step: false)
     destination = { 'geocoder_status' => 'OK' }
     destination['partial_match'] = true if partial_match
 
@@ -235,20 +316,25 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
           'start_location' => { 'lat' => 52.3, 'lng' => 1.17 },
           'end_location' => { 'lat' => 52.31, 'lng' => 1.18 },
           'duration' => { 'text' => '12 mins' },
-          'steps' => [route_step('Head north on Test Road'), route_step('Turn left onto End Road')]
+          'steps' => [
+            route_step('Head north on Test Road', end_lat: long_step ? 52.309 : 52.3009),
+            route_step('Turn left onto End Road')
+          ]
         }]
       }]
     }
   end
 
-  def route_step(instruction)
+  # Roughly 100m end to end by default, so it is a single window. An empty polyline
+  # makes the geometry fall back to the two endpoints, which keeps it predictable.
+  def route_step(instruction, end_lat: 52.3009)
     {
       'html_instructions' => instruction,
       'distance' => { 'text' => '100 m' },
       'duration' => { 'text' => '2 mins' },
       'start_location' => { 'lat' => 52.3, 'lng' => 1.17 },
-      'end_location' => { 'lat' => 52.31, 'lng' => 1.18 },
-      'polyline' => { 'points' => 'steppoints' }
+      'end_location' => { 'lat' => end_lat, 'lng' => 1.17 },
+      'polyline' => { 'points' => '' }
     }
   end
 
@@ -263,8 +349,8 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   def geocode_body
     {
       'features' => [
-        geocode_result('High Street, Newport', 51.58, -2.99),
-        geocode_result('High Street, Newark', 53.07, -0.81)
+        geocode_result('High Street, Testville', 52.0, 1.0),
+        geocode_result('High Street, Otherton', 53.0, 0.5)
       ]
     }
   end

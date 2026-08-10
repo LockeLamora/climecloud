@@ -1,5 +1,5 @@
 <div class='route'>
-<%= "Turn #{@step_index + 1} of #{@steps.length}" %><br />
+<%= "Turn #{@step_index + 1} of #{@steps.length}" %><%= " (part #{@segment + 1} of #{@segments})" if @segments > 1 %><br />
 <%= link_to "(Switch to Whole route)", directions_plan_path(@route_params) %>
 <br /><br />
 <%= @step["html_instructions"].html_safe %><br />
@@ -9,12 +9,16 @@
 <img src="data:image/png;base64,<%= @image %>" />
 <% end %>
 <br /><br />
-<% if @step_index + 1 < @steps.length %>
+<% if @segment + 1 < @segments %>
+<%= link_to "Further along >", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index, segment: @segment + 1)) %><br />
+<% elsif @step_index + 1 < @steps.length %>
 <%= link_to "Next turn >", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index + 1)) %><br />
 <% else %>
 <%= "<b>Arrive:</b> #{@end}".html_safe %><br />
 <% end %>
-<% if @step_index > 0 %>
+<% if @segment > 0 %>
+<%= link_to "< Back along", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index, segment: @segment - 1)) %><br />
+<% elsif @step_index > 0 %>
 <%= link_to "< Previous turn", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index - 1)) %><br />
 <% end %>
 <%= link_to "(Back to menu)", root_path %>
