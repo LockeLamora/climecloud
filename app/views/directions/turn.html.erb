@@ -4,6 +4,7 @@
 <br /><br />
 <%= @step["html_instructions"].html_safe %><br />
 <%= "#{@step["distance"]["text"]} (#{@step["duration"]["text"]})" %>
+<% if @heading %><br />Heading <b><%= @heading %></b> (map is north up)<% end %>
 <% if cookies["show_map"] == '1' %>
 <br />
 <img src="data:image/png;base64,<%= @image %>" />

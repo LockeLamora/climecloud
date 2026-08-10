@@ -139,6 +139,7 @@ class DirectionsController < ApplicationController
     @step = @steps[@step_index]
     @segments = session['maps'].step_segment_count(@step)
     @segment = params[:segment].to_i.clamp(0, @segments - 1)
+    @heading = session['maps'].step_heading(@step, @segment)
 
     @image = session['maps'].get_static_map_step_image_api(@step, @segment) if cookies['show_map'] == '1'
     render :turn

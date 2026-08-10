@@ -23,9 +23,16 @@ class Maps
   # At 17 it covers roughly 150m, which is close enough to read the street you are
   # standing on rather than the shape of the town.
   MIN_STEP_ZOOM = 17
-  # Matched to what a tile shows at that zoom, so a window is one legible stretch.
-  SEGMENT_METRES = 150
+  # Shorter than the frame at that zoom, which leaves room to put the walker near the
+  # bottom edge rather than in the middle.
+  SEGMENT_METRES = 100
   METRES_PER_DEGREE = 111_320
+  EQUATOR_METRES_PER_PIXEL = 156_543.03392
+  # How much of the frame sits behind the walker. The rest is the leg ahead of them,
+  # so the picture reads as the journey in front rather than a stretch of road with
+  # the starting point somewhere arbitrary in it.
+  BEHIND_FRACTION = 0.15
+  COMPASS_POINTS = %w[north north-east east south-east south south-west west north-west].freeze
 
   # unresolved lists the endpoints Google could not pin down, or matched only
   # loosely, so the user can be offered a list of places to pick from.
@@ -58,6 +65,16 @@ class Maps
   # A long step framed whole is unreadable at two inches, and framed at its start it
   # shows the first stretch and then nothing until the turn a kilometre later. Split
   # it into windows the user can walk along instead.
+  # The map cannot be rotated, so a leg drawn left to right gives no clue whether it
+  # runs east or west. Naming the direction in words is legible where a 12 pixel pin
+  # on satellite imagery is not.
+  def step_heading(step, segment = 0)
+    points = segment_points(step, segment)
+    return nil if points.length < 2
+
+    compass_point(bearing_between(points.first, points.last))
+  end
+
   def step_segment_count(step)
     points = walkable_points(step)
     return 1 if points.length < 2
@@ -69,7 +86,8 @@ class Maps
 
   def build_google_map_static_step_image_api(step, segment)
     uri = URI('https://maps.googleapis.com/maps/api/staticmap')
-    centre, zoom = frame_for(step, segment)
+    points = segment_points(step, segment)
+    centre, zoom = frame_for(points)
 
     params = {
       key: @key,
@@ -77,9 +95,12 @@ class Maps
       maptype: 'hybrid',
       center: centre,
       zoom: zoom,
+      # Marked at the ends of this window, not of the whole step. Pinned to the step
+      # they both sat outside the frame on every middle chunk, leaving a bare line
+      # with nothing to say which way along it you were walking.
       markers: [
-        "size:mid|color:green|label:A|#{step['start_location']['lat']},#{step['start_location']['lng']}",
-        "size:mid|color:red|label:B|#{step['end_location']['lat']},#{step['end_location']['lng']}"
+        "size:mid|color:green|label:A|#{points.first.first},#{points.first.last}",
+        "size:mid|color:red|label:B|#{points.last.first},#{points.last.last}"
       ],
       path: "enc:#{step['polyline']['points']}"
     }
@@ -91,13 +112,58 @@ class Maps
   # Frame the window being walked right now rather than the whole step. Google's own
   # fit leaves a single turn as a speck, and a long step fitted whole is unreadable.
   # Centring each window means every stretch gets its own view, not just the first.
-  def frame_for(step, segment)
-    points = segment_points(step, segment)
+  def frame_for(points)
+    zoom = zoom_for_leg(points)
+
+    [centre_ahead_of(points, zoom), zoom]
+  end
+
+  # Ask for a frame wider than the leg itself, since part of it is given over to the
+  # ground already behind the walker.
+  def zoom_for_leg(points)
     lats = points.map(&:first)
     lngs = points.map(&:last)
-    zoom = [zoom_for(lats.min, lats.max, lngs.min, lngs.max), MIN_STEP_ZOOM].max
+    padding = (1 - (2 * BEHIND_FRACTION))
+    lat_span = (lats.max - lats.min) / padding / 2
+    lng_span = (lngs.max - lngs.min) / padding / 2
+    mid_lat = (lats.min + lats.max) / 2
+    mid_lng = (lngs.min + lngs.max) / 2
 
-    [centre_of((lats.min + lats.max) / 2, (lngs.min + lngs.max) / 2), zoom]
+    zoom = zoom_for(mid_lat - lat_span, mid_lat + lat_span, mid_lng - lng_span, mid_lng + lng_span)
+    [zoom, MIN_STEP_ZOOM].max
+  end
+
+  # Push the centre forward along the leg so the walker's own position sits near the
+  # bottom of the frame with the road ahead of them filling the rest. The map itself
+  # cannot be rotated, so north stays up: this makes the position predictable, not
+  # the direction.
+  def centre_ahead_of(points, zoom)
+    start = points.first
+    forward = (0.5 - BEHIND_FRACTION) * frame_metres(start.first, zoom)
+    bearing = bearing_between(start, points.last)
+    latitude = start.first + ((forward * Math.cos(bearing)) / METRES_PER_DEGREE)
+    longitude = start.last + ((forward * Math.sin(bearing)) /
+                             (METRES_PER_DEGREE * Math.cos(start.first * Math::PI / 180)))
+
+    centre_of(latitude, longitude)
+  end
+
+  def frame_metres(lat, zoom)
+    EQUATOR_METRES_PER_PIXEL * Math.cos(lat * Math::PI / 180) / (2**zoom) * IMAGE_SIZE
+  end
+
+  def compass_point(bearing)
+    degrees = ((bearing * 180 / Math::PI) + 360) % 360
+
+    COMPASS_POINTS[((degrees + 22.5) / 45).floor % COMPASS_POINTS.length]
+  end
+
+  # Radians clockwise from north.
+  def bearing_between(from, to)
+    delta_lat = to.first - from.first
+    delta_lon = (to.last - from.last) * Math.cos(from.first * Math::PI / 180)
+
+    Math.atan2(delta_lon, delta_lat)
   end
 
   def centre_of(lat, lng)
