@@ -10,7 +10,17 @@ Metrics/ClassLength:
   Enabled: false  
 
 Naming/AccessorMethodName:
-  Enabled: false  
+  Enabled: false
+
+# The Google News batchexecute payload is one long opaque literal that cannot be
+# wrapped or interpolated without changing what gets sent.
+Layout/LineLength:
+  Exclude:
+    - 'lib/gnews.rb'
+
+Style/StringConcatenation:
+  Exclude:
+    - 'lib/gnews.rb'
 
 Metrics/AbcSize:
   Enabled: false  

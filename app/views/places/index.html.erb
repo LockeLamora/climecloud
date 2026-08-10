@@ -1,0 +1,18 @@
+<div class='route'>
+<h2>Places</h2>
+<%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
+<% if @place.present? %>
+Near <%= @place %><br />
+<% end %>
+<br />
+<% Places::CATEGORIES.each do |kind, details| %>
+<%= link_to details[:label], places_list_path(carried_location.merge(kind: kind)) %><br />
+<% end %>
+<br />
+<%= form_with url: "places_search", method: :get, local: true do |f| %>
+    <%= f.label "Somewhere else:" %>
+    <%= f.text_field :query, class: "big_text_field" %>
+    <br /><br />
+    <%= f.submit "Search" %>
+<% end %>
+</div>

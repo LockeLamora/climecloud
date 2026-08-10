@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'maps'
 require 'geocode'
 
@@ -8,19 +9,19 @@ class DirectionsController < ApplicationController
   end
 
   def plan
-    session["maps"] = Maps.new({
-      origin: params[:origin],
-      destination: params[:destination],
-      mode: params[:mode],
-      units: resolve_unit
-    })
+    session['maps'] = Maps.new({
+                                 origin: params[:origin],
+                                 destination: params[:destination],
+                                 mode: params[:mode],
+                                 units: resolve_unit
+                               })
 
-    plan = session["maps"].get_routes
+    plan = session['maps'].get_routes
     @route_params = params.permit(:origin, :destination, :mode).to_h
 
     if plan.nil?
-      @error = session["maps"].error
-      render_failed_lookup(session["maps"].unresolved.first)
+      @error = session['maps'].error
+      render_failed_lookup(session['maps'].unresolved.first)
       return
     end
 
@@ -36,9 +37,7 @@ class DirectionsController < ApplicationController
       return
     end
 
-    if cookies['show_map'] == '1'
-      @image = session["maps"].get_static_map_image_api(@overview_polyline)
-    end
+    @image = session['maps'].get_static_map_image_api(@overview_polyline) if cookies['show_map'] == '1'
     render :route
   end
 
@@ -55,7 +54,9 @@ class DirectionsController < ApplicationController
   # worth a second look; anything already pinned to a place_id is not.
   def ambiguous_fields
     %w[origin destination].reject do |field|
-      @route_params[field].to_s.strip.start_with?('place_id:')
+      value = @route_params[field].to_s.strip
+      # Coordinates come from the places list and are already exact.
+      value.start_with?('place_id:') || value.match?(/\A-?\d+(\.\d+)?,-?\d+(\.\d+)?\z/)
     end
   end
 
@@ -73,9 +74,9 @@ class DirectionsController < ApplicationController
   def render_candidates(field)
     @field = field
     @candidates = Geocode.new({
-      address: @route_params[field],
-      country_code: cookies['country_code']
-    }).get_candidates
+                                address: @route_params[field],
+                                country_code: cookies['country_code']
+                              }).get_candidates
 
     if @candidates.empty?
       @error = 'Could not find that place, please try again'
@@ -91,9 +92,7 @@ class DirectionsController < ApplicationController
     @step_index = params[:step].to_i.clamp(0, @steps.length - 1)
     @step = @steps[@step_index]
 
-    if cookies['show_map'] == '1'
-      @image = session["maps"].get_static_map_step_image_api(@step)
-    end
+    @image = session['maps'].get_static_map_step_image_api(@step) if cookies['show_map'] == '1'
     render :turn
   end
 

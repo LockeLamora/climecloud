@@ -5,7 +5,7 @@
 <br /><br />
 <ol>
 <% @candidates.each do |candidate| %>
-    <li><%= link_to candidate[:address], directions_plan_path(@route_params.merge(@field => "place_id:#{candidate[:place_id]}")) %></li>
+    <li><%= link_to candidate[:address], directions_plan_path(@route_params.merge(@field => "#{candidate[:lat]},#{candidate[:lon]}")) %></li>
 <% end %>
 </ol>
 <br />

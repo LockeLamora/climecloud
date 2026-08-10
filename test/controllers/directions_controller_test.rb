@@ -65,12 +65,13 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'did you mean', @response.body
     assert_match 'High Street, Newport', @response.body
     assert_match 'High Street, Newark', @response.body
-    assert_match 'place_id%3APLACE_ONE', @response.body
+    # Coordinates, so the re-planned route cannot be read a second way.
+    assert_match 'destination=51.58%2C-2.99', @response.body
   end
 
   test 'returns to the search form when nothing matches at all' do
     stub_directions(not_found_body)
-    stub_geocode('status' => 'ZERO_RESULTS', 'results' => [])
+    stub_geocode('features' => [])
 
     plan_route
 
@@ -92,7 +93,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   test 'does not offer to re-pick an endpoint already pinned to a place' do
     stub_directions(directions_body)
 
-    plan_route(destination: 'place_id:PLACE_ONE')
+    plan_route(destination: '51.58,-2.99')
 
     assert_response :success
     assert_match 'field=origin', @response.body
@@ -146,7 +147,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def stub_geocode(body)
-    stub_request(:get, %r{maps\.googleapis\.com/maps/api/geocode/json})
+    stub_request(:get, %r{api\.geoapify\.com/v1/geocode/autocomplete})
       .to_return(status: 200, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
@@ -190,20 +191,14 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
 
   def geocode_body
     {
-      'status' => 'OK',
-      'results' => [
-        geocode_result('PLACE_ONE', 'High Street, Newport'),
-        geocode_result('PLACE_TWO', 'High Street, Newark')
+      'features' => [
+        geocode_result('High Street, Newport', 51.58, -2.99),
+        geocode_result('High Street, Newark', 53.07, -0.81)
       ]
     }
   end
 
-  def geocode_result(place_id, address)
-    {
-      'place_id' => place_id,
-      'formatted_address' => address,
-      'geometry' => { 'location' => { 'lat' => 52.3, 'lng' => 1.17 } },
-      'address_components' => [{ 'types' => ['country'], 'short_name' => 'GB' }]
-    }
+  def geocode_result(address, lat, lon)
+    { 'properties' => { 'formatted' => address, 'lat' => lat, 'lon' => lon, 'country_code' => 'gb' } }
   end
 end

@@ -116,12 +116,12 @@ class ForecastController < ApplicationController
     end
   end
 
-  def weather 
+  def weather
     @weather ||= Weather.new({
-      latitude: cookies[:lat],
-      longitude: cookies[:lon],
-      timezone: cookies[:timezone_name].presence || 'auto',
-      metrics_units: get_metrics_units
-    }) 
+                               latitude: cookies[:lat],
+                               longitude: cookies[:lon],
+                               timezone: cookies[:timezone_name].presence || 'auto',
+                               metrics_units: get_metrics_units
+                             })
   end
 end

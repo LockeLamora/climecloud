@@ -81,12 +81,12 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Location saved as', @response.body
     assert_equal '51.5', cookies['lat']
     assert_equal '-3.0', cookies['lon']
-    assert_not_requested :get, %r{maps\.googleapis\.com/maps/api/geocode/json}
+    assert_not_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete}
   end
 
   test 'still saves the location when the locale lookup fails' do
     stub_geocode(one_result)
-    stub_request(:get, %r{api\.geoapify\.com}).to_return(status: 500, body: '')
+    stub_request(:get, %r{api\.geoapify\.com/v1/geocode/reverse}).to_return(status: 500, body: '')
 
     save_settings
 
@@ -123,7 +123,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def stub_geocode(body)
-    stub_request(:get, %r{maps\.googleapis\.com/maps/api/geocode/json})
+    stub_request(:get, %r{api\.geoapify\.com/v1/geocode/autocomplete})
       .to_return(status: 200, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
@@ -135,26 +135,21 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
       'country_code' => 'gb'
     }
 
-    stub_request(:get, %r{api\.geoapify\.com})
+    stub_request(:get, %r{api\.geoapify\.com/v1/geocode/reverse})
       .to_return(status: 200,
                  body: { 'features' => [{ 'properties' => properties }] }.to_json,
                  headers: { 'Content-Type' => 'application/json' })
   end
 
   def one_result
-    { 'status' => 'OK', 'results' => [geocode_result('Newport, UK')] }
+    { 'features' => [geocode_result('Newport, UK')] }
   end
 
   def two_results
-    { 'status' => 'OK', 'results' => [geocode_result('Newport, UK'), geocode_result('Newport Pagnell, UK')] }
+    { 'features' => [geocode_result('Newport, UK'), geocode_result('Newport Pagnell, UK')] }
   end
 
   def geocode_result(address)
-    {
-      'place_id' => 'PLACE_ID',
-      'formatted_address' => address,
-      'geometry' => { 'location' => { 'lat' => 52.3, 'lng' => 1.17 } },
-      'address_components' => [{ 'types' => ['country'], 'short_name' => 'GB' }]
-    }
+    { 'properties' => { 'formatted' => address, 'lat' => 52.3, 'lon' => 1.17, 'country_code' => 'gb' } }
   end
 end

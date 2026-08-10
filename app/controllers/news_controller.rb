@@ -41,20 +41,20 @@ class NewsController < ApplicationController
 
   def get_blacklist
     ['Financial Times',
-    'Bloomberg',
-    'Times of Israel',
-    'Times of India',
-    'Reuters',
-    'Daily Record',
-    'Live updates',
-    'Wall Street Journal',
-    'Fox News',
-    'USA TODAY',
-    'Axios',
-    'SFGATE',
-    'Ynetnews',
-    'KABC-TV']
-end
+     'Bloomberg',
+     'Times of Israel',
+     'Times of India',
+     'Reuters',
+     'Daily Record',
+     'Live updates',
+     'Wall Street Journal',
+     'Fox News',
+     'USA TODAY',
+     'Axios',
+     'SFGATE',
+     'Ynetnews',
+     'KABC-TV']
+  end
 
   def prepare_articles
     @news_items = []
@@ -93,8 +93,8 @@ end
 
   def gnews
     @gnews ||= Gnews.new({
-      section: cookies['news_default_section'],
-      country_code: cookies['country_code']
-    })
+                           section: cookies['news_default_section'],
+                           country_code: cookies['country_code']
+                         })
   end
 end

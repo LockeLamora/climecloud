@@ -292,7 +292,7 @@ GEM
       base64
     rubyzip (3.4.1)
     securerandom (0.4.1)
-    selenium-webdriver (4.46.0)
+    selenium-webdriver (4.39.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
@@ -370,7 +370,7 @@ DEPENDENCIES
   rails (~> 8.0.5, >= 8.0.5.1)
   rexml (~> 3.3, >= 3.3.9)
   rubocop
-  selenium-webdriver
+  selenium-webdriver (< 4.40)
   sprockets-rails
   stimulus-rails
   turbo-rails

@@ -33,7 +33,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'Hourly forecast', @response.body
-    assert_requested :get, %r{api\.open-meteo\.com.*wind_speed_unit=kmh}
+    assert_requested :get, /api\.open-meteo\.com.*wind_speed_unit=kmh/
   end
 
   test 'falls back to an automatic timezone when none was saved' do
@@ -42,11 +42,11 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     get '/forecast/hourly', headers: { 'COOKIE' => 'lat=52.3;lon=1.17;metrics=metric' }
 
     assert_response :success
-    assert_requested :get, %r{api\.open-meteo\.com.*timezone=auto}
+    assert_requested :get, /api\.open-meteo\.com.*timezone=auto/
   end
 
   test 'reports rather than crashes when the forecast cannot be fetched' do
-    stub_request(:get, %r{api\.open-meteo\.com})
+    stub_request(:get, /api\.open-meteo\.com/)
       .to_return(status: 400, body: '{"error":true,"reason":"invalid unit"}')
 
     get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
@@ -57,7 +57,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'does not blame the saved location when the weather service is rate limited' do
-    stub_request(:get, %r{api\.open-meteo\.com})
+    stub_request(:get, /api\.open-meteo\.com/)
       .to_return(status: 429, body: '{"error":true,"reason":"Daily API request limit exceeded."}')
 
     get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=hybrid" }
@@ -72,6 +72,14 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     get '/forecast/hourly', headers: { 'COOKIE' => 'lat=' }
 
     assert_redirected_to '/settings'
+  end
+
+  # Crawlers carry no cookies, so they must never reach the API and spend quota.
+  test 'does not call open-meteo at all when no location is saved' do
+    get '/forecast/hourly'
+    get '/forecast/daily'
+
+    assert_not_requested :get, /api\.open-meteo\.com/
   end
 
   private
@@ -95,7 +103,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    stub_request(:get, %r{api\.open-meteo\.com})
+    stub_request(:get, /api\.open-meteo\.com/)
       .to_return(status: 200, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 end

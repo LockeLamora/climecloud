@@ -55,9 +55,9 @@ class SettingsController < ApplicationController
 
   def geocode_postcode
     Geocode.new({
-      address: params[:postcode],
-      country_code: params[:country_code]
-    }).get_candidates
+                  address: params[:postcode],
+                  country_code: params[:country_code]
+                }).get_candidates
   end
 
   # A postcode or town can match several places. Take the first so the common case

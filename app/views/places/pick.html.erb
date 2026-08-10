@@ -1,0 +1,14 @@
+<div class='route'>
+Which did you mean?<br />
+<b><%= params[:query] %></b>
+<br /><br />
+<ol>
+<% @candidates.each do |candidate| %>
+    <li><%= link_to candidate[:address], places_path(lat: candidate[:lat],
+                                                     lon: candidate[:lon],
+                                                     place: candidate[:address]) %></li>
+<% end %>
+</ol>
+<br />
+<%= link_to "(None of these? Search again)", places_path %>
+</div>

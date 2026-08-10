@@ -1,0 +1,17 @@
+<div class='route'>
+<b><%= @kind[:label] %></b><%= " near #{@place}" if @place.present? %><br />
+<%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
+<% if @places.empty? && @error.nil? %>
+Nothing found within <%= Places::RADIUS_METRES / 1000 %>km<br />
+<% end %>
+<ol>
+<% @places.each do |place| %>
+    <li><%= link_to place[:name], directions_plan_path(origin: "#{@lat},#{@lon}",
+                                                       destination: "#{place[:lat]},#{place[:lon]}",
+                                                       mode: 'walking') %>
+    <%= place_distance(place[:distance]) %></li>
+<% end %>
+</ol>
+<br />
+<%= link_to "(Back to places)", places_path(carried_location) %>
+</div>

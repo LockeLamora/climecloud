@@ -80,6 +80,8 @@ group :test do
   gem 'bundle-audit'
   gem 'capybara'
   gem 'rubocop'
-  gem 'selenium-webdriver'
+  # As with connection_pool, 4.46 is written in Ruby 3.4 syntax and will not parse
+  # on 3.3.0, which takes every system test down at load.
+  gem 'selenium-webdriver', '< 4.40'
   gem 'webmock'
 end
