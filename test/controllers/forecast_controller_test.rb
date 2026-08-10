@@ -56,14 +56,53 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Set your location again', @response.body
   end
 
-  test 'does not blame the saved location when the weather service is rate limited' do
+  test 'falls back to a relay when open-meteo refuses on the daily limit' do
     stub_request(:get, /api\.open-meteo\.com/)
       .to_return(status: 429, body: '{"error":true,"reason":"Daily API request limit exceeded."}')
+    stub_request(:get, /allorigins\.win/)
+      .to_return(status: 200, body: forecast_body.to_json, headers: { 'Content-Type' => 'application/json' })
 
-    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=hybrid" }
+    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
+
+    assert_response :success
+    assert_match 'Hourly forecast', @response.body
+    assert_no_match(/weather service is busy/, @response.body)
+  end
+
+  test 'tries the next relay when the first one is no help either' do
+    stub_request(:get, /api\.open-meteo\.com/).to_return(status: 429, body: '{"error":true}')
+    stub_request(:get, /allorigins\.win/).to_return(status: 503, body: '')
+    stub_request(:get, /codetabs\.com/)
+      .to_return(status: 200, body: forecast_body.to_json, headers: { 'Content-Type' => 'application/json' })
+
+    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
+
+    assert_response :success
+    assert_match 'Hourly forecast', @response.body
+  end
+
+  test 'does not relay anything other than a rate limit' do
+    stub_request(:get, /api\.open-meteo\.com/)
+      .to_return(status: 400, body: '{"error":true,"reason":"invalid unit"}')
+
+    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
+
+    assert_response :success
+    assert_not_requested :get, /allorigins\.win/
+    assert_not_requested :get, /codetabs\.com/
+  end
+
+  test 'still says the service is busy when every relay fails too' do
+    stub_request(:get, /api\.open-meteo\.com/)
+      .to_return(status: 429, body: '{"error":true,"reason":"Daily API request limit exceeded."}')
+    stub_request(:get, /allorigins\.win/).to_return(status: 503, body: '')
+    stub_request(:get, /codetabs\.com/).to_return(status: 503, body: '')
+
+    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
 
     assert_response :success
     assert_match 'weather service is busy', @response.body
+    # The location is fine, so it must not be what gets blamed.
     assert_match 'Your location is saved', @response.body
     assert_no_match(/Set your location again/, @response.body)
   end
@@ -85,7 +124,12 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   private
 
   def stub_forecast
-    body = {
+    stub_request(:get, /api\.open-meteo\.com/)
+      .to_return(status: 200, body: forecast_body.to_json, headers: { 'Content-Type' => 'application/json' })
+  end
+
+  def forecast_body
+    {
       'hourly' => {
         'time' => ['2026-08-10T09:00'],
         'temperature_2m' => [15.2],
@@ -102,8 +146,5 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
         'snowfall' => 'cm'
       }
     }
-
-    stub_request(:get, /api\.open-meteo\.com/)
-      .to_return(status: 200, body: body.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 end
