@@ -53,7 +53,12 @@ class ForecastController < ApplicationController
     Rails.logger.warn("Forecast unavailable for #{cookies[:lat]},#{cookies[:lon]} " \
                       "tz=#{cookies[:timezone_name]}: #{reason}")
 
-    @error = 'Could not fetch the forecast for your saved location'
+    @rate_limited = weather.rate_limited?
+    @error = if @rate_limited
+               'The weather service is busy. Your location is saved, please try again later.'
+             else
+               'Could not fetch the forecast for your saved location'
+             end
     render :unavailable
   end
 

@@ -3,6 +3,8 @@ Location saved as:<br />
 <b><%= cookies['city'].presence || @place %></b>
 <br /><br />
 <%= link_to "Continue", "/" %><br /><br />
+<% if @alternatives.positive? %>
 <%= link_to "(Wrong place? See #{@alternatives} other match#{'es' unless @alternatives == 1})",
             settings_pick_path(@settings_params) %>
+<% end %>
 </div>

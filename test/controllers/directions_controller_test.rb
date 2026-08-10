@@ -122,7 +122,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
 
     with_api_credentials do
       get '/directions_pick',
-          params: { origin: 'wesham road', destination: 'station road', mode: 'walking', field: 'destination' },
+          params: { origin: 'start street', destination: 'end street', mode: 'walking', field: 'destination' },
           headers: { 'COOKIE' => COOKIES }
     end
 
@@ -135,7 +135,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   def plan_route(extra = {})
     with_api_credentials do
       get '/directions_plan',
-          params: { origin: 'wesham road', destination: 'station road', mode: 'walking' }.merge(extra),
+          params: { origin: 'start street', destination: 'end street', mode: 'walking' }.merge(extra),
           headers: { 'COOKIE' => COOKIES }
     end
   end

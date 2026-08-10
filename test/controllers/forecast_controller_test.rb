@@ -56,6 +56,18 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Set your location again', @response.body
   end
 
+  test 'does not blame the saved location when the weather service is rate limited' do
+    stub_request(:get, %r{api\.open-meteo\.com})
+      .to_return(status: 429, body: '{"error":true,"reason":"Daily API request limit exceeded."}')
+
+    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=hybrid" }
+
+    assert_response :success
+    assert_match 'weather service is busy', @response.body
+    assert_match 'Your location is saved', @response.body
+    assert_no_match(/Set your location again/, @response.body)
+  end
+
   test 'sends a visitor with no saved location back to settings' do
     get '/forecast/hourly', headers: { 'COOKIE' => 'lat=' }
 

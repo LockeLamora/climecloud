@@ -2,7 +2,13 @@ require 'net/http'
 require 'uri'
 
 class Weather
-    attr_reader :error
+    attr_reader :error, :error_code
+
+    # Open-Meteo caps free use per day. Nothing is wrong with the saved location when
+    # this happens, so it must not be reported as if there were.
+    def rate_limited?
+      @error_code == '429'
+    end
 
     def initialize(params)
         @latitude = params[:latitude]
@@ -28,6 +34,7 @@ class Weather
         return JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
 
         # Open-Meteo explains itself in the body. Throwing that away left us guessing.
+        @error_code = res.code
         @error = "#{res.code} #{failure_reason(res)}"
         nil
       end

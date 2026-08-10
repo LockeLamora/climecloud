@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 ruby '3.3.0'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem 'rails', '~> 7.1.3', '>= 7.1.3.2'
+gem 'rails', '~> 8.0.5', '>= 8.0.5.1'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
@@ -13,9 +13,13 @@ gem 'sprockets-rails'
 # Use sqlite3 as the database for Active Record
 gem 'pg', '~> 1.5.5'
 
+# connection_pool 3.x is written in Ruby 3.4 syntax and will not parse on 3.3.0.
+# Reached through wombat -> mechanize -> net-http-persistent.
+gem 'connection_pool', '< 3.0'
+
 # For webscraping news
 gem 'domainatrix', '~> 0.0.11'
-gem 'rexml', '~> 3.2.6'
+gem 'rexml', '~> 3.3', '>= 3.3.9'
 gem 'wombat', '~> 3.0.0'
 
 # required for country selection dropdown

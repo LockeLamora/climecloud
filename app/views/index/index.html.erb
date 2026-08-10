@@ -1,5 +1,8 @@
 <h2>Climecloud</h1><br />
 <b>Dumbphone utilities dashboard</b><br />
+<% if cookies[:city].present? %>
+<%= [cookies[:city], cookies[:state].presence].compact.join(', ') %><br />
+<% end %>
 <br />
 
     <%=link_to "Weather forecast", "/forecast/hourly" %><br /><br />

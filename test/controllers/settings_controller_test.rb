@@ -64,7 +64,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     save_settings
 
-    assert_response :redirect
+    assert_response :success
+    assert_match 'Location saved as', @response.body
     assert_equal 'Newport', cookies['city']
     assert_equal 'Europe/London', cookies['timezone_name']
     assert_equal 'gb', cookies['country_code']
@@ -76,7 +77,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     save_settings(lat: '51.5', lon: '-3.0', place: 'Newport, UK', place_country: 'gb')
 
-    assert_response :redirect
+    assert_response :success
+    assert_match 'Location saved as', @response.body
     assert_equal '51.5', cookies['lat']
     assert_equal '-3.0', cookies['lon']
     assert_not_requested :get, %r{maps\.googleapis\.com/maps/api/geocode/json}
@@ -88,7 +90,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     save_settings
 
-    assert_response :redirect
+    assert_response :success
+    assert_match 'Location saved as', @response.body
     assert_equal '52.3', cookies['lat']
     assert_equal 'auto', cookies['timezone_name']
     assert_equal 'gb', cookies['country_code']

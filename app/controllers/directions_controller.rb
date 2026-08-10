@@ -50,9 +50,9 @@ class DirectionsController < ApplicationController
 
   private
 
-  # Google picks one reading of free text without saying so: "neville road" quietly
-  # becomes London when Peterlee was meant. Anything the user typed is worth a second
-  # look; anything already pinned to a place_id is not.
+  # Google picks one reading of free text without saying so, and a street name common
+  # to several towns silently resolves to the wrong one. Anything the user typed is
+  # worth a second look; anything already pinned to a place_id is not.
   def ambiguous_fields
     %w[origin destination].reject do |field|
       @route_params[field].to_s.strip.start_with?('place_id:')

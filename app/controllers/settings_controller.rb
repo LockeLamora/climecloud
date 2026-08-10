@@ -69,14 +69,11 @@ class SettingsController < ApplicationController
     set_news(params)
     set_cookie
 
-    if alternatives.positive?
-      @alternatives = alternatives
-      @settings_params = settings_params
-      render :saved
-      return
-    end
-
-    redirect_to '/'
+    # Always confirm. Redirecting straight to the menu gave no sign the postcode had
+    # matched anything at all until the weather page was opened.
+    @alternatives = alternatives
+    @settings_params = settings_params
+    render :saved
   end
 
   def settings_params
