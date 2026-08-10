@@ -30,6 +30,8 @@ class DirectionsController < ApplicationController
     @start = plan[:start]
     @end = plan[:end]
     @overview_polyline = plan[:overview_polyline]
+    @start_location = plan[:start_location]
+    @end_location = plan[:end_location]
     @ambiguous = ambiguous_fields
 
     if params[:view] == 'turn' && @steps.present?
@@ -46,6 +48,16 @@ class DirectionsController < ApplicationController
     @route_params = params.permit(:origin, :destination, :mode).to_h
     render_candidates(params[:field] == 'origin' ? 'origin' : 'destination')
   end
+
+  # Carried into the pick link so the alternatives are searched around where Google
+  # placed the endpoint the user is not currently changing.
+  def bias_params_for(field)
+    other = field == 'origin' ? @end_location : @start_location
+    return {} if other.blank?
+
+    { 'bias_lat' => other['lat'].to_s, 'bias_lon' => other['lng'].to_s }
+  end
+  helper_method :bias_params_for
 
   private
 
@@ -71,14 +83,30 @@ class DirectionsController < ApplicationController
     render_candidates(field)
   end
 
-  # Prefer matches near the other end of the journey, falling back to the saved
-  # location, so the nearest candidates are the ones at the top of a short list.
+  # Search around the other end of the journey. "wesham to station road" has to look
+  # near Wesham, not near wherever the settings postcode happens to point, or the
+  # Station Road 200 metres away never appears at all.
   def bias_point(field)
+    return [params[:bias_lat], params[:bias_lon]] if params[:bias_lat].present? && params[:bias_lon].present?
+
     other = field == 'origin' ? 'destination' : 'origin'
     coordinates = coordinates_in(@route_params[other])
     return coordinates if coordinates
 
-    [cookies['lat'], cookies['lon']]
+    geocode_endpoint(@route_params[other]) || [cookies['lat'], cookies['lon']]
+  end
+
+  # Only reached when there is no resolved route to borrow coordinates from, so the
+  # other end has to be placed before this one can be searched around it.
+  def geocode_endpoint(value)
+    return nil if value.blank?
+
+    candidate = Geocode.new({
+                              address: value,
+                              country_code: cookies['country_code']
+                            }).get_candidates.first
+
+    candidate && [candidate[:lat], candidate[:lon]]
   end
 
   def coordinates_in(value)

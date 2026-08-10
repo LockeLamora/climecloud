@@ -118,6 +118,25 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Route planning is unavailable', @response.body
   end
 
+  test 'offers one entry per street rather than a list of house numbers' do
+    stub_directions(not_found_body)
+    stub_geocode('features' => [
+                   house_on('Station Road', 'Clive', 410),
+                   house_on('Station Road', 'Clive', 255),
+                   house_on('Station Road', 'Clive', 231),
+                   house_on('Station Road', 'Haydock', 41)
+                 ])
+
+    plan_route
+
+    assert_response :success
+    assert_match 'Station Road, Clive', @response.body
+    assert_match 'Station Road, Haydock', @response.body
+    # Four results, two streets, and no door numbers left in the list.
+    assert_equal 2, @response.body.scan('Station Road,').length
+    assert_no_match(/\d+ Station Road/, @response.body)
+  end
+
   test 'ranks candidates nearest the other end of the journey first' do
     stub_directions(not_found_body)
     stub_geocode(geocode_body)
@@ -131,9 +150,34 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'falls back to the saved location when the other end is not yet pinned' do
+  test 'places the other end first so a nearby street is searched for nearby' do
     stub_directions(not_found_body)
-    stub_geocode(geocode_body)
+    stub_geocode('features' => [geocode_result('Wesham, Kirkham', 53.78, -2.88)])
+
+    plan_route
+
+    assert_response :success
+    # Wesham is geocoded first, then Station Road is searched around Wesham rather
+    # than around the saved settings postcode hundreds of miles away.
+    assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete} do |request|
+      request.uri.query.include?('bias=proximity:-2.88,53.78')
+    end
+  end
+
+  test 'offers the route page pick link biased to where google put the other end' do
+    stub_directions(directions_body)
+
+    plan_route
+
+    assert_response :success
+    # Origin resolved to 52.30,1.17, so re-picking the destination searches there.
+    assert_match 'bias_lat=52.3', @response.body
+    assert_match 'bias_lon=1.17', @response.body
+  end
+
+  test 'falls back to the saved location when the other end cannot be placed' do
+    stub_directions(not_found_body)
+    stub_geocode('features' => [])
 
     plan_route
 
@@ -188,6 +232,8 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
         'legs' => [{
           'start_address' => 'Start Road, Testville',
           'end_address' => 'End Road, Testville',
+          'start_location' => { 'lat' => 52.3, 'lng' => 1.17 },
+          'end_location' => { 'lat' => 52.31, 'lng' => 1.18 },
           'duration' => { 'text' => '12 mins' },
           'steps' => [route_step('Head north on Test Road'), route_step('Turn left onto End Road')]
         }]
@@ -225,5 +271,19 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
 
   def geocode_result(address, lat, lon)
     { 'properties' => { 'formatted' => address, 'lat' => lat, 'lon' => lon, 'country_code' => 'gb' } }
+  end
+
+  def house_on(street, city, number)
+    {
+      'properties' => {
+        'formatted' => "#{number} #{street}, #{city}, United Kingdom",
+        'housenumber' => number.to_s,
+        'street' => street,
+        'city' => city,
+        'lat' => 53.4,
+        'lon' => -2.6,
+        'country_code' => 'gb'
+      }
+    }
   end
 end

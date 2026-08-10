@@ -206,15 +206,25 @@ class Maps
     @unresolved = partial_match_waypoints(body)
     overview_polyline = extract_journey_overlay(body)
     start, endpart = extract_addresses(body)
+    start_location, end_location = extract_locations(body)
     steps, overall_time = extract_steps(body)
 
     {
       overview_polyline: overview_polyline,
       start: start,
       end: endpart,
+      start_location: start_location,
+      end_location: end_location,
       steps: steps,
       overall_time: overall_time
     }
+  end
+
+  # Where Google actually placed each end. Worth keeping: re-picking one endpoint
+  # should search around the other, and this saves geocoding it a second time.
+  def extract_locations(body)
+    leg = body['routes'][0]['legs'][0]
+    [leg['start_location'], leg['end_location']]
   end
 
   def extract_steps(body)
