@@ -15,7 +15,9 @@ class PlacesController < ApplicationController
   def search
     @candidates = Geocode.new({
                                 address: params[:query],
-                                country_code: cookies['country_code']
+                                country_code: cookies['country_code'],
+                                bias_lat: cookies['lat'],
+                                bias_lon: cookies['lon']
                               }).get_candidates
 
     if @candidates.empty?

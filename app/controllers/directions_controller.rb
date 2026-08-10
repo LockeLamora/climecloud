@@ -71,11 +71,29 @@ class DirectionsController < ApplicationController
     render_candidates(field)
   end
 
+  # Prefer matches near the other end of the journey, falling back to the saved
+  # location, so the nearest candidates are the ones at the top of a short list.
+  def bias_point(field)
+    other = field == 'origin' ? 'destination' : 'origin'
+    coordinates = coordinates_in(@route_params[other])
+    return coordinates if coordinates
+
+    [cookies['lat'], cookies['lon']]
+  end
+
+  def coordinates_in(value)
+    match = value.to_s.strip.match(/\A(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)\z/)
+    match && [match[1], match[2]]
+  end
+
   def render_candidates(field)
     @field = field
+    bias_lat, bias_lon = bias_point(field)
     @candidates = Geocode.new({
                                 address: @route_params[field],
-                                country_code: cookies['country_code']
+                                country_code: cookies['country_code'],
+                                bias_lat: bias_lat,
+                                bias_lon: bias_lon
                               }).get_candidates
 
     if @candidates.empty?

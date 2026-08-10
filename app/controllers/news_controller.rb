@@ -73,9 +73,10 @@ class NewsController < ApplicationController
   end
 
   def scrape_article(url)
-    url = gnews.get_article(url)
+    resolved = gnews.get_article(url)
+    return 'Could not open this article, please try another' if resolved.nil?
 
-    @article_url = url
+    @article_url = resolved
     Scraper.scrape_article(@article_url, gnews.get_useragent)
   end
 

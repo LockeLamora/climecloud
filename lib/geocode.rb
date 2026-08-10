@@ -12,6 +12,9 @@ class Geocode
     @key = Rails.application.credentials.geoapify.api_key
     @address = params[:address]
     @country_code = params[:country_code]
+    @type = params[:type]
+    @bias_lat = params[:bias_lat]
+    @bias_lon = params[:bias_lon]
   end
 
   def get_candidates
@@ -34,6 +37,12 @@ class Geocode
       limit: MAX_CANDIDATES
     }
     params[:filter] = "countrycode:#{@country_code.downcase}" if @country_code.present?
+    # Autocomplete is deliberately fuzzy, which is what free text search wants but not
+    # a postcode box: without this, "abcdefg" happily comes back as Bristol.
+    params[:type] = @type if @type.present?
+    # Rank matches near the other end of the journey first. A Station Road two
+    # hundred miles away is never the one that was meant. Longitude first again.
+    params[:bias] = "proximity:#{@bias_lon},#{@bias_lat}" if @bias_lat.present? && @bias_lon.present?
 
     uri.query = URI.encode_www_form(params)
     uri

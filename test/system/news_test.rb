@@ -7,6 +7,7 @@ class NewsTest < ApplicationSystemTestCase
 
   test 'visiting the index and then an article' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+    stub_article_lookup
     visit news_url
     assert_text 'Budget 2024 live: Jeremy Hunt'
     first('.news > ul > a').click
@@ -19,5 +20,26 @@ class NewsTest < ApplicationSystemTestCase
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('science-news.xml').read)
     click_link('Science')
     assert_text "'Nightmarish' sea lizard that roamed the seas 66"
+  end
+
+  private
+
+  # A Google News link resolves through three requests before the real article is
+  # reached: fetch the stub page for its timestamp and signature, post those back for
+  # the true URL, then load that. Pinned so the test does not ride on Google's
+  # consent flow or on a 2024 article still reading the same.
+  def stub_article_lookup
+    stub_request(:get, %r{news\.google\.com/rss/articles/})
+      .to_return(status: 200,
+                 body: '<html data-n-a-ts="1709600000" data-n-a-sg="test-signature"></html>',
+                 headers: { 'Content-Type' => 'text/html' })
+
+    stub_request(:post, %r{news\.google\.com/_/DotsSplashUi})
+      .to_return(status: 200, body: '["https://www.bbc.com/news/live/uk-politics-68465603"]')
+
+    stub_request(:get, /bbc\.com/)
+      .to_return(status: 200,
+                 body: '<html><body><p>BBC programmes on iPlayer</p></body></html>',
+                 headers: { 'Content-Type' => 'text/html' })
   end
 end

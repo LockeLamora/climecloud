@@ -29,6 +29,9 @@ class Gnews
 
     timestamp = get_timestamp(res.body)
     signature = get_signature(res.body)
+    # Google serves a consent page instead of the article to some clients, which has
+    # neither value in it. Better to say we cannot open it than to die on a nil.
+    return nil if timestamp.nil? || signature.nil?
 
     url.gsub!('https://news.google.com/rss/articles/', '')
     url.gsub!('?oc=5', '')

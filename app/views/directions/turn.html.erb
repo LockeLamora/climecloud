@@ -17,4 +17,5 @@
 <% if @step_index > 0 %>
 <%= link_to "< Previous turn", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index - 1)) %><br />
 <% end %>
+<%= link_to "(Back to menu)", root_path %>
 </div>

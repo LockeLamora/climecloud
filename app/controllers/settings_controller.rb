@@ -56,7 +56,8 @@ class SettingsController < ApplicationController
   def geocode_postcode
     Geocode.new({
                   address: params[:postcode],
-                  country_code: params[:country_code]
+                  country_code: params[:country_code],
+                  type: 'postcode'
                 }).get_candidates
   end
 

@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class DirectionsControllerTest < ActionDispatch::IntegrationTest
-  COOKIES = 'metrics=hybrid;country_code=gb'
+  COOKIES = 'metrics=hybrid;country_code=gb;lat=52.3;lon=1.17'
 
   test 'should load the drections search page successfully when cookie is set' do
     get '/directions'
@@ -116,6 +116,31 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'Route planning is unavailable', @response.body
+  end
+
+  test 'ranks candidates nearest the other end of the journey first' do
+    stub_directions(not_found_body)
+    stub_geocode(geocode_body)
+
+    plan_route(origin: '51.48,-3.18')
+
+    assert_response :success
+    # Biased towards the origin, so the nearby Newport outranks the distant Newark.
+    assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete} do |request|
+      request.uri.query.include?('bias=proximity:-3.18,51.48')
+    end
+  end
+
+  test 'falls back to the saved location when the other end is not yet pinned' do
+    stub_directions(not_found_body)
+    stub_geocode(geocode_body)
+
+    plan_route
+
+    assert_response :success
+    assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete} do |request|
+      request.uri.query.include?('bias=proximity:1.17,52.3')
+    end
   end
 
   test 'lists candidates when asked to pick a different endpoint' do
