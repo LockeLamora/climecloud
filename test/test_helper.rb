@@ -22,6 +22,18 @@ module ActiveSupport
               'www.bbc.com']
     )
 
+    # config/master.key is not in the repo, so credentials do not decrypt under test.
+    # Anything reaching an API needs stand-in keys to get as far as the stubbed request.
+    def with_api_credentials
+      credentials = ActiveSupport::OrderedOptions.new
+      credentials.google = ActiveSupport::OrderedOptions.new
+      credentials.google.api_key = 'test-google-key'
+      credentials.geoapify = ActiveSupport::OrderedOptions.new
+      credentials.geoapify.api_key = 'test-geoapify-key'
+
+      Rails.application.stub(:credentials, credentials) { yield }
+    end
+
     def set_cookies
       page.driver.browser.manage.add_cookie(name: 'lat', value: '48.8051741')
       page.driver.browser.manage.add_cookie(name: 'lon', value: '2.1219587')

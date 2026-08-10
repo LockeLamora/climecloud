@@ -81,6 +81,14 @@ end
 
   def get_articles
     @articles, @title = gnews.get_articles_from_api(@search_query)
+
+    if @articles.nil?
+      @error = 'Could not fetch the news feed, please try again'
+      @articles = []
+    end
+
+    # Google returns a lone article as a bare item rather than a list.
+    @articles = [@articles] unless @articles.is_a?(Array)
   end
 
   def gnews

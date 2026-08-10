@@ -39,14 +39,17 @@ def get_articles_from_api(search_query = nil)
     @res = Net::HTTP.get_response(uri)
     @res = Net::HTTP.get_response(URI.parse(@res['location'])) if @res.code.start_with?('3')
     body = @res.body if @res.is_a?(Net::HTTPSuccess)
+    return nil, nil if body.nil?
+
     body = JSON.parse(Hash.from_xml(body).to_json)
-    articles = body['rss']['channel']['item']
+    # nil is reserved for a feed we could not fetch, so an empty feed returns a list.
+    articles = body.dig('rss', 'channel', 'item') || []
     title = if !@section.nil? && @section.upcase != 'HEADLINES'
-               body['rss']['channel']['title']
+               body.dig('rss', 'channel', 'title')
              else
                'Headlines - Latest - Google News'
              end
-    return articles, title         
+    return articles, title
   end
 
 private

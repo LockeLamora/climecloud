@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'maps'
+require 'geocode'
 
 class DirectionsController < ApplicationController
   def search
@@ -15,28 +16,82 @@ class DirectionsController < ApplicationController
     })
 
     plan = session["maps"].get_routes
+    @route_params = params.permit(:origin, :destination, :mode).to_h
+
+    if plan.nil?
+      @error = session["maps"].error
+      render_failed_lookup(session["maps"].unresolved.first)
+      return
+    end
+
     @steps = plan[:steps]
     @overall_time = plan[:overall_time]
     @start = plan[:start]
     @end = plan[:end]
     @overview_polyline = plan[:overview_polyline]
-    
-    unless @error.nil?
-      render :search
+    @partial = session["maps"].unresolved
+
+    if params[:view] == 'turn' && @steps.present?
+      render_turn
       return
     end
+
     if cookies['show_map'] == '1'
       @image = session["maps"].get_static_map_image_api(@overview_polyline)
     end
     render :route
   end
 
+  # Reached from the route page when Google matched loosely and picked the wrong place.
+  def pick
+    @route_params = params.permit(:origin, :destination, :mode).to_h
+    render_candidates(params[:field] == 'origin' ? 'origin' : 'destination')
+  end
+
   private
+
+  # Google could not place one of the endpoints, so offer what it does know
+  # rather than dropping the user back on an empty form.
+  def render_failed_lookup(field)
+    if field.nil?
+      render :search
+      return
+    end
+
+    render_candidates(field)
+  end
+
+  def render_candidates(field)
+    @field = field
+    @candidates = Geocode.new({
+      address: @route_params[field],
+      country_code: cookies['country_code']
+    }).get_candidates
+
+    if @candidates.empty?
+      @error = 'Could not find that place, please try again'
+      render :search
+      return
+    end
+
+    render :pick
+  end
+
+  # No GPS on these handsets, so the user advances a turn at a time themselves.
+  def render_turn
+    @step_index = params[:step].to_i.clamp(0, @steps.length - 1)
+    @step = @steps[@step_index]
+
+    if cookies['show_map'] == '1'
+      @image = session["maps"].get_static_map_step_image_api(@step)
+    end
+    render :turn
+  end
 
   def resolve_unit
     metrics = {
       'imperial' => 'imperial',
-      'metrics' => 'metric',
+      'metric' => 'metric',
       'hybrid' => 'imperial'
     }
 

@@ -3,18 +3,24 @@
 require 'uri'
 require 'net/http'
 require 'json'
+require 'geocode'
 
 class SettingsController < ApplicationController
   def set
-    uri = build_google_geocode_uri(params)
-    get_parameters_from_google_geocode_api(uri)
-    unless @error.nil?
-      render :set
-      return
+    if params[:lat].present? && params[:lon].present?
+      @lat = params[:lat]
+      @lon = params[:lon]
+      @country_code = params[:place_country]
+    else
+      location = resolve_location
+      return if performed?
+
+      @lat = location[:lat]
+      @lon = location[:lon]
+      @country_code = location[:country_code]
     end
 
-    uri = build_geoapify_api_query
-    get_parameters_from_geoapify_api(uri)
+    lookup_locale
     set_metrics(params)
     set_show_map(params)
     set_news(params)
@@ -29,28 +35,39 @@ class SettingsController < ApplicationController
 
   private
 
-  def build_google_geocode_uri(params)
-    uri = URI('https://maps.googleapis.com/maps/api/geocode/json')
+  # A postcode or town can match several places. Picking the first silently gives
+  # the wrong forecast, so offer the choice instead.
+  def resolve_location
+    @settings_params = settings_params
+    candidates = Geocode.new({
+      address: params[:postcode],
+      country_code: params[:country_code]
+    }).get_candidates
 
-    params = {
-      key: Rails.application.credentials.google.api_key,
-      components: ["postal_code:#{params[:postcode]}",
-                   "country:#{params[:country_code]}"]
-    }
-
-    uri.query = URI.encode_www_form(params)
-    uri
-  end
-
-  def get_parameters_from_google_geocode_api(uri)
-    res = Net::HTTP.get_response(uri)
-    body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
-    if body['status'] == 'ZERO_RESULTS'
+    if candidates.empty?
       @error = 'Could not determine location, please try again'
+      render :set
       return
     end
-    @lat = body['results'][0]['geometry']['location']['lat'].to_s
-    @lon = body['results'][0]['geometry']['location']['lng'].to_s
+
+    if candidates.length > 1
+      @candidates = candidates
+      render :pick
+      return
+    end
+
+    candidates.first
+  end
+
+  def settings_params
+    params.permit(:postcode, :country_code, :metrics, :mapimages, :news_default_section).to_h
+  end
+
+  # City, county and timezone are presentation extras. If the lookup fails we still
+  # have coordinates, so save what we have rather than losing the whole location.
+  def lookup_locale
+    uri = build_geoapify_api_query
+    get_parameters_from_geoapify_api(uri)
   end
 
   def set_metrics(params)
@@ -68,23 +85,36 @@ class SettingsController < ApplicationController
   def set_cookie
     cookies.permanent[:lat] = @lat
     cookies.permanent[:lon] = @lon
-    cookies.permanent[:city] = @city
+    cookies.permanent[:city] = @city.presence || params[:place].presence || params[:postcode]
     cookies.permanent[:state] = @state
-    cookies.permanent[:timezone_name] = @timezone_name
+    cookies.permanent[:timezone_name] = @timezone_name.presence || 'auto'
     cookies.permanent[:metrics] = @metrics
-    cookies.permanent[:country_code] = @country_code
+    cookies.permanent[:country_code] = resolve_country_code
     cookies.permanent[:show_map] = @show_map
     cookies.permanent[:news_default_section] = @news_default_section
   end
 
-  def get_parameters_from_geoapify_api(uri)
-    res = Net::HTTP.get_response(uri)
-    body = JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+  # The country picked on the form is more dependable than a reverse lookup, and
+  # the news feed needs it to choose an edition.
+  def resolve_country_code
+    (@country_code.presence || params[:country_code]).to_s.downcase.presence
+  end
 
-    @city = body['features'][0]['properties']['city']
-    @state = body['features'][0]['properties']['state']
-    @timezone_name = body['features'][0]['properties']['timezone']['name']
-    @country_code = body['features'][0]['properties']['country_code']
+  def get_parameters_from_geoapify_api(uri)
+    properties = fetch_geoapify_properties(uri)
+
+    @city = properties['city']
+    @state = properties['state']
+    @timezone_name = properties.dig('timezone', 'name')
+    @country_code = properties['country_code'].presence || @country_code
+  end
+
+  def fetch_geoapify_properties(uri)
+    res = Net::HTTP.get_response(uri)
+    return {} unless res.is_a?(Net::HTTPSuccess)
+
+    body = JSON.parse(res.body)
+    body.dig('features', 0, 'properties') || {}
   end
 
   def build_geoapify_api_query

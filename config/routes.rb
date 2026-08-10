@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   get 'directions' => 'directions#search'
   get 'directions_plan' => 'directions#plan'
+  get 'directions_pick' => 'directions#pick'
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'
   get 'news_search' => 'news#search'

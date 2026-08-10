@@ -1,0 +1,13 @@
+<div class='route'>
+<%= @error ? "<span class='error'>#{@error}</span><br /><br />".html_safe : nil %>
+<%= "Which \"#{field_label(@field)}\" did you mean?" %><br />
+<b><%= @route_params[@field] %></b>
+<br /><br />
+<ol>
+<% @candidates.each do |candidate| %>
+    <li><%= link_to candidate[:address], directions_plan_path(@route_params.merge(@field => "place_id:#{candidate[:place_id]}")) %></li>
+<% end %>
+</ol>
+<br />
+<%= link_to "(None of these? Search again)", directions_path %>
+</div>

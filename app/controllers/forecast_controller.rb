@@ -7,30 +7,51 @@ require 'weather'
 
 class ForecastController < ApplicationController
   def hourly
-    unless cookies[:lat]
+    unless cookies[:lat].present?
       redirect_to '/settings'
       return
     end
 
     data = weather.get_forecast('hourly')
+    if forecast_unavailable?(data, 'hourly')
+      render_unavailable
+      return
+    end
+
     parse_forecast_data(data, 'hourly')
 
     render :hourly
   end
 
   def daily
-    unless cookies[:lat]
+    unless cookies[:lat].present?
       redirect_to '/settings'
       return
     end
 
     data = weather.get_forecast('daily')
+    if forecast_unavailable?(data, 'daily')
+      render_unavailable
+      return
+    end
+
     parse_forecast_data(data, 'daily')
 
     render :daily
   end
 
   private
+
+  # Open-Meteo rejects a bad timezone or unit outright, which used to take the
+  # whole page down rather than saying anything useful.
+  def forecast_unavailable?(data, period)
+    data.nil? || data['error'].present? || data[period].nil?
+  end
+
+  def render_unavailable
+    @error = 'Could not fetch the forecast for your saved location'
+    render :unavailable
+  end
 
   def get_metrics_units
     metrics = {}
@@ -44,7 +65,8 @@ class ForecastController < ApplicationController
       metrics[:temperature_unit] = 'fahrenheit'
       metrics[:precipitation_unit] = 'inch'
     when 'metric'
-      metrics[:wind_speed_unit] = 'kph'
+      # Open-Meteo names this kmh. kph is rejected outright and takes the whole page down.
+      metrics[:wind_speed_unit] = 'kmh'
       metrics[:temperature_unit] = 'celsius'
       metrics[:precipitation_unit] = 'mm'
     end
@@ -89,7 +111,7 @@ class ForecastController < ApplicationController
     @weather ||= Weather.new({
       latitude: cookies[:lat],
       longitude: cookies[:lon],
-      timezone: cookies[:timezone_name],
+      timezone: cookies[:timezone_name].presence || 'auto',
       metrics_units: get_metrics_units
     }) 
   end

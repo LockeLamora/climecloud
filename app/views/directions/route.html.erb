@@ -1,6 +1,10 @@
 <div class='route'>
 <%= "#{@start} to #{@end}" %><br />
-<%= @overall_time %>
+<% Array(@partial).each do |field| %>
+<%= link_to "(Wrong \"#{field_label(field)}\"? Pick another)", directions_pick_path(@route_params.merge('field' => field)) %><br />
+<% end %>
+<%= @overall_time %><br />
+<%= link_to "(Switch to Turn-by-turn)", directions_plan_path(@route_params.merge(view: 'turn', step: 0)) %>
 <% if cookies["show_map"] == '1' %>
 <br />
 <img src="data:image/png;base64,<%= @image %>" />

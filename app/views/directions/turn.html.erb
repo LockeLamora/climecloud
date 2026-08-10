@@ -1,0 +1,20 @@
+<div class='route'>
+<%= "Turn #{@step_index + 1} of #{@steps.length}" %><br />
+<%= link_to "(Switch to Whole route)", directions_plan_path(@route_params) %>
+<br /><br />
+<%= @step["html_instructions"].html_safe %><br />
+<%= "#{@step["distance"]["text"]} (#{@step["duration"]["text"]})" %>
+<% if cookies["show_map"] == '1' %>
+<br />
+<img src="data:image/png;base64,<%= @image %>" />
+<% end %>
+<br /><br />
+<% if @step_index + 1 < @steps.length %>
+<%= link_to "Next turn >", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index + 1)) %><br />
+<% else %>
+<%= "<b>Arrive:</b> #{@end}".html_safe %><br />
+<% end %>
+<% if @step_index > 0 %>
+<%= link_to "< Previous turn", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index - 1)) %><br />
+<% end %>
+</div>

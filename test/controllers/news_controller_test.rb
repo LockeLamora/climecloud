@@ -10,6 +10,13 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Headlines - Latest', @response.body
   end
 
+  test 'reports rather than crashes when the news feed cannot be fetched' do
+    stub_request(:get, /news.google.com/).to_return(status: 500, body: '')
+    get news_url, headers: { 'COOKIE' => 'country_code=gb;' }
+    assert_response :success
+    assert_match 'Could not fetch the news feed', @response.body
+  end
+
   test 'should render a news article successfully' do
     get news_article_url, params: { article: 'https://news.google.com/rss/articles/'\
     'CBMinQFodHRwczovL3d3dy50aGVndWFyZGlhbi5jb20vYnVzaW5lc3MvbGl2ZS8yMDI0L21hci8wNS9qZXJlbXk'\
