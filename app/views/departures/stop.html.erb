@@ -17,7 +17,7 @@ Nothing due in the next couple of hours<br />
 <% end %>
 </table>
 <br />
-<%= link_to "(Refresh)", departures_stop_path(id: @stop['id']) %><br />
-<%= link_to "(All stops)", departures_path %><br />
-<%= link_to "(Back to menu)", root_path %>
+<%= link_to "1 Refresh", departures_stop_path(id: @stop["id"]), accesskey: "1" %><br />
+<%= link_to "9 All stops", departures_path, accesskey: "9" %><br />
+<%= link_to "0 Back to menu", root_path, accesskey: "0" %>
 </div>

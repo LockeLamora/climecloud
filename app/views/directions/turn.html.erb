@@ -1,6 +1,6 @@
 <div class='route'>
 <%= "Turn #{@step_index + 1} of #{@steps.length}" %><%= " (part #{@segment + 1} of #{@segments})" if @segments > 1 %><br />
-<%= link_to "(Switch to Whole route)", directions_plan_path(@route_params) %>
+<%= link_to "3 Switch to Whole route", directions_plan_path(@route_params), accesskey: "3" %>
 <br /><br />
 <%= @step["html_instructions"].html_safe %><br />
 <%= "#{@step["distance"]["text"]} (#{@step["duration"]["text"]})" %>
@@ -10,16 +10,16 @@
 <% end %>
 <br /><br />
 <% if @segment + 1 < @segments %>
-<%= link_to "Further along >", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index, segment: @segment + 1)) %><br />
+<%= link_to "1 Further along >", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index, segment: @segment + 1)), accesskey: "1" %><br />
 <% elsif @step_index + 1 < @steps.length %>
-<%= link_to "Next turn >", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index + 1)) %><br />
+<%= link_to "1 Next turn >", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index + 1)), accesskey: "1" %><br />
 <% else %>
 <%= "<b>Arrive:</b> #{@end}".html_safe %><br />
 <% end %>
 <% if @segment > 0 %>
-<%= link_to "< Back along", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index, segment: @segment - 1)) %><br />
+<%= link_to "2 < Back along", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index, segment: @segment - 1)), accesskey: "2" %><br />
 <% elsif @step_index > 0 %>
-<%= link_to "< Previous turn", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index - 1)) %><br />
+<%= link_to "2 < Previous turn", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index - 1)), accesskey: "2" %><br />
 <% end %>
-<%= link_to "(Back to menu)", root_path %>
+<%= link_to "0 Back to menu", root_path, accesskey: "0" %>
 </div>

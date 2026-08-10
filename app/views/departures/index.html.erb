@@ -1,16 +1,16 @@
 <div class='route'>
 <h2>Departures</h2>
 <% if @stops.present? %>
-<% @stops.each do |stop| %>
-<%= link_to stop['name'], departures_stop_path(id: stop['id']) %><br />
+<% @stops.each_with_index do |stop, index| %>
+<%= link_to "#{index + 1} #{stop['name']}", departures_stop_path(id: stop['id']), accesskey: (index + 1).to_s %><br />
 <% end %>
 <br />
-<%= link_to "(Add another stop)", departures_add_path %><br />
-<%= link_to "(Forget saved stops)", departures_forget_path %>
+<%= link_to "8 Add another stop", departures_add_path, accesskey: "8" %><br />
+<%= link_to "9 Forget saved stops", departures_forget_path, accesskey: "9" %>
 <% else %>
 No stops saved yet.<br /><br />
 <%= link_to "Find stops near me", departures_add_path %>
 <% end %>
 <br /><br />
-<%= link_to "(Back to menu)", root_path %>
+<%= link_to "0 Back to menu", root_path, accesskey: "0" %>
 </div>

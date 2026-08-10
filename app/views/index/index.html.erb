@@ -5,14 +5,15 @@
 <% end %>
 <br />
 
+    <%# Numbers are fixed per destination, not per position, so that the keys a user %>
+    <%# has learned do not all shift when Departures switches on. %>
     <% if departures_available? %>
-    <%=link_to "Departures", "/departures" %><br /><br />
+    <%=link_to "1 Departures", "/departures", accesskey: "1" %><br /><br />
     <% else %>
-    Departures (coming soon)<br /><br />
+    1 Departures (coming soon)<br /><br />
     <% end %>
-    <%=link_to "Weather forecast", "/forecast/hourly" %><br /><br />
-    <%=link_to "Map directions", "/directions" %><br /><br />
-    <%=link_to "Places nearby", "/places" %><br /><br />
-    <%=link_to "News", "/news" %><br /><br />
-    <%=link_to "Change settings", "/settings", :class=>'change-settings' %><br /><br />
-  
+    <%=link_to "2 Weather forecast", "/forecast/hourly", accesskey: "2" %><br /><br />
+    <%=link_to "3 Map directions", "/directions", accesskey: "3" %><br /><br />
+    <%=link_to "4 Places nearby", "/places", accesskey: "4" %><br /><br />
+    <%=link_to "5 News", "/news", accesskey: "5" %><br /><br />
+    <%=link_to "6 Change settings", "/settings", :class=>'change-settings', accesskey: "6" %><br /><br />

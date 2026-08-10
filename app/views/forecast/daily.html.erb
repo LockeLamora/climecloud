@@ -1,6 +1,6 @@
 <h1>Daily forecast</h1>
 <%= "#{cookies["city"]}, #{cookies["state"]}"%><br />
-<%=link_to "(Switch to Hourly)", "/forecast/hourly" %>
+<%=link_to "1 Switch to Hourly", "/forecast/hourly", accesskey: "1" %>
 
 <table>
 <thead>
@@ -28,7 +28,7 @@
   </tbody>
   </table>
   <br /><br />
-  <%= link_to "(Back to menu)", root_path %>
+  <%= link_to "0 Back to menu", root_path, accesskey: "0" %>
   <br /><br />
   <a href="https://open-meteo.com" target="_blank">Weather data by Open-Meteo.com</a>
 

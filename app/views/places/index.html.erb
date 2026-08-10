@@ -5,8 +5,10 @@
 Near <%= @place %><br />
 <% end %>
 <br />
-<% Places::CATEGORIES.each do |kind, details| %>
-<%= link_to details[:label], places_list_path(carried_location.merge(kind: kind)) %><br />
+<% Places::CATEGORIES.each_with_index do |(kind, details), index| %>
+<%= link_to "#{index + 1} #{details[:label]}",
+            places_list_path(carried_location.merge(kind: kind)),
+            accesskey: (index + 1).to_s %><br />
 <% end %>
 <br />
 <% if @saved.present? %>
@@ -24,5 +26,5 @@ Near <%= @place %><br />
     <%= f.submit "Search" %>
 <% end %>
 <br />
-<%= link_to "(Back to menu)", root_path %>
+<%= link_to "0 Back to menu", root_path, accesskey: "0" %>
 </div>
