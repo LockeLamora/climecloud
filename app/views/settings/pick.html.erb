@@ -1,7 +1,6 @@
 <div class='route'>
-More than one place matched<br />
-<b><%= params[:postcode] %></b><br />
-Which did you mean?
+Other places matching<br />
+<b><%= params[:postcode] %></b>
 <br /><br />
 <ol>
 <% @candidates.each do |candidate| %>
@@ -12,5 +11,5 @@ Which did you mean?
 <% end %>
 </ol>
 <br />
-<%= link_to "(None of these? Try again)", settings_path %>
+<%= link_to "(None of these? Search again)", settings_path %>
 </div>

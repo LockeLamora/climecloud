@@ -13,6 +13,11 @@ class Maps
 
     UNAVAILABLE = 'Route planning is unavailable, please try again later'.freeze
 
+    IMAGE_SIZE = 220
+    WORLD_PIXELS = 256
+    # Hybrid imagery runs out above this in most places, leaving a blank tile.
+    MAX_STEP_ZOOM = 19
+
     # unresolved lists the endpoints Google could not pin down, or matched only
     # loosely, so the user can be offered a list of places to pick from.
     attr_reader :error, :unresolved
@@ -45,19 +50,99 @@ class Maps
 
     def build_google_map_static_step_image_api(step)
         uri = URI('https://maps.googleapis.com/maps/api/staticmap')
+        centre, zoom = frame_for(step)
+
         params = {
           key: @key,
-          size: '220x220',
+          size: "#{IMAGE_SIZE}x#{IMAGE_SIZE}",
           maptype: 'hybrid',
+          center: centre,
+          zoom: zoom,
           markers: [
-            "color:green|label:A|#{step['start_location']['lat']},#{step['start_location']['lng']}",
-            "color:red|label:B|#{step['end_location']['lat']},#{step['end_location']['lng']}"
+            "size:mid|color:green|label:A|#{step['start_location']['lat']},#{step['start_location']['lng']}",
+            "size:mid|color:red|label:B|#{step['end_location']['lat']},#{step['end_location']['lng']}"
           ],
           path: "enc:#{step['polyline']['points']}"
         }
 
         uri.query = URI.encode_www_form(params)
         uri
+    end
+
+    # Left to itself Google fits the step with enough padding that a single turn is
+    # a speck in the middle of a 220px tile. Frame it ourselves instead.
+    def frame_for(step)
+        points = step_points(step)
+        lats = points.map(&:first)
+        lngs = points.map(&:last)
+
+        centre = format('%<lat>.6f,%<lng>.6f',
+                        lat: (lats.min + lats.max) / 2,
+                        lng: (lngs.min + lngs.max) / 2)
+
+        [centre, zoom_for(lats.min, lats.max, lngs.min, lngs.max)]
+    end
+
+    def step_points(step)
+        points = decode_polyline(step['polyline']['points'])
+        points << [step['start_location']['lat'], step['start_location']['lng']]
+        points << [step['end_location']['lat'], step['end_location']['lng']]
+        points
+    end
+
+    def zoom_for(min_lat, max_lat, min_lng, max_lng)
+        lat_fraction = (mercator(max_lat) - mercator(min_lat)) / Math::PI
+        lng_diff = max_lng - min_lng
+        lng_fraction = (lng_diff.negative? ? lng_diff + 360 : lng_diff) / 360
+
+        [zoom_for_fraction(lat_fraction), zoom_for_fraction(lng_fraction)].min
+    end
+
+    def zoom_for_fraction(fraction)
+        return MAX_STEP_ZOOM if fraction <= 0
+
+        zoom = (Math.log(IMAGE_SIZE / WORLD_PIXELS.to_f / fraction) / Math.log(2)).floor
+        zoom.clamp(1, MAX_STEP_ZOOM)
+    end
+
+    def mercator(lat)
+        sin = Math.sin(lat * Math::PI / 180)
+        radians = Math.log((1 + sin) / (1 - sin)) / 2
+        radians.clamp(-Math::PI, Math::PI) / 2
+    end
+
+    # Google hands back the step geometry encoded, and the true bounds matter: a
+    # bend in the road can sit well outside a straight line from A to B.
+    def decode_polyline(encoded)
+        points = []
+        index = 0
+        lat = 0
+        lng = 0
+
+        while index < encoded.to_s.length
+          lat_delta, index = decode_chunk(encoded, index)
+          lng_delta, index = decode_chunk(encoded, index)
+          lat += lat_delta
+          lng += lng_delta
+          points << [lat / 1e5, lng / 1e5]
+        end
+
+        points
+    end
+
+    def decode_chunk(encoded, index)
+        result = 0
+        shift = 0
+
+        loop do
+          byte = encoded[index].ord - 63
+          index += 1
+          result |= (byte & 0x1f) << shift
+          shift += 5
+          break if byte < 0x20
+        end
+
+        [result.odd? ? ~(result >> 1) : result >> 1, index]
     end
 
     def build_google_map_static_image_api(overview_polyline)

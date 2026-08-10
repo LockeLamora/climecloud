@@ -1,6 +1,6 @@
 <div class='route'>
 <%= "#{@start} to #{@end}" %><br />
-<% Array(@partial).each do |field| %>
+<% Array(@ambiguous).each do |field| %>
 <%= link_to "(Wrong \"#{field_label(field)}\"? Pick another)", directions_pick_path(@route_params.merge('field' => field)) %><br />
 <% end %>
 <%= @overall_time %><br />

@@ -9,26 +9,53 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Change your settings', @response.body
   end
 
-  test 'offers a choice when a postcode matches more than one place' do
+  test 'assumes the first match and offers the rest when a postcode is ambiguous' do
     stub_geocode(two_results)
+    stub_geoapify
 
     save_settings
 
     assert_response :success
-    assert_match 'More than one place matched', @response.body
-    assert_match 'Newport, UK', @response.body
+    assert_match 'Location saved as', @response.body
+    assert_match 'See 1 other match', @response.body
+    assert_equal 'Newport', cookies['city']
+    # The alternatives are a step away, not on this page.
+    assert_no_match(/Newport Pagnell/, @response.body)
+  end
+
+  test 'lists only the places that were not assumed' do
+    stub_geocode(two_results)
+
+    with_api_credentials do
+      get '/settings_pick', params: { postcode: 'zz1 1zz', country_code: 'GB', metrics: 'hybrid' }
+    end
+
+    assert_response :success
     assert_match 'Newport Pagnell, UK', @response.body
     assert_match 'lat=52.3', @response.body
+    assert_match 'Search again', @response.body
   end
 
   test 'carries the rest of the settings through the choice' do
     stub_geocode(two_results)
+    stub_geoapify
 
     save_settings(metrics: 'metric', news_default_section: 'Science')
 
     assert_response :success
     assert_match 'metrics=metric', @response.body
     assert_match 'news_default_section=Science', @response.body
+  end
+
+  test 'reports when there are no other matches to offer' do
+    stub_geocode(one_result)
+
+    with_api_credentials do
+      get '/settings_pick', params: { postcode: 'zz1 1zz', country_code: 'GB' }
+    end
+
+    assert_response :success
+    assert_match 'No other places matched', @response.body
   end
 
   test 'saves straight away when only one place matches' do
@@ -65,7 +92,8 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal '52.3', cookies['lat']
     assert_equal 'auto', cookies['timezone_name']
     assert_equal 'gb', cookies['country_code']
-    assert_equal 'sr8 2af', cookies['city']
+    # Falls back to the geocoded address, which reads better than the raw postcode.
+    assert_equal 'Newport, UK', cookies['city']
   end
 
   test 'reports a postcode that matches nothing' do
@@ -82,7 +110,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
   def save_settings(extra = {})
     with_api_credentials do
       get '/settings_save', params: {
-        postcode: 'sr8 2af',
+        postcode: 'zz1 1zz',
         country_code: 'GB',
         metrics: 'hybrid',
         mapimages: '1',

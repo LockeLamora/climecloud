@@ -78,14 +78,25 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Could not find that place', @response.body
   end
 
-  test 'flags a loosely matched endpoint on the route page' do
-    stub_directions(directions_body(partial_match: true))
+  test 'offers to re-pick either endpoint the user typed as text' do
+    stub_directions(directions_body)
 
     plan_route
 
     assert_response :success
-    assert_match 'Pick another', @response.body
     assert_match 'directions_pick', @response.body
+    assert_match 'From', @response.body
+    assert_match 'To', @response.body
+  end
+
+  test 'does not offer to re-pick an endpoint already pinned to a place' do
+    stub_directions(directions_body)
+
+    plan_route(destination: 'place_id:PLACE_ONE')
+
+    assert_response :success
+    assert_match 'field=origin', @response.body
+    assert_no_match(/field=destination/, @response.body)
   end
 
   test 'reports rather than crashes when no route exists between two places' do

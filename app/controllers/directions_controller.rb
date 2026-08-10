@@ -29,7 +29,7 @@ class DirectionsController < ApplicationController
     @start = plan[:start]
     @end = plan[:end]
     @overview_polyline = plan[:overview_polyline]
-    @partial = session["maps"].unresolved
+    @ambiguous = ambiguous_fields
 
     if params[:view] == 'turn' && @steps.present?
       render_turn
@@ -49,6 +49,15 @@ class DirectionsController < ApplicationController
   end
 
   private
+
+  # Google picks one reading of free text without saying so: "neville road" quietly
+  # becomes London when Peterlee was meant. Anything the user typed is worth a second
+  # look; anything already pinned to a place_id is not.
+  def ambiguous_fields
+    %w[origin destination].reject do |field|
+      @route_params[field].to_s.strip.start_with?('place_id:')
+    end
+  end
 
   # Google could not place one of the endpoints, so offer what it does know
   # rather than dropping the user back on an empty form.

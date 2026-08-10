@@ -14,7 +14,7 @@ class ForecastController < ApplicationController
 
     data = weather.get_forecast('hourly')
     if forecast_unavailable?(data, 'hourly')
-      render_unavailable
+      render_unavailable(data)
       return
     end
 
@@ -31,7 +31,7 @@ class ForecastController < ApplicationController
 
     data = weather.get_forecast('daily')
     if forecast_unavailable?(data, 'daily')
-      render_unavailable
+      render_unavailable(data)
       return
     end
 
@@ -48,7 +48,11 @@ class ForecastController < ApplicationController
     data.nil? || data['error'].present? || data[period].nil?
   end
 
-  def render_unavailable
+  def render_unavailable(data)
+    reason = weather.error || (data.is_a?(Hash) ? data['reason'] : nil)
+    Rails.logger.warn("Forecast unavailable for #{cookies[:lat]},#{cookies[:lon]} " \
+                      "tz=#{cookies[:timezone_name]}: #{reason}")
+
     @error = 'Could not fetch the forecast for your saved location'
     render :unavailable
   end

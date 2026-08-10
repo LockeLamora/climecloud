@@ -11,38 +11,12 @@ class SettingsController < ApplicationController
       @lat = params[:lat]
       @lon = params[:lon]
       @country_code = params[:place_country]
-    else
-      location = resolve_location
-      return if performed?
-
-      @lat = location[:lat]
-      @lon = location[:lon]
-      @country_code = location[:country_code]
+      @place = params[:place]
+      save_location
+      return
     end
 
-    lookup_locale
-    set_metrics(params)
-    set_show_map(params)
-    set_news(params)
-    set_cookie
-
-    redirect_to '/'
-  end
-
-  def change
-    render :set
-  end
-
-  private
-
-  # A postcode or town can match several places. Picking the first silently gives
-  # the wrong forecast, so offer the choice instead.
-  def resolve_location
-    @settings_params = settings_params
-    candidates = Geocode.new({
-      address: params[:postcode],
-      country_code: params[:country_code]
-    }).get_candidates
+    candidates = geocode_postcode
 
     if candidates.empty?
       @error = 'Could not determine location, please try again'
@@ -50,13 +24,59 @@ class SettingsController < ApplicationController
       return
     end
 
-    if candidates.length > 1
-      @candidates = candidates
-      render :pick
+    chosen = candidates.first
+    @lat = chosen[:lat]
+    @lon = chosen[:lon]
+    @country_code = chosen[:country_code]
+    @place = chosen[:address]
+
+    save_location(alternatives: candidates.length - 1)
+  end
+
+  def change
+    render :set
+  end
+
+  # Only reached when the assumed place was wrong, so show what else matched.
+  def pick
+    @settings_params = settings_params
+    @candidates = geocode_postcode.drop(1)
+
+    if @candidates.empty?
+      @error = 'No other places matched, please try again'
+      render :set
       return
     end
 
-    candidates.first
+    render :pick
+  end
+
+  private
+
+  def geocode_postcode
+    Geocode.new({
+      address: params[:postcode],
+      country_code: params[:country_code]
+    }).get_candidates
+  end
+
+  # A postcode or town can match several places. Take the first so the common case
+  # stays a single keypress, and only offer the rest when the user says it is wrong.
+  def save_location(alternatives: 0)
+    lookup_locale
+    set_metrics(params)
+    set_show_map(params)
+    set_news(params)
+    set_cookie
+
+    if alternatives.positive?
+      @alternatives = alternatives
+      @settings_params = settings_params
+      render :saved
+      return
+    end
+
+    redirect_to '/'
   end
 
   def settings_params
@@ -85,7 +105,7 @@ class SettingsController < ApplicationController
   def set_cookie
     cookies.permanent[:lat] = @lat
     cookies.permanent[:lon] = @lon
-    cookies.permanent[:city] = @city.presence || params[:place].presence || params[:postcode]
+    cookies.permanent[:city] = @city.presence || @place.presence || params[:postcode]
     cookies.permanent[:state] = @state
     cookies.permanent[:timezone_name] = @timezone_name.presence || 'auto'
     cookies.permanent[:metrics] = @metrics

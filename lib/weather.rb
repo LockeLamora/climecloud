@@ -2,6 +2,8 @@ require 'net/http'
 require 'uri'
 
 class Weather
+    attr_reader :error
+
     def initialize(params)
         @latitude = params[:latitude]
         @longitude = params[:longitude]
@@ -23,7 +25,17 @@ class Weather
 
     def get_forecast_data_from_api(uri)
         res = Net::HTTP.get_response(uri)
-        JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+        return JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
+
+        # Open-Meteo explains itself in the body. Throwing that away left us guessing.
+        @error = "#{res.code} #{failure_reason(res)}"
+        nil
+      end
+
+    def failure_reason(res)
+        JSON.parse(res.body.to_s)['reason']
+      rescue JSON::ParserError
+        res.body.to_s[0, 200]
       end
 
     def get_params_by_period(period)

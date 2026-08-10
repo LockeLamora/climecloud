@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get 'settings' => 'settings#change'
   get 'settings_save' => 'settings#set'
+  get 'settings_pick' => 'settings#pick'
   get 'forecast/hourly' => 'forecast#hourly'
   get 'forecast/daily' => 'forecast#daily'
 
