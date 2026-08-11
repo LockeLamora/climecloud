@@ -154,7 +154,8 @@ vi:
     nothing_due: "Không có chuyến nào trong hai giờ tới"
     no_stops: "Không có điểm dừng trong bán kính %{radius} m"
     live: "trực tiếp"
-    timetable: "theo lịch"
+    times_note: "Giờ theo lịch, trừ khi ghi trực tiếp"
+    unknown_destination: "Không rõ điểm đến"
     unavailable: "Không kết nối được dịch vụ giờ khởi hành, hãy thử lại sau"
     unreadable: "Không đọc được phản hồi của dịch vụ giờ khởi hành"
   news:

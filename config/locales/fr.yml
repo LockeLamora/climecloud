@@ -154,7 +154,8 @@ fr:
     nothing_due: "Rien de prévu dans les deux prochaines heures"
     no_stops: "Aucun arrêt trouvé dans un rayon de %{radius} m"
     live: "en direct"
-    timetable: "horaire"
+    times_note: "Horaires théoriques, sauf ceux marqués en direct"
+    unknown_destination: "Destination non indiquée"
     unavailable: "Impossible de joindre le service des départs, réessayez plus tard"
     unreadable: "Impossible de lire la réponse du service des départs"
   news:

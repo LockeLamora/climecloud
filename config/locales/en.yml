@@ -154,7 +154,8 @@ en:
     nothing_due: "Nothing due in the next couple of hours"
     no_stops: "No stops found within %{radius}m"
     live: "live"
-    timetable: "timetable"
+    times_note: "Times are from the timetable unless marked live"
+    unknown_destination: "Destination not given"
     unavailable: "Could not reach the departures service, please try again later"
     unreadable: "Could not read the departures service response"
   news:

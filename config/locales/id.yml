@@ -154,7 +154,8 @@ id:
     nothing_due: "Tidak ada jadwal dalam dua jam ke depan"
     no_stops: "Tidak ada halte dalam %{radius} m"
     live: "langsung"
-    timetable: "jadwal"
+    times_note: "Waktu sesuai jadwal, kecuali ditandai langsung"
+    unknown_destination: "Tujuan tidak dicantumkan"
     unavailable: "Tidak bisa menghubungi layanan keberangkatan, coba lagi nanti"
     unreadable: "Tidak bisa membaca jawaban layanan keberangkatan"
   news:

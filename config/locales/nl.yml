@@ -154,7 +154,8 @@ nl:
     nothing_due: "Niets verwacht in de komende twee uur"
     no_stops: "Geen haltes gevonden binnen %{radius} m"
     live: "live"
-    timetable: "dienstregeling"
+    times_note: "Tijden volgens dienstregeling, tenzij live vermeld"
+    unknown_destination: "Bestemming niet vermeld"
     unavailable: "Kon de vertrekdienst niet bereiken, probeer het later opnieuw"
     unreadable: "Kon het antwoord van de vertrekdienst niet lezen"
   news:

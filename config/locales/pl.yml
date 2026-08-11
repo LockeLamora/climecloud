@@ -154,7 +154,8 @@ pl:
     nothing_due: "Nic nie planowane w ciągu najbliższych dwóch godzin"
     no_stops: "Nie znaleziono przystanków w promieniu %{radius} m"
     live: "na żywo"
-    timetable: "rozkład"
+    times_note: "Godziny z rozkładu, o ile nie oznaczono na żywo"
+    unknown_destination: "Nie podano kierunku"
     unavailable: "Nie udało się połączyć z serwisem odjazdów, spróbuj później"
     unreadable: "Nie udało się odczytać odpowiedzi serwisu odjazdów"
   news:

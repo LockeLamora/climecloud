@@ -154,7 +154,8 @@ pt:
     nothing_due: "Nada previsto nas próximas duas horas"
     no_stops: "Nenhuma paragem encontrada num raio de %{radius} m"
     live: "em direto"
-    timetable: "horário"
+    times_note: "Horários previstos, exceto os marcados em direto"
+    unknown_destination: "Destino não indicado"
     unavailable: "Não foi possível aceder ao serviço de partidas, tente mais tarde"
     unreadable: "Não foi possível ler a resposta do serviço de partidas"
   news:

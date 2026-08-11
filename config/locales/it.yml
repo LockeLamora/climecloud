@@ -154,7 +154,8 @@ it:
     nothing_due: "Nulla previsto nelle prossime due ore"
     no_stops: "Nessuna fermata trovata entro %{radius} m"
     live: "in tempo reale"
-    timetable: "orario"
+    times_note: "Orari da orario, salvo quelli indicati in tempo reale"
+    unknown_destination: "Destinazione non indicata"
     unavailable: "Impossibile raggiungere il servizio partenze, riprova più tardi"
     unreadable: "Impossibile leggere la risposta del servizio partenze"
   news:

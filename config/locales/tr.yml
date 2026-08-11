@@ -154,7 +154,8 @@ tr:
     nothing_due: "Önümüzdeki iki saat içinde bir şey yok"
     no_stops: "%{radius} m içinde durak bulunamadı"
     live: "canlı"
-    timetable: "tarifeli"
+    times_note: "Saatler tarifeye göre, canlı yazmıyorsa"
+    unknown_destination: "Varış yeri belirtilmemiş"
     unavailable: "Kalkış servisine ulaşılamadı, daha sonra deneyin"
     unreadable: "Kalkış servisinin yanıtı okunamadı"
   news:

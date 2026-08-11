@@ -154,7 +154,8 @@ sw:
     nothing_due: "Hakuna kinachotarajiwa katika saa mbili zijazo"
     no_stops: "Hakuna vituo ndani ya m %{radius}"
     live: "moja kwa moja"
-    timetable: "ratiba"
+    times_note: "Nyakati ni za ratiba, isipokuwa zilizoandikwa moja kwa moja"
+    unknown_destination: "Mwelekeo haujaonyeshwa"
     unavailable: "Haikuweza kufikia huduma ya kuondoka, jaribu baadaye"
     unreadable: "Haikuweza kusoma jibu la huduma ya kuondoka"
   news:
