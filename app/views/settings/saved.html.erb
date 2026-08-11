@@ -2,7 +2,8 @@
 <%= t('settings.saved_as') %><br />
 <b><%= cookies['city'].presence || @place %></b>
 <br /><br />
-<% if @languages.length > 1 %>
+<%# Always shown, even when there is only one choice: it is the only way back to a %>
+<%# language you can read after moving to a country that speaks another. %>
 <%= t('settings.language') %><br />
 <% @languages.each_with_index do |locale, index| %>
 <%= link_to "#{index + 1} #{Languages.name_for(locale)}",
@@ -10,7 +11,6 @@
             accesskey: (index + 1).to_s %><br />
 <% end %>
 <br />
-<% end %>
 <%= link_to "0 #{t('common.continue')}", root_path, accesskey: "0" %><br /><br />
 <% if @alternatives.positive? %>
 <%= link_to "9 #{t('settings.wrong_place', count: @alternatives)}",

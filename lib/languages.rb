@@ -32,6 +32,13 @@ class Languages
     (['en'] + spoken).uniq & SUPPORTED
   end
 
+  # Always include whatever the reader is currently using, or moving to a country
+  # that speaks only one language would hide the picker and strand them in a
+  # language they cannot read their way out of.
+  def self.offered_for(country_code, current_locale)
+    (for_country(country_code) + [current_locale.to_s]).uniq & SUPPORTED
+  end
+
   def self.supported?(locale)
     SUPPORTED.include?(locale.to_s)
   end

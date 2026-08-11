@@ -82,7 +82,7 @@ class SettingsController < ApplicationController
     @settings_params = settings_params
     # Offered here rather than on the form, because the country is only known once
     # the location has actually resolved.
-    @languages = Languages.for_country(resolve_country_code)
+    @languages = Languages.offered_for(resolve_country_code, I18n.locale)
     render :saved
   end
 
