@@ -77,7 +77,7 @@ vi:
   settings:
     intro: "Đổi cài đặt của bạn:"
     postcode: "Mã bưu chính"
-    country: "Quốc gia"
+    which_country: "Mã bưu chính này ở nước nào?"
     metrics: "Đơn vị thời tiết"
     imperial: "Hệ Anh (°F, in, mph)"
     metric: "Hệ mét (°C, mm, km/h)"

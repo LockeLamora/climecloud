@@ -77,7 +77,7 @@ sw:
   settings:
     intro: "Badilisha mipangilio yako:"
     postcode: "Msimbo wa posta"
-    country: "Nchi"
+    which_country: "Msimbo huu wa posta uko nchi gani?"
     metrics: "Vipimo vya hali ya hewa"
     imperial: "Imperial (°F, in, mph)"
     metric: "Metriki (°C, mm, km/h)"

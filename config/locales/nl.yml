@@ -77,7 +77,7 @@ nl:
   settings:
     intro: "Je instellingen wijzigen:"
     postcode: "Postcode"
-    country: "Land"
+    which_country: "In welk land ligt deze postcode?"
     metrics: "Weereenheden"
     imperial: "Imperiaal (°F, in, mph)"
     metric: "Metrisch (°C, mm, km/u)"

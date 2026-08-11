@@ -77,7 +77,7 @@ ur:
   settings:
     intro: "اپنی ترتیبات بدلیں:"
     postcode: "پوسٹ کوڈ"
-    country: "ملک"
+    which_country: "یہ پوسٹ کوڈ کس ملک میں ہے؟"
     metrics: "موسمی اکائیاں"
     imperial: "امپیریل (°F, in, mph)"
     metric: "میٹرک (°C, mm, km/h)"

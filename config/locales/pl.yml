@@ -77,7 +77,7 @@ pl:
   settings:
     intro: "Zmień swoje ustawienia:"
     postcode: "Kod pocztowy"
-    country: "Kraj"
+    which_country: "W którym kraju jest ten kod pocztowy?"
     metrics: "Jednostki pogodowe"
     imperial: "Imperialne (°F, in, mph)"
     metric: "Metryczne (°C, mm, km/h)"

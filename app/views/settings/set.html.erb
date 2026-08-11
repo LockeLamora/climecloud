@@ -1,11 +1,11 @@
 <%= @error.nil? ? t('settings.intro') : "<span class='error'>#{@error}</span>".html_safe %>
 <br /><br />
 <%= form_with url:"settings_save", method: :get, local: true do |f| %>
+    <%# No country field: the postcode is asked about on its own, and which country it %>
+    <%# belongs to is read back off the search. Only when it genuinely belongs to more %>
+    <%# than one is the user asked, and then as a short list of the ones that apply. %>
     <%= f.label t('settings.postcode') %>
     <%= f.text_field :postcode, class: "text_field" %>
-    <br /><br />
-    <%= f.label t('settings.country') %>
-    <%= f.country_select :country_code, {priority_countries: ["GB", "US"],selected: "GB"},class: "country_select" %>
     <br /><br />
 
     <b><%= t('settings.metrics') %></b><br />

@@ -77,7 +77,7 @@ bn:
   settings:
     intro: "আপনার সেটিংস বদলান:"
     postcode: "পোস্ট কোড"
-    country: "দেশ"
+    which_country: "এই পোস্টকোডটি কোন দেশের?"
     metrics: "আবহাওয়ার একক"
     imperial: "ইম্পেরিয়াল (°F, in, mph)"
     metric: "মেট্রিক (°C, mm, km/h)"

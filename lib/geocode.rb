@@ -36,7 +36,24 @@ class Geocode
     request_candidates(country_filter)
   end
 
+  # Everything the search found rather than one screenful, so a caller can offer the
+  # first few places and still see every country the whole result touched. Cutting to
+  # eight first would hide the user's own country behind eight matches in another.
+  def get_all_candidates
+    return [] if @address.blank?
+
+    all_candidates(country_filter)
+  end
+
   private
+
+  def request_candidates(filter)
+    all_candidates(filter).first(MAX_CANDIDATES)
+  end
+
+  def all_candidates(filter)
+    get_candidates_from_geoapify_uri(build_geoapify_autocomplete_uri(filter))
+  end
 
   def biased?
     @bias_lat.present? && @bias_lon.present?
@@ -51,10 +68,6 @@ class Geocode
     return nil if @country_code.blank?
 
     "countrycode:#{@country_code.downcase}"
-  end
-
-  def request_candidates(filter)
-    get_candidates_from_geoapify_uri(build_geoapify_autocomplete_uri(filter))
   end
 
   # Autocomplete rather than geocoding, because geocoding resolves instead of
@@ -85,7 +98,7 @@ class Geocode
     body = JSON.parse(res.body)
     candidates = (body['features'] || []).filter_map { |feature| candidate_from(feature) }
     candidates = candidates.uniq { |candidate| candidate[:address].downcase }
-    nearest_first(candidates).first(MAX_CANDIDATES)
+    nearest_first(candidates)
   end
 
   # Geoapify ranks by text relevance, which scatters a search for "bus station" the

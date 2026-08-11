@@ -1,0 +1,14 @@
+<div class='route'>
+<%= t('settings.which_country') %><br />
+<b><%= params[:postcode] %></b>
+<br /><br />
+<%# Numbered with accesskeys, so confirming the country is one keypress rather than %>
+<%# scrolling a dropdown of every country there is on a four way pad. %>
+<% @countries.each_with_index do |code, index| %>
+<%= link_to "#{index + 1} #{country_name(code)}",
+            settings_save_path(@settings_params.merge('country_code' => code)),
+            accesskey: (index + 1).to_s %><br />
+<% end %>
+<br />
+<%= link_to "(#{t('common.none_of_these')})", settings_path %>
+</div>

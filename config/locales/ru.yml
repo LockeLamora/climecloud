@@ -77,7 +77,7 @@ ru:
   settings:
     intro: "Изменить настройки:"
     postcode: "Почтовый индекс"
-    country: "Страна"
+    which_country: "В какой стране этот почтовый индекс?"
     metrics: "Единицы погоды"
     imperial: "Имперские (°F, in, mph)"
     metric: "Метрические (°C, mm, км/ч)"

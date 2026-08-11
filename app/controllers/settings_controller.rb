@@ -17,14 +17,17 @@ class SettingsController < ApplicationController
       return
     end
 
-    candidates = geocode_postcode
+    matches = postcode_matches
 
-    if candidates.empty?
+    if matches.empty?
       @error = I18n.t('settings.not_determined')
       render :set
       return
     end
 
+    return if ask_which_country(matches)
+
+    candidates = matches.first(Geocode::MAX_CANDIDATES)
     chosen = candidates.first
     @lat = chosen[:lat]
     @lon = chosen[:lon]
@@ -46,7 +49,7 @@ class SettingsController < ApplicationController
   # Only reached when the assumed place was wrong, so show what else matched.
   def pick
     @settings_params = settings_params
-    @candidates = geocode_postcode.drop(1)
+    @candidates = postcode_matches.first(Geocode::MAX_CANDIDATES).drop(1)
 
     if @candidates.empty?
       @error = I18n.t('settings.no_others')
@@ -59,12 +62,28 @@ class SettingsController < ApplicationController
 
   private
 
-  def geocode_postcode
+  def postcode_matches
     Geocode.new({
                   address: params[:postcode],
                   country_code: params[:country_code],
                   type: 'postcode'
-                }).get_candidates
+                }).get_all_candidates
+  end
+
+  # A postcode is its own answer to which country it is in, so the countries are read
+  # back off the search rather than asked for up front. Only ask when the postcode
+  # really does exist in more than one: a dropdown of every country on earth made the
+  # common case worse to serve the rare one, and most of its entries could never apply.
+  def ask_which_country(matches)
+    return false if params[:country_code].present?
+
+    countries = matches.filter_map { |match| match[:country_code] }.uniq
+    return false if countries.length < 2
+
+    @countries = countries.first(Geocode::MAX_CANDIDATES)
+    @settings_params = settings_params
+    render :country
+    true
   end
 
   # A postcode or town can match several places. Take the first so the common case

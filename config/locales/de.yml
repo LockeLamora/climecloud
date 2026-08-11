@@ -77,7 +77,7 @@ de:
   settings:
     intro: "Einstellungen ändern:"
     postcode: "Postleitzahl"
-    country: "Land"
+    which_country: "In welchem Land liegt diese Postleitzahl?"
     metrics: "Wettereinheiten"
     imperial: "Imperial (°F, in, mph)"
     metric: "Metrisch (°C, mm, km/h)"

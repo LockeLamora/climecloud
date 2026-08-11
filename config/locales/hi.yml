@@ -77,7 +77,7 @@ hi:
   settings:
     intro: "अपनी सेटिंग्स बदलें:"
     postcode: "पिन कोड"
-    country: "देश"
+    which_country: "यह पोस्टकोड किस देश में है?"
     metrics: "मौसम इकाइयाँ"
     imperial: "इम्पीरियल (°F, in, mph)"
     metric: "मीट्रिक (°C, mm, km/h)"

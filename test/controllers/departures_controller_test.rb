@@ -6,6 +6,12 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
   COOKIES = 'lat=51.5;lon=-0.1;city=Testville'
   SAVED = [{ 'id' => 's-test-northgate', 'name' => 'Northgate' }].to_json
 
+  # Every action here is gated on the Transitland key, which does not decrypt under
+  # test. Without a stand-in every request redirects to the menu and every assertion
+  # below is really only testing that redirect.
+  setup { stub_api_credentials }
+  teardown { unstub_api_credentials }
+
   test 'lists nearby boarding points and leaves out the station they sit inside' do
     stub_stops('stops' => [
                  station('Testville Bus Station', 's-test-station'),

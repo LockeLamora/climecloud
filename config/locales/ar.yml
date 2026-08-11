@@ -77,7 +77,7 @@ ar:
   settings:
     intro: "غيّر إعداداتك:"
     postcode: "الرمز البريدي"
-    country: "الدولة"
+    which_country: "في أي بلد هذا الرمز البريدي؟"
     metrics: "وحدات الطقس"
     imperial: "إمبراطوري (°F, in, mph)"
     metric: "متري (°C, mm, km/h)"

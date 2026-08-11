@@ -77,7 +77,7 @@ id:
   settings:
     intro: "Ubah pengaturan Anda:"
     postcode: "Kode pos"
-    country: "Negara"
+    which_country: "Kode pos ini ada di negara mana?"
     metrics: "Satuan cuaca"
     imperial: "Imperial (°F, in, mph)"
     metric: "Metrik (°C, mm, km/j)"

@@ -26,21 +26,27 @@ module ActiveSupport
     # config/master.key is not in the repo, so credentials do not decrypt under test.
     # Anything reaching an API needs stand-in keys to get as far as the stubbed request.
     # Defined by hand rather than with Minitest's stub, which handed back nil here.
-    def with_api_credentials
+    def stub_api_credentials
       credentials = ActiveSupport::OrderedOptions.new
-      credentials.google = ActiveSupport::OrderedOptions.new
-      credentials.google.api_key = 'test-google-key'
-      credentials.geoapify = ActiveSupport::OrderedOptions.new
-      credentials.geoapify.api_key = 'test-geoapify-key'
-
-      application = Rails.application
-      application.define_singleton_method(:credentials) { credentials }
-
-      begin
-        yield
-      ensure
-        application.singleton_class.send(:remove_method, :credentials)
+      %w[google geoapify transitland].each do |service|
+        credentials[service] = ActiveSupport::OrderedOptions.new
+        credentials[service].api_key = "test-#{service}-key"
       end
+
+      Rails.application.define_singleton_method(:credentials) { credentials }
+    end
+
+    def unstub_api_credentials
+      singleton = Rails.application.singleton_class
+
+      singleton.send(:remove_method, :credentials) if singleton.method_defined?(:credentials)
+    end
+
+    def with_api_credentials
+      stub_api_credentials
+      yield
+    ensure
+      unstub_api_credentials
     end
 
     def set_cookies

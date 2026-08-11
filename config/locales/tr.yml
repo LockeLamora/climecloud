@@ -77,7 +77,7 @@ tr:
   settings:
     intro: "Ayarlarınızı değiştirin:"
     postcode: "Posta kodu"
-    country: "Ülke"
+    which_country: "Bu posta kodu hangi ülkede?"
     metrics: "Hava durumu birimleri"
     imperial: "İngiliz (°F, in, mph)"
     metric: "Metrik (°C, mm, km/sa)"

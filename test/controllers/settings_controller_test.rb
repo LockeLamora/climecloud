@@ -9,6 +9,67 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Change your settings', @response.body
   end
 
+  test 'asks which country only when the postcode really belongs to more than one' do
+    stub_geocode('features' => [geocode_result('Testville, UK'),
+                                geocode_result('Testville, France', country: 'fr')])
+
+    save_settings(country_code: nil)
+
+    assert_response :success
+    assert_match 'Which country is this postcode in?', @response.body
+    # Named in the reader's own language, and only the countries that actually apply.
+    assert_match 'United Kingdom', @response.body
+    assert_match 'France', @response.body
+    assert_match 'country_code=gb', @response.body
+    assert_match 'country_code=fr', @response.body
+  end
+
+  test 'saves without asking when the postcode exists in only one country' do
+    stub_geocode(two_results)
+    stub_geoapify
+
+    save_settings(country_code: nil)
+
+    assert_response :success
+    assert_match 'Location saved as', @response.body
+    # Asking would be a keypress spent on a question with one possible answer.
+    assert_no_match(/Which country/, @response.body)
+    assert_equal 'gb', cookies['country_code']
+  end
+
+  test 'carries the other settings through the country choice' do
+    stub_geocode('features' => [geocode_result('Testville, UK'),
+                                geocode_result('Testville, France', country: 'fr')])
+
+    save_settings(country_code: nil, metrics: 'metric', news_default_section: 'Science')
+
+    assert_response :success
+    assert_match 'metrics=metric', @response.body
+    assert_match 'news_default_section=Science', @response.body
+    assert_match 'postcode=zz1+1zz', @response.body
+  end
+
+  test 'stops asking once the country has been confirmed' do
+    stub_geocode(one_result)
+    stub_geoapify
+
+    save_settings(country_code: 'gb')
+
+    assert_response :success
+    assert_match 'Location saved as', @response.body
+    assert_no_match(/Which country/, @response.body)
+  end
+
+  test 'offers no country dropdown on the form' do
+    get settings_url
+
+    assert_response :success
+    # A four way pad and a list of every country on earth, most of which could never
+    # match the postcode being typed.
+    assert_no_match(/<select[^>]+country/, @response.body)
+    assert_match 'name="postcode"', @response.body
+  end
+
   test 'assumes the first match and offers the rest when a postcode is ambiguous' do
     stub_geocode(two_results)
     stub_geoapify
@@ -110,16 +171,17 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
+  # Pass country_code: nil to submit the form as it now stands, with no country on it.
   def save_settings(extra = {})
-    with_api_credentials do
-      get '/settings_save', params: {
-        postcode: 'zz1 1zz',
-        country_code: 'GB',
-        metrics: 'hybrid',
-        mapimages: '1',
-        news_default_section: 'Headlines'
-      }.merge(extra)
-    end
+    query = {
+      postcode: 'zz1 1zz',
+      country_code: 'GB',
+      metrics: 'hybrid',
+      mapimages: '1',
+      news_default_section: 'Headlines'
+    }.merge(extra).compact
+
+    with_api_credentials { get '/settings_save', params: query }
   end
 
   def stub_geocode(body)
@@ -149,7 +211,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     { 'features' => [geocode_result('Testville, UK'), geocode_result('Testville Magna, UK')] }
   end
 
-  def geocode_result(address)
-    { 'properties' => { 'formatted' => address, 'lat' => 52.3, 'lon' => 1.17, 'country_code' => 'gb' } }
+  def geocode_result(address, country: 'gb')
+    { 'properties' => { 'formatted' => address, 'lat' => 52.3, 'lon' => 1.17, 'country_code' => country } }
   end
 end

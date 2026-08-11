@@ -77,7 +77,7 @@ pt:
   settings:
     intro: "Alterar as suas definições:"
     postcode: "Código postal"
-    country: "País"
+    which_country: "Em que país fica este código postal?"
     metrics: "Unidades meteorológicas"
     imperial: "Imperial (°F, in, mph)"
     metric: "Métrico (°C, mm, km/h)"
