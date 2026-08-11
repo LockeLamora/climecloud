@@ -143,6 +143,7 @@ id:
     unreadable: "Tidak bisa membaca jawaban dari Wikipedia"
   departures:
     title: "Jadwal bus & kereta"
+    attribution: "Data transportasi dari Transitland"
     none_saved: "Belum ada halte tersimpan."
     find_stops: "Cari halte di dekat saya"
     add_stop: "Tambah halte lain"

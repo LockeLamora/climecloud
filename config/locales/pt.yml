@@ -143,6 +143,7 @@ pt:
     unreadable: "Não foi possível ler a resposta da Wikipédia"
   departures:
     title: "Horários de ônibus e trem"
+    attribution: "Dados de transporte da Transitland"
     none_saved: "Ainda não há paragens guardadas."
     find_stops: "Procurar paragens próximas"
     add_stop: "Adicionar outra paragem"

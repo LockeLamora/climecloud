@@ -143,6 +143,7 @@ it:
     unreadable: "Impossibile leggere la risposta di Wikipedia"
   departures:
     title: "Orari bus e treno"
+    attribution: "Dati sui trasporti di Transitland"
     none_saved: "Nessuna fermata salvata."
     find_stops: "Trova fermate vicine"
     add_stop: "Aggiungi un'altra fermata"

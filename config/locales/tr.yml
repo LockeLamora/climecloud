@@ -143,6 +143,7 @@ tr:
     unreadable: "Vikipedi'nin yanıtı okunamadı"
   departures:
     title: "Otobüs ve tren saatleri"
+    attribution: "Ulaşım verileri Transitland'dan"
     none_saved: "Henüz kayıtlı durak yok."
     find_stops: "Yakınımdaki durakları bul"
     add_stop: "Başka durak ekle"

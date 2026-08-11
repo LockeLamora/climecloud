@@ -143,6 +143,7 @@ en:
     unreadable: "Could not read the reply from Wikipedia"
   departures:
     title: "Bus & train times"
+    attribution: "Transport data by Transitland"
     none_saved: "No stops saved yet."
     find_stops: "Find stops near me"
     add_stop: "Add another stop"

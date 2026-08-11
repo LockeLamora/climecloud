@@ -143,6 +143,7 @@ de:
     unreadable: "Antwort von Wikipedia konnte nicht gelesen werden"
   departures:
     title: "Bus- & Bahnzeiten"
+    attribution: "Verkehrsdaten von Transitland"
     none_saved: "Noch keine Haltestellen gespeichert."
     find_stops: "Haltestellen in der Nähe finden"
     add_stop: "Weitere Haltestelle hinzufügen"

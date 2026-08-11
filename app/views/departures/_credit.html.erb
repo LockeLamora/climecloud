@@ -1,4 +1,5 @@
-<%# The Transitland terms ask for the name and a link to the terms wherever their data %>
-<%# is shown, so it sits on every page that carries departures or stops. No accesskey: %>
-<%# it is an acknowledgement, not somewhere anyone needs to get to in a hurry. %>
-<div class='credit'><%= link_to 'Transitland', 'https://www.transit.land/terms' %></div>
+<%# The Transitland terms ask for their name and a link to the terms wherever their data %>
+<%# is shown, so it sits on every page that carries departures or stops. Worded and %>
+<%# styled to match the weather credit, so the dashboard acknowledges its sources the %>
+<%# same way everywhere. %>
+<div class='credit'><a href="https://www.transit.land/terms" target="_blank"><%= t('departures.attribution') %></a></div>

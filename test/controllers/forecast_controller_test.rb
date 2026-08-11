@@ -26,6 +26,19 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     assert_match 'statename', @response.body
   end
 
+  test 'credits open-meteo on both forecast pages, as the licence requires' do
+    stub_forecast
+
+    ['/forecast/hourly', '/forecast/daily'].each do |path|
+      get path, headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=hybrid" }
+
+      assert_response :success
+      assert_match 'Weather data by Open-Meteo.com', @response.body, "#{path} carries no attribution"
+      assert_match 'https://open-meteo.com', @response.body, "#{path} does not link the source"
+      assert_match "class='credit'", @response.body, "#{path} does not style the attribution"
+    end
+  end
+
   test 'asks open-meteo for kmh when the metric setting is chosen' do
     stub_forecast
 
@@ -144,6 +157,24 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
         'temperature_2m' => '°C',
         'wind_speed_10m' => 'km/h',
         'snowfall' => 'cm'
+      },
+      # The daily page asks for different fields, so a body carrying only the hourly
+      # ones sends it to the "could not fetch" page instead of rendering a forecast.
+      'daily' => {
+        'time' => ['2026-08-10'],
+        'temperature_2m_max' => [18.4],
+        'temperature_2m_min' => [11.2],
+        'precipitation_probability_mean' => [20],
+        'rain_sum' => [0.4],
+        'snowfall_sum' => [0.0],
+        'wind_speed_10m_max' => [19.1],
+        'wind_speed_10m_min' => [6.3]
+      },
+      'daily_units' => {
+        'rain_sum' => 'mm',
+        'temperature_2m_max' => '°C',
+        'wind_speed_10m_max' => 'km/h',
+        'snowfall_sum' => 'cm'
       }
     }
   end

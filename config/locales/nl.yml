@@ -143,6 +143,7 @@ nl:
     unreadable: "Kon het antwoord van Wikipedia niet lezen"
   departures:
     title: "Bus- & treintijden"
+    attribution: "Vervoergegevens van Transitland"
     none_saved: "Nog geen haltes opgeslagen."
     find_stops: "Haltes in de buurt zoeken"
     add_stop: "Nog een halte toevoegen"

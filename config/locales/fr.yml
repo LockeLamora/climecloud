@@ -143,6 +143,7 @@ fr:
     unreadable: "Impossible de lire la réponse de Wikipédia"
   departures:
     title: "Horaires bus & train"
+    attribution: "Données transport par Transitland"
     none_saved: "Aucun arrêt enregistré."
     find_stops: "Trouver des arrêts près de moi"
     add_stop: "Ajouter un arrêt"

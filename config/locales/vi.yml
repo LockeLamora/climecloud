@@ -143,6 +143,7 @@ vi:
     unreadable: "Không đọc được phản hồi từ Wikipedia"
   departures:
     title: "Giờ xe buýt và tàu"
+    attribution: "Dữ liệu giao thông từ Transitland"
     none_saved: "Chưa lưu điểm dừng nào."
     find_stops: "Tìm điểm dừng gần tôi"
     add_stop: "Thêm điểm dừng khác"

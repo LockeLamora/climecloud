@@ -342,8 +342,9 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
       get path, headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
 
       assert_response :success
-      assert_match 'Transitland', @response.body, "#{path} carries no attribution"
+      assert_match 'Transport data by Transitland', @response.body, "#{path} carries no attribution"
       assert_match 'https://www.transit.land/terms', @response.body, "#{path} does not link the terms"
+      assert_match "class='credit'", @response.body, "#{path} does not style the attribution"
     end
   end
 

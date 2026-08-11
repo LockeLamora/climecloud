@@ -143,6 +143,7 @@ ar:
     unreadable: "تعذرت قراءة رد ويكيبيديا"
   departures:
     title: "مواعيد الحافلات والقطارات"
+    attribution: "بيانات النقل من Transitland"
     none_saved: "لا توجد محطات محفوظة بعد."
     find_stops: "ابحث عن محطات قريبة"
     add_stop: "أضف محطة أخرى"

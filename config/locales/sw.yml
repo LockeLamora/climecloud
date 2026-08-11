@@ -143,6 +143,7 @@ sw:
     unreadable: "Haikuweza kusoma jibu la Wikipedia"
   departures:
     title: "Nyakati za basi na treni"
+    attribution: "Data ya usafiri kutoka Transitland"
     none_saved: "Hakuna vituo vilivyohifadhiwa bado."
     find_stops: "Tafuta vituo vilivyo karibu"
     add_stop: "Ongeza kituo kingine"

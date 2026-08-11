@@ -143,6 +143,7 @@ bn:
     unreadable: "উইকিপিডিয়ার উত্তর পড়া যায়নি"
   departures:
     title: "বাস ও ট্রেনের সময়"
+    attribution: "পরিবহন তথ্য Transitland থেকে"
     none_saved: "এখনও কোনো স্টপ সংরক্ষিত নেই।"
     find_stops: "কাছের স্টপ খুঁজুন"
     add_stop: "আরেকটি স্টপ যোগ করুন"
