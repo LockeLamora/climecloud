@@ -6,9 +6,9 @@ require 'net/http'
 
 module Scraper
   def self.scrape_article(url, useragent)
-    res = Net::HTTP.get_response(URI(url), { 'user-agent' => @useragent })
+    res = Net::HTTP.get_response(URI(url), { 'user-agent' => useragent })
     unless res.code.start_with?('2', '3')
-      Rails.logger.warn("Cannot load page - response #{res.code} - url #{@article_url}")
+      Rails.logger.warn("Cannot load page - response #{res.code} - url #{url}")
       return 'Cannot load page'
     end
 
