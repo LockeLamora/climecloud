@@ -5,10 +5,20 @@ require 'uri'
 
 class Places
   RADIUS_METRES = 5000
+  # Everything else worth walking to is close by. A hospital is not: the nearest one can
+  # be the far side of a county, and looking five kilometres out found nothing at all.
+  HOSPITAL_RADIUS_METRES = 30_000
   MAX_RESULTS = 10
+  # Surgeries outnumber hospitals in any town, so sorting the two together by distance
+  # buried the nearest hospital at twelfth and off the end of the list. These places are
+  # kept whatever their distance, and the rest of the list fills up around them.
+  GUARANTEED_RESULTS = 3
   # Ask for more than we show, because stops on opposite sides of the same road come
   # back as separate records under one name and collapse into a single entry.
   REQUEST_LIMIT = 20
+  # Surgeries are dense enough in a city to fill an ordinary request on their own, which
+  # leaves no hospital in the pool to hold back. Asking for more costs the same request.
+  WIDE_REQUEST_LIMIT = 60
   BUS_CATEGORY = 'public_transport.bus'
   STATION_NAME = /station|interchange|bus stn/i
   # Most car parks within a mile of a city centre are somebody's private spaces. They
@@ -68,7 +78,9 @@ class Places
                                'public_transport.train' },
     # Not the bare healthcare category, which brings back dentists and opticians when
     # what was asked for is somewhere to be seen about something wrong.
-    'hospital' => { categories: 'healthcare.hospital,healthcare.clinic_or_praxis' },
+    'hospital' => { categories: 'healthcare.hospital,healthcare.clinic_or_praxis',
+                    radius: HOSPITAL_RADIUS_METRES, guarantee: 'healthcare.hospital',
+                    request_limit: WIDE_REQUEST_LIMIT },
     'pharmacy' => { categories: 'commercial.health_and_beauty.pharmacy' },
     'food' => { categories: 'catering.restaurant,catering.fast_food,catering.cafe' },
     'shops' => { categories: 'commercial.supermarket,commercial.convenience' },
@@ -83,6 +95,12 @@ class Places
   PAGE_SIZE = 8
 
   attr_reader :error
+
+  # How far this category looked, so a page reporting nothing found says the distance it
+  # actually searched rather than the default everything else uses.
+  def radius
+    (@kind && @kind[:radius]) || RADIUS_METRES
+  end
 
   def initialize(params)
     @key = Rails.application.credentials.geoapify.api_key
@@ -108,9 +126,9 @@ class Places
       categories: @kind[:categories],
       # Geoapify wants longitude first in these two, the reverse of every other
       # coordinate this app passes around.
-      filter: "circle:#{@lon},#{@lat},#{RADIUS_METRES}",
+      filter: "circle:#{@lon},#{@lat},#{radius}",
       bias: "proximity:#{@lon},#{@lat}",
-      limit: REQUEST_LIMIT
+      limit: @kind[:request_limit] || REQUEST_LIMIT
     }
 
     uri.query = URI.encode_www_form(params)
@@ -129,7 +147,20 @@ class Places
     places = places.sort_by { |place| place[:distance] || Float::INFINITY }
     # Nearest first before the collapse, so a pair of stops either side of a road
     # leaves the one actually closest to the user.
-    places.uniq { |place| place[:name].downcase }.first(MAX_RESULTS)
+    keeping_guaranteed(places.uniq { |place| place[:name].downcase })
+  end
+
+  # Hold places back from the cap when the category says they must survive it, then let
+  # the nearest of everything else fill the remaining room. Displayed in distance order
+  # either way, so a hospital twenty kilometres out reads as exactly that.
+  def keeping_guaranteed(places)
+    wanted = @kind[:guarantee]
+    return places.first(MAX_RESULTS) if wanted.nil?
+
+    kept = places.select { |place| place[:categories].include?(wanted) }.first(GUARANTEED_RESULTS)
+    others = (places - kept).first(MAX_RESULTS - kept.length)
+
+    (kept + others).sort_by { |place| place[:distance] || Float::INFINITY }
   end
 
   def place_from(feature)
@@ -144,7 +175,8 @@ class Places
       lat: properties['lat'],
       lon: properties['lon'],
       hours: properties['opening_hours'].presence,
-      notes: parking_notes(properties) + toilet_notes(properties)
+      notes: parking_notes(properties) + toilet_notes(properties),
+      categories: properties['categories'] || []
     }
   end
 

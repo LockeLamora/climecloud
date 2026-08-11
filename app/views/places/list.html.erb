@@ -7,7 +7,7 @@
 <%= t('places.toilets_hint') %><br />
 <% end %>
 <% if @places.empty? && @error.nil? %>
-<%= t('places.nothing_found', radius: Places::RADIUS_METRES / 1000) %><br />
+<%= t('places.nothing_found', radius: @radius / 1000) %><br />
 <% end %>
 <ol>
 <% @places.each_with_index do |place, index| %>

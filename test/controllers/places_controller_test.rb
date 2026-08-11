@@ -235,6 +235,65 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/Office Spaces/, @response.body)
   end
 
+  test 'looks much further for a hospital than for a corner shop' do
+    stub_places
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'hospital' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    # The nearest hospital can be the far side of a county, and five kilometres found none.
+    assert_requested :get, /api\.geoapify\.com/ do |request|
+      request.uri.query.include?("circle:1.17,52.3,#{Places::HOSPITAL_RADIUS_METRES}")
+    end
+  end
+
+  test 'keeps the ordinary radius for everything else' do
+    stub_places
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'food' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_requested :get, /api\.geoapify\.com/ do |request|
+      request.uri.query.include?("circle:1.17,52.3,#{Places::RADIUS_METRES}")
+    end
+  end
+
+  test 'shows a hospital that nearer surgeries would otherwise push off the list' do
+    surgeries = (1..12).map do |n|
+      { 'properties' => { 'name' => "Surgery #{n}", 'distance' => n * 100, 'lat' => 52.31, 'lon' => 1.18,
+                          'categories' => ['healthcare.clinic_or_praxis'] } }
+    end
+    far_hospital = { 'properties' => { 'name' => 'County Hospital', 'distance' => 22_000, 'lat' => 52.5,
+                                       'lon' => 1.4, 'categories' => ['healthcare.hospital'] } }
+    stub_places(surgeries + [far_hospital])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'hospital' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    # Twelve nearer surgeries ranked it beyond the end of the list, which is why the
+    # category appeared to find no hospital at all.
+    assert_match 'County Hospital', @response.body
+    # Still last, because it really is the furthest away.
+    assert_operator @response.body.index('Surgery 1'), :<, @response.body.index('County Hospital')
+  end
+
+  test 'says how far it actually looked when nothing turned up' do
+    stub_places([])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'hospital' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match "#{Places::HOSPITAL_RADIUS_METRES / 1000}km", @response.body
+  end
+
   test 'asks the api for hospitals and surgeries but not dentists' do
     stub_places
 

@@ -61,6 +61,8 @@ class PlacesController < ApplicationController
     places = Places.new({ lat: @lat, lon: @lon, kind: params[:kind] })
     @places = places.get_places
     @error = places.error
+    # Categories do not all search the same distance, so the page says the one it used.
+    @radius = places.radius
 
     render :list
   end
