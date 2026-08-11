@@ -7,8 +7,12 @@ require 'webmock/minitest'
 
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
-    parallelize(workers: :number_of_processors)
+    # Deliberately serial. Rails only parallelises past fifty tests, and when the suite
+    # crossed that line every worker went looking for a database of its own
+    # ("rails_test-0" and friends) that nothing creates, so the run stalled. Almost
+    # every test here waits on a stubbed HTTP call rather than the database, and the
+    # whole suite finishes in a couple of seconds, so there is nothing to win back.
+    parallelize(workers: 1)
 
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all

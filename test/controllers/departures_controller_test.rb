@@ -351,6 +351,8 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
       assert_match 'Transport data by Transitland', @response.body, "#{path} carries no attribution"
       assert_match 'https://www.transit.land/terms', @response.body, "#{path} does not link the terms"
       assert_match "class='credit'", @response.body, "#{path} does not style the attribution"
+      # Flush against the last link, it is easy to hit by accident on a touchscreen.
+      assert_match %r{<br />\s*<br />\s*<div class='credit'>}, @response.body, "#{path} credit is not spaced"
     end
   end
 

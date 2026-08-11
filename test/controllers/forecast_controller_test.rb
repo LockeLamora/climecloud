@@ -36,6 +36,10 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
       assert_match 'Weather data by Open-Meteo.com', @response.body, "#{path} carries no attribution"
       assert_match 'https://open-meteo.com', @response.body, "#{path} does not link the source"
       assert_match "class='credit'", @response.body, "#{path} does not style the attribution"
+      # The same gap as the transport credit, and only one of them: the views supplied
+      # their own breaks as well, which spaced the two credits differently.
+      assert_match %r{<br />\s*<br />\s*<div class='credit'>}, @response.body, "#{path} credit is not spaced"
+      assert_no_match(%r{<br />\s*<br />\s*<br />\s*<br />\s*<div class='credit'>}, @response.body)
     end
   end
 
