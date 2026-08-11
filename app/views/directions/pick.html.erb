@@ -1,6 +1,6 @@
 <div class='route'>
 <%= @error ? "<span class='error'>#{@error}</span><br /><br />".html_safe : nil %>
-<%= "Which \"#{field_label(@field)}\" did you mean?" %><br />
+<%= t('directions.which_field', field: field_label(@field)) %><br />
 <b><%= @route_params[@field] %></b>
 <br /><br />
 <ol>
@@ -9,5 +9,5 @@
 <% end %>
 </ol>
 <br />
-<%= link_to "(None of these? Search again)", directions_path %>
+<%= link_to "(#{t('common.none_of_these')})", directions_path %>
 </div>

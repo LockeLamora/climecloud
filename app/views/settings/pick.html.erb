@@ -1,5 +1,5 @@
 <div class='route'>
-Other places matching<br />
+<%= t('settings.other_places') %><br />
 <b><%= params[:postcode] %></b>
 <br /><br />
 <ol>
@@ -11,5 +11,5 @@ Other places matching<br />
 <% end %>
 </ol>
 <br />
-<%= link_to "(None of these? Search again)", settings_path %>
+<%= link_to "(#{t('common.none_of_these')})", settings_path %>
 </div>

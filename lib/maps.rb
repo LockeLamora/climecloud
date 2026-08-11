@@ -4,16 +4,17 @@ require 'net/http'
 require 'uri'
 
 class Maps
-  STATUS_MESSAGES = {
-    'NOT_FOUND' => 'Could not find that place, please pick one below',
-    'ZERO_RESULTS' => 'No route found, try another way of travelling',
-    'OVER_QUERY_LIMIT' => 'Too many searches just now, please try again shortly',
-    'REQUEST_DENIED' => 'Route planning is unavailable, please try again later',
-    'INVALID_REQUEST' => 'Please fill in both From and To',
-    'MAX_ROUTE_LENGTH_EXCEEDED' => 'That route is too long to plan'
+  # Keys rather than translated strings: a constant is evaluated once at boot, so
+  # holding the text here would pin every user to whichever locale happened to be
+  # active when the class first loaded.
+  STATUS_KEYS = {
+    'NOT_FOUND' => 'pick_one_below',
+    'ZERO_RESULTS' => 'no_route',
+    'OVER_QUERY_LIMIT' => 'too_many',
+    'REQUEST_DENIED' => 'unavailable',
+    'INVALID_REQUEST' => 'fill_in_both',
+    'MAX_ROUTE_LENGTH_EXCEEDED' => 'too_long'
   }.freeze
-
-  UNAVAILABLE = 'Route planning is unavailable, please try again later'
 
   IMAGE_SIZE = 220
   WORLD_PIXELS = 256
@@ -32,7 +33,7 @@ class Maps
   # so the picture reads as the journey in front rather than a stretch of road with
   # the starting point somewhere arbitrary in it.
   BEHIND_FRACTION = 0.15
-  COMPASS_POINTS = %w[north north-east east south-east south south-west west north-west].freeze
+  COMPASS_POINTS = %w[north north_east east south_east south south_west west north_west].freeze
 
   # unresolved lists the endpoints Google could not pin down, or matched only
   # loosely, so the user can be offered a list of places to pick from.
@@ -155,7 +156,7 @@ class Maps
   def compass_point(bearing)
     degrees = ((bearing * 180 / Math::PI) + 360) % 360
 
-    COMPASS_POINTS[((degrees + 22.5) / 45).floor % COMPASS_POINTS.length]
+    I18n.t("compass.#{COMPASS_POINTS[((degrees + 22.5) / 45).floor % COMPASS_POINTS.length]}")
   end
 
   # Radians clockwise from north.
@@ -309,7 +310,10 @@ class Maps
       origin: @origin,
       destination: @destination,
       mode: @mode,
-      units: @units
+      units: @units,
+      # Turn instructions come back translated, which matters more than the chrome
+      # around them: a German menu wrapped around "Turn left" helps nobody.
+      language: I18n.locale
     }
 
     uri.query = URI.encode_www_form(params)
@@ -319,13 +323,13 @@ class Maps
   def get_routes_from_google_maps_uri(uri)
     res = Net::HTTP.get_response(uri)
     unless res.is_a?(Net::HTTPSuccess)
-      @error = UNAVAILABLE
+      @error = I18n.t('directions.unavailable')
       return
     end
 
     body = JSON.parse(res.body)
     unless body['status'] == 'OK'
-      @error = STATUS_MESSAGES.fetch(body['status'], 'Could not plan route, please try again')
+      @error = I18n.t("directions.#{STATUS_KEYS.fetch(body['status'], 'could_not_plan')}")
       @unresolved = unresolved_waypoints(body) if body['status'] == 'NOT_FOUND'
       return
     end

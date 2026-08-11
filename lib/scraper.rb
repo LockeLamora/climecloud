@@ -9,24 +9,32 @@ module Scraper
     res = Net::HTTP.get_response(URI(url), { 'user-agent' => useragent })
     unless res.code.start_with?('2', '3')
       Rails.logger.warn("Cannot load page - response #{res.code} - url #{url}")
-      return 'Cannot load page'
+      return I18n.t('news.cannot_load')
     end
 
     rule = resolve_article_rules(url)
 
+    # Wombat joins base_url and path, so passing the whole article URL as the base
+    # with a path of "/" appended a trailing slash and asked for a page that does not
+    # exist. Split the URL instead and hand it the two halves it expects.
+    address = URI(url)
+    host = "#{address.scheme}://#{address.host}"
+    route = address.path.presence || '/'
+    route = "#{route}?#{address.query}" if address.query.present?
+
     begin
       Wombat.set_user_agent(useragent)
       out = Wombat.crawl do
-        base_url url
-        path '/'
+        base_url host
+        path route
         text({ css: rule }, :list)
       end
     rescue StandardError => e
       Rails.logger.warn("Cannot parse page - #{e.class}: #{e.message} - url #{url}")
-      return 'Cannot parse page'
+      return I18n.t('news.cannot_parse')
     end
 
-    return 'Cannot parse page' if out['text'].blank?
+    return I18n.t('news.cannot_parse') if out['text'].blank?
 
     out['text'].join('<br /><br />')
   end

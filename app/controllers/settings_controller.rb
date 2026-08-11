@@ -4,6 +4,7 @@ require 'uri'
 require 'net/http'
 require 'json'
 require 'geocode'
+require 'languages'
 
 class SettingsController < ApplicationController
   def set
@@ -19,7 +20,7 @@ class SettingsController < ApplicationController
     candidates = geocode_postcode
 
     if candidates.empty?
-      @error = 'Could not determine location, please try again'
+      @error = I18n.t('settings.not_determined')
       render :set
       return
     end
@@ -37,13 +38,18 @@ class SettingsController < ApplicationController
     render :set
   end
 
+  def language
+    cookies.permanent[:locale] = params[:locale] if Languages.supported?(params[:locale])
+    redirect_to root_path
+  end
+
   # Only reached when the assumed place was wrong, so show what else matched.
   def pick
     @settings_params = settings_params
     @candidates = geocode_postcode.drop(1)
 
     if @candidates.empty?
-      @error = 'No other places matched, please try again'
+      @error = I18n.t('settings.no_others')
       render :set
       return
     end
@@ -74,6 +80,9 @@ class SettingsController < ApplicationController
     # matched anything at all until the weather page was opened.
     @alternatives = alternatives
     @settings_params = settings_params
+    # Offered here rather than on the form, because the country is only known once
+    # the location has actually resolved.
+    @languages = Languages.for_country(resolve_country_code)
     render :saved
   end
 

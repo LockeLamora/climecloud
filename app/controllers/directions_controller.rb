@@ -125,7 +125,7 @@ class DirectionsController < ApplicationController
                               }).get_candidates
 
     if @candidates.empty?
-      @error = 'Could not find that place, please try again'
+      @error = I18n.t('directions.not_found')
       render :search
       return
     end

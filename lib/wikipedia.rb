@@ -5,7 +5,12 @@ require 'uri'
 require 'cgi'
 
 class Wikipedia
-  ENDPOINT = 'https://en.wikipedia.org/w/api.php'
+  # The language is the subdomain, so a reader gets their own Wikipedia rather than
+  # the English one with a translated search box around it.
+  def self.endpoint
+    "https://#{I18n.locale}.wikipedia.org/w/api.php"
+  end
+
   # Wikimedia throttles callers it cannot identify to a tenth of the normal
   # allowance, and this app shares an outbound address with everything else on the
   # host. Naming ourselves with a contact URL is the difference between 10 and 200
@@ -69,7 +74,7 @@ class Wikipedia
   end
 
   def build_uri(params)
-    uri = URI(ENDPOINT)
+    uri = URI(self.class.endpoint)
     uri.query = URI.encode_www_form(params)
     uri
   end
@@ -78,16 +83,16 @@ class Wikipedia
     res = Net::HTTP.get_response(uri, { 'user-agent' => USER_AGENT })
     unless res.is_a?(Net::HTTPSuccess)
       @error = if res.code == '429'
-                 'Wikipedia is busy just now, please try again shortly'
+                 I18n.t('wikipedia.busy')
                else
-                 'Could not reach Wikipedia, please try again later'
+                 I18n.t('wikipedia.unavailable')
                end
       return nil
     end
 
     JSON.parse(res.body)
   rescue JSON::ParserError
-    @error = 'Could not read the reply from Wikipedia'
+    @error = I18n.t('wikipedia.unreadable')
     nil
   end
 

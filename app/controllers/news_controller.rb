@@ -74,7 +74,7 @@ class NewsController < ApplicationController
 
   def scrape_article(url)
     resolved = gnews.get_article(url)
-    return 'Could not open this article, please try another' if resolved.nil?
+    return I18n.t('news.article_unavailable') if resolved.nil?
 
     @article_url = resolved
     Scraper.scrape_article(@article_url, gnews.get_useragent)
@@ -84,7 +84,7 @@ class NewsController < ApplicationController
     @articles, @title = gnews.get_articles_from_api(@search_query)
 
     if @articles.nil?
-      @error = 'Could not fetch the news feed, please try again'
+      @error = I18n.t('news.unavailable')
       @articles = []
     end
 

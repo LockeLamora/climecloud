@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get 'settings' => 'settings#change'
   get 'settings_save' => 'settings#set'
   get 'settings_pick' => 'settings#pick'
+  get 'settings_language' => 'settings#language'
   get 'forecast/hourly' => 'forecast#hourly'
   get 'forecast/daily' => 'forecast#daily'
 

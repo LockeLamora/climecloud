@@ -1,23 +1,23 @@
-<%= @error.nil? ? "Change your settings:" : "<span class='error'>#{@error}</span>".html_safe %>
+<%= @error.nil? ? t('settings.intro') : "<span class='error'>#{@error}</span>".html_safe %>
 <br /><br />
 <%= form_with url:"settings_save", method: :get, local: true do |f| %>
-    <%= f.label "Post/zip code" %>
+    <%= f.label t('settings.postcode') %>
     <%= f.text_field :postcode, class: "text_field" %>
     <br /><br />
-    <%= f.label "Country" %>
+    <%= f.label t('settings.country') %>
     <%= f.country_select :country_code, {priority_countries: ["GB", "US"],selected: "GB"},class: "country_select" %>
     <br /><br />
 
-    <b>Weather metrics</b><br />
-    <%= f.radio_button :metrics, 'imperial' %> Imperial (°F, in, mph)<br />
-    <%= f.radio_button :metrics, 'metric' %> Metric (°C, mm, Km/h) <br />
-    <%= f.radio_button :metrics, 'hybrid', checked: true %> Hybrid (°C, mm, mph) <br />
+    <b><%= t('settings.metrics') %></b><br />
+    <%= f.radio_button :metrics, 'imperial' %> <%= t('settings.imperial') %><br />
+    <%= f.radio_button :metrics, 'metric' %> <%= t('settings.metric') %> <br />
+    <%= f.radio_button :metrics, 'hybrid', checked: true %> <%= t('settings.hybrid') %> <br />
     <br />
-    <b>Maps</b></br />
-    <%= f.check_box :mapimages %>Show small map image in results<br /><br />
+    <b><%= t('settings.maps') %></b></br />
+    <%= f.check_box :mapimages %><%= t('settings.show_map') %><br /><br />
     <br />
-    <b>News</b><br />
-    <%= f.label "Default news section" %>
+    <b><%= t('settings.news') %></b><br />
+    <%= f.label t('settings.default_section') %>
     <%= f.select :news_default_section, options_for_select(['Headlines','World','Nation','Business','Technology','Entertainment','Science','Sports','Health']) %>
     <br /><br />
     <%= f.submit %>

@@ -55,9 +55,9 @@ class ForecastController < ApplicationController
 
     @rate_limited = weather.rate_limited?
     @error = if @rate_limited
-               'The weather service is busy. Your location is saved, please try again later.'
+               I18n.t('forecast.busy')
              else
-               'Could not fetch the forecast for your saved location'
+               I18n.t('forecast.unavailable')
              end
     render :unavailable
   end

@@ -1,7 +1,7 @@
-<h1>Forecast</h1>
+<h1><%= t('forecast.title') %></h1>
 <span class='error'><%= @error %></span>
 <br /><br />
 <% unless @rate_limited %>
-<%= link_to "Set your location again", "/settings" %><br /><br />
+<%= link_to t('forecast.set_location_again'), "/settings" %><br /><br />
 <% end %>
-<%= link_to "Back to menu", "/" %>
+<%= link_to "0 #{t('common.back_to_menu')}", "/", accesskey: "0" %>

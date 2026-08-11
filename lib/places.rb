@@ -14,38 +14,37 @@ class Places
 
   # Geoapify names bus stops after the road junction they sit on, so without a label
   # the list reads as a column of street names with no clue what any of them are.
-  KIND_LABELS = {
-    'public_transport.bus' => 'Bus station',
-    'public_transport.train' => 'Train station',
-    'public_transport.subway' => 'Metro station',
-    'service.taxi' => 'Taxi rank',
-    'service.vehicle.fuel' => 'Petrol station',
-    'commercial.supermarket' => 'Supermarket',
-    'commercial.convenience' => 'Convenience shop',
-    'commercial.health_and_beauty.pharmacy' => 'Pharmacy',
-    'catering.restaurant' => 'Restaurant',
-    'catering.fast_food' => 'Fast food',
-    'catering.cafe' => 'Cafe',
-    'catering.pub' => 'Pub',
-    'catering.bar' => 'Bar',
-    'service.financial.atm' => 'Cash machine',
-    'service.financial.bank' => 'Bank',
-    'amenity.toilet' => 'Public toilet'
+  KIND_KEYS = {
+    'public_transport.bus' => 'bus_station',
+    'public_transport.train' => 'train_station',
+    'public_transport.subway' => 'metro_station',
+    'service.taxi' => 'taxi_rank',
+    'service.vehicle.fuel' => 'petrol_station',
+    'commercial.supermarket' => 'supermarket',
+    'commercial.convenience' => 'convenience',
+    'commercial.health_and_beauty.pharmacy' => 'pharmacy',
+    'catering.restaurant' => 'restaurant',
+    'catering.fast_food' => 'fast_food',
+    'catering.cafe' => 'cafe',
+    'catering.pub' => 'pub',
+    'catering.bar' => 'bar',
+    'service.financial.atm' => 'atm',
+    'service.financial.bank' => 'bank',
+    'amenity.toilet' => 'toilet'
   }.freeze
 
   # Grouped rather than one entry per Geoapify category: splitting Food into
   # restaurant, cafe and fast food would triple the menu on a 240x320 screen, and
   # the API takes a comma separated list in a single request anyway.
   CATEGORIES = {
-    'petrol' => { label: 'Petrol', categories: 'service.vehicle.fuel' },
-    'food' => { label: 'Food', categories: 'catering.restaurant,catering.fast_food,catering.cafe' },
-    'shops' => { label: 'Shops', categories: 'commercial.supermarket,commercial.convenience' },
-    'cash' => { label: 'Cash', categories: 'service.financial.atm,service.financial.bank' },
-    'toilets' => { label: 'Toilets', categories: 'amenity.toilet' },
-    'pharmacy' => { label: 'Pharmacy', categories: 'commercial.health_and_beauty.pharmacy' },
-    'pub' => { label: 'Pub', categories: 'catering.pub,catering.bar' },
-    'transport' => { label: 'Transport',
-                     categories: 'public_transport.train,public_transport.subway,' \
+    'petrol' => { categories: 'service.vehicle.fuel' },
+    'food' => { categories: 'catering.restaurant,catering.fast_food,catering.cafe' },
+    'shops' => { categories: 'commercial.supermarket,commercial.convenience' },
+    'cash' => { categories: 'service.financial.atm,service.financial.bank' },
+    'toilets' => { categories: 'amenity.toilet' },
+    'pharmacy' => { categories: 'commercial.health_and_beauty.pharmacy' },
+    'pub' => { categories: 'catering.pub,catering.bar' },
+    'transport' => { categories: 'public_transport.train,public_transport.subway,' \
                                  'public_transport.bus,service.taxi' }
   }.freeze
 
@@ -71,6 +70,7 @@ class Places
     uri = URI('https://api.geoapify.com/v2/places')
     params = {
       apiKey: @key,
+      lang: I18n.locale,
       categories: @kind[:categories],
       # Geoapify wants longitude first in these two, the reverse of every other
       # coordinate this app passes around.
@@ -86,7 +86,7 @@ class Places
   def get_places_from_geoapify_uri(uri)
     res = Net::HTTP.get_response(uri)
     unless res.is_a?(Net::HTTPSuccess)
-      @error = 'Could not look up places, please try again later'
+      @error = I18n.t('places.unavailable')
       return []
     end
 
@@ -121,9 +121,9 @@ class Places
 
   def kind_label(properties)
     categories = properties['categories'] || []
-    match = KIND_LABELS.keys.find { |category| categories.include?(category) }
+    match = KIND_KEYS.keys.find { |category| categories.include?(category) }
 
-    match && KIND_LABELS[match]
+    match && I18n.t("places.kind.#{KIND_KEYS[match]}")
   end
 
   # OSM records are frequently unnamed, public toilets especially, so fall back to
@@ -132,6 +132,6 @@ class Places
     properties['name'].presence ||
       properties['address_line1'].presence ||
       properties['street'].presence ||
-      'Unnamed'
+      I18n.t('places.kind.unnamed')
   end
 end

@@ -1,13 +1,13 @@
-<h1>Hourly forecast</h1>
+<h1><%= t('forecast.hourly_title') %></h1>
 <%= "#{cookies["city"]}, #{cookies["state"]}"%><br />
-<%=link_to "1 Switch to Daily", "/forecast/daily", accesskey: "1" %>
+<%=link_to "1 #{t('forecast.switch_to_daily')}", "/forecast/daily", accesskey: "1" %>
 <table>
 <thead>
     <tr>
-      <th>Time</th>
-      <th>Temp (feels like)</th>
-      <th>Wind</th>
-      <th>Precip <%= @units[:rain]%></th>
+      <th><%= t('forecast.time') %></th>
+      <th><%= t('forecast.temp_feels') %></th>
+      <th><%= t('forecast.wind') %></th>
+      <th><%= t('forecast.precip') %> <%= @units[:rain]%></th>
     </tr>
   </thead>
 
@@ -18,7 +18,7 @@
     <td> <%= "#{@temps[i].round}#{@units[:temp]} (#{@feels_like[i].round})"%></td>
     <td> <%= "#{@wind[i].round}\n#{@units[:wind]}" %></td>
     <% if @snow[i] > 0 %>
-    <td> <%= "<b>snow:</b> #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
+    <td> <%= "<b>#{t('forecast.snow')}:</b> #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
       <% else %>
     <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
     <% end %>
@@ -27,6 +27,6 @@
   </tbody>
   </table>
   <br /><br />
-  <%= link_to "0 Back to menu", root_path, accesskey: "0" %>
+  <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
   <br /><br />
-  <a href="https://open-meteo.com" target="_blank">Weather data by Open-Meteo.com</a>
+  <a href="https://open-meteo.com" target="_blank"><%= t('forecast.attribution') %></a>

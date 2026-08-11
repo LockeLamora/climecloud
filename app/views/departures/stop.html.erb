@@ -2,14 +2,14 @@
 <b><%= @stop['name'] %></b><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @departures.empty? && @error.nil? %>
-Nothing due in the next couple of hours<br />
+<%= t('departures.nothing_due') %><br />
 <% end %>
 <table>
 <% @departures.each do |departure| %>
   <tr>
     <td><%= departure[:time] %></td>
     <td><%= departure[:route] %></td>
-    <td><%= departure[:live] ? 'live' : 'timetable' %></td>
+    <td><%= departure[:live] ? t('departures.live') : t('departures.timetable') %></td>
   </tr>
   <% if departure[:towards].present? %>
   <tr><td colspan="3"><%= departure[:towards] %></td></tr>
@@ -17,7 +17,7 @@ Nothing due in the next couple of hours<br />
 <% end %>
 </table>
 <br />
-<%= link_to "1 Refresh", departures_stop_path(id: @stop["id"]), accesskey: "1" %><br />
-<%= link_to "9 All stops", departures_path, accesskey: "9" %><br />
-<%= link_to "0 Back to menu", root_path, accesskey: "0" %>
+<%= link_to "1 #{t('departures.refresh')}", departures_stop_path(id: @stop["id"]), accesskey: "1" %><br />
+<%= link_to "9 #{t('departures.all_stops')}", departures_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
 </div>

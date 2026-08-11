@@ -5,10 +5,10 @@
 <br />
 <%= simple_format(@article[:extract]) %>
 <% unless @full %>
-<%= link_to "1 Read the full article", wikipedia_article_path(title: @article[:title], full: '1'), accesskey: "1" %><br />
+<%= link_to "1 #{t('wikipedia.read_full')}", wikipedia_article_path(title: @article[:title], full: '1'), accesskey: "1" %><br />
 <% end %>
 <% end %>
 <br />
-<%= link_to "9 Search again", wikipedia_path, accesskey: "9" %><br />
-<%= link_to "0 Back to menu", root_path, accesskey: "0" %>
+<%= link_to "9 #{t('common.search_again')}", wikipedia_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
 </div>

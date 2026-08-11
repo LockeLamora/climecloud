@@ -1,4 +1,5 @@
 <div class="news">
-<%= link_to "Read the original source here", sanitize(@article_url.html_safe)  %><br />
+<%= link_to t('news.source_link'), sanitize(@article_url.html_safe)  %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %><br />
 <%= @article %>
 </div>

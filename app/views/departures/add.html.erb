@@ -1,8 +1,8 @@
 <div class='route'>
-Stops near <%= cookies['city'].presence || 'your saved location' %><br />
+<%= t('departures.near', place: cookies['city'].presence || t('departures.your_location')) %><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @nearby.empty? && @error.nil? %>
-No stops found within <%= Departures::NEARBY_RADIUS_METRES %>m<br />
+<%= t('departures.no_stops', radius: Departures::NEARBY_RADIUS_METRES) %><br />
 <% end %>
 <ol>
 <% @nearby.each do |stop| %>
@@ -10,6 +10,6 @@ No stops found within <%= Departures::NEARBY_RADIUS_METRES %>m<br />
 <% end %>
 </ol>
 <br />
-<%= link_to "(Somewhere else? Change your postcode)", settings_path %><br />
-<%= link_to "(Back to departures)", departures_path %>
+<%= link_to "(#{t('places.change_postcode')})", settings_path %><br />
+<%= link_to "9 #{t('departures.all_stops')}", departures_path, accesskey: "9" %>
 </div>

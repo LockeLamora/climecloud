@@ -1,5 +1,5 @@
 <h2>Climecloud</h1><br />
-<b>Dumbphone utilities dashboard</b><br />
+<b><%= t('menu.subtitle') %></b><br />
 <% if cookies[:city].present? %>
 <%= [cookies[:city], cookies[:state].presence].compact.join(', ') %><br />
 <% end %>
@@ -7,14 +7,14 @@
 
     <%# Numbers are fixed per destination, not per position, so that the keys a user %>
     <%# has learned do not all shift when Departures switches on. %>
-    <%=link_to "1 Weather forecast", "/forecast/hourly", accesskey: "1" %><br /><br />
-    <%=link_to "2 Map directions", "/directions", accesskey: "2" %><br /><br />
-    <%=link_to "3 Places nearby", "/places", accesskey: "3" %><br /><br />
-    <%=link_to "4 News", "/news", accesskey: "4" %><br /><br />
-    <%=link_to "5 Wikipedia", "/wikipedia", accesskey: "5" %><br /><br />
+    <%=link_to "1 #{t('menu.weather')}", "/forecast/hourly", accesskey: "1" %><br /><br />
+    <%=link_to "2 #{t('menu.directions')}", "/directions", accesskey: "2" %><br /><br />
+    <%=link_to "3 #{t('menu.places')}", "/places", accesskey: "3" %><br /><br />
+    <%=link_to "4 #{t('menu.news')}", "/news", accesskey: "4" %><br /><br />
+    <%=link_to "5 #{t('menu.wikipedia')}", "/wikipedia", accesskey: "5" %><br /><br />
     <% if departures_available? %>
-    <%=link_to "6 Departures", "/departures", accesskey: "6" %><br /><br />
+    <%=link_to "6 #{t('menu.departures')}", "/departures", accesskey: "6" %><br /><br />
     <% else %>
-    6 Departures (coming soon)<br /><br />
+    6 <%= t('menu.departures_soon') %><br /><br />
     <% end %>
-    <%=link_to "7 Change settings", "/settings", :class=>'change-settings', accesskey: "7" %><br /><br />
+    <%=link_to "7 #{t('menu.settings')}", "/settings", :class=>'change-settings', accesskey: "7" %><br /><br />

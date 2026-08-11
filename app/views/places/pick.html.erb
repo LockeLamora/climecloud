@@ -1,5 +1,5 @@
 <div class='route'>
-Which did you mean?<br />
+<%= t('common.which_did_you_mean') %><br />
 <b><%= params[:query] %></b>
 <br /><br />
 <ol>
@@ -10,5 +10,5 @@ Which did you mean?<br />
 <% end %>
 </ol>
 <br />
-<%= link_to "(None of these? Search again)", places_path %>
+<%= link_to "(#{t('common.none_of_these')})", places_path %>
 </div>

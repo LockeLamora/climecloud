@@ -66,13 +66,13 @@ class Departures
   def fetch(uri)
     res = Net::HTTP.get_response(uri)
     unless res.is_a?(Net::HTTPSuccess)
-      @error = 'Could not reach the departures service, please try again later'
+      @error = I18n.t('departures.unavailable')
       return nil
     end
 
     JSON.parse(res.body)
   rescue JSON::ParserError
-    @error = 'Could not read the departures service response'
+    @error = I18n.t('departures.unreadable')
     nil
   end
 

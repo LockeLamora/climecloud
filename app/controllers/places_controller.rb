@@ -31,7 +31,7 @@ class PlacesController < ApplicationController
 
     if @candidates.empty?
       location_known?
-      @error = 'Could not find that place, please try again'
+      @error = I18n.t('places.not_found')
       render :index
       return
     end

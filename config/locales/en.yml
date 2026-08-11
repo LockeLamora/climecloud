@@ -1,31 +1,167 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  language_name: "English"
+  menu:
+    subtitle: "Dumbphone utilities dashboard"
+    weather: "Weather forecast"
+    directions: "Map directions"
+    places: "Places nearby"
+    news: "News"
+    wikipedia: "Wikipedia"
+    departures: "Departures"
+    departures_soon: "Departures (coming soon)"
+    settings: "Change settings"
+  common:
+    back_to_menu: "Back to menu"
+    search: "Search"
+    search_again: "Search again"
+    none_of_these: "None of these? Search again"
+    continue: "Continue"
+    which_did_you_mean: "Which did you mean?"
+  compass:
+    north: "north"
+    north_east: "north-east"
+    east: "east"
+    south_east: "south-east"
+    south: "south"
+    south_west: "south-west"
+    west: "west"
+    north_west: "north-west"
+  forecast:
+    title: "Forecast"
+    hourly_title: "Hourly forecast"
+    daily_title: "Daily forecast"
+    switch_to_daily: "Switch to Daily"
+    switch_to_hourly: "Switch to Hourly"
+    time: "Time"
+    date: "Date"
+    temp: "Temp"
+    temp_feels: "Temp (feels like)"
+    wind: "Wind"
+    precip: "Precip"
+    snow: "snow"
+    set_location_again: "Set your location again"
+    attribution: "Weather data by Open-Meteo.com"
+    unavailable: "Could not fetch the forecast for your saved location"
+    busy: "The weather service is busy. Your location is saved, please try again later."
+  directions:
+    title: "Directions"
+    from: "From:"
+    to: "To:"
+    mode: "How are you travelling?"
+    on_foot: "On foot"
+    driving: "Driving"
+    transit: "Public transport"
+    find_route: "Find route"
+    switch_turn_by_turn: "Switch to Turn-by-turn"
+    switch_whole_route: "Switch to Whole route"
+    turn_of: "Turn %{number} of %{total}"
+    part_of: "part %{number} of %{total}"
+    heading: "Heading"
+    map_north_up: "(map is north up)"
+    further_along: "Further along >"
+    next_turn: "Next turn >"
+    back_along: "< Back along"
+    previous_turn: "< Previous turn"
+    arrive: "Arrive:"
+    wrong_endpoint: "Wrong \"%{field}\"? Pick another"
+    field_from: "From"
+    field_to: "To"
+    which_field: "Which \"%{field}\" did you mean?"
+    not_found: "Could not find that place, please try again"
+    unavailable: "Route planning is unavailable, please try again later"
+    no_route: "No route found, try another way of travelling"
+    pick_one_below: "Could not find that place, please pick one below"
+    too_many: "Too many searches just now, please try again shortly"
+    fill_in_both: "Please fill in both From and To"
+    too_long: "That route is too long to plan"
+    could_not_plan: "Could not plan route, please try again"
+  settings:
+    intro: "Change your settings:"
+    postcode: "Post/zip code"
+    country: "Country"
+    metrics: "Weather metrics"
+    imperial: "Imperial (°F, in, mph)"
+    metric: "Metric (°C, mm, Km/h)"
+    hybrid: "Hybrid (°C, mm, mph)"
+    maps: "Maps"
+    show_map: "Show small map image in results"
+    news: "News"
+    default_section: "Default news section"
+    saved_as: "Location saved as:"
+    language: "Language:"
+    wrong_place:
+      one: "Wrong place? See 1 other match"
+      other: "Wrong place? See %{count} other matches"
+    other_places: "Other places matching"
+    not_determined: "Could not determine location, please try again"
+    no_others: "No other places matched, please try again"
+  places:
+    title: "Places"
+    near: "Near"
+    saved: "Saved places"
+    forget: "Forget saved places"
+    somewhere_else: "Somewhere else:"
+    change_postcode: "Somewhere else? Change your postcode"
+    back_to_places: "Back to places"
+    nothing_found: "Nothing found within %{radius}km"
+    unavailable: "Could not look up places, please try again later"
+    not_found: "Could not find that place, please try again"
+    category:
+      petrol: "Petrol"
+      food: "Food"
+      shops: "Shops"
+      cash: "Cash"
+      toilets: "Toilets"
+      pharmacy: "Pharmacy"
+      pub: "Pub"
+      transport: "Transport"
+    kind:
+      bus_station: "Bus station"
+      train_station: "Train station"
+      metro_station: "Metro station"
+      taxi_rank: "Taxi rank"
+      petrol_station: "Petrol station"
+      supermarket: "Supermarket"
+      convenience: "Convenience shop"
+      pharmacy: "Pharmacy"
+      restaurant: "Restaurant"
+      fast_food: "Fast food"
+      cafe: "Cafe"
+      pub: "Pub"
+      bar: "Bar"
+      atm: "Cash machine"
+      bank: "Bank"
+      toilet: "Public toilet"
+      unnamed: "Unnamed"
+  wikipedia:
+    title: "Wikipedia"
+    search_label: "Search:"
+    nothing_found: "Nothing found for %{query}"
+    read_full: "Read the full article"
+    not_found: "Could not find that article"
+    busy: "Wikipedia is busy just now, please try again shortly"
+    unavailable: "Could not reach Wikipedia, please try again later"
+    unreadable: "Could not read the reply from Wikipedia"
+  departures:
+    title: "Departures"
+    none_saved: "No stops saved yet."
+    find_stops: "Find stops near me"
+    add_stop: "Add another stop"
+    forget_stops: "Forget saved stops"
+    refresh: "Refresh"
+    all_stops: "All stops"
+    near: "Stops near %{place}"
+    your_location: "your saved location"
+    nothing_due: "Nothing due in the next couple of hours"
+    no_stops: "No stops found within %{radius}m"
+    live: "live"
+    timetable: "timetable"
+    unavailable: "Could not reach the departures service, please try again later"
+    unreadable: "Could not read the departures service response"
+  news:
+    search_label: "Search news"
+    unavailable: "Could not fetch the news feed, please try again"
+    article_unavailable: "Could not open this article, please try another"
+    source_link: "Read the original source here"
+    cannot_load: "Cannot load page"
+    cannot_parse: "Cannot parse page"

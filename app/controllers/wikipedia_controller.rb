@@ -23,7 +23,7 @@ class WikipediaController < ApplicationController
 
     service = Wikipedia.new({ title: @title, full: @full })
     @article = service.article
-    @error = service.error || (@article.nil? ? 'Could not find that article' : nil)
+    @error = service.error || (@article.nil? ? I18n.t('wikipedia.not_found') : nil)
 
     render :article
   end

@@ -1,30 +1,30 @@
 <div class='route'>
-<h2>Places</h2>
+<h2><%= t('places.title') %></h2>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @place.present? %>
-Near <%= @place %><br />
+<%= t('places.near') %> <%= @place %><br />
 <% end %>
 <br />
-<% Places::CATEGORIES.each_with_index do |(kind, details), index| %>
-<%= link_to "#{index + 1} #{details[:label]}",
+<% Places::CATEGORIES.each_key.with_index do |kind, index| %>
+<%= link_to "#{index + 1} #{t("places.category.#{kind}")}",
             places_list_path(carried_location.merge(kind: kind)),
             accesskey: (index + 1).to_s %><br />
 <% end %>
 <br />
 <% if @saved.present? %>
-<b>Saved places</b><br />
+<b><%= t('places.saved') %></b><br />
 <% @saved.each do |saved| %>
 <%= link_to saved['place'], places_path(lat: saved['lat'], lon: saved['lon'], place: saved['place']) %><br />
 <% end %>
-<%= link_to "(Forget saved places)", places_forget_path %>
+<%= link_to "(#{t('places.forget')})", places_forget_path %>
 <br /><br />
 <% end %>
 <%= form_with url: "places_search", method: :get, local: true do |f| %>
-    <%= f.label "Somewhere else:" %>
+    <%= f.label t('places.somewhere_else') %>
     <%= f.text_field :query, class: "big_text_field" %>
     <br /><br />
-    <%= f.submit "Search" %>
+    <%= f.submit t('common.search') %>
 <% end %>
 <br />
-<%= link_to "0 Back to menu", root_path, accesskey: "0" %>
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
 </div>

@@ -1,8 +1,8 @@
 <div class='route'>
-<b><%= @kind[:label] %></b><%= " near #{@place}" if @place.present? %><br />
+<b><%= t("places.category.#{params[:kind]}") %></b><%= " #{t('places.near').downcase} #{@place}" if @place.present? %><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @places.empty? && @error.nil? %>
-Nothing found within <%= Places::RADIUS_METRES / 1000 %>km<br />
+<%= t('places.nothing_found', radius: Places::RADIUS_METRES / 1000) %><br />
 <% end %>
 <ol>
 <% @places.each do |place| %>
@@ -13,5 +13,5 @@ Nothing found within <%= Places::RADIUS_METRES / 1000 %>km<br />
 <% end %>
 </ol>
 <br />
-<%= link_to "9 Back to places", places_path(carried_location), accesskey: "9" %>
+<%= link_to "9 #{t('places.back_to_places')}", places_path(carried_location), accesskey: "9" %>
 </div>

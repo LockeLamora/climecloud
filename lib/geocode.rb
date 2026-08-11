@@ -64,6 +64,7 @@ class Geocode
     uri = URI('https://api.geoapify.com/v1/geocode/autocomplete')
     params = {
       apiKey: @key,
+      lang: I18n.locale,
       text: @address,
       limit: REQUEST_LIMIT
     }
