@@ -11,6 +11,11 @@ class PlacesController < ApplicationController
 
     remember_place if params[:place].present?
     @saved = saved_places
+    # Digits nine and zero are the navigation on every page in this app, so a ninth
+    # category cannot have a key of its own and the list is paged instead.
+    @page = [params[:page].to_i, 0].max
+    @kinds = Places::CATEGORIES.keys.drop(@page * Places::PAGE_SIZE).first(Places::PAGE_SIZE)
+    @more_kinds = Places::CATEGORIES.length > (@page + 1) * Places::PAGE_SIZE
     render :index
   end
 

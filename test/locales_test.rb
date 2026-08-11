@@ -9,14 +9,27 @@ class LocalesTest < ActiveSupport::TestCase
   # Keys built at runtime cannot be found by reading the source for literals, so they
   # are enumerated from the constants that drive them.
   def dynamic_keys
-    modes = (Departures::MODE_KEYS.values + Departures::EXTENDED_MODES.values).uniq
-
     %w[language_name places.kind.unnamed] +
       %w[origin destination].map { |field| "directions.field_#{field}" } +
-      Places::CATEGORIES.keys.map { |kind| "places.category.#{kind}" } +
+      place_keys + transport_keys + direction_keys
+  end
+
+  def place_keys
+    parking = Places::PARKING_TYPE_KEYS.values.uniq + %w[paid free park_and_ride]
+
+    Places::CATEGORIES.keys.map { |kind| "places.category.#{kind}" } +
       Places::KIND_KEYS.values.map { |kind| "places.kind.#{kind}" } +
-      Maps::COMPASS_POINTS.map { |point| "compass.#{point}" } +
-      modes.map { |mode| "departures.mode.#{mode}" } +
+      parking.map { |detail| "places.parking.#{detail}" }
+  end
+
+  def transport_keys
+    modes = (Departures::MODE_KEYS.values + Departures::EXTENDED_MODES.values).uniq
+
+    modes.map { |mode| "departures.mode.#{mode}" }
+  end
+
+  def direction_keys
+    Maps::COMPASS_POINTS.map { |point| "compass.#{point}" } +
       (Maps::STATUS_KEYS.values + ['could_not_plan']).map { |key| "directions.#{key}" }
   end
 

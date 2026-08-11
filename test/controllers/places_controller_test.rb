@@ -5,14 +5,114 @@ require 'test_helper'
 class PlacesControllerTest < ActionDispatch::IntegrationTest
   LOCATION_COOKIES = 'lat=52.3;lon=1.17;city=Testville;metrics=metric'
 
-  test 'lists every category on the menu' do
+  test 'lists a screenful of categories with a digit each' do
     get '/places', headers: { 'COOKIE' => LOCATION_COOKIES }
 
     assert_response :success
     assert_match 'Testville', @response.body
-    %w[Petrol Food Shops Cash Toilets Pharmacy Pub Transport].each do |label|
+    %w[Toilets Pharmacy Food Shops Pub Transport Parking].each do |label|
       assert_match label, @response.body
     end
+    # Nine and zero are the navigation on every page, so a ninth category has no digit
+    # left and lives a page away rather than losing its keypress.
+    assert_match 'More', @response.body
+  end
+
+  test 'puts what is needed in a hurry within one keypress' do
+    get '/places', headers: { 'COOKIE' => LOCATION_COOKIES }
+
+    assert_response :success
+    # A toilet or a doctor is needed now, so they take the first keys.
+    assert_match(/1 Toilets/, @response.body)
+    assert_match(/2 Hospital/, @response.body)
+    # Petrol and a cash machine are things you set out to find, so they wait on page two.
+    assert_no_match(/Petrol/, @response.body)
+    assert_no_match(/Cash/, @response.body)
+  end
+
+  test 'reaches the categories past the first screenful' do
+    get '/places', params: { page: '1' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+
+    assert_response :success
+    assert_match 'Petrol', @response.body
+    assert_match 'Cash', @response.body
+    assert_match 'Back', @response.body
+    assert_no_match(/Toilets/, @response.body)
+  end
+
+  test 'credits openstreetmap wherever its data is shown, as the licence requires' do
+    stub_places
+
+    with_api_credentials do
+      get '/places', headers: { 'COOKIE' => LOCATION_COOKIES }
+      assert_credited
+
+      get '/places_list', params: { kind: 'toilets' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+      assert_credited
+    end
+  end
+
+  test 'looks for anywhere a child could be taken, not only public conveniences' do
+    stub_places
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'toilets' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_requested :get, /api\.geoapify\.com/ do |request|
+      query = request.uri.query
+      # OpenStreetMap records a toilet at two pubs in twenty nine, so nothing can filter
+      # on having one. Offer the places where asking works instead.
+      # The same set a mainstream search returns for "toilets near me": stations,
+      # supermarkets, cafes and the rest, rather than public conveniences alone.
+      %w[amenity.toilet commercial.supermarket service.vehicle.fuel catering.fast_food
+         catering.cafe commercial.shopping_mall
+         public_transport.train].all? { |category| query.include?(category) }
+    end
+  end
+
+  test 'explains why a supermarket is in a list of toilets' do
+    stub_places([{ 'properties' => { 'name' => 'Big Shop', 'distance' => 150, 'lat' => 52.31, 'lon' => 1.18,
+                                     'categories' => ['commercial.supermarket'] } }])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'toilets' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'Places that usually have one', @response.body
+    # Labelled for what it is, so the list is read as places to try rather than as toilets.
+    assert_match 'Supermarket', @response.body
+  end
+
+  test 'leaves the other categories reading as themselves' do
+    stub_places
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'petrol' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_no_match(/Places that usually have one/, @response.body)
+  end
+
+  test 'says where a nappy can be changed, which is often why anyone is looking' do
+    stub_places([
+                  { 'properties' => { 'name' => 'Market Toilets', 'distance' => 200, 'lat' => 52.31, 'lon' => 1.18,
+                                      'categories' => ['amenity.toilet'],
+                                      'facilities' => { 'changing_table' => true } } },
+                  { 'properties' => { 'name' => 'Park Toilets', 'distance' => 600, 'lat' => 52.32, 'lon' => 1.19,
+                                      'categories' => ['amenity.toilet'], 'facilities' => {} } }
+                ])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'toilets' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'baby changing', @response.body
+    assert_equal 1, @response.body.scan('baby changing').length
   end
 
   test 'remembers a place typed in by hand so it need not be typed again' do
@@ -61,6 +161,94 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
     assert_match '400m', @response.body
     assert_match '1.2km', @response.body
     assert_match 'directions_plan', @response.body
+  end
+
+  test 'shows opening hours where the data has them' do
+    stub_places([{ 'properties' => { 'name' => 'Corner Chemist', 'distance' => 300, 'lat' => 52.31, 'lon' => 1.18,
+                                     'opening_hours' => 'Mo-Fr 09:00-18:00; Sa 09:00-13:00' } }])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'pharmacy' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'Hours', @response.body
+    assert_match 'Mo-Fr 09:00-18:00', @response.body
+  end
+
+  test 'says how a car park is built and whether it charges' do
+    stub_places([
+                  { 'properties' => { 'name' => 'Market Multi', 'distance' => 200, 'lat' => 52.31, 'lon' => 1.18,
+                                      'categories' => ['parking.cars'],
+                                      'parking' => { 'type' => 'multi-storey', 'fee' => true } } },
+                  { 'properties' => { 'name' => 'Riverside Free', 'distance' => 900, 'lat' => 52.32, 'lon' => 1.19,
+                                      'categories' => ['parking.cars'],
+                                      'parking' => { 'type' => 'surface', 'fee' => false,
+                                                     'park_and_ride' => true } } }
+                ])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'parking' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'multi-storey, charges apply', @response.body
+    assert_match 'open air, free', @response.body
+    assert_match 'park and ride', @response.body
+  end
+
+  test 'says nothing about a charge the data does not mention' do
+    stub_places([{ 'properties' => { 'name' => 'Unsigned Yard', 'distance' => 200, 'lat' => 52.31, 'lon' => 1.18,
+                                     'categories' => ['parking.cars'],
+                                     'parking' => { 'type' => 'surface' } } }])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'parking' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'open air', @response.body
+    # Only seven of twenty real car parks say anything about a charge, and an absent fee
+    # is not a free one. Sending someone to read the sign beats telling them it is free.
+    assert_no_match(/free/, @response.body)
+    assert_no_match(/charges apply/, @response.body)
+  end
+
+  test 'leaves out car parks nobody may park in' do
+    stub_places([
+                  { 'properties' => { 'name' => 'Office Spaces', 'distance' => 100, 'lat' => 52.31, 'lon' => 1.18,
+                                      'categories' => ['parking.cars'],
+                                      'parking' => { 'type' => 'surface', 'access' => 'private' } } },
+                  { 'properties' => { 'name' => 'Town Car Park', 'distance' => 500, 'lat' => 52.32, 'lon' => 1.19,
+                                      'categories' => ['parking.cars'],
+                                      'parking' => { 'type' => 'surface', 'access' => 'yes' } } }
+                ])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'parking' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_match 'Town Car Park', @response.body
+    # Somewhere to be towed from rather than somewhere to park, and most of the car parks
+    # near a city centre are exactly this.
+    assert_no_match(/Office Spaces/, @response.body)
+  end
+
+  test 'asks the api for hospitals and surgeries but not dentists' do
+    stub_places
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'hospital' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_response :success
+    assert_requested :get, /api\.geoapify\.com/ do |request|
+      request.uri.query.include?('healthcare.hospital') &&
+        request.uri.query.include?('healthcare.clinic_or_praxis') &&
+        # The bare healthcare category also returns opticians and dentists.
+        !request.uri.query.include?('categories=healthcare&')
+    end
   end
 
   test 'asks the api for the grouped categories of the chosen kind' do
@@ -185,6 +373,16 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  # The data underneath is OpenStreetMap's, and Geoapify returns this very string with
+  # every record. Spaced like the weather and transport credits so it is not sitting
+  # against the last link, where it is easy to hit by accident.
+  def assert_credited
+    assert_response :success
+    assert_match '© OpenStreetMap contributors', @response.body
+    assert_match 'openstreetmap.org/copyright', @response.body
+    assert_match %r{<br />\s*<br />\s*<div class='credit'>}, @response.body
+  end
 
   # The saved list lives in a cookie, so it has to be handed back on the next request.
   def cookies_header

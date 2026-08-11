@@ -98,6 +98,19 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/Which country/, @response.body)
   end
 
+  test 'credits openstreetmap on the pages built from its data' do
+    stub_geocode('features' => [geocode_result('Testville, UK'),
+                                geocode_result('Testville, France', country: 'fr')])
+
+    save_settings(country_code: nil)
+
+    assert_response :success
+    # Geoapify serves this string with every record, because the addresses underneath
+    # are OpenStreetMap's.
+    assert_match '© OpenStreetMap contributors', @response.body
+    assert_match %r{<br />\s*<br />\s*<div class='credit'>}, @response.body
+  end
+
   test 'offers no country dropdown on the form' do
     get settings_url
 

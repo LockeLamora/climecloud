@@ -11,6 +11,17 @@ class Places
   REQUEST_LIMIT = 20
   BUS_CATEGORY = 'public_transport.bus'
   STATION_NAME = /station|interchange|bus stn/i
+  # Most car parks within a mile of a city centre are somebody's private spaces. They
+  # are somewhere you would be towed from rather than somewhere to park, so they are no
+  # use in a list of places to leave a car.
+  PRIVATE_ACCESS = 'private'
+  # A rooftop deck is the top of a multi-storey as far as anyone parking is concerned.
+  PARKING_TYPE_KEYS = {
+    'surface' => 'surface',
+    'multi-storey' => 'multistorey',
+    'rooftop' => 'multistorey',
+    'underground' => 'underground'
+  }.freeze
 
   # Geoapify names bus stops after the road junction they sit on, so without a label
   # the list reads as a column of street names with no clue what any of them are.
@@ -30,23 +41,46 @@ class Places
     'catering.bar' => 'bar',
     'service.financial.atm' => 'atm',
     'service.financial.bank' => 'bank',
-    'amenity.toilet' => 'toilet'
+    'amenity.toilet' => 'toilet',
+    'parking.cars' => 'parking',
+    'healthcare.hospital' => 'hospital',
+    'healthcare.clinic_or_praxis' => 'doctor',
+    'commercial.department_store' => 'department_store',
+    'commercial.shopping_mall' => 'shopping_centre'
   }.freeze
 
   # Grouped rather than one entry per Geoapify category: splitting Food into
   # restaurant, cafe and fast food would triple the menu on a 240x320 screen, and
   # the API takes a comma separated list in a single request anyway.
+  # Ordered by how urgently each one is usually wanted, because the first eight are the
+  # ones reachable with a single keypress. A toilet or a doctor is needed now; petrol and
+  # a cash machine are things you go looking for, and they sit on the second page.
   CATEGORIES = {
-    'petrol' => { categories: 'service.vehicle.fuel' },
+    # Not only public toilets. A child who needs to go does not care whether it is a
+    # supermarket, a filling station or a park, so this asks for everywhere you could
+    # reasonably walk into and be pointed at one, nearest first with what each place is
+    # written underneath. OpenStreetMap almost never records that a venue has a toilet
+    # (two pubs in twenty nine), so no source can filter on it and the honest thing is
+    # to offer the places where asking works rather than pretend to know.
+    'toilets' => { categories: 'amenity.toilet,commercial.supermarket,service.vehicle.fuel,' \
+                               'catering.fast_food,catering.cafe,catering.pub,' \
+                               'commercial.department_store,commercial.shopping_mall,' \
+                               'public_transport.train' },
+    # Not the bare healthcare category, which brings back dentists and opticians when
+    # what was asked for is somewhere to be seen about something wrong.
+    'hospital' => { categories: 'healthcare.hospital,healthcare.clinic_or_praxis' },
+    'pharmacy' => { categories: 'commercial.health_and_beauty.pharmacy' },
     'food' => { categories: 'catering.restaurant,catering.fast_food,catering.cafe' },
     'shops' => { categories: 'commercial.supermarket,commercial.convenience' },
-    'cash' => { categories: 'service.financial.atm,service.financial.bank' },
-    'toilets' => { categories: 'amenity.toilet' },
-    'pharmacy' => { categories: 'commercial.health_and_beauty.pharmacy' },
     'pub' => { categories: 'catering.pub,catering.bar' },
     'transport' => { categories: 'public_transport.train,public_transport.subway,' \
-                                 'public_transport.bus,service.taxi' }
+                                 'public_transport.bus,service.taxi' },
+    'parking' => { categories: 'parking' },
+    'petrol' => { categories: 'service.vehicle.fuel' },
+    'cash' => { categories: 'service.financial.atm,service.financial.bank' }
   }.freeze
+  # Eight fit a small screen with a digit each, and the ninth onwards are a page away.
+  PAGE_SIZE = 8
 
   attr_reader :error
 
@@ -101,15 +135,54 @@ class Places
   def place_from(feature)
     properties = feature['properties'] || {}
     name = place_name(properties)
-    return nil if roadside_stop?(properties, name)
+    return nil if roadside_stop?(properties, name) || private_parking?(properties)
 
     {
       name: name,
       kind: kind_label(properties),
       distance: properties['distance'],
       lat: properties['lat'],
-      lon: properties['lon']
+      lon: properties['lon'],
+      hours: properties['opening_hours'].presence,
+      notes: parking_notes(properties) + toilet_notes(properties)
     }
+  end
+
+  # Whether there is somewhere to change a baby, which is often the whole reason for
+  # looking one up in a hurry. Six of fifteen public toilets in a city centre say so.
+  #
+  # Nothing about a charge, deliberately: the data carries a "no_fee" marker whose
+  # meaning cannot be pinned down from the responses, and telling a parent a toilet is
+  # free when it wants thirty pence at the barrier is worse than saying nothing.
+  def toilet_notes(properties)
+    return [] unless (properties['facilities'] || {})['changing_table']
+
+    [I18n.t('places.changing_table')]
+  end
+
+  def private_parking?(properties)
+    (properties['parking'] || {})['access'] == PRIVATE_ACCESS
+  end
+
+  # What someone deciding where to leave a car wants to know before walking to it.
+  # Silence rather than a guess when a field is missing: only seven of twenty car parks
+  # around a city centre say anything about a charge, and an absent fee is not a free
+  # one. Saying nothing sends someone to read the sign, which beats being wrong.
+  def parking_notes(properties)
+    parking = properties['parking'] || {}
+    return [] if parking.empty?
+
+    [
+      PARKING_TYPE_KEYS[parking['type']],
+      charge_key(parking),
+      parking['park_and_ride'] ? 'park_and_ride' : nil
+    ].compact.map { |key| I18n.t("places.parking.#{key}") }
+  end
+
+  def charge_key(parking)
+    return nil if parking['fee'].nil?
+
+    parking['fee'] ? 'paid' : 'free'
   end
 
   # Geoapify has one category covering both a bus station and every pole on the

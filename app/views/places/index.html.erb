@@ -5,12 +5,20 @@
 <%= t('places.near') %> <%= @place %><br />
 <% end %>
 <br />
-<% Places::CATEGORIES.each_key.with_index do |kind, index| %>
+<% @kinds.each_with_index do |kind, index| %>
 <%= link_to "#{index + 1} #{t("places.category.#{kind}")}",
             places_list_path(carried_location.merge(kind: kind)),
             accesskey: (index + 1).to_s %><br />
 <% end %>
 <br />
+<% if @more_kinds %>
+<%= link_to "9 #{t('places.more_categories')}",
+            places_path(carried_location.merge(page: @page + 1)), accesskey: "9" %><br /><br />
+<% end %>
+<% if @page.positive? %>
+<%= link_to "9 #{t('places.previous_categories')}",
+            places_path(carried_location.merge(page: @page - 1)), accesskey: "9" %><br /><br />
+<% end %>
 <% if @saved.present? %>
 <b><%= t('places.saved') %></b><br />
 <% @saved.each do |saved| %>
@@ -27,4 +35,5 @@
 <% end %>
 <br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+<%= render "shared/osm_credit" %>
 </div>
