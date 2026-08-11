@@ -154,6 +154,7 @@ it:
     near: "Fermate vicino a %{place}"
     your_location: "la tua posizione salvata"
     nothing_due: "Nulla previsto nelle prossime due ore"
+    no_timetable: "Nessun orario per questa fermata nei dati disponibili"
     no_stops: "Nessuna fermata trovata entro %{radius} m"
     live: "in tempo reale"
     mode:

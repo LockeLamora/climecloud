@@ -154,6 +154,7 @@ nl:
     near: "Haltes bij %{place}"
     your_location: "je opgeslagen locatie"
     nothing_due: "Niets verwacht in de komende twee uur"
+    no_timetable: "Geen dienstregeling voor deze halte in de beschikbare gegevens"
     no_stops: "Geen haltes gevonden binnen %{radius} m"
     live: "live"
     mode:

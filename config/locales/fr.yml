@@ -154,6 +154,7 @@ fr:
     near: "Arrêts près de %{place}"
     your_location: "votre position enregistrée"
     nothing_due: "Rien de prévu dans les deux prochaines heures"
+    no_timetable: "Aucun horaire pour cet arrêt dans les données disponibles"
     no_stops: "Aucun arrêt trouvé dans un rayon de %{radius} m"
     live: "en direct"
     mode:

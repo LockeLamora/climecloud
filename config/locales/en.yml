@@ -154,6 +154,7 @@ en:
     near: "Stops near %{place}"
     your_location: "your saved location"
     nothing_due: "Nothing due in the next couple of hours"
+    no_timetable: "No timetable for this stop in the available data"
     no_stops: "No stops found within %{radius}m"
     live: "live"
     mode:

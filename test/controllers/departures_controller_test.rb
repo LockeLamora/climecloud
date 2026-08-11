@@ -294,6 +294,59 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Destination not given', @response.body
   end
 
+  test 'says there is no timetable for a stop that has no service at any hour' do
+    # Served by routes, but with no schedule behind them: the network structure is
+    # published and the times are not, which is a stop that can never show a departure.
+    stub_departures_within_window('stops' => [{ 'stop_name' => 'Metro Station', 'departures' => [] }])
+    stub_departures_any_time('stops' => [{ 'stop_name' => 'Metro Station', 'departures' => [] }])
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    assert_match 'No timetable for this stop', @response.body
+    assert_no_match(/Nothing due/, @response.body)
+  end
+
+  test 'says nothing is due soon when the stop does have a timetable' do
+    stub_departures_within_window('stops' => [{ 'stop_name' => 'Northgate', 'departures' => [] }])
+    stub_departures_any_time('stops' => [{
+                               'stop_name' => 'Northgate',
+                               'departures' => [departure('06:12:00', route: '22', trip_headsign: 'Eastport')]
+                             }])
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    # Quiet for a couple of hours is not the same as never running.
+    assert_match 'Nothing due', @response.body
+    assert_no_match(/No timetable/, @response.body)
+  end
+
+  test 'does not claim a stop has no timetable when the check itself fails' do
+    stub_departures_within_window('stops' => [{ 'stop_name' => 'Northgate', 'departures' => [] }])
+    stub_request(:get, %r{transit\.land/api/v2/rest/stops/.+/departures\?(?!.*next=7200)})
+      .to_return(status: 500, body: '')
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    assert_no_match(/No timetable/, @response.body)
+  end
+
+  test 'credits transitland wherever their data is shown, as their terms require' do
+    stub_stops('stops' => [platform('Northgate', 's-test-northgate')])
+    stub_departures('stops' => [{ 'stop_name' => 'Northgate',
+                                  'departures' => [departure('14:09:00', route: '22', trip_headsign: 'Eastport')] }])
+
+    ['/departures', '/departures_add', '/departures_stop?id=s-test-northgate'].each do |path|
+      get path, headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+      assert_response :success
+      assert_match 'Transitland', @response.body, "#{path} carries no attribution"
+      assert_match 'https://www.transit.land/terms', @response.body, "#{path} does not link the terms"
+    end
+  end
+
   test 'reports rather than crashes when transitland is unreachable' do
     stub_request(:get, %r{transit\.land/api/v2/rest/stops/.+/departures}).to_return(status: 500, body: '')
 
@@ -315,6 +368,25 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     stub_request(:get, %r{transit\.land/api/v2/rest/stops/.+/departures}).to_return(
       status: 200, body: body.to_json, headers: { 'Content-Type' => 'application/json' }
     )
+  end
+
+  # The two hour window someone at a stop cares about.
+  def stub_departures_within_window(body)
+    request = stub_request(:get, %r{transit\.land/api/v2/rest/stops/.+/departures})
+
+    request.with(query: hash_including('next' => '7200')).to_return(json(body))
+  end
+
+  # The same stop asked without a window, which is how a quiet couple of hours is told
+  # apart from a stop that never runs anything.
+  def stub_departures_any_time(body)
+    request = stub_request(:get, %r{transit\.land/api/v2/rest/stops/.+/departures})
+
+    request.with { |sent| !sent.uri.query.include?('next=') }.to_return(json(body))
+  end
+
+  def json(body)
+    { status: 200, body: body.to_json, headers: { 'Content-Type' => 'application/json' } }
   end
 
   def station(name, id)

@@ -154,6 +154,7 @@ de:
     near: "Haltestellen nahe %{place}"
     your_location: "Ihrem gespeicherten Standort"
     nothing_due: "In den nächsten zwei Stunden nichts geplant"
+    no_timetable: "Für diese Haltestelle liegt kein Fahrplan vor"
     no_stops: "Keine Haltestellen im Umkreis von %{radius} m"
     live: "live"
     mode:

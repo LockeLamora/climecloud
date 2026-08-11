@@ -13,3 +13,10 @@ a.change-settings {
 .error {
   color: red;
 }
+
+/* Attribution the data licence asks for, kept quiet enough not to compete with the
+   times above it. Small screens have no room for a footer, so it earns one line. */
+.credit, .credit a, .credit a:visited {
+  font-size: 0.75em;
+  color: #767676;
+}

@@ -26,6 +26,7 @@ class DeparturesController < ApplicationController
     service = Departures.new({ stop_id: @stop['id'] })
     @departures = service.next_departures
     @error = service.error
+    @untimetabled = service.untimetabled?
 
     render :stop
   end

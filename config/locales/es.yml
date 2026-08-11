@@ -154,6 +154,7 @@ es:
     near: "Paradas cerca de %{place}"
     your_location: "tu ubicación guardada"
     nothing_due: "Nada previsto en las próximas dos horas"
+    no_timetable: "No hay horarios para esta parada en los datos disponibles"
     no_stops: "No se encontraron paradas en %{radius} m a la redonda"
     live: "en directo"
     mode:

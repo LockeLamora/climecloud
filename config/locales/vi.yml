@@ -154,6 +154,7 @@ vi:
     near: "Điểm dừng gần %{place}"
     your_location: "vị trí đã lưu của bạn"
     nothing_due: "Không có chuyến nào trong hai giờ tới"
+    no_timetable: "Không có lịch trình cho điểm dừng này trong dữ liệu hiện có"
     no_stops: "Không có điểm dừng trong bán kính %{radius} m"
     live: "trực tiếp"
     mode:

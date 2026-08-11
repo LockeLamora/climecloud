@@ -42,6 +42,13 @@ class Departures
 
   attr_reader :error
 
+  # Some stops exist only as locations, inherited from a feed that carries no services
+  # for them: metro platforms named in a bus feed, for instance. They can never produce
+  # a departure, and saying "nothing due" of one reads as a fault in the dashboard.
+  def untimetabled?
+    @untimetabled.present?
+  end
+
   def initialize(params)
     @key = Rails.application.credentials.transitland.api_key
     @lat = params[:lat]
@@ -72,12 +79,8 @@ class Departures
     body = fetch(departures_uri)
     return [] if body.nil?
 
-    # One stop can come back as several entries when more than one feed covers it, and
-    # reading only the first quietly dropped the departures held by the rest.
-    departures = (body['stops'] || []).flat_map { |stop| departures_at(stop) }
-                                      .sort_by { |departure| departure[:time] }
-                                      .uniq { |departure| departure.values_at(:time, :route, :towards) }
-                                      .first(MAX_DEPARTURES)
+    departures = merged_departures(body)
+    @untimetabled = departures.empty? && !any_timetable?
 
     name_missing_destinations(departures)
   end
@@ -150,6 +153,27 @@ class Departures
     return name if code.blank? || name.downcase.include?(code.downcase)
 
     "#{name} (#{code})"
+  end
+
+  # One stop can come back as several entries when more than one feed covers it, and
+  # reading only the first quietly dropped the departures held by the rest. Two feeds
+  # describing the same journey then arrive seconds apart, so identical rows collapse.
+  def merged_departures(body)
+    (body['stops'] || []).flat_map { |stop| departures_at(stop) }
+                         .sort_by { |departure| departure[:time] }
+                         .uniq { |departure| departure.values_at(:time, :route, :towards) }
+                         .first(MAX_DEPARTURES)
+  end
+
+  # Asked without the two hour window, so a stop that simply has nothing due soon is
+  # told apart from one that has no service at any hour. Only reached when the page
+  # would otherwise be empty, so it costs nothing in the ordinary case.
+  def any_timetable?
+    body = fetch(build_uri("#{BASE}/stops/#{@stop_id}/departures", limit: 1), quiet: true)
+    # Unreachable is not the same as unserved, so claim nothing.
+    return true if body.nil?
+
+    (body['stops'] || []).any? { |stop| (stop['departures'] || []).any? }
   end
 
   def departures_at(stop)

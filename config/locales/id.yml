@@ -154,6 +154,7 @@ id:
     near: "Halte dekat %{place}"
     your_location: "lokasi tersimpan Anda"
     nothing_due: "Tidak ada jadwal dalam dua jam ke depan"
+    no_timetable: "Tidak ada jadwal untuk halte ini dalam data yang tersedia"
     no_stops: "Tidak ada halte dalam %{radius} m"
     live: "langsung"
     mode:

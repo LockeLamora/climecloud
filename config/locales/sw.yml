@@ -154,6 +154,7 @@ sw:
     near: "Vituo karibu na %{place}"
     your_location: "mahali pako palipohifadhiwa"
     nothing_due: "Hakuna kinachotarajiwa katika saa mbili zijazo"
+    no_timetable: "Hakuna ratiba ya kituo hiki katika data iliyopo"
     no_stops: "Hakuna vituo ndani ya m %{radius}"
     live: "moja kwa moja"
     mode:

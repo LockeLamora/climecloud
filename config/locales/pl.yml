@@ -154,6 +154,7 @@ pl:
     near: "Przystanki w pobliżu %{place}"
     your_location: "Twojej zapisanej lokalizacji"
     nothing_due: "Nic nie planowane w ciągu najbliższych dwóch godzin"
+    no_timetable: "Brak rozkładu dla tego przystanku w dostępnych danych"
     no_stops: "Nie znaleziono przystanków w promieniu %{radius} m"
     live: "na żywo"
     mode:

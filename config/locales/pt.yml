@@ -154,6 +154,7 @@ pt:
     near: "Paragens perto de %{place}"
     your_location: "a sua localização guardada"
     nothing_due: "Nada previsto nas próximas duas horas"
+    no_timetable: "Sem horários para esta paragem nos dados disponíveis"
     no_stops: "Nenhuma paragem encontrada num raio de %{radius} m"
     live: "em direto"
     mode:

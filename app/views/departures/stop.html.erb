@@ -1,8 +1,10 @@
 <div class='route'>
 <b><%= @stop['name'] %></b><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
+<%# A stop with no service at any hour is not the same as a quiet couple of hours, and %>
+<%# calling the first one "nothing due" reads as the dashboard being broken. %>
 <% if @departures.empty? && @error.nil? %>
-<%= t('departures.nothing_due') %><br />
+<%= @untimetabled ? t('departures.no_timetable') : t('departures.nothing_due') %><br />
 <% end %>
 <%# Time, service, destination, on one line. A stop named after a railway station is %>
 <%# often a bus stop outside one, so the kind of vehicle is worth the words. It shares %>
@@ -23,4 +25,5 @@
 <%= link_to "1 #{t('departures.refresh')}", departures_stop_path(id: @stop["id"]), accesskey: "1" %><br />
 <%= link_to "9 #{t('departures.all_stops')}", departures_path, accesskey: "9" %><br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+<%= render "credit" %>
 </div>

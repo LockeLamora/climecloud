@@ -154,6 +154,7 @@ tr:
     near: "%{place} yakınındaki duraklar"
     your_location: "kayıtlı konumunuz"
     nothing_due: "Önümüzdeki iki saat içinde bir şey yok"
+    no_timetable: "Bu durak için mevcut verilerde tarife yok"
     no_stops: "%{radius} m içinde durak bulunamadı"
     live: "canlı"
     mode:
