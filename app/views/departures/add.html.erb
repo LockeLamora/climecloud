@@ -4,11 +4,19 @@
 <% if @nearby.empty? && @error.nil? %>
 <%= t('departures.no_stops', radius: Departures::NEARBY_RADIUS_METRES) %><br />
 <% end %>
-<ol>
+<ol start="<%= (@page * Departures::PAGE_SIZE) + 1 %>">
 <% @nearby.each do |stop| %>
     <li><%= link_to stop[:name], departures_save_path(id: stop[:id], name: stop[:name]) %></li>
 <% end %>
 </ol>
+<%# Nearest first, so the stop someone wants is usually on the first page. When it is %>
+<%# not, the rest are a keypress away rather than discarded. %>
+<% if @more %>
+<%= link_to "8 #{t('departures.more_stops')}", departures_add_path(page: @page + 1), accesskey: "8" %><br />
+<% end %>
+<% if @page.positive? %>
+<%= link_to "7 #{t('departures.previous_stops')}", departures_add_path(page: @page - 1), accesskey: "7" %><br />
+<% end %>
 <br />
 <%= link_to "(#{t('places.change_postcode')})", settings_path %><br />
 <%= link_to "9 #{t('departures.all_stops')}", departures_path, accesskey: "9" %>

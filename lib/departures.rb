@@ -6,10 +6,13 @@ require 'uri'
 class Departures
   BASE = 'https://transit.land/api/v2/rest'
   NEARBY_RADIUS_METRES = 1000
-  MAX_STOPS = 10
-  # Stations and repeated names are dropped from the result, so ask for more than are
-  # shown or a busy interchange fills the list before any other stop is reached.
-  REQUEST_LIMIT = 40
+  # About what fits on a small screen without scrolling. The rest are not thrown away:
+  # they are reached a page at a time, since the stop someone wants is not always among
+  # the nearest handful.
+  PAGE_SIZE = 10
+  # Stations and repeated names are dropped from the result, so ask for far more than
+  # any one page shows. This is also what caps how far the paging can go.
+  REQUEST_LIMIT = 100
   MAX_DEPARTURES = 8
   METRES_PER_DEGREE = 111_320
   # Naming a destination costs a request, so only a few are worth making. Trips sharing
@@ -18,6 +21,19 @@ class Departures
   # Departures beyond the next couple of hours are no use to someone standing at a
   # stop, and asking for fewer keeps the response small over 4G.
   WINDOW_SECONDS = 7200
+
+  # A stop named after a railway station is very often a bus stop outside one, so what
+  # kind of vehicle is coming has to be said rather than guessed at from the stop name.
+  MODE_KEYS = {
+    0 => 'tram', 1 => 'metro', 2 => 'rail', 3 => 'bus', 4 => 'ferry',
+    5 => 'tram', 11 => 'bus', 12 => 'metro'
+  }.freeze
+  # The extended route types agencies increasingly publish instead, narrowed to the
+  # handful of words worth putting on a small screen. A coach is a bus to a passenger.
+  EXTENDED_MODES = {
+    (100..199) => 'rail', (200..299) => 'bus', (400..499) => 'rail',
+    (700..799) => 'bus', (800..899) => 'bus', (900..999) => 'tram', (1000..1099) => 'ferry'
+  }.freeze
 
   # Transitland reports whether each departure is backed by real time data. STATIC
   # means the agency publishes no feed for it, so the time is the timetable and must
@@ -31,6 +47,7 @@ class Departures
     @lat = params[:lat]
     @lon = params[:lon]
     @stop_id = params[:stop_id]
+    @page = [params[:page].to_i, 0].max
   end
 
   def nearby_stops
@@ -39,7 +56,14 @@ class Departures
     body = fetch(stops_uri)
     return [] if body.nil?
 
-    nearest_first(body['stops'] || [])
+    @nearby = nearest_first(body['stops'] || [])
+    @nearby.drop(@page * PAGE_SIZE).first(PAGE_SIZE)
+  end
+
+  # Whether asking for another page would find anything, so a link to one that would
+  # come back empty is never offered.
+  def more_stops?
+    @nearby.to_a.length > (@page + 1) * PAGE_SIZE
   end
 
   def next_departures
@@ -52,6 +76,7 @@ class Departures
     # reading only the first quietly dropped the departures held by the rest.
     departures = (body['stops'] || []).flat_map { |stop| departures_at(stop) }
                                       .sort_by { |departure| departure[:time] }
+                                      .uniq { |departure| departure.values_at(:time, :route, :towards) }
                                       .first(MAX_DEPARTURES)
 
     name_missing_destinations(departures)
@@ -65,7 +90,6 @@ class Departures
     stops.filter_map { |stop| stop_from(stop) }
          .sort_by { |stop| stop[:metres] }
          .uniq { |stop| stop[:name] }
-         .first(MAX_STOPS)
   end
 
   def stops_uri
@@ -143,6 +167,7 @@ class Departures
       live: LIVE_STATUSES.include?(departure['schedule_relationship'].to_s.upcase),
       route: route_name(departure),
       towards: towards(departure, stop_name),
+      mode: mode_key(trip.dig('route', 'route_type')),
       pattern: trip['stop_pattern_id'],
       route_id: trip.dig('route', 'onestop_id'),
       trip_id: trip['id']
@@ -195,6 +220,17 @@ class Departures
     estimated = departure['departure'].is_a?(Hash) ? departure['departure']['estimated'] : nil
 
     estimated.presence || departure['departure_time']
+  end
+
+  # Nil rather than a guess when the type is missing or is something no word here fits:
+  # saying nothing is better than calling a funicular a tram.
+  def mode_key(route_type)
+    return nil if route_type.nil?
+
+    type = route_type.to_i
+    return MODE_KEYS[type] if MODE_KEYS.key?(type)
+
+    EXTENDED_MODES.find { |types, _| types.cover?(type) }&.last
   end
 
   def route_name(departure)

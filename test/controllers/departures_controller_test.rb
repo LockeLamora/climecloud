@@ -63,6 +63,36 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     assert_operator @response.body.index('Down The Road'), :<, @response.body.index('Half A Mile Off')
   end
 
+  test 'reaches the stops past the first page rather than discarding them' do
+    stub_stops('stops' => (1..14).map { |n| platform("Stop #{n}", "s-test-#{n}", lat: 51.5 + (n / 10_000.0)) })
+
+    get '/departures_add', headers: { 'HTTP_COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Stop 10', @response.body
+    assert_no_match(/Stop 11/, @response.body)
+    assert_match 'More stops', @response.body
+    assert_no_match(/Previous stops/, @response.body)
+
+    get '/departures_add?page=1', headers: { 'HTTP_COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Stop 11', @response.body
+    assert_match 'Stop 14', @response.body
+    assert_match 'Previous stops', @response.body
+    # Nothing beyond the last page, so no link to a page that would come back empty.
+    assert_no_match(/More stops/, @response.body)
+  end
+
+  test 'treats a page number that makes no sense as the first page' do
+    stub_stops('stops' => (1..3).map { |n| platform("Stop #{n}", "s-test-#{n}", lat: 51.5 + (n / 10_000.0)) })
+
+    get '/departures_add?page=-4', headers: { 'HTTP_COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Stop 1', @response.body
+  end
+
   test 'names the destination from the end of the trip when the feed gives no headsign' do
     stub_departures('stops' => [{
                       'stop_name' => 'Northgate',
@@ -162,6 +192,81 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     assert_operator @response.body.index('14:05'), :<, @response.body.index('14:20')
   end
 
+  test 'shows one row per journey when two feeds both describe it' do
+    stub_departures('stops' => [
+                      { 'stop_name' => 'Railway Station',
+                        'departures' => [departure('14:21:00', route: '78', trip_headsign: 'Market Square')] },
+                      # The same bus, from a second feed covering the same stop, seconds apart.
+                      { 'stop_name' => 'Railway Station',
+                        'departures' => [departure('14:21:02', route: '78', trip_headsign: 'Market Square')] }
+                    ])
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    assert_equal 1, @response.body.scan('Market Square').length
+  end
+
+  test 'keeps two services of one route leaving the same minute for different places' do
+    stub_departures('stops' => [{
+                      'stop_name' => 'Railway Station',
+                      'departures' => [
+                        departure('14:21:00', route: '78', trip_headsign: 'Market Square'),
+                        departure('14:21:00', route: '78', trip_headsign: 'Westhaven Station')
+                      ]
+                    }])
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    assert_match 'Market Square', @response.body
+    assert_match 'Westhaven Station', @response.body
+  end
+
+  test 'says what kind of vehicle is coming, since a stop name can suggest another' do
+    stub_departures('stops' => [{
+                      'stop_name' => 'Railway Station',
+                      'departures' => [
+                        departure('14:21:00', route: '78', trip_headsign: 'Market Square', route_type: 3),
+                        departure('14:44:00', route: 'NR', trip_headsign: 'Westhaven', route_type: 2)
+                      ]
+                    }])
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    # The stop is named after a station but the 78 is a bus outside it.
+    assert_match '(bus)', @response.body
+    assert_match '(rail)', @response.body
+  end
+
+  test 'reads the extended route types agencies publish instead of the original ones' do
+    stub_departures('stops' => [{
+                      'stop_name' => 'Railway Station',
+                      'departures' => [departure('14:21:00', route: '78', trip_headsign: 'Market Square',
+                                                             route_type: 702)]
+                    }])
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    assert_match '(bus)', @response.body
+  end
+
+  test 'says nothing about the vehicle rather than guessing when the feed omits it' do
+    stub_departures('stops' => [{
+                      'stop_name' => 'Railway Station',
+                      'departures' => [departure('14:21:00', route: '78', trip_headsign: 'Market Square')]
+                    }])
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    # A missing type must not read as a tram, which is what route type zero means.
+    assert_no_match(/\(tram\)/, @response.body)
+    assert_match 'Market Square', @response.body
+  end
+
   test 'marks a real time departure as live and says the rest are timetabled' do
     stub_departures('stops' => [{
                       'stop_name' => 'Northgate',
@@ -247,7 +352,8 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
         'route' => {
           'onestop_id' => fields[:route_id],
           'route_short_name' => fields[:route],
-          'route_long_name' => fields[:route_long_name]
+          'route_long_name' => fields[:route_long_name],
+          'route_type' => fields[:route_type]
         }
       }
     }

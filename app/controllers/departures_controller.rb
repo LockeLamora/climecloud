@@ -38,9 +38,11 @@ class DeparturesController < ApplicationController
       return
     end
 
-    service = Departures.new({ lat: cookies[:lat], lon: cookies[:lon] })
+    service = Departures.new({ lat: cookies[:lat], lon: cookies[:lon], page: params[:page] })
     @nearby = service.nearby_stops
     @error = service.error
+    @page = [params[:page].to_i, 0].max
+    @more = service.more_stops?
 
     render :add
   end

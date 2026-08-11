@@ -4,13 +4,16 @@
 <% if @departures.empty? && @error.nil? %>
 <%= t('departures.nothing_due') %><br />
 <% end %>
-<%# Time, service, destination, on one line: a narrow screen has no room for a %>
-<%# column saying "timetable" against every row, so that is said once underneath. %>
+<%# Time, service, destination, on one line. A stop named after a railway station is %>
+<%# often a bus stop outside one, so the kind of vehicle is worth the words. It shares %>
+<%# the brackets with the live marker to keep each departure to a single line. %>
 <% @departures.each do |departure| %>
+<% tags = [departure[:mode] ? t("departures.mode.#{departure[:mode]}") : nil,
+           departure[:live] ? t('departures.live') : nil].compact %>
 <%= departure[:time] %>
 <% if departure[:route].present? %><b><%= departure[:route] %></b><% end %>
 <%= departure[:towards].presence || t('departures.unknown_destination') %>
-<% if departure[:live] %>(<%= t('departures.live') %>)<% end %>
+<% if tags.any? %>(<%= tags.join(', ') %>)<% end %>
 <br />
 <% end %>
 <% if @departures.any? %>
