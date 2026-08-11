@@ -21,10 +21,12 @@ module Scraper
         path '/'
         text({ css: rule }, :list)
       end
-    rescue StandardError
-      Rails.logger.warn("Cannot parse page - url #{url}")
+    rescue StandardError => e
+      Rails.logger.warn("Cannot parse page - #{e.class}: #{e.message} - url #{url}")
       return 'Cannot parse page'
     end
+
+    return 'Cannot parse page' if out['text'].blank?
 
     out['text'].join('<br /><br />')
   end
@@ -54,7 +56,8 @@ module Scraper
       'nypost.com' => '.entry-content p',
       'ynetnews.com' => '.public-DraftEditor-content',
       'pbs.org' => '.body-text p',
-      'telegraph.co.uk' => '.articleBodyText'
+      'telegraph.co.uk' => '.articleBodyText',
+      'time.com' => '#article-body p'
     }
     rules.key?(domain) ? rules[domain] : 'p'
   end
