@@ -8,11 +8,15 @@ class SettingsTest < ApplicationSystemTestCase
     assert_text 'Change your settings:'
 
     find_field(name: 'postcode').set('78000')
-    select('France', from: 'country_code')
     choose(option: 'metric')
     check(name: 'mapimages')
-    click_button(name: 'commit')
     select('Headlines', from: 'news_default_section')
+    click_button(name: 'commit')
+
+    # 78000 is a postcode in more than one country, so the country is confirmed after
+    # the search rather than chosen from a dropdown before it. Guarded because which
+    # countries a live geocoder returns is its business, not this test's.
+    click_link('France') if page.has_text?('Which country is this postcode in?')
 
     sleep 2
     # Loose because the exact coordinates come from a live geocoder and differ

@@ -24,6 +24,44 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'country_code=fr', @response.body
   end
 
+  test 'rejects a typo rather than asking which country it belongs to' do
+    # What the live geocoder really returns for "abcdefg" once no country narrows it:
+    # postcodes in Morocco and Spain that have nothing to do with what was typed.
+    stub_geocode('features' => [geocode_result('Abdelghaya Souahel, Morocco', country: 'ma',
+                                                                              postcode: '32354'),
+                                geocode_result('Garrafe de Torio, Spain', country: 'es', postcode: '24891')])
+
+    save_settings(country_code: nil, postcode: 'abcdefg')
+
+    assert_response :success
+    assert_match 'Could not determine location', @response.body
+    assert_no_match(/Which country/, @response.body)
+  end
+
+  test 'keeps only the countries whose postcode matches exactly when any does' do
+    stub_geocode('features' => [geocode_result('Banja Luka, Bosnia', country: 'ba', postcode: '78000'),
+                                geocode_result('Versailles, France', country: 'fr', postcode: '78000'),
+                                # A Japanese code beginning 780, which is not this postcode.
+                                geocode_result('Kochi, Japan', country: 'jp', postcode: '780-0033')])
+
+    save_settings(country_code: nil, postcode: '78000')
+
+    assert_response :success
+    assert_match 'Bosnia', @response.body
+    assert_match 'France', @response.body
+    assert_no_match(/Japan/, @response.body)
+  end
+
+  test 'falls back to postcodes that begin with a partly typed one' do
+    stub_geocode('features' => [geocode_result('Testville, UK', postcode: 'zz1 1zz')])
+    stub_geoapify
+
+    save_settings(country_code: nil, postcode: 'zz1')
+
+    assert_response :success
+    assert_match 'Location saved as', @response.body
+  end
+
   test 'saves without asking when the postcode exists in only one country' do
     stub_geocode(two_results)
     stub_geoapify
@@ -211,7 +249,17 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     { 'features' => [geocode_result('Testville, UK'), geocode_result('Testville Magna, UK')] }
   end
 
-  def geocode_result(address, country: 'gb')
-    { 'properties' => { 'formatted' => address, 'lat' => 52.3, 'lon' => 1.17, 'country_code' => country } }
+  # The postcode defaults to the one the other tests type, so a result matches unless a
+  # test is deliberately about a postcode that does not.
+  def geocode_result(address, country: 'gb', postcode: 'zz1 1zz')
+    {
+      'properties' => {
+        'formatted' => address,
+        'lat' => 52.3,
+        'lon' => 1.17,
+        'country_code' => country,
+        'postcode' => postcode
+      }
+    }
   end
 end

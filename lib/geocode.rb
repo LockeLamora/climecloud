@@ -97,8 +97,32 @@ class Geocode
 
     body = JSON.parse(res.body)
     candidates = (body['features'] || []).filter_map { |feature| candidate_from(feature) }
-    candidates = candidates.uniq { |candidate| candidate[:address].downcase }
+    candidates = matching_postcodes(candidates).uniq { |candidate| candidate[:address].downcase }
     nearest_first(candidates)
+  end
+
+  # Autocomplete stays fuzzy even when asked for a postcode, and dropping the country
+  # filter took away what used to hide that: "abcdefg" comes back as real postcodes in
+  # Morocco and Spain, which turned a typo into a question about which country it was
+  # in. Keep only the postcodes that begin with what was typed, and when any match it
+  # outright, keep only those: "78000" then means Bosnia and France rather than also
+  # every Japanese code starting 780.
+  def matching_postcodes(candidates)
+    return candidates unless @type == 'postcode'
+
+    typed = comparable(@address)
+    return candidates if typed.blank?
+
+    exact = candidates.select { |candidate| comparable(candidate[:postcode]) == typed }
+    return exact if exact.any?
+
+    candidates.select { |candidate| comparable(candidate[:postcode]).start_with?(typed) }
+  end
+
+  # Postcodes are written with and without spaces and hyphens by different agencies and
+  # different people, and none of that changes which postcode is meant.
+  def comparable(text)
+    text.to_s.downcase.gsub(/[^a-z0-9]/, '')
   end
 
   # Geoapify ranks by text relevance, which scatters a search for "bus station" the
@@ -128,7 +152,8 @@ class Geocode
       address: address,
       lat: properties['lat'].to_s,
       lon: properties['lon'].to_s,
-      country_code: properties['country_code'].to_s.downcase.presence
+      country_code: properties['country_code'].to_s.downcase.presence,
+      postcode: properties['postcode'].to_s
     }
   end
 
