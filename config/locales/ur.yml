@@ -7,8 +7,7 @@ ur:
     places: "قریبی مقامات"
     news: "خبریں"
     wikipedia: "ویکیپیڈیا"
-    departures: "روانگی"
-    departures_soon: "روانگی (جلد آ رہا ہے)"
+    departures: "بس اور ٹرین کے اوقات"
     settings: "ترتیبات بدلیں"
   common:
     back_to_menu: "مینو پر واپس"
@@ -143,7 +142,7 @@ ur:
     unavailable: "ویکیپیڈیا تک نہیں پہنچ سکے، بعد میں کوشش کریں"
     unreadable: "ویکیپیڈیا کا جواب پڑھا نہیں جا سکا"
   departures:
-    title: "روانگی"
+    title: "بس اور ٹرین کے اوقات"
     none_saved: "ابھی تک کوئی اسٹاپ محفوظ نہیں۔"
     find_stops: "قریبی اسٹاپ تلاش کریں"
     add_stop: "ایک اور اسٹاپ شامل کریں"

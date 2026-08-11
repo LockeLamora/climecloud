@@ -7,8 +7,7 @@ tr:
     places: "Yakındaki yerler"
     news: "Haberler"
     wikipedia: "Vikipedi"
-    departures: "Kalkışlar"
-    departures_soon: "Kalkışlar (yakında)"
+    departures: "Otobüs ve tren saatleri"
     settings: "Ayarları değiştir"
   common:
     back_to_menu: "Menüye dön"
@@ -143,7 +142,7 @@ tr:
     unavailable: "Vikipedi'ye ulaşılamadı, daha sonra deneyin"
     unreadable: "Vikipedi'nin yanıtı okunamadı"
   departures:
-    title: "Kalkışlar"
+    title: "Otobüs ve tren saatleri"
     none_saved: "Henüz kayıtlı durak yok."
     find_stops: "Yakınımdaki durakları bul"
     add_stop: "Başka durak ekle"

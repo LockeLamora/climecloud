@@ -7,8 +7,7 @@ en:
     places: "Places nearby"
     news: "News"
     wikipedia: "Wikipedia"
-    departures: "Departures"
-    departures_soon: "Departures (coming soon)"
+    departures: "Bus & train times"
     settings: "Change settings"
   common:
     back_to_menu: "Back to menu"
@@ -143,7 +142,7 @@ en:
     unavailable: "Could not reach Wikipedia, please try again later"
     unreadable: "Could not read the reply from Wikipedia"
   departures:
-    title: "Departures"
+    title: "Bus & train times"
     none_saved: "No stops saved yet."
     find_stops: "Find stops near me"
     add_stop: "Add another stop"

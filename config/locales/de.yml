@@ -7,8 +7,7 @@ de:
     places: "Orte in der Nähe"
     news: "Nachrichten"
     wikipedia: "Wikipedia"
-    departures: "Abfahrten"
-    departures_soon: "Abfahrten (demnächst)"
+    departures: "Bus- & Bahnzeiten"
     settings: "Einstellungen ändern"
   common:
     back_to_menu: "Zurück zum Menü"
@@ -143,7 +142,7 @@ de:
     unavailable: "Wikipedia nicht erreichbar, bitte später erneut versuchen"
     unreadable: "Antwort von Wikipedia konnte nicht gelesen werden"
   departures:
-    title: "Abfahrten"
+    title: "Bus- & Bahnzeiten"
     none_saved: "Noch keine Haltestellen gespeichert."
     find_stops: "Haltestellen in der Nähe finden"
     add_stop: "Weitere Haltestelle hinzufügen"

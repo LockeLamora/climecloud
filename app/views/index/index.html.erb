@@ -12,9 +12,5 @@
     <%=link_to "3 #{t('menu.places')}", "/places", accesskey: "3" %><br /><br />
     <%=link_to "4 #{t('menu.news')}", "/news", accesskey: "4" %><br /><br />
     <%=link_to "5 #{t('menu.wikipedia')}", "/wikipedia", accesskey: "5" %><br /><br />
-    <% if departures_available? %>
     <%=link_to "6 #{t('menu.departures')}", "/departures", accesskey: "6" %><br /><br />
-    <% else %>
-    6 <%= t('menu.departures_soon') %><br /><br />
-    <% end %>
     <%=link_to "7 #{t('menu.settings')}", "/settings", :class=>'change-settings', accesskey: "7" %><br /><br />

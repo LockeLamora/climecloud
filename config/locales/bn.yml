@@ -7,8 +7,7 @@ bn:
     places: "কাছের জায়গা"
     news: "খবর"
     wikipedia: "উইকিপিডিয়া"
-    departures: "ছাড়ার সময়"
-    departures_soon: "ছাড়ার সময় (শীঘ্রই আসছে)"
+    departures: "বাস ও ট্রেনের সময়"
     settings: "সেটিংস বদলান"
   common:
     back_to_menu: "মেনুতে ফিরুন"
@@ -143,7 +142,7 @@ bn:
     unavailable: "উইকিপিডিয়ায় পৌঁছানো যায়নি, পরে চেষ্টা করুন"
     unreadable: "উইকিপিডিয়ার উত্তর পড়া যায়নি"
   departures:
-    title: "ছাড়ার সময়"
+    title: "বাস ও ট্রেনের সময়"
     none_saved: "এখনও কোনো স্টপ সংরক্ষিত নেই।"
     find_stops: "কাছের স্টপ খুঁজুন"
     add_stop: "আরেকটি স্টপ যোগ করুন"

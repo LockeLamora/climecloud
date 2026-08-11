@@ -7,8 +7,7 @@ pt:
     places: "Locais próximos"
     news: "Notícias"
     wikipedia: "Wikipédia"
-    departures: "Partidas"
-    departures_soon: "Partidas (em breve)"
+    departures: "Horários de ônibus e trem"
     settings: "Alterar definições"
   common:
     back_to_menu: "Voltar ao menu"
@@ -143,7 +142,7 @@ pt:
     unavailable: "Não foi possível aceder à Wikipédia, tente mais tarde"
     unreadable: "Não foi possível ler a resposta da Wikipédia"
   departures:
-    title: "Partidas"
+    title: "Horários de ônibus e trem"
     none_saved: "Ainda não há paragens guardadas."
     find_stops: "Procurar paragens próximas"
     add_stop: "Adicionar outra paragem"

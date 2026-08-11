@@ -7,8 +7,7 @@ it:
     places: "Luoghi vicini"
     news: "Notizie"
     wikipedia: "Wikipedia"
-    departures: "Partenze"
-    departures_soon: "Partenze (prossimamente)"
+    departures: "Orari bus e treno"
     settings: "Modifica impostazioni"
   common:
     back_to_menu: "Torna al menu"
@@ -143,7 +142,7 @@ it:
     unavailable: "Impossibile raggiungere Wikipedia, riprova più tardi"
     unreadable: "Impossibile leggere la risposta di Wikipedia"
   departures:
-    title: "Partenze"
+    title: "Orari bus e treno"
     none_saved: "Nessuna fermata salvata."
     find_stops: "Trova fermate vicine"
     add_stop: "Aggiungi un'altra fermata"

@@ -7,8 +7,7 @@ ar:
     places: "أماكن قريبة"
     news: "الأخبار"
     wikipedia: "ويكيبيديا"
-    departures: "المغادرات"
-    departures_soon: "المغادرات (قريبًا)"
+    departures: "مواعيد الحافلات والقطارات"
     settings: "تغيير الإعدادات"
   common:
     back_to_menu: "العودة إلى القائمة"
@@ -143,7 +142,7 @@ ar:
     unavailable: "تعذر الوصول إلى ويكيبيديا، حاول لاحقًا"
     unreadable: "تعذرت قراءة رد ويكيبيديا"
   departures:
-    title: "المغادرات"
+    title: "مواعيد الحافلات والقطارات"
     none_saved: "لا توجد محطات محفوظة بعد."
     find_stops: "ابحث عن محطات قريبة"
     add_stop: "أضف محطة أخرى"

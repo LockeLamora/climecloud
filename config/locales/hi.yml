@@ -7,8 +7,7 @@ hi:
     places: "आसपास की जगहें"
     news: "समाचार"
     wikipedia: "विकिपीडिया"
-    departures: "प्रस्थान"
-    departures_soon: "प्रस्थान (जल्द आ रहा है)"
+    departures: "बस और ट्रेन का समय"
     settings: "सेटिंग्स बदलें"
   common:
     back_to_menu: "मेन्यू पर वापस"
@@ -143,7 +142,7 @@ hi:
     unavailable: "विकिपीडिया तक नहीं पहुँच सके, बाद में कोशिश करें"
     unreadable: "विकिपीडिया का उत्तर पढ़ा नहीं जा सका"
   departures:
-    title: "प्रस्थान"
+    title: "बस और ट्रेन का समय"
     none_saved: "अभी तक कोई स्टॉप सहेजा नहीं गया।"
     find_stops: "पास के स्टॉप खोजें"
     add_stop: "एक और स्टॉप जोड़ें"

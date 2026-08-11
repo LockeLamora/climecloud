@@ -7,8 +7,7 @@ fr:
     places: "Lieux à proximité"
     news: "Actualités"
     wikipedia: "Wikipédia"
-    departures: "Départs"
-    departures_soon: "Départs (bientôt disponible)"
+    departures: "Horaires bus & train"
     settings: "Modifier les réglages"
   common:
     back_to_menu: "Retour au menu"
@@ -143,7 +142,7 @@ fr:
     unavailable: "Impossible de joindre Wikipédia, réessayez plus tard"
     unreadable: "Impossible de lire la réponse de Wikipédia"
   departures:
-    title: "Départs"
+    title: "Horaires bus & train"
     none_saved: "Aucun arrêt enregistré."
     find_stops: "Trouver des arrêts près de moi"
     add_stop: "Ajouter un arrêt"

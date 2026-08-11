@@ -5,6 +5,12 @@ require 'test_helper'
 class DirectionsControllerTest < ActionDispatch::IntegrationTest
   COOKIES = 'metrics=hybrid;country_code=gb;lat=52.3;lon=1.17'
 
+  # Step lengths are expressed in windows rather than metres, so retuning the window
+  # size does not silently leave these tests asserting the wrong chunk counts.
+  SHORT_STEP_METRES = Maps::SEGMENT_METRES * 0.8
+  LONG_STEP_WINDOWS = 7
+  LONG_STEP_METRES = Maps::SEGMENT_METRES * (LONG_STEP_WINDOWS - 0.5)
+
   test 'should load the drections search page successfully when cookie is set' do
     get '/directions'
     assert_response :success
@@ -52,8 +58,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     plan_route(view: 'turn', step: '0')
 
     assert_response :success
-    # Roughly a kilometre at 150m a window.
-    assert_match 'part 1 of 7', @response.body
+    assert_match "part 1 of #{LONG_STEP_WINDOWS}", @response.body
     assert_match 'Further along', @response.body
     assert_no_match(/Next turn/, @response.body)
   end
@@ -61,10 +66,10 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   test 'reaches the next turn only after the last chunk of a long step' do
     stub_directions(directions_body(long_step: true))
 
-    plan_route(view: 'turn', step: '0', segment: '6')
+    plan_route(view: 'turn', step: '0', segment: (LONG_STEP_WINDOWS - 1).to_s)
 
     assert_response :success
-    assert_match 'part 7 of 7', @response.body
+    assert_match "part #{LONG_STEP_WINDOWS} of #{LONG_STEP_WINDOWS}", @response.body
     assert_match 'Next turn', @response.body
     assert_match 'Back along', @response.body
   end
@@ -85,7 +90,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     plan_route(view: 'turn', step: '0', segment: '99')
 
     assert_response :success
-    assert_match 'part 7 of 7', @response.body
+    assert_match "part #{LONG_STEP_WINDOWS} of #{LONG_STEP_WINDOWS}", @response.body
   end
 
   test 'clamps a step number past the end of the route' do
@@ -317,7 +322,7 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
           'end_location' => { 'lat' => 52.31, 'lng' => 1.18 },
           'duration' => { 'text' => '12 mins' },
           'steps' => [
-            route_step('Head north on Test Road', end_lat: long_step ? 52.309 : 52.3009),
+            route_step('Head north on Test Road', metres: long_step ? LONG_STEP_METRES : SHORT_STEP_METRES),
             route_step('Turn left onto End Road')
           ]
         }]
@@ -325,15 +330,15 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     }
   end
 
-  # Roughly 100m end to end by default, so it is a single window. An empty polyline
-  # makes the geometry fall back to the two endpoints, which keeps it predictable.
-  def route_step(instruction, end_lat: 52.3009)
+  # Short enough for a single window by default. An empty polyline makes the geometry
+  # fall back to the two endpoints, which keeps the length exactly what is asked for.
+  def route_step(instruction, metres: SHORT_STEP_METRES)
     {
       'html_instructions' => instruction,
       'distance' => { 'text' => '100 m' },
       'duration' => { 'text' => '2 mins' },
       'start_location' => { 'lat' => 52.3, 'lng' => 1.17 },
-      'end_location' => { 'lat' => end_lat, 'lng' => 1.17 },
+      'end_location' => { 'lat' => 52.3 + (metres / Maps::METRES_PER_DEGREE.to_f), 'lng' => 1.17 },
       'polyline' => { 'points' => '' }
     }
   end

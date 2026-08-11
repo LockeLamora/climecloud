@@ -7,8 +7,7 @@ vi:
     places: "Địa điểm gần đây"
     news: "Tin tức"
     wikipedia: "Wikipedia"
-    departures: "Giờ khởi hành"
-    departures_soon: "Giờ khởi hành (sắp có)"
+    departures: "Giờ xe buýt và tàu"
     settings: "Đổi cài đặt"
   common:
     back_to_menu: "Về menu"
@@ -143,7 +142,7 @@ vi:
     unavailable: "Không kết nối được Wikipedia, hãy thử lại sau"
     unreadable: "Không đọc được phản hồi từ Wikipedia"
   departures:
-    title: "Giờ khởi hành"
+    title: "Giờ xe buýt và tàu"
     none_saved: "Chưa lưu điểm dừng nào."
     find_stops: "Tìm điểm dừng gần tôi"
     add_stop: "Thêm điểm dừng khác"

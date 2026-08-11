@@ -7,8 +7,7 @@ sw:
     places: "Sehemu za karibu"
     news: "Habari"
     wikipedia: "Wikipedia"
-    departures: "Kuondoka"
-    departures_soon: "Kuondoka (inakuja hivi karibuni)"
+    departures: "Nyakati za basi na treni"
     settings: "Badilisha mipangilio"
   common:
     back_to_menu: "Rudi kwenye menyu"
@@ -143,7 +142,7 @@ sw:
     unavailable: "Haikuweza kufikia Wikipedia, jaribu baadaye"
     unreadable: "Haikuweza kusoma jibu la Wikipedia"
   departures:
-    title: "Kuondoka"
+    title: "Nyakati za basi na treni"
     none_saved: "Hakuna vituo vilivyohifadhiwa bado."
     find_stops: "Tafuta vituo vilivyo karibu"
     add_stop: "Ongeza kituo kingine"

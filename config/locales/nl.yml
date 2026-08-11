@@ -7,8 +7,7 @@ nl:
     places: "Plekken in de buurt"
     news: "Nieuws"
     wikipedia: "Wikipedia"
-    departures: "Vertrektijden"
-    departures_soon: "Vertrektijden (binnenkort)"
+    departures: "Bus- & treintijden"
     settings: "Instellingen wijzigen"
   common:
     back_to_menu: "Terug naar menu"
@@ -143,7 +142,7 @@ nl:
     unavailable: "Kon Wikipedia niet bereiken, probeer het later opnieuw"
     unreadable: "Kon het antwoord van Wikipedia niet lezen"
   departures:
-    title: "Vertrektijden"
+    title: "Bus- & treintijden"
     none_saved: "Nog geen haltes opgeslagen."
     find_stops: "Haltes in de buurt zoeken"
     add_stop: "Nog een halte toevoegen"

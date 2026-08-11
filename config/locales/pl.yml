@@ -7,8 +7,7 @@ pl:
     places: "Miejsca w pobliżu"
     news: "Wiadomości"
     wikipedia: "Wikipedia"
-    departures: "Odjazdy"
-    departures_soon: "Odjazdy (wkrótce)"
+    departures: "Godziny autobusów i pociągów"
     settings: "Zmień ustawienia"
   common:
     back_to_menu: "Powrót do menu"
@@ -143,7 +142,7 @@ pl:
     unavailable: "Nie udało się połączyć z Wikipedią, spróbuj później"
     unreadable: "Nie udało się odczytać odpowiedzi Wikipedii"
   departures:
-    title: "Odjazdy"
+    title: "Godziny autobusów i pociągów"
     none_saved: "Nie zapisano jeszcze żadnych przystanków."
     find_stops: "Znajdź przystanki w pobliżu"
     add_stop: "Dodaj kolejny przystanek"

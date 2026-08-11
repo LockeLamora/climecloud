@@ -7,8 +7,7 @@ id:
     places: "Tempat terdekat"
     news: "Berita"
     wikipedia: "Wikipedia"
-    departures: "Keberangkatan"
-    departures_soon: "Keberangkatan (segera hadir)"
+    departures: "Jadwal bus & kereta"
     settings: "Ubah pengaturan"
   common:
     back_to_menu: "Kembali ke menu"
@@ -143,7 +142,7 @@ id:
     unavailable: "Tidak bisa menghubungi Wikipedia, coba lagi nanti"
     unreadable: "Tidak bisa membaca jawaban dari Wikipedia"
   departures:
-    title: "Keberangkatan"
+    title: "Jadwal bus & kereta"
     none_saved: "Belum ada halte tersimpan."
     find_stops: "Cari halte di dekat saya"
     add_stop: "Tambah halte lain"
