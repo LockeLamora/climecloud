@@ -48,6 +48,56 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, @response.body.scan('Market Square').length
   end
 
+  test 'lists the nearest stops first however the feed happens to order them' do
+    stub_stops('stops' => [
+                 platform('Half A Mile Off', 's-test-far', lat: 51.507, lon: -0.1),
+                 platform('Just Round The Corner', 's-test-near', lat: 51.5005, lon: -0.1),
+                 platform('Down The Road', 's-test-mid', lat: 51.502, lon: -0.1)
+               ])
+
+    get '/departures_add', headers: { 'HTTP_COOKIE' => COOKIES }
+
+    assert_response :success
+    # The search comes back unordered, so without sorting the ten kept are arbitrary.
+    assert_operator @response.body.index('Just Round The Corner'), :<, @response.body.index('Down The Road')
+    assert_operator @response.body.index('Down The Road'), :<, @response.body.index('Half A Mile Off')
+  end
+
+  test 'names the destination from the end of the trip when the feed gives no headsign' do
+    stub_departures('stops' => [{
+                      'stop_name' => 'Northgate',
+                      'departures' => [
+                        departure('14:09:00', route: '22', pattern: 41, route_id: 'r-test-22', trip_id: 900),
+                        departure('14:39:00', route: '22', pattern: 41, route_id: 'r-test-22', trip_id: 901)
+                      ]
+                    }])
+    stub_trip('r-test-22', 900, ['Northgate', 'Midwich', 'Eastport Centre'])
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    assert_equal 2, @response.body.scan('Eastport Centre').length
+    # Both trips run the same stop pattern, so one lookup names them both.
+    assert_requested :get, %r{transit\.land/api/v2/rest/routes/r-test-22/trips/900}, times: 1
+  end
+
+  test 'leaves the times alone when the destination lookup fails' do
+    stub_departures('stops' => [{
+                      'stop_name' => 'Northgate',
+                      'departures' => [departure('14:09:00', route: '22', pattern: 41, route_id: 'r-test-22',
+                                                             trip_id: 900)]
+                    }])
+    stub_request(:get, %r{transit\.land/api/v2/rest/routes/.+/trips/}).to_return(status: 500, body: '')
+
+    get '/departures_stop?id=s-test-northgate', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    assert_match '14:09', @response.body
+    assert_match 'Destination not given', @response.body
+    # A missing nicety is no reason to put an error across a page that has the times.
+    assert_no_match(/Could not reach/, @response.body)
+  end
+
   test 'shows where each service is going rather than where it already is' do
     stub_departures('stops' => [{
                       'stop_name' => 'Northgate',
@@ -166,8 +216,22 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     { 'stop_name' => name, 'onestop_id' => id, 'location_type' => 1 }
   end
 
-  def platform(name, id, platform_code: nil)
-    { 'stop_name' => name, 'onestop_id' => id, 'location_type' => 0, 'platform_code' => platform_code }
+  def platform(name, id, platform_code: nil, lat: 51.5, lon: -0.1)
+    {
+      'stop_name' => name,
+      'onestop_id' => id,
+      'location_type' => 0,
+      'platform_code' => platform_code,
+      'geometry' => { 'coordinates' => [lon, lat] }
+    }
+  end
+
+  def stub_trip(route_id, trip_id, stop_names)
+    body = { 'trips' => [{ 'stop_times' => stop_names.map { |name| { 'stop' => { 'stop_name' => name } } } }] }
+
+    stub_request(:get, %r{transit\.land/api/v2/rest/routes/#{route_id}/trips/#{trip_id}}).to_return(
+      status: 200, body: body.to_json, headers: { 'Content-Type' => 'application/json' }
+    )
   end
 
   def departure(time, fields)
@@ -177,8 +241,11 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
       'schedule_relationship' => fields[:schedule_relationship] || 'STATIC',
       'stop_headsign' => fields[:stop_headsign],
       'trip' => {
+        'id' => fields[:trip_id],
+        'stop_pattern_id' => fields[:pattern],
         'trip_headsign' => fields[:trip_headsign],
         'route' => {
+          'onestop_id' => fields[:route_id],
           'route_short_name' => fields[:route],
           'route_long_name' => fields[:route_long_name]
         }

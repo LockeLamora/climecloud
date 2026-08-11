@@ -11,6 +11,10 @@ class Departures
   # shown or a busy interchange fills the list before any other stop is reached.
   REQUEST_LIMIT = 40
   MAX_DEPARTURES = 8
+  METRES_PER_DEGREE = 111_320
+  # Naming a destination costs a request, so only a few are worth making. Trips sharing
+  # a stop pattern share a last stop, which keeps that number to one per pattern.
+  MAX_TERMINUS_LOOKUPS = 4
   # Departures beyond the next couple of hours are no use to someone standing at a
   # stop, and asking for fewer keeps the response small over 4G.
   WINDOW_SECONDS = 7200
@@ -35,9 +39,7 @@ class Departures
     body = fetch(stops_uri)
     return [] if body.nil?
 
-    (body['stops'] || []).filter_map { |stop| stop_from(stop) }
-                         .uniq { |stop| stop[:name] }
-                         .first(MAX_STOPS)
+    nearest_first(body['stops'] || [])
   end
 
   def next_departures
@@ -48,12 +50,23 @@ class Departures
 
     # One stop can come back as several entries when more than one feed covers it, and
     # reading only the first quietly dropped the departures held by the rest.
-    (body['stops'] || []).flat_map { |stop| departures_at(stop) }
-                         .sort_by { |departure| departure[:time] }
-                         .first(MAX_DEPARTURES)
+    departures = (body['stops'] || []).flat_map { |stop| departures_at(stop) }
+                                      .sort_by { |departure| departure[:time] }
+                                      .first(MAX_DEPARTURES)
+
+    name_missing_destinations(departures)
   end
 
   private
+
+  # The search comes back in no useful order, so the ten kept were an arbitrary ten and
+  # the stands of a nearby interchange lost their places to stops half a mile off.
+  def nearest_first(stops)
+    stops.filter_map { |stop| stop_from(stop) }
+         .sort_by { |stop| stop[:metres] }
+         .uniq { |stop| stop[:name] }
+         .first(MAX_STOPS)
+  end
 
   def stops_uri
     build_uri("#{BASE}/stops", lat: @lat, lon: @lon, radius: NEARBY_RADIUS_METRES, limit: REQUEST_LIMIT)
@@ -69,16 +82,18 @@ class Departures
     uri
   end
 
-  def fetch(uri)
+  # Quiet for the lookups that only add a nicety: failing to name a destination is no
+  # reason to put an error across a page that has the times on it.
+  def fetch(uri, quiet: false)
     res = Net::HTTP.get_response(uri)
     unless res.is_a?(Net::HTTPSuccess)
-      @error = I18n.t('departures.unavailable')
+      @error = I18n.t('departures.unavailable') unless quiet
       return nil
     end
 
     JSON.parse(res.body)
   rescue JSON::ParserError
-    @error = I18n.t('departures.unreadable')
+    @error = I18n.t('departures.unreadable') unless quiet
     nil
   end
 
@@ -91,7 +106,17 @@ class Departures
     name = stop['stop_name'].presence
     return nil if name.blank? || stop['onestop_id'].blank?
 
-    { id: stop['onestop_id'], name: stand_name(stop, name) }
+    { id: stop['onestop_id'], name: stand_name(stop, name), metres: metres_away(stop) }
+  end
+
+  def metres_away(stop)
+    coordinates = stop.dig('geometry', 'coordinates')
+    return Float::INFINITY unless coordinates.is_a?(Array) && coordinates.length >= 2
+
+    east = (coordinates[0].to_f - @lon.to_f) * METRES_PER_DEGREE * Math.cos(@lat.to_f * Math::PI / 180)
+    north = (coordinates[1].to_f - @lat.to_f) * METRES_PER_DEGREE
+
+    Math.sqrt((east * east) + (north * north))
   end
 
   # Stands at one interchange usually share a name, so the stand number is the only
@@ -111,12 +136,58 @@ class Departures
     time = departure_time(departure)
     return nil if time.blank?
 
+    trip = departure['trip'] || {}
+
     {
       time: time.to_s[0, 5],
       live: LIVE_STATUSES.include?(departure['schedule_relationship'].to_s.upcase),
       route: route_name(departure),
-      towards: towards(departure, stop_name)
+      towards: towards(departure, stop_name),
+      pattern: trip['stop_pattern_id'],
+      route_id: trip.dig('route', 'onestop_id'),
+      trip_id: trip['id']
     }
+  end
+
+  # Some agencies publish no headsign of any kind, which left every row saying nothing
+  # but a route number. A trip's last stop is where it ends up, so it can be looked up
+  # instead. Trips running the same stop pattern end at the same place, so a page of
+  # eight departures usually needs one or two requests rather than eight.
+  def name_missing_destinations(departures)
+    patterns = departures.reject { |departure| departure[:towards].present? }
+                         .group_by { |departure| departure[:pattern] }
+                         .reject { |pattern, _| pattern.blank? }
+                         .first(MAX_TERMINUS_LOOKUPS)
+    return departures if patterns.empty?
+
+    termini = look_up_termini(patterns)
+    departures.each { |departure| departure[:towards] ||= termini[departure[:pattern]] }
+  end
+
+  # In parallel, because these run one after the other on a page someone is waiting on
+  # at a bus stop, and the requests do not depend on each other.
+  def look_up_termini(patterns)
+    patterns.map { |pattern, group| Thread.new { [pattern, terminus_for(group.first)] } }
+            .map(&:value)
+            .to_h
+  end
+
+  def terminus_for(departure)
+    route = departure[:route_id]
+    trip = departure[:trip_id]
+    return nil if route.blank? || trip.blank?
+
+    body = fetch(build_uri("#{BASE}/routes/#{route}/trips/#{trip}", {}), quiet: true)
+    return nil if body.nil?
+
+    last_stop_of(body)
+  end
+
+  def last_stop_of(body)
+    trip = (body['trips'] || []).first || {}
+    stop_times = trip['stop_times'] || []
+
+    stop_times.last&.dig('stop', 'stop_name').presence
   end
 
   # Prefer the estimate when the agency publishes one, otherwise the timetable.
