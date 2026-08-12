@@ -14,8 +14,13 @@ module Scraper
   MAX_REDIRECTS = 3
   SEPARATOR = '<br /><br />'
   # Furniture that sits inside the article container as often as outside it, and was being
-  # read as part of the story.
-  BOILERPLATE = 'script, style, noscript, nav, header, footer, aside, form, figcaption, iframe'
+  # read as part of the story. The class matches are for paid placements, which are written
+  # in full sentences and so survive every other filter: equity release, "browse radios and
+  # music centres", "less scrolling, more great TV".
+  BOILERPLATE = 'script, style, noscript, nav, header, footer, aside, form, figcaption, iframe, ' \
+                '[class*="promo"], [class*="advert"], [class*="sponsor"], [class*="partner"], ' \
+                '[class*="affiliate"], [class*="newsletter"], [class*="related"], ' \
+                '[class*="recommend"], [id*="advert"], [id*="promo"]'
   # Where an article usually sits, tried in order. Without this the fallback was every
   # paragraph on the page, which meant cookie notices, related story teasers and the
   # footer arrived as prose on a 240 pixel screen.
@@ -133,18 +138,20 @@ module Scraper
     text.any? ? text : tidy(paragraphs).uniq
   end
 
-  # A rule written for the domain wins. Otherwise look where an article usually is before
-  # settling for every paragraph on the page.
+  # A rule written for the domain wins, then the containers an article usually sits in.
+  # There is deliberately no fallback to every paragraph on the page: doing that put
+  # advertising on screen dressed as the story, and saying the page could not be read is
+  # worth more than that. The log line names the site, so a rule can be written for it.
   def self.candidates(document, url)
     rule = ArticleRules.for(url)
     return document.css(rule).map(&:text) unless rule == ArticleRules::DEFAULT
 
     CONTAINERS.each do |container|
       found = document.css("#{container} #{ArticleRules::DEFAULT}").map(&:text)
-      return found if readable(found).any?
+      return found if tidy(found).any?
     end
 
-    document.css(ArticleRules::DEFAULT).map(&:text)
+    []
   end
 
   def self.readable(paragraphs)

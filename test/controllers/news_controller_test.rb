@@ -139,6 +139,62 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'says it cannot read the page rather than showing what is around the story' do
+    stub_article_lookup
+    stub_page(<<~HTML)
+      <html><body>
+        <div class="wrapper">
+          <p>Find what's worth watching with Radio Times magazine and app. Less scrolling, more great TV.</p>
+          <p>With a lifetime mortgage, the most popular type of equity release, you continue to own your home.</p>
+          <p>If your listening experience needs an upgrade, browse radios and music centres from Roberts.</p>
+        </div>
+      </body></html>
+    HTML
+
+    get_article
+
+    assert_response :success
+    # Taking every paragraph on the page put paid placements on screen dressed as the
+    # story. They are written in full sentences, so no length filter catches them.
+    assert_match 'Cannot parse page', @response.body
+    assert_no_match(/equity release/, @response.body)
+    assert_no_match(/Radio Times/, @response.body)
+  end
+
+  test 'leaves paid placements out of an article it can read' do
+    stub_article_lookup
+    stub_page(<<~HTML)
+      <html><body><article>
+        <p>The committee will publish its findings before the end of the month.</p>
+        <div class="advert-inline"><p>With a lifetime mortgage you continue to own 100% of your home.</p></div>
+        <div class="promo-block"><p>Less scrolling, more great TV with Radio Times magazine and app.</p></div>
+      </article></body></html>
+    HTML
+
+    get_article
+
+    assert_response :success
+    assert_match 'The committee will publish', @response.body
+    assert_no_match(/lifetime mortgage/, @response.body)
+    assert_no_match(/Radio Times/, @response.body)
+  end
+
+  test 'puts the links after the story rather than above it' do
+    stub_article_lookup
+    stub_page('<html><body><article>' \
+              '<p>The story itself runs on for quite some distance here.</p>' \
+              '</article></body></html>')
+
+    get_article
+
+    assert_response :success
+    # Reading to the end and scrolling back up to reach the menu was the wrong way round.
+    assert_operator @response.body.index('The story itself runs on'), :<,
+                    @response.body.index('Back to headlines')
+    assert_operator @response.body.index('The story itself runs on'), :<,
+                    @response.body.index('Back to menu')
+  end
+
   test 'shows a short article rather than nothing at all' do
     stub_article_lookup
     stub_page('<html><body><article><p>Play was abandoned.</p><p>No result.</p></article></body></html>')
@@ -234,7 +290,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     stub_request(:get, /theguardian\.com/)
       .to_return(status: 301, headers: { 'Location' => 'https://www.theguardian.com/amp/budget' })
     stub_request(:get, %r{theguardian\.com/amp/budget})
-      .to_return(status: 200, body: '<html><body><p>Moved but readable.</p></body></html>')
+      .to_return(status: 200, body: '<html><body><article><p>Moved but readable.</p></article></body></html>')
 
     get news_article_url, params: { article: 'https://news.google.com/rss/articles/test' }
 
@@ -377,8 +433,9 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
     stub_request(:get, /theguardian\.com/)
       .to_return(status: 200,
-                 body: '<html><body><p>Jeremy Hunt cut national insurance again in the budget.</p>' \
-                       '</body></html>',
+                 body: '<html><body><article>' \
+                       '<p>Jeremy Hunt cut national insurance again in the budget.</p>' \
+                       '</article></body></html>',
                  headers: { 'Content-Type' => 'text/html' })
   end
 end

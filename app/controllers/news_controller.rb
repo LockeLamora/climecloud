@@ -64,6 +64,7 @@ class NewsController < ApplicationController
     'Fast Company', 'PhoneArena', 'MedPage Today', 'GamesHub', 'KGW', 'Vogue Adria',
     'Medical Xpress', 'Institute for the Study of War', 'GameSpot', 'Benzinga',
     'Firstpost', 'Investing.com', 'MMORPG.com', 'SpaceDaily', 'Space War',
+    'Belfast Telegraph',
     # 401 or 402, want a subscription
     'Barron\'s', 'MarketWatch', 'People.com',
     # 429, rate limiting us
