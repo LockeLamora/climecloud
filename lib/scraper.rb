@@ -1,72 +1,158 @@
 # frozen_string_literal: true
 
-require 'wombat'
-require 'domainatrix'
+require 'article_rules'
 require 'net/http'
+require 'nokogiri'
 
 module Scraper
+  # A reader on a slow connection is already waiting. Without these a single unresponsive
+  # publisher held a worker for forty two seconds, and once for two minutes before dying.
+  OPEN_TIMEOUT_SECONDS = 5
+  READ_TIMEOUT_SECONDS = 8
+  # Publishers redirect between editions, to AMP, and to consent pages. Enough to follow
+  # the ordinary ones without chasing a loop.
+  MAX_REDIRECTS = 3
+  SEPARATOR = '<br /><br />'
+  # Furniture that sits inside the article container as often as outside it, and was being
+  # read as part of the story.
+  BOILERPLATE = 'script, style, noscript, nav, header, footer, aside, form, figcaption, iframe'
+  # Where an article usually sits, tried in order. Without this the fallback was every
+  # paragraph on the page, which meant cookie notices, related story teasers and the
+  # footer arrived as prose on a 240 pixel screen.
+  CONTAINERS = ['article', '[itemprop="articleBody"]', 'main', '.article-body',
+                '.article__body', '.story-body', '.post-content', '.entry-content'].freeze
+  # Bylines, datelines, photo captions and "Share this" are all shorter than a sentence.
+  MIN_PARAGRAPH_LENGTH = 40
+
+  # Anything the network can raise on the way to a page we do not control. Left
+  # unrescued, each of these was a 500 rather than a page saying it could not be opened.
+  NETWORK_ERRORS = [
+    Net::ReadTimeout, Net::OpenTimeout, EOFError, SocketError, Errno::ECONNRESET,
+    Errno::ECONNREFUSED, Errno::EHOSTUNREACH, OpenSSL::SSL::SSLError, URI::InvalidURIError
+  ].freeze
+
+  # Returns the article text, or the reason it could not be given. One fetch: the page
+  # used to be requested twice, once to check the status and again to read it, and the
+  # status was checked on the URL before redirects rather than the page finally served.
+  # That let a 403 through on a site that redirected elsewhere.
   def self.scrape_article(url, useragent)
-    res = Net::HTTP.get_response(URI(url), { 'user-agent' => useragent })
-    unless res.code.start_with?('2', '3')
-      Rails.logger.warn("Cannot load page - response #{res.code} - url #{url}")
-      return I18n.t('news.cannot_load')
+    response = fetch(url, useragent)
+    return { error: I18n.t('news.cannot_load') } if response.nil?
+
+    text = extract_text(response.body, response.uri.to_s)
+    if text.blank?
+      # Logged because it was not: a page that loads and yields no paragraphs took this
+      # path silently, so there was no way to tell how often the CSS rules come up empty
+      # against a redesign, or which sites need a rule of their own.
+      Rails.logger.warn("Cannot parse page - no text matched - url #{response.uri}")
+      return { error: I18n.t('news.cannot_parse') }
     end
 
-    rule = resolve_article_rules(url)
-
-    # Wombat joins base_url and path, so passing the whole article URL as the base
-    # with a path of "/" appended a trailing slash and asked for a page that does not
-    # exist. Split the URL instead and hand it the two halves it expects.
-    address = URI(url)
-    host = "#{address.scheme}://#{address.host}"
-    route = address.path.presence || '/'
-    route = "#{route}?#{address.query}" if address.query.present?
-
-    begin
-      Wombat.set_user_agent(useragent)
-      out = Wombat.crawl do
-        base_url host
-        path route
-        text({ css: rule }, :list)
-      end
-    rescue StandardError => e
-      Rails.logger.warn("Cannot parse page - #{e.class}: #{e.message} - url #{url}")
-      return I18n.t('news.cannot_parse')
-    end
-
-    return I18n.t('news.cannot_parse') if out['text'].blank?
-
-    out['text'].join('<br /><br />')
+    { text: text }
   end
 
-  def self.resolve_article_rules(url)
-    parsedurl = Domainatrix.parse(url)
-    domain = "#{parsedurl.domain}.#{parsedurl.public_suffix}"
+  # Redirects are followed here rather than by the parser, so the status of the page
+  # actually served is the one that decides whether there is anything to read.
+  def self.fetch(url, useragent, redirects = 0)
+    response = get(url, useragent)
+    return nil if response.nil?
 
-    rules = {
-      'cnbc.com' => '.PageBuilder-article p',
-      'independent.co.uk' => '#main p',
-      'cnn.com' => '.article__content p',
-      'politicshome.com' => '.newsview p',
-      'gov.uk' => '.news-article p',
-      'itv.com' => '#main-content p',
-      'newscientist.com' => '.ArticleContent p',
-      'dailymail.co.uk' => "[itemprop='articleBody'] p",
-      'indiatimes.com' => '.clearfix *',
-      'politico.eu' => '.article__content p',
-      'dailyrecord.co.uk' => '.article-body p',
-      'foxnews.com' => '.article-body p',
-      'iflscience.com' => '.article-content p',
-      'nytimes.com' => '.StoryBodyCompanionColumn p',
-      'businessinsider.com' => '.content-lock-content p',
-      'usatoday.com' => '.content-well p',
-      'cbsnews.com' => '.content__body p',
-      'nypost.com' => '.entry-content p',
-      'ynetnews.com' => '.public-DraftEditor-content',
-      'pbs.org' => '.body-text p',
-      'telegraph.co.uk' => '.articleBodyText',
-      'time.com' => '#article-body p'
-    }
-    rules.key?(domain) ? rules[domain] : 'p'
+    if response.is_a?(Net::HTTPRedirection) && redirects < MAX_REDIRECTS
+      location = response['location']
+      return nil if location.blank?
+
+      return fetch(URI.join(url, location).to_s, useragent, redirects + 1)
+    end
+
+    unless response.is_a?(Net::HTTPSuccess)
+      Rails.logger.warn("Cannot load page - response #{response.code} - url #{url}")
+      return nil
+    end
+
+    response
+  end
+
+  def self.get(url, useragent)
+    address = URI(url)
+    request = Net::HTTP::Get.new(address, { 'user-agent' => useragent })
+
+    Net::HTTP.start(address.host, address.port,
+                    use_ssl: address.scheme == 'https',
+                    open_timeout: OPEN_TIMEOUT_SECONDS,
+                    read_timeout: READ_TIMEOUT_SECONDS) do |http|
+      http.request(request)
+    end
+  rescue *NETWORK_ERRORS => e
+    Rails.logger.warn("Cannot reach page - #{e.class}: #{e.message} - url #{url}")
+    nil
+  end
+
+  def self.extract_text(body, url)
+    document = Nokogiri::HTML(body)
+
+    # Read before the boilerplate is stripped, because it lives in a script tag.
+    structured = readable(structured_body(document))
+    return structured.join(SEPARATOR) if structured.any?
+
+    document.css(BOILERPLATE).each(&:remove)
+    from_markup(document, url).join(SEPARATOR)
+  rescue StandardError => e
+    Rails.logger.warn("Cannot parse page - #{e.class}: #{e.message} - url #{url}")
+    nil
+  end
+
+  # The schema.org articleBody most publishers embed for search engines. It is the story
+  # without the furniture, so it beats anything guessed from the markup.
+  def self.structured_body(document)
+    document.css('script[type="application/ld+json"]').each do |script|
+      body = article_body(JSON.parse(script.text))
+      return body.split(/\n+/) if body.present?
+    rescue JSON::ParserError
+      next
+    end
+
+    []
+  end
+
+  # Publishers nest it differently: a bare object, a list of them, or under @graph.
+  def self.article_body(data)
+    case data
+    when Array then data.filter_map { |entry| article_body(entry) }.first
+    when Hash
+      return data['articleBody'] if data['articleBody'].is_a?(String)
+
+      article_body(data['@graph']) if data['@graph']
+    end
+  end
+
+  def self.from_markup(document, url)
+    paragraphs = candidates(document, url)
+    text = readable(paragraphs)
+    # Some articles really are a handful of one line paragraphs, so a filter that leaves
+    # nothing behind hands back what it was given rather than an empty page.
+    text.any? ? text : tidy(paragraphs).uniq
+  end
+
+  # A rule written for the domain wins. Otherwise look where an article usually is before
+  # settling for every paragraph on the page.
+  def self.candidates(document, url)
+    rule = ArticleRules.for(url)
+    return document.css(rule).map(&:text) unless rule == ArticleRules::DEFAULT
+
+    CONTAINERS.each do |container|
+      found = document.css("#{container} #{ArticleRules::DEFAULT}").map(&:text)
+      return found if readable(found).any?
+    end
+
+    document.css(ArticleRules::DEFAULT).map(&:text)
+  end
+
+  def self.readable(paragraphs)
+    tidy(paragraphs).reject { |text| text.length < MIN_PARAGRAPH_LENGTH }.uniq
+  end
+
+  # Newspaper markup is full of line breaks and indentation that arrive as whitespace.
+  def self.tidy(paragraphs)
+    paragraphs.to_a.map { |text| text.to_s.gsub(/\s+/, ' ').strip }.reject(&:blank?)
   end
 end

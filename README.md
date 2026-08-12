@@ -10,13 +10,6 @@ Current functionality includes route navigation via maps, weather forecasting an
 
 This is all in a lightweight text-based format which is  sized to suit screens of 240x320px with minimal user interaction required due to the lack of touchscreen controls or a qwerty keyboard.
 
-**Technologies used**
-
-- Google maps
-- <https://www.newscatcherapi.com/> (For your News feeds)
-- <https://open-meteo.com> (For your Weather forecasting)
-- <https://www.geoapify.com/> (To help determine your location)
-- Ruby on rails
 
 **Sample images**
 

@@ -2,11 +2,13 @@
 <div class='news_topics'>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <%= @title %><br /><br />
-    <%= link_to 'Headlines', news_path({section: 'HEADLINES'}) %> |
-    <%= link_to 'World', news_path({section: 'WORLD'}) %> |  <%= link_to 'Nation', news_path({section:'NATION'}) %> |
-    <%= link_to 'Business', news_path({section: 'BUSINESS'}) %> |  <%= link_to 'Technology', news_path({section:'TECHNOLOGY'}) %> |
-    <%= link_to 'Entertainment', news_path({section: 'ENTERTAINMENT'}) %> |  <%= link_to 'Science', news_path({section:'SCIENCE'}) %> |
-    <%= link_to 'Sports', news_path({section: 'SPORTS'}) %> |  <%= link_to 'Health', news_path({section:'HEALTH'}) %>
+<%# Nine sections, nine digits, in the reader's own language. They were nine untranslated %>
+<%# links you had to scroll past on a keypad, which is the one thing this app never asks %>
+<%# anyone to do. Zero stays free for the menu, as everywhere else. %>
+<% Gnews::SECTIONS.each_with_index do |section, index| %>
+<%= link_to "#{index + 1} #{t("news.section.#{section.downcase}")}",
+            news_path(section: section), accesskey: (index + 1).to_s %><br />
+<% end %>
 </div>
 <br />
 <div class='news_search'>
@@ -23,7 +25,13 @@
             <b><%= item[:item_title] %></b><br />
             <ul>
             <% item[:articles].each do |article| %>
-                <%= link_to article[:article_title], news_article_path(article: article[:article_url]) %>
+                <%# The section travels with the link so the way back lands on the list %>
+                <%# actually being read, and the headline so an article that will not open %>
+                <%# can still say what it was about. %>
+                <%= link_to article[:article_title],
+                            news_article_path(article: article[:article_url],
+                                              section: @section,
+                                              title: article[:article_title]) %>
             <% end %>
             </ul>
             <br />

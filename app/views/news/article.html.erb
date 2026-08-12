@@ -1,5 +1,13 @@
 <div class="news">
-<%= link_to t('news.source_link'), sanitize(@article_url.html_safe)  %><br />
+<%# Roughly a third of articles cannot be opened here: publishers refuse the request, or %>
+<%# want a subscription. Saying only "cannot load page" wasted the trip. The headline came %>
+<%# from the feed, so it can still say what the story was, and the source link still works. %>
+<% if @error.present? %>
+<% if @title.present? %><b><%= @title %></b><br /><br /><% end %>
+<span class='error'><%= @error %></span><br /><br />
+<% end %>
+<%= link_to t('news.source_link'), sanitize(@article_url.html_safe) %><br />
+<%= link_to "9 #{t('news.back_to_headlines')}", news_path(section: @section), accesskey: "9" %><br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %><br />
 <%= @article %>
 </div>
