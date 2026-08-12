@@ -7,6 +7,8 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
                      'lat=52.3;lon=1.17;timezone_name=Europe%2FLondon'
 
   test 'should load the hourly weather forecast page successfully when cookie is set' do
+    stub_forecast
+
     get '/forecast/hourly',
         headers: { 'COOKIE' => 'city=cityname;state=statename;country_code=gb;'\
         'lat=52.3;lon=1.17;timezone=Europe%2FLondon;metrics=hybrid' }
@@ -17,6 +19,8 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should load the daily weather forecast page successfully when cookie is set' do
+    stub_forecast
+
     get '/forecast/daily',
         headers: { 'COOKIE' => 'city=cityname;state=statename;country_code=gb;'\
         'lat=52.3;lon=1.17;timezone=Europe%2FLondon;metrics=hybrid' }

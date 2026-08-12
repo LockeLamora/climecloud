@@ -17,15 +17,13 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    WebMock.disable_net_connect!(
-      allow_localhost: true,
-      allow: ['maps.googleapis.com',
-              'api.geoapify.com',
-              'api.open-meteo.com',
-              'news.google.com',
-              'www.theguardian.com',
-              'www.bbc.com']
-    )
+    # Nothing but the test server itself. The allow list that used to sit here named six
+    # API hosts, which meant a test that forgot to stub one quietly made a real call and
+    # passed on someone else's data: the settings tests geocoded live, so their assertions
+    # had to be loosened to tolerate whatever came back, they needed real credentials, and
+    # they could not run offline at all. Raising on an unstubbed request turns a forgotten
+    # stub back into a failure that says so.
+    WebMock.disable_net_connect!(allow_localhost: true)
 
     # config/master.key is not in the repo, so credentials do not decrypt under test.
     # Anything reaching an API needs stand-in keys to get as far as the stubbed request.
@@ -62,7 +60,7 @@ module ActiveSupport
       page.driver.browser.manage.add_cookie(name: 'state', value: 'Ile-de-France')
       page.driver.browser.manage.add_cookie(name: 'show_map', value: '1')
       page.driver.browser.manage.add_cookie(name: 'country_code', value: 'fr')
-      page.driver.browser.manage.add_cookie(name: 'news_default_section', value: 'Headlines')
+      page.driver.browser.manage.add_cookie(name: 'news_default_section', value: 'HEADLINES')
     end
   end
 end

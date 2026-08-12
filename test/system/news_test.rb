@@ -18,7 +18,9 @@ class NewsTest < ApplicationSystemTestCase
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
     visit news_url
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('science-news.xml').read)
-    click_link('Science')
+    # Scoped to the topic list: the headlines below it are published by Science@NASA and
+    # Science News Magazine, so an unscoped link name matches three things.
+    within('.news_topics') { click_link('Science') }
     assert_text "'Nightmarish' sea lizard that roamed the seas 66"
   end
 
@@ -39,7 +41,9 @@ class NewsTest < ApplicationSystemTestCase
 
     stub_request(:get, /bbc\.com/)
       .to_return(status: 200,
-                 body: '<html><body><p>BBC programmes on iPlayer</p></body></html>',
+                 body: '<html><body><article>' \
+                       '<p>BBC programmes on iPlayer</p>' \
+                       '</article></body></html>',
                  headers: { 'Content-Type' => 'text/html' })
   end
 end

@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "Morocco",
+        "country_code": "MA",
+        "city": "Tangier",
+        "postcode": "90000",
+        "formatted": "90000 Tangier, Morocco",
+        "lat": 35.7810771,
+        "lon": -5.8134525,
+        "result_type": "postcode"
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "Spain",
+        "country_code": "ES",
+        "city": "Bilbao",
+        "postcode": "48001",
+        "formatted": "48001 Bilbao, Spain",
+        "lat": 43.2630126,
+        "lon": -2.9349852,
+        "result_type": "postcode"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "France",
+        "country_code": "FR",
+        "state": "Ile-de-France",
+        "city": "Versailles",
+        "postcode": "78000",
+        "formatted": "78000 Versailles, France",
+        "lat": 48.8035403,
+        "lon": 2.1266886,
+        "result_type": "postcode"
+      }
+    }
+  ]
+}

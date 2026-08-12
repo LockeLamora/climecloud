@@ -1,0 +1,24 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "country": "France",
+        "country_code": "fr",
+        "state": "Ile-de-France",
+        "county": "Yvelines",
+        "city": "Versailles",
+        "postcode": "78000",
+        "formatted": "Versailles, France",
+        "lat": 48.8035403,
+        "lon": 2.1266886,
+        "timezone": {
+          "name": "Europe/Paris",
+          "offset_STD": "+01:00",
+          "offset_DST": "+02:00"
+        }
+      }
+    }
+  ]
+}
