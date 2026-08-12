@@ -80,7 +80,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   test 'falls back to a relay when open-meteo refuses on the daily limit' do
     stub_request(:get, /api\.open-meteo\.com/)
       .to_return(status: 429, body: '{"error":true,"reason":"Daily API request limit exceeded."}')
-    stub_request(:get, /allorigins\.win/)
+    stub_request(:get, /r\.jina\.ai/)
       .to_return(status: 200, body: forecast_body.to_json, headers: { 'Content-Type' => 'application/json' })
 
     get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
@@ -88,12 +88,16 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match 'Hourly forecast', @response.body
     assert_no_match(/weather service is busy/, @response.body)
+    # That relay takes its target in the path rather than a query string, and needs the
+    # header or it answers with the page rewritten for a language model.
+    assert_requested :get, %r{r\.jina\.ai/https://api\.open-meteo\.com},
+                     headers: { 'x-return-format' => 'text' }
   end
 
   test 'tries the next relay when the first one is no help either' do
     stub_request(:get, /api\.open-meteo\.com/).to_return(status: 429, body: '{"error":true}')
-    stub_request(:get, /allorigins\.win/).to_return(status: 503, body: '')
-    stub_request(:get, /codetabs\.com/)
+    stub_request(:get, /r\.jina\.ai/).to_return(status: 503, body: '')
+    stub_request(:get, /allorigins\.win/)
       .to_return(status: 200, body: forecast_body.to_json, headers: { 'Content-Type' => 'application/json' })
 
     get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
@@ -109,6 +113,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
 
     assert_response :success
+    assert_not_requested :get, /r\.jina\.ai/
     assert_not_requested :get, /allorigins\.win/
     assert_not_requested :get, /codetabs\.com/
   end
@@ -116,6 +121,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
   test 'still says the service is busy when every relay fails too' do
     stub_request(:get, /api\.open-meteo\.com/)
       .to_return(status: 429, body: '{"error":true,"reason":"Daily API request limit exceeded."}')
+    stub_request(:get, /r\.jina\.ai/).to_return(status: 503, body: '')
     stub_request(:get, /allorigins\.win/).to_return(status: 503, body: '')
     stub_request(:get, /codetabs\.com/).to_return(status: 503, body: '')
 
@@ -126,6 +132,39 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     # The location is fine, so it must not be what gets blamed.
     assert_match 'Your location is saved', @response.body
     assert_no_match(/Set your location again/, @response.body)
+  end
+
+  # The relays below the first take their target escaped in a query string. Sending it
+  # raw put a bare ? and & into their URL and they answered about a truncated request.
+  test 'hands the target to each relay the way that relay wants it' do
+    stub_request(:get, /api\.open-meteo\.com/).to_return(status: 429, body: '{"error":true}')
+    stub_request(:get, /r\.jina\.ai/).to_return(status: 503, body: '')
+    stub_request(:get, /allorigins\.win/)
+      .to_return(status: 200, body: forecast_body.to_json, headers: { 'Content-Type' => 'application/json' })
+
+    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
+
+    assert_response :success
+    # The escaped ampersands are the point: unescaped, everything after the first one
+    # would be read as a parameter of the relay rather than part of the target.
+    assert_requested :get, %r{allorigins\.win/raw\?url=https://api\.open-meteo\.com.*%26longitude}
+  end
+
+  # A relay that hangs used to cost its full timeout each, so three of them meant the
+  # busy message arrived long after the reader had given up on the page.
+  test 'stops trying relays once the time budget is spent' do
+    stub_request(:get, /api\.open-meteo\.com/).to_return(status: 429, body: '{"error":true}')
+    stub_request(:get, /r\.jina\.ai/).to_return { raise Net::ReadTimeout }
+    stub_request(:get, /allorigins\.win/).to_return { raise Net::ReadTimeout }
+    stub_request(:get, /codetabs\.com/).to_return { raise Net::ReadTimeout }
+
+    started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};metrics=metric" }
+    elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
+
+    assert_response :success
+    assert_match 'weather service is busy', @response.body
+    assert_operator elapsed, :<, Weather::PROXY_BUDGET_SECONDS + Weather::PROXY_TIMEOUT_SECONDS
   end
 
   test 'sends a visitor with no saved location back to settings' do
