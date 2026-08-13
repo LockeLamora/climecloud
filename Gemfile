@@ -22,8 +22,10 @@ gem 'domainatrix', '~> 0.0.11'
 gem 'rexml', '~> 3.3', '>= 3.3.9'
 gem 'wombat', '~> 3.0.0'
 
-# required for country selection dropdown
-gem 'country_select', '~> 8.0'
+# Country names, translated, for confirming which country a postcode is in. Not
+# country_select: there is no country dropdown any more, since the postcode answers the
+# question itself, so only the name lookup this gem sits on top of is still wanted.
+gem 'countries', '~> 5.7'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
@@ -32,18 +34,6 @@ gem 'puma', '>= 5.0'
 # because the browsers this is built for run little or none of it. Turbo was here and
 # was worse than useless: it fetched links on hover, and since saving a stop was a GET,
 # moving a pointer down a list of nearby stops saved every stop it passed.
-
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem 'jbuilder'
-
-# Use Redis adapter to run Action Cable in production
-# gem "redis", ">= 4.0.1"
-
-# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
-# gem "kredis"
-
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[windows jruby]
@@ -56,16 +46,8 @@ group :development, :test do
   gem 'debug', platforms: %i[mri windows]
 end
 
-group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem 'web-console'
-
-  # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
-  # gem "rack-mini-profiler"
-
-  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
-  # gem "spring"
-end
+# No development-only group. web-console was the only thing in it, and it works by
+# injecting JavaScript into error pages, which is no use for a browser that runs none.
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]

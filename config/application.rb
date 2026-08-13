@@ -1,17 +1,19 @@
 require_relative "boot"
 
-# Deliberately not "rails/all". The app has no tables and no models, so Active
-# Record is dropped, and with it the frameworks that are built on top of it:
-# Active Storage, Action Text and Action Mailbox. Loading Active Record would
-# open a database connection on boot and require a server to be running to
-# serve a single page.
+# Deliberately not "rails/all", which loads ten frameworks this app has no use for and
+# pays for on every boot. What is left is what actually serves a page.
+#
+# Active Record is out because there are no tables and no models, and loading it opens a
+# database connection on boot: a server had to be running to serve a page that reads
+# nothing. Active Storage, Action Text and Action Mailbox are built on it and went too.
+#
+# Action Cable needs a JavaScript client, and there is none: see the Gemfile. Action
+# Mailer sends nothing and Active Job enqueues nothing; both were empty base classes from
+# the app template.
 require "rails"
 
-require "action_cable/engine"
 require "action_controller/railtie"
-require "action_mailer/railtie"
 require "action_view/railtie"
-require "active_job/railtie"
 require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -35,6 +37,10 @@ module Climecloud
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Nothing sets a flash message; every page says what happened in its own body. The
+    # session itself stays, because the forgery token on each form is stored in it.
+    config.middleware.delete ActionDispatch::Flash
 
     config.i18n.available_locales = %w[en hi bn id ur ar sw ru tr vi fr de es it nl pt pl]
     config.i18n.default_locale = :en
