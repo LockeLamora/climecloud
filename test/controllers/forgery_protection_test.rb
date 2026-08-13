@@ -22,9 +22,16 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
   setup do
     @protection_was = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
+    # Every departures action is gated on the Transitland key, and credentials are blank
+    # in tests by design — see test_helper.rb. Without a stand-in each request redirects
+    # to the menu.
+    stub_api_credentials
   end
 
-  teardown { ActionController::Base.allow_forgery_protection = @protection_was }
+  teardown do
+    ActionController::Base.allow_forgery_protection = @protection_was
+    unstub_api_credentials
+  end
 
   test 'the settings form saves a location rather than being rejected' do
     stub_geocode
@@ -35,13 +42,11 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_absolute_action '/settings_save'
 
-    with_api_credentials do
-      post '/settings_save', params: {
-        authenticity_token: token_from(response.body),
-        postcode: 'zz1 1zz', country_code: 'GB', metrics: 'hybrid',
-        mapimages: '1', news_default_section: 'HEADLINES'
-      }
-    end
+    post '/settings_save', params: {
+      authenticity_token: token_from(response.body),
+      postcode: 'zz1 1zz', country_code: 'GB', metrics: 'hybrid',
+      mapimages: '1', news_default_section: 'HEADLINES'
+    }
 
     assert_response :success
     assert_match 'Location saved as', response.body
@@ -94,12 +99,10 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
     stub_reverse_lookup
 
     get '/settings'
-    with_api_credentials do
-      post '/settings_save', params: {
-        authenticity_token: token_from(response.body),
-        postcode: 'zz1 1zz', country_code: 'GB', metrics: 'hybrid', news_default_section: 'HEADLINES'
-      }
-    end
+    post '/settings_save', params: {
+      authenticity_token: token_from(response.body),
+      postcode: 'zz1 1zz', country_code: 'GB', metrics: 'hybrid', news_default_section: 'HEADLINES'
+    }
 
     assert_response :success
     assert_absolute_action '/settings_language'

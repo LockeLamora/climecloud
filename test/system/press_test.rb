@@ -29,7 +29,14 @@ class PressTest < ApplicationSystemTestCase
     seed_cookies
   end
 
-  teardown { unstub_api_credentials }
+  teardown do
+    unstub_api_credentials
+    # Capybara resets cookies and the session between tests but not devtools overrides, so
+    # an emulated media feature set in one test silently applies to every test that runs
+    # after it — which showed up as the sweep being reported as `none` at random,
+    # depending on the seed.
+    clear_emulated_media
+  end
 
   test 'a pressed link stays inverted and animating for the whole request' do
     visit departures_url
@@ -41,9 +48,45 @@ class PressTest < ApplicationSystemTestCase
     assert_equal 'A', state['tag']
     assert_equal '1 Northgate', state['text']
     assert state['focus'], 'focus is what spans the wait; without it there is no hook at all'
-    assert_equal 'rgb(255, 255, 255)', state['colour'], 'pressed text must not stay blue on blue'
-    assert_equal 'rgb(0, 0, 255)', state['background']
-    assert_equal 'press-sweep', state['animation'], 'the pointer press should still be animating'
+    assert_equal 'press-reveal', state['animation'], 'the pointer press should still be animating'
+    # The inversion arrives as a sweep, so the blue is a growing background layer rather
+    # than a flat colour, and the glyphs are painted by layers clipped to the text.
+    assert_equal 'rgba(0, 0, 0, 0)', state['fill'], 'the glyphs are painted by the clipped layers'
+    assert_includes state['clip'].to_s, 'text'
+    assert_match(/rgb\(0, 0, 255\)/, state['image'], 'the blue that sweeps in must be a background layer')
+  end
+
+  # Mid-crossing the line is half inverted: white on blue up to the boundary, blue on
+  # white after it. Read off the animation rather than a screenshot, by parking it at a
+  # fraction of its own duration.
+  test 'the inversion arrives progressively rather than all at once' do
+    visit departures_url
+
+    boundaries = [0.2, 0.5, 0.85].map { |fraction| boundary_at(fraction) }
+
+    assert_operator boundaries[0], :<, boundaries[1], "the sweep did not advance: #{boundaries.inspect}"
+    assert_operator boundaries[1], :<, boundaries[2], "the sweep did not advance: #{boundaries.inspect}"
+    assert_operator boundaries[0], :<, 40, 'it should still be near the start a fifth of the way in'
+    assert_operator boundaries[2], :>, 60, 'it should be most of the way across by the end'
+  end
+
+  # A reader who asked for no motion still has to see the press. Getting this wrong is
+  # invisible in the CSS: dropping background-image alone leaves one layer, so a
+  # three-value background-clip collapses to `text` and the blue is clipped to the glyphs,
+  # which renders white letters on a white page.
+  test 'reduced motion holds a readable inversion instead of animating' do
+    emulate_reduced_motion
+    visit departures_url
+
+    link = find('a', text: '1 Northgate')
+    page.execute_script('arguments[0].focus()', link)
+
+    assert page.evaluate_script("matchMedia('(prefers-reduced-motion: reduce)').matches"),
+           'the emulation did not take, so this proves nothing'
+    assert_equal 'none', style(link, 'animationName')
+    assert_equal 'border-box', style(link, 'backgroundClip'), 'blue clipped to the glyphs is invisible'
+    assert_equal 'rgb(0, 0, 255)', style(link, 'backgroundColor')
+    assert_equal 'rgb(255, 255, 255)', style(link, 'webkitTextFillColor')
   end
 
   # The keypad is the point of this app, so a number key has to get everything a click
@@ -58,9 +101,8 @@ class PressTest < ApplicationSystemTestCase
     state = recorded_state
 
     assert_equal '1 Northgate', state['text']
-    assert_equal 'rgb(255, 255, 255)', state['colour']
-    assert_equal 'rgb(0, 0, 255)', state['background']
-    assert_equal 'press-sweep', state['animation'], 'the keypad must get the sweep, not just the inversion'
+    assert_equal 'press-reveal', state['animation'], 'the keypad must get the sweep, not just the inversion'
+    assert_match(/rgb\(0, 0, 255\)/, state['image'])
     assert_match(/departures_stop/, page.current_url, 'the access key must still follow the link')
   end
 
@@ -73,9 +115,9 @@ class PressTest < ApplicationSystemTestCase
 
     page.execute_script('arguments[0].focus()', button)
 
-    assert_equal 'rgb(255, 255, 255)', style(button, 'color')
-    assert_equal 'rgb(0, 0, 255)', style(button, 'backgroundColor')
-    assert_equal 'press-sweep', style(button, 'animationName')
+    assert_equal 'press-reveal', style(button, 'animationName')
+    assert_match(/rgb\(0, 0, 255\)/, style(button, 'backgroundImage'))
+    assert_includes style(button, 'backgroundClip'), 'text'
   end
 
   private
@@ -91,11 +133,39 @@ class PressTest < ApplicationSystemTestCase
         const s = el ? getComputedStyle(el) : null;
         sessionStorage.setItem('press', JSON.stringify({
           tag: el && el.tagName, text: el && el.textContent.trim(),
-          focus: el && el.matches(':focus'),
-          colour: s && s.color, background: s && s.backgroundColor, animation: s && s.animationName
+          focus: el && el.matches(':focus'), animation: s && s.animationName,
+          fill: s && s.webkitTextFillColor, clip: s && s.backgroundClip,
+          image: s && s.backgroundImage
         }));
       });
     JS
+  end
+
+  # Where the blue has reached, as a percentage of the line, with the animation parked at
+  # a fraction of its duration by way of a negative delay.
+  def boundary_at(fraction)
+    link = find('a', text: '1 Northgate')
+    page.execute_script(<<~JS, link, fraction)
+      const el = arguments[0], f = arguments[1];
+      el.focus();
+      const seconds = parseFloat(getComputedStyle(el).animationDuration);
+      el.style.animationDelay = `-${seconds * f}s`;
+      el.style.animationPlayState = 'paused';
+    JS
+    style(link, 'backgroundSize').to_s[/([\d.]+)%/, 1].to_f
+  end
+
+  def emulate_reduced_motion
+    page.driver.browser.execute_cdp(
+      'Emulation.setEmulatedMedia',
+      features: [{ 'name' => 'prefers-reduced-motion', 'value' => 'reduce' }]
+    )
+  end
+
+  def clear_emulated_media
+    page.driver.browser.execute_cdp('Emulation.setEmulatedMedia', features: [])
+  rescue StandardError
+    nil # no session left to clean up
   end
 
   def recorded_state

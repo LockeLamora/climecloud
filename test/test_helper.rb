@@ -20,8 +20,18 @@ module ActiveSupport
     # stub back into a failure that says so.
     WebMock.disable_net_connect!(allow_localhost: true)
 
-    # config/master.key is not in the repo, so credentials do not decrypt under test.
-    # Anything reaching an API needs stand-in keys to get as far as the stubbed request.
+    # Credentials are empty for every test unless a test asks for them.
+    #
+    # config/master.key is on a developer machine and is not in the repo, so credentials
+    # decrypt here and do not decrypt on a CI runner. A test that forgot stub_api_credentials
+    # therefore passed locally and failed on GitHub, which happened more than once and cost
+    # more time each go. Blanking them by default makes the local run behave like the runner,
+    # so a missing stub fails immediately and in the place where it is cheap to fix.
+    #
+    # Anything reaching an API needs stand-in keys to get as far as its stubbed request:
+    # call stub_api_credentials in setup, or wrap a section in with_api_credentials.
+    setup { unstub_api_credentials }
+
     # Defined by hand rather than with Minitest's stub, which handed back nil here.
     def stub_api_credentials
       credentials = ActiveSupport::OrderedOptions.new
@@ -30,13 +40,13 @@ module ActiveSupport
         credentials[service].api_key = "test-#{service}-key"
       end
 
-      Rails.application.define_singleton_method(:credentials) { credentials }
+      replace_credentials_with(credentials)
     end
 
+    # Empty rather than the real thing. Removing the override would hand back whatever
+    # config/master.key happens to decrypt, which is the difference this is here to erase.
     def unstub_api_credentials
-      singleton = Rails.application.singleton_class
-
-      singleton.send(:remove_method, :credentials) if singleton.method_defined?(:credentials)
+      replace_credentials_with(ActiveSupport::OrderedOptions.new)
     end
 
     def with_api_credentials
@@ -44,6 +54,12 @@ module ActiveSupport
       yield
     ensure
       unstub_api_credentials
+    end
+
+    private
+
+    def replace_credentials_with(credentials)
+      Rails.application.define_singleton_method(:credentials) { credentials }
     end
 
     def set_cookies

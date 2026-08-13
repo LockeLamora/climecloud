@@ -1,30 +1,26 @@
 /* What a press looks like while the request is in flight.
  *
  * Nothing on screen used to change between pressing a link and the next page arriving,
- * and over 4G that is long enough to doubt the keypress registered. The pressed line
- * inverts and a highlight sweeps across it until the new page replaces it.
+ * and over 4G that is long enough to doubt the keypress registered. The inversion now
+ * arrives as a sweep: blue floods the line from the left and the text turns white as it
+ * is covered, over and over until the new page replaces it.
  *
  * Keyed on :focus, not :active. :active lasts only from press to release and the
- * navigation begins on release, so the entire wait happened after :active had gone: it
- * showed as one flash and then nothing at all.
+ * navigation begins on release, so the whole wait happened after :active had gone: it
+ * showed as one flash and then nothing.
  *
- * Every route in deliberately: pointer, Enter, and the number keys. Chrome counts an
- * access key as keyboard focus, so splitting pointer presses out with
- * :not(:focus-visible) — which is the only way CSS can tell a press from a rest —
- * silently dropped the sweep for the keypad, which is the input this app is built around.
- * The cost of not splitting is that a link left sitting under focus keeps sweeping as
- * though it were loading. On a keypad that is the same moment as pressing it, and there
- * is no CSS state for "a request is in flight" to do better with.
+ * Every route in deliberately: pointer, Enter and the number keys. Chrome reports an
+ * access key as keyboard focus, so :not(:focus-visible) — the only way CSS can tell a
+ * press from a rest — silently drops the sweep for the keypad, which is the input this
+ * app is built around. The cost is that a link left sitting under focus keeps sweeping;
+ * there is no CSS state for "a request is in flight" to do better with.
  *
  * a:visited:focus is not redundant: components/text.css keeps followed links blue, sorts
  * after this file, and `a:visited` weighs the same as `a:focus`.
  */
 
-@keyframes press-sweep {
-  from { background-position: -45% 0; }
-  to   { background-position: 145% 0; }
-}
-
+/* The plain inversion, which every browser can manage. Also the fallback: if the sweep
+ * below is not supported, a press still reads unmistakably. */
 a:focus,
 a:visited:focus,
 form.inline-action button:focus {
@@ -32,32 +28,79 @@ form.inline-action button:focus {
   background-color: blue;
   text-decoration: none;
   outline: none;
-
-  /* A band of lighter blue travelling left to right over the inverted line. Sized and
-   * positioned as a background so it costs no element and cannot shift layout. */
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.38),
-    rgba(255, 255, 255, 0)
-  );
-  background-repeat: no-repeat;
-  background-size: 40% 100%;
-  animation: press-sweep 1.1s linear infinite;
 }
 
-/* The credit line is deliberately quiet, so it inverts to match itself rather than
- * flaring blue at the bottom of every page. */
 .credit a:focus {
   background-color: #767676;
 }
 
-/* Keep the inversion, drop the travelling highlight. The press still reads. */
+/* The sweep itself. Three background layers, no extra element and no extra markup:
+ *
+ *   1. white, clipped to the glyphs, growing  — the text that has been covered
+ *   2. blue,  clipped to the glyphs, full     — the text not yet reached
+ *   3. blue,  filling the box, growing        — the block arriving under both
+ *
+ * Layer one paints over layer two, so the glyphs turn white exactly as far as the block
+ * has travelled. The alternative was an overlay carrying a copy of the text through
+ * content: attr(data-text), which would mean adding that attribute to every link in the
+ * app; and painting the block alone leaves blue text on blue ground until the sweep
+ * passes it.
+ *
+ * Gated on background-clip: text. Without the guard, a browser that ignores it would
+ * apply the transparent fill and render nothing at all.
+ */
+@keyframes press-reveal {
+  from { background-size: 0 100%, 100% 100%, 0 100%; }
+  to   { background-size: 100% 100%, 100% 100%, 100% 100%; }
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  a:focus,
+  a:visited:focus,
+  form.inline-action button:focus {
+    background-color: transparent;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-image:
+      linear-gradient(#fff, #fff),
+      linear-gradient(blue, blue),
+      linear-gradient(blue, blue);
+    -webkit-background-clip: text, text, border-box;
+    background-clip: text, text, border-box;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    animation: press-reveal 1.4s linear infinite;
+  }
+
+  .credit a:focus {
+    background-image:
+      linear-gradient(#fff, #fff),
+      linear-gradient(#767676, #767676),
+      linear-gradient(#767676, #767676);
+  }
+}
+
+/* No motion: hold the finished state, which is the plain inversion.
+ *
+ * background-clip has to be put back as well, and not only the image. Dropping to
+ * background-image: none leaves a single layer, so a three-value background-clip
+ * collapses to its first value — text — and the blue is then clipped to the glyph shapes
+ * instead of filling the line: white letters on a white page, invisible.
+ */
 @media (prefers-reduced-motion: reduce) {
   a:focus,
   a:visited:focus,
   form.inline-action button:focus {
     animation: none;
     background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    background-color: blue;
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+  }
+
+  .credit a:focus {
+    background-color: #767676;
   }
 }

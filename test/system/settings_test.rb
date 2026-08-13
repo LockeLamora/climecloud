@@ -3,6 +3,13 @@
 require 'application_system_test_case'
 
 class SettingsTest < ApplicationSystemTestCase
+  # Geocoding reads a key off the credentials, which are blank in tests by design — see
+  # test_helper.rb. These two used to work only because a real config/master.key happened
+  # to be present, which is the same reason CI hands RAILS_MASTER_KEY to this job. Neither
+  # is needed: the HTTP is stubbed from fixtures, so stand-in keys are enough.
+  setup { stub_api_credentials }
+  teardown { unstub_api_credentials }
+
   test 'successfully sets user settings' do
     stub_postcode_search
     stub_reverse_lookup
