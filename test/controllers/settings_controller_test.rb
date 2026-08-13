@@ -31,7 +31,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
   test 'rejects a typo rather than asking which country it belongs to' do
     # What the live geocoder really returns for "abcdefg" once no country narrows it:
-    # postcodes in Morocco and Spain that have nothing to do with what was typed.
+    # postcodes in Morocco and Spain that have nothing to do with the input.
     stub_geocode('features' => [geocode_result('Abdelghaya Souahel, Morocco', country: 'ma',
                                                                               postcode: '32354'),
                                 geocode_result('Garrafe de Torio, Spain', country: 'es', postcode: '24891')])

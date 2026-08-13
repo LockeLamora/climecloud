@@ -1,8 +1,7 @@
-/* Only these two states. :hover was redundant with the bare `a`, and both it and
- * :active outranked the pressed style in components/press.css: this file is
- * concatenated after it and the selectors were the same weight, so blue text landed on
- * the blue pressed ground and the line read as blank. :visited has to stay or a
- * followed link goes purple, and press.css carries a matching :visited:active. */
+/* These two states only. This file is concatenated after components/press.css, so any
+ * state named here at the same specificity beats the pressed style: :hover would outrank
+ * it, and the bare `a` already covers hovering. :visited stays, or a followed link goes
+ * purple, and press.css carries a matching :visited:focus to outweigh it. */
 a, a:visited {
     color: blue;
   }
@@ -19,8 +18,8 @@ a.change-settings {
   color: red;
 }
 
-/* Attribution the data licence asks for, kept quiet enough not to compete with the
-   times above it. Small screens have no room for a footer, so it earns one line. */
+/* Attribution the data licence asks for, kept quiet enough not to compete with the times
+   above it. One line, because a 240px screen has no room for a footer. */
 .credit, .credit a, .credit a:visited {
   font-size: 0.75em;
   color: #767676;

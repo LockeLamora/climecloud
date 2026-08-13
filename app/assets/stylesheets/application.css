@@ -3,12 +3,8 @@
  * directory into one response, and require_self appends whatever is written below, so
  * anything added here overrides the components.
  *
- * There are deliberately no @import lines. This file used to declare its contents twice,
- * once through require_tree and again as three @imports, and the @imports did nothing:
- * require_self places them after other rules, and CSS requires a browser to ignore an
- * @import there. Chrome confirmed it — one request, no second fetch. Adding them back
- * would either stay dead or, if moved above the rules, turn one request into four on a
- * phone over 4G.
+ * No @import lines: they would either sit after these rules, where CSS requires a browser
+ * to ignore them, or above and turn one request into four on a phone over 4G.
  *
  *= require_tree .
  *= require_self

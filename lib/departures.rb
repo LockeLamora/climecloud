@@ -87,8 +87,9 @@ class Departures
 
   private
 
-  # The search comes back in no useful order, so the ten kept were an arbitrary ten and
-  # the stands of a nearby interchange lost their places to stops half a mile off.
+  # The search comes back in no useful order, so it is sorted by distance before the page
+  # is cut: the stands of a nearby interchange keep their places over stops half a mile
+  # off.
   def nearest_first(stops)
     stops.filter_map { |stop| stop_from(stop) }
          .sort_by { |stop| stop[:metres] }
@@ -124,9 +125,9 @@ class Departures
     nil
   end
 
-  # A station is a building rather than a boarding point. Transitland hangs departures
-  # off the platforms inside it, so offering the station itself only ever led to a page
-  # claiming nothing was due at a stop with buses standing in it.
+  # A station is a building rather than a boarding point, and Transitland hangs departures
+  # off the platforms inside it. Only boarding points are offered, so no stop can be shown
+  # with nothing due while buses stand in it.
   def stop_from(stop)
     return nil unless stop['location_type'].to_i.zero?
 
@@ -155,9 +156,9 @@ class Departures
     "#{name} (#{code})"
   end
 
-  # One stop can come back as several entries when more than one feed covers it, and
-  # reading only the first quietly dropped the departures held by the rest. Two feeds
-  # describing the same journey then arrive seconds apart, so identical rows collapse.
+  # One stop can come back as several entries when more than one feed covers it, so all of
+  # them are merged. Two feeds describing the same journey arrive seconds apart, so
+  # identical rows collapse.
   def merged_departures(body)
     (body['stops'] || []).flat_map { |stop| departures_at(stop) }
                          .sort_by { |departure| departure[:time] }

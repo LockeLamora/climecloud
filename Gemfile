@@ -10,8 +10,7 @@ gem 'rails', '~> 8.0.5', '>= 8.0.5.1'
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
 
-# No database gem. The app has no tables and Active Record is not loaded; see
-# config/application.rb.
+# No database gem: no tables, and Active Record is not loaded. See config/application.rb.
 
 # connection_pool 3.x is written in Ruby 3.4 syntax and will not parse on 3.3.0.
 # Reached through wombat -> mechanize -> net-http-persistent.
@@ -22,18 +21,15 @@ gem 'domainatrix', '~> 0.0.11'
 gem 'rexml', '~> 3.3', '>= 3.3.9'
 gem 'wombat', '~> 3.0.0'
 
-# Country names, translated, for confirming which country a postcode is in. Not
-# country_select: there is no country dropdown any more, since the postcode answers the
-# question itself, so only the name lookup this gem sits on top of is still wanted.
+# Country names, translated, for confirming which country a postcode is in. Only the
+# name lookup is used; there is no country dropdown, because the postcode answers that.
 gem 'countries', '~> 5.7'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 
-# No JavaScript. Every page is server-rendered and reached with plain links and forms,
-# because the browsers this is built for run little or none of it. Turbo was here and
-# was worse than useless: it fetched links on hover, and since saving a stop was a GET,
-# moving a pointer down a list of nearby stops saved every stop it passed.
+# No JavaScript, and no Hotwire. Every page is server-rendered and reached with plain
+# links and forms, because the browsers this is built for run little or none of it.
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[windows jruby]
@@ -46,8 +42,8 @@ group :development, :test do
   gem 'debug', platforms: %i[mri windows]
 end
 
-# No development-only group. web-console was the only thing in it, and it works by
-# injecting JavaScript into error pages, which is no use for a browser that runs none.
+# No development-only group: web-console works by injecting JavaScript into error pages,
+# which is no use to a browser that runs none.
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]

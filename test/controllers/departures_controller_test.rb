@@ -358,9 +358,8 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  # Saving went untested, and a bug hid there for it: the stop list offered plain GET
-  # links, so a browser that fetches links before they are followed saved stops nobody
-  # picked. Choosing the fourth stop of ten saved three others along with it.
+  # Saving is a POST and forgetting a DELETE, so a browser that fetches links
+  # speculatively cannot change what is stored by looking at the list.
   test 'will not save a stop from a GET, however the request arrives' do
     get '/departures_save?id=s-test-northgate&name=Northgate', headers: { 'HTTP_COOKIE' => COOKIES }
 
@@ -465,9 +464,9 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     JSON.parse(cookies[:departures_saved].presence || '[]')
   end
 
-  # A rejected request must not write the cookie at all, in either direction. Asserting
-  # on the jar instead would prove nothing: it only carries what a response set, so it
-  # reads as empty whether the stops survived or were wiped.
+  # A rejected request must not write the cookie in either direction. The jar only carries
+  # what a response set, so it reads as empty whether the stops survived or were wiped —
+  # hence asserting on Set-Cookie.
   def assert_not_touched(name)
     sent = Array(@response.headers['Set-Cookie']).join("\n")
 

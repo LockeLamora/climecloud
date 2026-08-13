@@ -16,9 +16,8 @@
 <%= "<b>#{i}</b>- #{step["distance"]["text"]}(#{step["duration"]["text"]})<br /> #{step["html_instructions"]}".html_safe %>
     </ol>
 <% end %>
-<%# Zero is the menu on every page in this app, and this one had no way off it but the %>
-<%# browser's own back button. The whole route can run to a screen of steps, so it goes %>
-<%# last, where the turn by turn view also keeps it. %>
+<%# Zero is the menu on every page. Last on this one, since the route can run to a %>
+<%# screenful of steps, which is where the turn by turn view keeps it too. %>
 <br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
 </div>

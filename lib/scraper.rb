@@ -5,22 +5,22 @@ require 'net/http'
 require 'nokogiri'
 
 module Scraper
-  # A reader on a slow connection is already waiting. Without these a single unresponsive
-  # publisher held a worker for forty two seconds, and once for two minutes before dying.
+  # A reader on a slow connection is already waiting, so an unresponsive publisher gets a
+  # few seconds and no more, rather than holding a worker for as long as it likes.
   OPEN_TIMEOUT_SECONDS = 5
   READ_TIMEOUT_SECONDS = 8
   # Publishers redirect between editions, to AMP, and to consent pages. Enough to follow
   # the ordinary ones without chasing a loop.
   MAX_REDIRECTS = 3
   SEPARATOR = '<br /><br />'
-  # Furniture that sits inside the article container as often as outside it, and was being
-  # read as part of the story. The class matches are for paid placements, which are written
-  # in full sentences and so survive every other filter: equity release, "browse radios and
-  # music centres", "less scrolling, more great TV".
-  # The accessibility-only entries are there because text meant for a screen reader is
-  # still text: one publisher spells its quotation marks out in hidden spans, so an article
-  # arrived reading `he said double quotation mark the budget is fine`. Nothing here
-  # rewrites a quote — typed, &quot; and curly all survive — those were the page's own words.
+  # Furniture that sits inside the article container as often as outside it. The class
+  # matches catch paid placements, which are written in full sentences and so pass every
+  # other filter: equity release, "browse radios and music centres", "less scrolling, more
+  # great TV".
+  #
+  # The accessibility entries are here because text meant for a screen reader is still
+  # text, and some publishers spell their punctuation out in hidden spans. Quotation marks
+  # themselves are untouched: typed, &quot; and curly all come through as written.
   BOILERPLATE = [
     'script, style, noscript, nav, header, footer, aside, form, figcaption, iframe',
     '[class*="promo"], [class*="advert"], [class*="sponsor"], [class*="partner"]',
@@ -29,34 +29,30 @@ module Scraper
     '[aria-hidden="true"], .sr-only, .visually-hidden, .visuallyhidden',
     '.screen-reader-text, .screen-reader-only, .assistive-text'
   ].join(', ').freeze
-  # Where an article usually sits, tried in order. Without this the fallback was every
-  # paragraph on the page, which meant cookie notices, related story teasers and the
-  # footer arrived as prose on a 240 pixel screen.
+  # Where an article usually sits, tried in order. Narrowing to these keeps cookie
+  # notices, story teasers and the footer off a 240 pixel screen.
   CONTAINERS = ['article', '[itemprop="articleBody"]', 'main', '.article-body',
                 '.article__body', '.story-body', '.post-content', '.entry-content'].freeze
   # Bylines, datelines, photo captions and "Share this" are all shorter than a sentence.
   MIN_PARAGRAPH_LENGTH = 40
 
-  # Anything the network can raise on the way to a page we do not control. Left
-  # unrescued, each of these was a 500 rather than a page saying it could not be opened.
+  # Anything the network can raise on the way to a page we do not control. Rescued so the
+  # reader gets a page saying it could not be opened, rather than a 500.
   NETWORK_ERRORS = [
     Net::ReadTimeout, Net::OpenTimeout, EOFError, SocketError, Errno::ECONNRESET,
     Errno::ECONNREFUSED, Errno::EHOSTUNREACH, OpenSSL::SSL::SSLError, URI::InvalidURIError
   ].freeze
 
-  # Returns the article text, or the reason it could not be given. One fetch: the page
-  # used to be requested twice, once to check the status and again to read it, and the
-  # status was checked on the URL before redirects rather than the page finally served.
-  # That let a 403 through on a site that redirected elsewhere.
+  # Returns the article text, or the reason it could not be given. One fetch, and the
+  # status that decides is the one from the page finally served after redirects.
   def self.scrape_article(url, useragent)
     response = fetch(url, useragent)
     return { error: I18n.t('news.cannot_load') } if response.nil?
 
     text = extract_text(response.body, response.uri.to_s)
     if text.blank?
-      # Logged because it was not: a page that loads and yields no paragraphs took this
-      # path silently, so there was no way to tell how often the CSS rules come up empty
-      # against a redesign, or which sites need a rule of their own.
+      # Logged with the URL, so a redesign that empties the CSS rules is visible in the
+      # log and the site can be given a rule of its own.
       Rails.logger.warn("Cannot parse page - no text matched - url #{response.uri}")
       return { error: I18n.t('news.cannot_parse') }
     end
@@ -142,14 +138,14 @@ module Scraper
     paragraphs = candidates(document, url)
     text = readable(paragraphs)
     # Some articles really are a handful of one line paragraphs, so a filter that leaves
-    # nothing behind hands back what it was given rather than an empty page.
+    # nothing behind falls back to the unfiltered set rather than an empty page.
     text.any? ? text : tidy(paragraphs).uniq
   end
 
   # A rule written for the domain wins, then the containers an article usually sits in.
-  # There is deliberately no fallback to every paragraph on the page: doing that put
-  # advertising on screen dressed as the story, and saying the page could not be read is
-  # worth more than that. The log line names the site, so a rule can be written for it.
+  # Nothing falls back to every paragraph on the page: that puts advertising on screen
+  # dressed as the story, and saying the page could not be read is worth more. The log line
+  # names the site, so a rule can be written for it.
   def self.candidates(document, url)
     rule = ArticleRules.for(url)
     return document.css(rule).map(&:text) unless rule == ArticleRules::DEFAULT

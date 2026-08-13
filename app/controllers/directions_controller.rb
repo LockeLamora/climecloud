@@ -61,9 +61,9 @@ class DirectionsController < ApplicationController
 
   private
 
-  # Google picks one reading of free text without saying so, and a street name common
-  # to several towns silently resolves to the wrong one. Anything the user typed is
-  # worth a second look; anything already pinned to a place_id is not.
+  # Google picks one reading of free text without saying so, and a street name common to
+  # several towns can resolve to the wrong one. Anything typed as text is worth a second
+  # look; anything already pinned to a place_id is not.
   def ambiguous_fields
     %w[origin destination].reject do |field|
       value = @route_params[field].to_s.strip
@@ -83,9 +83,9 @@ class DirectionsController < ApplicationController
     render_candidates(field)
   end
 
-  # Search around the other end of the journey. A route from a town to a street name
-  # has to look near that town, not near wherever the settings postcode happens to
-  # point, or the matching street 200 metres away never appears at all.
+  # Search around the other end of the journey: a route from a town to a street name has
+  # to look near that town rather than near the settings postcode, or a matching street
+  # 200 metres away never appears.
   def bias_point(field)
     return [params[:bias_lat], params[:bias_lon]] if params[:bias_lat].present? && params[:bias_lon].present?
 

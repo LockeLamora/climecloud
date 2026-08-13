@@ -12,11 +12,10 @@ class Weather
   # in order, and only ever after a 429: a 400 is our own bad request and relaying it
   # would just be wrong twice.
   #
-  # Ordered by what actually answers. The two below the first spent months returning
-  # 520 and 522 while the forecast page told readers the service was busy, because
-  # nothing here logged and nothing here was checked. They are kept because a relay
-  # that is down today may be up next month and they cost one timeout to find out,
-  # but the budget below is what stops that costing the reader anything much.
+  # Ordered by what answers most reliably. A relay that is down today may be up next
+  # month, so a dead one stays on the list; the timeout and budget below are what keep it
+  # from costing the reader anything much. Every attempt is logged, so a relay that has
+  # stopped answering is visible rather than silently absorbed.
   #
   # Not every relay takes its target the same way: one wants it in the path unescaped,
   # the others want it escaped in a query string, and the first needs a header or it
@@ -30,9 +29,8 @@ class Weather
   ].freeze
   # Short, because a stalled relay must not cost more than the forecast is worth.
   PROXY_TIMEOUT_SECONDS = 4
-  # And a ceiling across all of them together, so adding a relay to the list can never
-  # again turn into another timeout the reader waits through. Three relays at four
-  # seconds each used to mean the busy message arrived some twenty seconds late.
+  # A ceiling across all of them together, so adding a relay to the list does not add
+  # another timeout to the wait before the busy message appears.
   PROXY_BUDGET_SECONDS = 10
 
   attr_reader :error, :error_code
@@ -65,11 +63,11 @@ class Weather
     res = Net::HTTP.get_response(uri)
     return JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
 
-    # Open-Meteo explains itself in the body. Throwing that away left us guessing.
+    # Open-Meteo explains itself in the body, so the reason is kept alongside the code.
     @error_code = res.code
     @error = "#{res.code} #{failure_reason(res)}"
-    # Logged before the relays are reached, so a run through the log reads as the whole
-    # path taken: what open-meteo said, which relay was tried, and how each one answered.
+    # Logged before the relays are reached, so the log reads as the whole path taken: what
+    # open-meteo said, which relay was tried, and how each answered.
     Rails.logger.warn("Forecast refused by open-meteo - #{@error}")
     return nil unless rate_limited?
 
@@ -95,15 +93,15 @@ class Weather
       return forecast
     end
 
-    # The reader is about to be told the service is busy. Say in the log that every
-    # relay was spent, so that message is never mistaken for open-meteo alone.
+    # The reader is about to be told the service is busy, so the log records that every
+    # relay was spent, and that message is not mistaken for open-meteo alone.
     Rails.logger.warn("Forecast unavailable - #{PROXIES.length} relays tried, none answered")
     nil
   end
 
   # Logged either way. A relay is somebody else's free service and will eventually stop
-  # answering; without a line here that shows up as readers being told the weather
-  # service is busy, which is true of the wrong service and points at nothing.
+  # answering, and the line here names which one, so a relay failure is not read as
+  # open-meteo being busy.
   def fetch_through(proxy, uri)
     res = get_with_timeout(proxy_uri(proxy, uri), proxy[:headers])
     # Nothing came back at all, and the rescue that caught it has already said why.

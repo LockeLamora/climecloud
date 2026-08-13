@@ -1,26 +1,22 @@
-/* What a press looks like while the request is in flight.
+/* A pressed link, button or submit while its request is in flight: blue floods the line
+ * from the left and the text turns white as it is covered, looping until the next page
+ * replaces it.
  *
- * Nothing on screen used to change between pressing a link and the next page arriving,
- * and over 4G that is long enough to doubt the keypress registered. The inversion now
- * arrives as a sweep: blue floods the line from the left and the text turns white as it
- * is covered, over and over until the new page replaces it.
+ * :focus is the hook because focus lasts from the press until the new document arrives,
+ * which is the whole of the wait. :active covers only press to release, and the
+ * navigation begins on release.
  *
- * Keyed on :focus, not :active. :active lasts only from press to release and the
- * navigation begins on release, so the whole wait happened after :active had gone: it
- * showed as one flash and then nothing.
+ * Pointer, Enter and access keys all qualify. Chrome reports an access key as keyboard
+ * focus, so :focus-visible cannot separate a press from a rest without dropping the
+ * keypad, and the keypad is this app's main input. The trade is that a link left sitting
+ * under focus keeps sweeping: CSS has no state meaning "a request is in flight".
  *
- * Every route in deliberately: pointer, Enter and the number keys. Chrome reports an
- * access key as keyboard focus, so :not(:focus-visible) — the only way CSS can tell a
- * press from a rest — silently drops the sweep for the keypad, which is the input this
- * app is built around. The cost is that a link left sitting under focus keeps sweeping;
- * there is no CSS state for "a request is in flight" to do better with.
- *
- * a:visited:focus is not redundant: components/text.css keeps followed links blue, sorts
- * after this file, and `a:visited` weighs the same as `a:focus`.
+ * a:visited:focus carries its own weight because components/text.css keeps followed links
+ * blue, sorts after this file, and `a:visited` is the same specificity as `a:focus`.
  */
 
-/* The plain inversion, which every browser can manage. Also the fallback: if the sweep
- * below is not supported, a press still reads unmistakably. */
+/* The inversion on its own, which every browser can manage, and the fallback wherever the
+ * sweep below does not apply. */
 a:focus,
 a:visited:focus,
 form.inline-action button:focus,
@@ -35,20 +31,18 @@ input[type="submit"]:focus {
   background-color: #767676;
 }
 
-/* The sweep itself. Three background layers, no extra element and no extra markup:
+/* The sweep, as three background layers rather than an extra element or a copy of the
+ * text in a data attribute:
  *
- *   1. white, clipped to the glyphs, growing  — the text that has been covered
- *   2. blue,  clipped to the glyphs, full     — the text not yet reached
- *   3. blue,  filling the box, growing        — the block arriving under both
+ *   1. white, clipped to the glyphs, growing  — text the block has reached
+ *   2. blue,  clipped to the glyphs, full     — text it has not
+ *   3. blue,  filling the box, growing        — the block itself
  *
  * Layer one paints over layer two, so the glyphs turn white exactly as far as the block
- * has travelled. The alternative was an overlay carrying a copy of the text through
- * content: attr(data-text), which would mean adding that attribute to every link in the
- * app; and painting the block alone leaves blue text on blue ground until the sweep
- * passes it.
+ * has travelled. Painting the block alone would leave blue text on blue ground.
  *
- * Gated on background-clip: text. Without the guard, a browser that ignores it would
- * apply the transparent fill and render nothing at all.
+ * Gated on background-clip: text, since the transparent fill this needs would otherwise
+ * render nothing at all.
  */
 @keyframes press-reveal {
   from { background-size: 0 100%, 100% 100%, 0 100%; }
@@ -60,17 +54,11 @@ input[type="submit"]:focus {
   a:visited:focus,
   form.inline-action button:focus,
   input[type="submit"]:focus {
-    /* A box of its own, or a link that wraps disappears entirely.
-     *
-     * An inline element that spans several lines is painted as fragments, and the
-     * background geometry is computed over those fragments joined into one virtual box —
-     * so on a news headline running to five lines the two clipped layers stopped landing
-     * on the glyphs at all. The text is transparent by then, which left nothing visible:
-     * the headline was simply a gap in the page.
-     *
-     * inline-block gives the background a single box to measure against. It changes no
-     * geometry here — same width, same height, same position, one client rect instead of
-     * five — and the sweep becomes a straight edge travelling down the whole block. */
+    /* One box for the background to measure against. An inline element that wraps is
+     * painted as fragments and its background geometry spans those fragments joined
+     * together, which puts the clipped layers somewhere other than the glyphs. Width,
+     * height and position are unchanged; the sweep becomes a straight edge down the whole
+     * block. */
     display: inline-block;
     background-color: transparent;
     color: transparent;
@@ -94,12 +82,11 @@ input[type="submit"]:focus {
   }
 }
 
-/* No motion: hold the finished state, which is the plain inversion.
+/* No motion: hold the finished state, the plain inversion.
  *
- * background-clip has to be put back as well, and not only the image. Dropping to
- * background-image: none leaves a single layer, so a three-value background-clip
- * collapses to its first value — text — and the blue is then clipped to the glyph shapes
- * instead of filling the line: white letters on a white page, invisible.
+ * background-clip goes back to border-box along with the image. A single layer takes only
+ * the first background-clip value, so leaving it at `text` clips the blue to the glyph
+ * shapes and the line renders white on white.
  */
 @media (prefers-reduced-motion: reduce) {
   a:focus,

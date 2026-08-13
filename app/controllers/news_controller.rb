@@ -22,7 +22,7 @@ class NewsController < ApplicationController
   def article
     @article_url = params[:article]
     # Both carried from the list: the section so the way back returns to the list being
-    # read, and the headline so a page we cannot open still says what it was about.
+    # read, and the headline so a page that cannot be opened still says what it was about.
     @section = params[:section]
     @title = params[:title]
 
@@ -49,12 +49,11 @@ class NewsController < ApplicationController
 
   # Sources whose pages cannot be shown here: they refuse the request, want a
   # subscription, or rate limit us. Matched against the source name as Google prints it in
-  # the feed, so the names have to be distinctive enough not to catch a headline by
-  # accident. "People.com" rather than "People" for that reason.
+  # the feed, so each name has to be distinctive enough not to catch a headline by
+  # accident — "People.com" rather than "People" for that reason.
   #
-  # Every name below the first group was taken from a production log, with the status the
-  # publisher returned. Blocking them costs a headline; leaving them in costs a reader the
-  # trip to a page that will not open.
+  # Grouped by the status the publisher returns. Blocking one costs a headline; leaving it
+  # in costs a reader the trip to a page that will not open.
   BLOCKED_SOURCES = [
     'Financial Times', 'Bloomberg', 'Times of Israel', 'Times of India', 'Reuters',
     'Daily Record', 'Live updates', 'Wall Street Journal', 'Fox News', 'USA TODAY',
@@ -76,9 +75,9 @@ class NewsController < ApplicationController
   def prepare_articles
     @news_items = @articles.filter_map do |item|
       articles = readable_articles(item)
-      # A story covered only by blocked sources used to leave its heading on the page with
-      # an empty list underneath, which reads as something having gone wrong. With nearly
-      # forty sources blocked that happens often enough to matter.
+      # A story covered only by blocked sources is dropped whole. Leaving its heading with
+      # an empty list underneath reads as a fault, and with nearly forty sources blocked it
+      # happens often enough to matter.
       next if articles.empty?
 
       { item_title: item['title'].rpartition('-')[0], articles: articles }

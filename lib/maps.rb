@@ -29,9 +29,8 @@ class Maps
   SEGMENT_METRES = 100
   METRES_PER_DEGREE = 111_320
   EQUATOR_METRES_PER_PIXEL = 156_543.03392
-  # How much of the frame sits behind the walker. The rest is the leg ahead of them,
-  # so the picture reads as the journey in front rather than a stretch of road with
-  # the starting point somewhere arbitrary in it.
+  # How much of the frame sits behind the walker. The rest is the leg ahead, so the picture
+  # reads as the journey in front with the walker near the bottom edge.
   BEHIND_FRACTION = 0.15
   COMPASS_POINTS = %w[north north_east east south_east south south_west west north_west].freeze
 
@@ -96,9 +95,8 @@ class Maps
       maptype: 'hybrid',
       center: centre,
       zoom: zoom,
-      # Marked at the ends of this window, not of the whole step. Pinned to the step
-      # they both sat outside the frame on every middle chunk, leaving a bare line
-      # with nothing to say which way along it you were walking.
+      # Marked at the ends of this window rather than of the whole step, so both markers
+      # sit inside the frame on every chunk and show which way along it you are walking.
       markers: [
         "size:mid|color:green|label:A|#{points.first.first},#{points.first.last}",
         "size:mid|color:red|label:B|#{points.last.first},#{points.last.last}"

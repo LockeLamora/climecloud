@@ -5,8 +5,8 @@
 <% end %>
 <br />
 
-    <%# Numbers are fixed per destination, not per position, so that the keys a user %>
-    <%# has learned do not all shift when Departures switches on. %>
+    <%# Numbers are fixed per destination rather than per position, so a learned key %>
+    <%# keeps working whether or not Departures is switched on. %>
     <%=link_to "1 #{t('menu.weather')}", "/forecast/hourly", accesskey: "1" %><br /><br />
     <%=link_to "2 #{t('menu.directions')}", "/directions", accesskey: "2" %><br /><br />
     <%=link_to "3 #{t('menu.places')}", "/places", accesskey: "3" %><br /><br />

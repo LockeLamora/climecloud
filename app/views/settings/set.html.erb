@@ -1,10 +1,8 @@
 <%= @error.nil? ? t('settings.intro') : "<span class='error'>#{@error}</span>".html_safe %>
 <br /><br />
-<%# settings_save_path, not the bare string "settings_save". Rails binds the forgery %>
-<%# token to the form's action and method, and a relative action produced a token for %>
-<%# "settings_save" while the request that came back was for "/settings_save": every %>
-<%# save was rejected with an invalid token. A GET form never verifies the token, which %>
-<%# is why the relative string looked fine here for as long as this was a GET. %>
+<%# settings_save_path rather than the bare string, because Rails binds the forgery token %>
+<%# to the form's action as written: a relative action mints a token for "settings_save" %>
+<%# while the request that arrives is for "/settings_save", and verification fails. %>
 <%= form_with url: settings_save_path, method: :post, local: true do |f| %>
     <%# No country field: the postcode is asked about on its own, and which country it %>
     <%# belongs to is read back off the search. Only when it genuinely belongs to more %>

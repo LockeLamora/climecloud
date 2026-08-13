@@ -70,9 +70,8 @@ class Geocode
     "countrycode:#{@country_code.downcase}"
   end
 
-  # Autocomplete rather than geocoding, because geocoding resolves instead of
-  # searching: a generic street name came back as a single best guess, so the
-  # ambiguity the user needed to resolve was never offered to them.
+  # Autocomplete rather than geocoding: geocoding resolves to a single best guess, which
+  # hides the ambiguity in a generic street name instead of offering it as a choice.
   def build_geoapify_autocomplete_uri(filter)
     uri = URI('https://api.geoapify.com/v1/geocode/autocomplete')
     params = {
@@ -101,12 +100,10 @@ class Geocode
     nearest_first(candidates)
   end
 
-  # Autocomplete stays fuzzy even when asked for a postcode, and dropping the country
-  # filter took away what used to hide that: "abcdefg" comes back as real postcodes in
-  # Morocco and Spain, which turned a typo into a question about which country it was
-  # in. Keep only the postcodes that begin with what was typed, and when any match it
-  # outright, keep only those: "78000" then means Bosnia and France rather than also
-  # every Japanese code starting 780.
+  # Autocomplete stays fuzzy even when asked for a postcode: "abcdefg" comes back as real
+  # postcodes in Morocco and Spain. Only postcodes beginning with what was typed are kept,
+  # and if any match it outright, only those — so "78000" means Bosnia and France rather
+  # than every Japanese code starting 780.
   def matching_postcodes(candidates)
     return candidates unless @type == 'postcode'
 
@@ -125,9 +122,9 @@ class Geocode
     text.to_s.downcase.gsub(/[^a-z0-9]/, '')
   end
 
-  # Geoapify ranks by text relevance, which scatters a search for "bus station" the
-  # length of the country. Sort by distance before the list is cut down, or the
-  # far away matches fill it up before the nearby one is ever reached.
+  # Geoapify ranks by text relevance, which scatters a search for "bus station" the length
+  # of the country. Sorted by distance before the list is cut down, so the nearby match is
+  # not pushed out by far away ones.
   def nearest_first(candidates)
     return candidates unless biased?
 

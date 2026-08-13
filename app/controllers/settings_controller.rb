@@ -70,10 +70,9 @@ class SettingsController < ApplicationController
                 }).get_all_candidates
   end
 
-  # A postcode is its own answer to which country it is in, so the countries are read
-  # back off the search rather than asked for up front. Only ask when the postcode
-  # really does exist in more than one: a dropdown of every country on earth made the
-  # common case worse to serve the rare one, and most of its entries could never apply.
+  # A postcode is its own answer to which country it is in, so the countries are read back
+  # off the search rather than asked for up front. The question is only put when the
+  # postcode genuinely exists in more than one, and then as the short list that applies.
   def ask_which_country(matches)
     return false if params[:country_code].present?
 
@@ -95,8 +94,8 @@ class SettingsController < ApplicationController
     set_news(params)
     set_cookie
 
-    # Always confirm. Redirecting straight to the menu gave no sign the postcode had
-    # matched anything at all until the weather page was opened.
+    # Always confirm, so the reader knows the postcode matched something without having to
+    # open the weather page to find out.
     @alternatives = alternatives
     @settings_params = settings_params
     # Offered here rather than on the form, because the country is only known once

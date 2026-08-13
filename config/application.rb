@@ -1,15 +1,12 @@
 require_relative "boot"
 
-# Deliberately not "rails/all", which loads ten frameworks this app has no use for and
-# pays for on every boot. What is left is what actually serves a page.
+# Only the frameworks that serve a page, rather than "rails/all".
 #
-# Active Record is out because there are no tables and no models, and loading it opens a
-# database connection on boot: a server had to be running to serve a page that reads
-# nothing. Active Storage, Action Text and Action Mailbox are built on it and went too.
-#
-# Action Cable needs a JavaScript client, and there is none: see the Gemfile. Action
-# Mailer sends nothing and Active Job enqueues nothing; both were empty base classes from
-# the app template.
+# No Active Record: there are no tables and no models, and loading it opens a database
+# connection on boot, which would mean running a server to serve a page that reads
+# nothing. Active Storage, Action Text and Action Mailbox are built on it, so they are out
+# with it. Action Cable needs a JavaScript client and this app ships none. Nothing sends
+# mail or enqueues a job.
 require "rails"
 
 require "action_controller/railtie"

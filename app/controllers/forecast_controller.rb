@@ -42,8 +42,8 @@ class ForecastController < ApplicationController
 
   private
 
-  # Open-Meteo rejects a bad timezone or unit outright, which used to take the
-  # whole page down rather than saying anything useful.
+  # Open-Meteo rejects a bad timezone or unit outright, so both are checked before the
+  # request and the page says what is wrong instead of failing.
   def forecast_unavailable?(data, period)
     data.nil? || data['error'].present? || data[period].nil?
   end
@@ -74,7 +74,7 @@ class ForecastController < ApplicationController
       metrics[:temperature_unit] = 'fahrenheit'
       metrics[:precipitation_unit] = 'inch'
     when 'metric'
-      # Open-Meteo names this kmh. kph is rejected outright and takes the whole page down.
+      # Open-Meteo names this kmh, and rejects kph outright.
       metrics[:wind_speed_unit] = 'kmh'
       metrics[:temperature_unit] = 'celsius'
       metrics[:precipitation_unit] = 'mm'

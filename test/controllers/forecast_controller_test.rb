@@ -150,8 +150,8 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     assert_requested :get, %r{allorigins\.win/raw\?url=https://api\.open-meteo\.com.*%26longitude}
   end
 
-  # A relay that hangs used to cost its full timeout each, so three of them meant the
-  # busy message arrived long after the reader had given up on the page.
+  # A budget across all the relays together, so three hanging relays cannot each spend
+  # their full timeout before the reader is told the service is busy.
   test 'stops trying relays once the time budget is spent' do
     stub_request(:get, /api\.open-meteo\.com/).to_return(status: 429, body: '{"error":true}')
     stub_request(:get, /r\.jina\.ai/).to_return { raise Net::ReadTimeout }

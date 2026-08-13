@@ -2,9 +2,8 @@
 <div class='news_topics'>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <%= @title %><br /><br />
-<%# Nine sections, nine digits, in the reader's own language. They were nine untranslated %>
-<%# links you had to scroll past on a keypad, which is the one thing this app never asks %>
-<%# anyone to do. Zero stays free for the menu, as everywhere else. %>
+<%# Nine sections, nine digits, in the reader's own language, so none of them needs %>
+<%# scrolling past on a keypad. Zero stays free for the menu, as everywhere else. %>
 <% Gnews::SECTIONS.each_with_index do |section, index| %>
 <%= link_to "#{index + 1} #{t("news.section.#{section.downcase}")}",
             news_path(section: section), accesskey: (index + 1).to_s %><br />
@@ -26,8 +25,8 @@
             <ul>
             <% item[:articles].each do |article| %>
                 <%# The section travels with the link so the way back lands on the list %>
-                <%# actually being read, and the headline so an article that will not open %>
-                <%# can still say what it was about. %>
+                <%# being read, and the headline so an article that will not open can still %>
+                <%# say what it was about. %>
                 <%= link_to article[:article_title],
                             news_article_path(article: article[:article_url],
                                               section: @section,

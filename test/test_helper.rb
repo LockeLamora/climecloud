@@ -7,32 +7,26 @@ require 'webmock/minitest'
 
 module ActiveSupport
   class TestCase
-    # Deliberately serial. Rails only parallelises past fifty tests, and forking
-    # workers buys nothing here: every test waits on a stubbed HTTP call, and the
-    # whole suite finishes in a couple of seconds.
+    # Serial. Every test waits on a stubbed HTTP call and the whole suite runs in a couple
+    # of seconds, so forking workers buys nothing.
     parallelize(workers: 1)
 
-    # Nothing but the test server itself. The allow list that used to sit here named six
-    # API hosts, which meant a test that forgot to stub one quietly made a real call and
-    # passed on someone else's data: the settings tests geocoded live, so their assertions
-    # had to be loosened to tolerate whatever came back, they needed real credentials, and
-    # they could not run offline at all. Raising on an unstubbed request turns a forgotten
-    # stub back into a failure that says so.
+    # Nothing but the test server itself: an unstubbed request raises rather than reaching
+    # a real API. No allow list, or a missing stub becomes a live call whose assertions have
+    # to tolerate whatever comes back.
     WebMock.disable_net_connect!(allow_localhost: true)
 
     # Credentials are empty for every test unless a test asks for them.
     #
-    # config/master.key is on a developer machine and is not in the repo, so credentials
-    # decrypt here and do not decrypt on a CI runner. A test that forgot stub_api_credentials
-    # therefore passed locally and failed on GitHub, which happened more than once and cost
-    # more time each go. Blanking them by default makes the local run behave like the runner,
-    # so a missing stub fails immediately and in the place where it is cheap to fix.
+    # config/master.key is not in the repo, so credentials decrypt on a developer machine
+    # and not on a CI runner. Blanking them here makes both behave the same, so a test that
+    # needs keys fails in the place where it is cheap to fix.
     #
     # Anything reaching an API needs stand-in keys to get as far as its stubbed request:
     # call stub_api_credentials in setup, or wrap a section in with_api_credentials.
     setup { unstub_api_credentials }
 
-    # Defined by hand rather than with Minitest's stub, which handed back nil here.
+    # Defined by hand rather than with Minitest's stub, which hands back nil here.
     def stub_api_credentials
       credentials = ActiveSupport::OrderedOptions.new
       %w[google geoapify transitland].each do |service|
@@ -43,8 +37,8 @@ module ActiveSupport
       replace_credentials_with(credentials)
     end
 
-    # Empty rather than the real thing. Removing the override would hand back whatever
-    # config/master.key happens to decrypt, which is the difference this is here to erase.
+    # Empty rather than removing the override, which would hand back whatever
+    # config/master.key decrypts to.
     def unstub_api_credentials
       replace_credentials_with(ActiveSupport::OrderedOptions.new)
     end

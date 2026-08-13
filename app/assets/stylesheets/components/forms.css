@@ -6,10 +6,9 @@
     width: 200px;
 }
 
-/* Saving and forgetting are POSTs rather than links, so they arrive as one-button
-   forms. On a 220px column a real button costs a line of its own and reads as
-   something other than the text around it, so it is stripped back to the link it
-   replaced. Left as a button element, which the keypad still reaches in turn. */
+/* Saving and forgetting are POSTs, so they arrive as one-button forms. The button is
+   stripped back to look like the text links around it: on a 220px column a styled button
+   costs a line of its own. It stays a button element, so the keypad reaches it in turn. */
 form.inline-action {
     display: inline;
     margin: 0;

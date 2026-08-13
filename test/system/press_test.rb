@@ -2,19 +2,14 @@
 
 require 'application_system_test_case'
 
-# Nothing on screen changed between pressing a link and the next page arriving, which
-# over 4G is long enough to doubt the keypress landed. A pressed link now inverts to
-# white on blue for as long as the request takes, with a highlight sweeping across it
-# when the press came from a pointer.
+# A pressed link, button or submit inverts to white on blue with a highlight sweeping
+# across it, and holds that for as long as the request takes. Over 4G that wait is long
+# enough to doubt the keypress landed.
 #
-# The first attempt keyed on :active and did not work at all: :active lasts from press to
-# release, the navigation starts on release, so the whole wait happened after :active had
-# gone. It showed as one flash. The test passed anyway, because it used click_and_hold to
-# pin the mouse down — it proved the styling and never tested the situation. Hence the
-# shape of these tests: the upstream is made genuinely slow, and the state is recorded
-# from inside the outgoing page at unload, which is the far end of the wait. Selenium
-# blocks until navigation completes, so the old document cannot be questioned directly
-# while it is still up.
+# These tests make the upstream genuinely slow and record the state from inside the
+# outgoing page at unload, which is the far end of the wait. Selenium blocks until
+# navigation completes, so the old document cannot be questioned while it is still up, and
+# holding the mouse down instead would test :active rather than the wait.
 class PressTest < ApplicationSystemTestCase
   SAVED = [{ 'id' => 's-one', 'name' => 'Northgate' }].freeze
   SLOW_UPSTREAM = 1.5
@@ -32,9 +27,7 @@ class PressTest < ApplicationSystemTestCase
   teardown do
     unstub_api_credentials
     # Capybara resets cookies and the session between tests but not devtools overrides, so
-    # an emulated media feature set in one test silently applies to every test that runs
-    # after it — which showed up as the sweep being reported as `none` at random,
-    # depending on the seed.
+    # an emulated media feature would otherwise apply to every test that runs after it.
     clear_emulated_media
   end
 
@@ -56,9 +49,8 @@ class PressTest < ApplicationSystemTestCase
     assert_match(/rgb\(0, 0, 255\)/, state['image'], 'the blue that sweeps in must be a background layer')
   end
 
-  # Mid-crossing the line is half inverted: white on blue up to the boundary, blue on
-  # white after it. Read off the animation rather than a screenshot, by parking it at a
-  # fraction of its own duration.
+  # Mid-crossing the line is half inverted: white on blue up to the boundary, blue on white
+  # after it. Read off the animation by parking it at a fraction of its own duration.
   test 'the inversion arrives progressively rather than all at once' do
     visit departures_url
 
@@ -70,11 +62,10 @@ class PressTest < ApplicationSystemTestCase
     assert_operator boundaries[2], :>, 60, 'it should be most of the way across by the end'
   end
 
-  # A news headline runs to several lines at 220px. As a wrapping inline it was painted as
-  # fragments, the background was measured over those fragments joined into one virtual
-  # box, and the layers that paint the glyphs missed them completely — with the text
-  # already transparent, the whole headline became a gap in the page. Nothing about the
-  # CSS said so, and no single-line link showed it.
+  # A news headline runs to several lines at 220px. A wrapping inline is painted as
+  # fragments and its background is measured over those fragments joined together, which
+  # puts the glyph-painting layers somewhere other than the glyphs; the text is transparent
+  # by then, so the headline would render as a gap. No single-line link exercises this.
   test 'a headline that wraps stays visible while it is pressed' do
     stub_request(:get, /news\.google\.com/).to_return(body: file_fixture('news_response.xml').read)
     page.driver.browser.manage.add_cookie(name: 'country_code', value: 'gb')
@@ -96,10 +87,9 @@ class PressTest < ApplicationSystemTestCase
     assert_match(/rgb\(0, 0, 255\)/, style(link, 'backgroundImage'))
   end
 
-  # f.submit renders an <input type="submit">, which matched neither the link rule nor the
-  # button rule, so the one control with the longest wait behind it — planning a route is
-  # two upstream calls and a map image — was the only thing in the app that answered to
-  # nothing at all when pressed.
+  # f.submit renders an <input type="submit">, which needs its own selector alongside the
+  # link and button rules. Planning a route is two upstream calls and a map image, so this
+  # is the control with the longest wait behind it.
   test 'a pressed submit button inverts and sweeps like everything else' do
     visit directions_url
 
@@ -115,10 +105,10 @@ class PressTest < ApplicationSystemTestCase
     assert_equal 'inline-block', style(button, 'display')
   end
 
-  # A reader who asked for no motion still has to see the press. Getting this wrong is
-  # invisible in the CSS: dropping background-image alone leaves one layer, so a
-  # three-value background-clip collapses to `text` and the blue is clipped to the glyphs,
-  # which renders white letters on a white page.
+  # A reader who asked for no motion still sees the press. background-clip has to go back
+  # to border-box along with the image: one layer takes only the first background-clip
+  # value, and left at `text` the blue is clipped to the glyphs and renders white on
+  # white.
   test 'reduced motion holds a readable inversion instead of animating' do
     emulate_reduced_motion
     visit departures_url
@@ -134,10 +124,9 @@ class PressTest < ApplicationSystemTestCase
     assert_equal 'rgb(255, 255, 255)', style(link, 'webkitTextFillColor')
   end
 
-  # The keypad is the point of this app, so a number key has to get everything a click
-  # gets, sweep included. Chrome reports an access key as keyboard focus, so anything that
-  # separates pointer presses from keyboard ones drops the sweep here — which is why
-  # nothing in press.css does.
+  # The keypad is the point of this app, so a number key gets everything a click gets,
+  # sweep included. Chrome reports an access key as keyboard focus, so anything separating
+  # pointer presses from keyboard ones would drop the sweep here.
   test 'a link reached by its access key sweeps for the whole request too' do
     visit departures_url
     record_state_at_unload
@@ -220,8 +209,8 @@ class PressTest < ApplicationSystemTestCase
     JSON.parse(raw)
   end
 
-  # Chrome reaches an access key with Control+Option on macOS and Alt alone elsewhere.
-  # Both are sent so this reads the same on a laptop and on CI.
+  # Chrome reaches an access key with Control+Option on macOS and Alt alone elsewhere, so
+  # this picks by platform and reads the same on a laptop and on CI.
   def press_access_key(key)
     action = page.driver.browser.action
     if RbConfig::CONFIG['host_os'].match?(/darwin/)

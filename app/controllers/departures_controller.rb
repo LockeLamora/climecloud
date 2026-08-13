@@ -64,9 +64,9 @@ class DeparturesController < ApplicationController
 
   private
 
-  # The key arrives with the Rails master key on the host, so on any deployment
-  # without it every action here would die on a nil credential. Send people back to
-  # the menu, where the entry reads "coming soon" rather than linking anywhere.
+  # The Transitland key only decrypts where the Rails master key is present. Without it
+  # these actions send the reader back to the menu, where the entry reads "coming soon"
+  # rather than linking anywhere.
   def departures_enabled?
     return true if Rails.application.credentials.transitland&.api_key.present?
 

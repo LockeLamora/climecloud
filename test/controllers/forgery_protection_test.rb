@@ -2,19 +2,13 @@
 
 require 'test_helper'
 
-# Every one of these round trips would have passed before this file existed, because
-# config/environments/test.rb turns forgery protection off and the whole suite runs
-# without it. That was harmless for as long as every mutation was a GET, since a GET is
-# never verified. The moment saving became a POST, production started rejecting every
-# save with an invalid token and nothing here noticed.
+# config/environments/test.rb turns forgery protection off for the rest of the suite, so
+# these tests turn it back on and submit each form the way a browser does: fetch the page,
+# take the token out of the markup, send it back. Nothing else here verifies a token.
 #
-# What went wrong is worth stating, because the stylesheet-level equivalent is easy to
-# repeat: Rails binds the token to the form's action and method, so a form written as
-# `form_with url: "settings_save"` produced a token for "settings_save" while the request
-# coming back was for "/settings_save". Path helpers avoid it. A bare string does not.
-#
-# So these tests turn protection back on and submit each form the way a browser does:
-# fetch the page, take the token out of the markup, send it back.
+# Rails binds the token to the form's action and method as written, so a form given a bare
+# string mints a token for "settings_save" while the request that arrives is for
+# "/settings_save". Every form uses a path helper for that reason.
 class ForgeryProtectionTest < ActionDispatch::IntegrationTest
   LOCATION = 'lat=51.5;lon=-0.1;city=Testville'
   SAVED = [{ 'id' => 's-one', 'name' => 'Northgate' }].to_json
@@ -22,9 +16,8 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
   setup do
     @protection_was = ActionController::Base.allow_forgery_protection
     ActionController::Base.allow_forgery_protection = true
-    # Every departures action is gated on the Transitland key, and credentials are blank
-    # in tests by design — see test_helper.rb. Without a stand-in each request redirects
-    # to the menu.
+    # Every departures action is gated on the Transitland key, and credentials are blank in
+    # tests by design — see test_helper.rb.
     stub_api_credentials
   end
 
@@ -115,8 +108,8 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
 
   private
 
-  # A relative action is what broke this: the token is scoped to the action as written,
-  # and the request that comes back carries a leading slash.
+  # The token is scoped to the action as written, and the request that comes back carries a
+  # leading slash, so the action has to be absolute.
   def assert_absolute_action(path)
     assert_match(
       /<form[^>]*action="#{Regexp.escape(path)}"/,

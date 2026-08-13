@@ -29,10 +29,9 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'national insurance', @response.body
   end
 
-  # A publisher that spells its punctuation out for screen readers had an article reading
-  # "he said double quotation mark the budget is fine". Nothing here rewrites a quotation
-  # mark — the three forms below all come through as typed — the words were hidden text on
-  # the page being read along with the story.
+  # Some publishers spell their punctuation out in spans meant only for a screen reader, so
+  # hidden text is stripped before the story is read. Quotation marks themselves are
+  # untouched: all three forms below come through as typed.
   test 'leaves out text written only for a screen reader, and leaves quotes alone' do
     stub_article_lookup
     stub_page(<<~HTML)
@@ -217,7 +216,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     get_article
 
     assert_response :success
-    # Reading to the end and scrolling back up to reach the menu was the wrong way round.
+    # Links after the story, so finishing it leaves them to hand rather than a scroll back.
     assert_operator @response.body.index('The story itself runs on'), :<,
                     @response.body.index('Back to headlines')
     assert_operator @response.body.index('The story itself runs on'), :<,
@@ -231,7 +230,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     get_article
 
     assert_response :success
-    # Filtering that leaves nothing behind hands back what it was given.
+    # Filtering that leaves nothing behind falls back to the unfiltered set.
     assert_match 'Play was abandoned', @response.body
     assert_no_match(/Cannot parse page/, @response.body)
   end
@@ -254,7 +253,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'A story anyone can read', @response.body
-    # The heading used to stay behind with nothing under it, which reads as a fault.
+    # No heading is left standing with nothing under it, which would read as a fault.
     assert_no_match(/A story only the blocked cover/, @response.body)
   end
 
@@ -308,7 +307,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
                                     title: 'Redirected somewhere that refuses us' }
 
     assert_response :success
-    # The status used to be checked before the redirect, so a 403 got through and the
+    # The status that decides is the one from the page finally served, so a publisher that
     # parser then failed on it instead.
     assert_match 'Cannot load page', @response.body
     assert_match 'Redirected somewhere that refuses us', @response.body
@@ -333,7 +332,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     get news_article_url, params: { article: 'https://news.google.com/rss/articles/test' }
 
     assert_response :success
-    # It was requested once to check the status and again to read it, which doubled the
+    # One fetch serves both the status check and the read, rather than doubling the
     # traffic sent to publishers already rate limiting us.
     assert_requested :get, /theguardian\.com/, times: 1
   end

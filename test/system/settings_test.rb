@@ -4,9 +4,8 @@ require 'application_system_test_case'
 
 class SettingsTest < ApplicationSystemTestCase
   # Geocoding reads a key off the credentials, which are blank in tests by design — see
-  # test_helper.rb. These two used to work only because a real config/master.key happened
-  # to be present, which is the same reason CI hands RAILS_MASTER_KEY to this job. Neither
-  # is needed: the HTTP is stubbed from fixtures, so stand-in keys are enough.
+  # test_helper.rb. The HTTP is stubbed from fixtures, so stand-in keys are enough and no
+  # real config/master.key is needed.
   setup { stub_api_credentials }
   teardown { unstub_api_credentials }
 
@@ -25,8 +24,8 @@ class SettingsTest < ApplicationSystemTestCase
     # 78000 is a postcode in both France and Bosnia, so the country is confirmed after
     # the search rather than chosen from a dropdown before it.
     assert_text 'Which country is this postcode in?'
-    # A button, not a link. Confirming the country writes the location, and a browser that
-    # fetches links before they are followed would have written it just for passing over.
+    # A button, not a link: confirming the country writes the location, and a browser that
+    # fetches links speculatively must not be able to trigger that.
     click_button('France')
 
     # The confirmation page is the signal that the cookies have been written. Cookies are
@@ -48,7 +47,7 @@ class SettingsTest < ApplicationSystemTestCase
 
   test 'unsuccessfully sets user settings and an error is displayed' do
     # Autocomplete stays fuzzy even when asked for a postcode, so nonsense comes back as
-    # real postcodes elsewhere. Nothing here matches what was typed, so nothing is offered.
+    # real postcodes elsewhere. None of them matches the input, so nothing is offered.
     stub_geoapify('autocomplete', 'geoapify_postcode_nonsense.json')
     visit settings_url
     assert_text 'Change your settings:'

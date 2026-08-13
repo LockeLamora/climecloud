@@ -76,8 +76,8 @@ class Places
                                'catering.fast_food,catering.cafe,catering.pub,' \
                                'commercial.department_store,commercial.shopping_mall,' \
                                'public_transport.train' },
-    # Not the bare healthcare category, which brings back dentists and opticians when
-    # what was asked for is somewhere to be seen about something wrong.
+    # Not the bare healthcare category, which brings back dentists and opticians rather
+    # than somewhere to be seen about something wrong.
     'hospital' => { categories: 'healthcare.hospital,healthcare.clinic_or_praxis',
                     radius: HOSPITAL_RADIUS_METRES, guarantee: 'healthcare.hospital',
                     request_limit: WIDE_REQUEST_LIMIT },
@@ -145,8 +145,8 @@ class Places
     body = JSON.parse(res.body)
     places = (body['features'] || []).filter_map { |feature| place_from(feature) }
     places = places.sort_by { |place| place[:distance] || Float::INFINITY }
-    # Nearest first before the collapse, so a pair of stops either side of a road
-    # leaves the one actually closest to the user.
+    # Nearest first before the collapse, so a pair of entries either side of a road leaves
+    # the one actually closest.
     keeping_guaranteed(places.uniq { |place| place[:name].downcase })
   end
 
@@ -196,10 +196,9 @@ class Places
     (properties['parking'] || {})['access'] == PRIVATE_ACCESS
   end
 
-  # What someone deciding where to leave a car wants to know before walking to it.
-  # Silence rather than a guess when a field is missing: only seven of twenty car parks
-  # around a city centre say anything about a charge, and an absent fee is not a free
-  # one. Saying nothing sends someone to read the sign, which beats being wrong.
+  # What someone deciding where to leave a car wants to know before walking to it. Silence
+  # rather than a guess when a field is missing: most car parks say nothing about a charge,
+  # and an absent fee is not a free one. Saying nothing sends someone to read the sign.
   def parking_notes(properties)
     parking = properties['parking'] || {}
     return [] if parking.empty?

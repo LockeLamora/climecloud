@@ -4,11 +4,9 @@ require 'net/http'
 require 'uri'
 
 class Gnews
-  # The sections Google publishes a feed for, in the order they are offered. Named here
-  # rather than written out in the two views that list them, which had drifted into
-  # holding the same nine words twice, in English, in an app that speaks seventeen
-  # languages. The values are what Google's URLs expect; the words shown come from the
-  # locale files.
+  # The sections Google publishes a feed for, in the order they are offered, named once
+  # here and read by both views that list them. The values are what Google's URLs expect;
+  # the words shown come from the locale files, so all seventeen languages get their own.
   SECTIONS = %w[HEADLINES WORLD NATION BUSINESS TECHNOLOGY ENTERTAINMENT SCIENCE SPORTS HEALTH].freeze
 
   def initialize(params = nil)
@@ -119,10 +117,9 @@ class Gnews
   end
 
   # The URL arrives inside a JSON string inside a JSON array, behind a few characters of
-  # anti-hijacking padding. It used to be pulled out with URI.extract, which stops at the
-  # first character it does not recognise: one article came back as ".../story?id" with
-  # the value of the query string missing, and 404ed through no fault of the publisher.
-  # URI.extract stays as the fallback in case the response shape changes again.
+  # anti-hijacking padding, so it is parsed out rather than pattern matched: URI.extract
+  # stops at the first character it does not recognise and truncates a query string.
+  # It stays as the fallback for a response this parse cannot read.
   def resolved_url(body)
     payload = JSON.parse(body.sub(/\A[^\[]*/, ''))
     nested = payload.flatten.compact.find { |part| part.is_a?(String) && part.include?('http') }
