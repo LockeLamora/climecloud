@@ -102,6 +102,7 @@ id:
       workbench: "Workbench"
       c64: "Commodore callback"
       barbie: "Barbiephone"
+      barbie_dark: "Barbiephone dark"
     saved_as: "Lokasi disimpan sebagai:"
     language: "Bahasa:"
     wrong_place:

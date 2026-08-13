@@ -415,37 +415,64 @@ body[data-theme="c64"] {
 }
 
 /* -------------------------------------------------------------- 22 barbie ---- */
-/* A pale ground rather than hot pink everywhere: white on #E0218A is hard to read a
- * timetable through, and the pink is worth more as the thing being pressed. */
+/* Hot pink on the ground and lemon for anything pressable, at the heaviest weight of any
+ * style here. The two colours carry the whole thing, so nothing is boxed or bevelled. */
 body[data-theme="barbie"] {
-  --paper: #FFE3F1;
-  --ink: #8E1057;
-  --link: #E0218A;
-  --press-bg: #E0218A;
-  --press-ink: #FFF5FA;
-  --quiet: #C77BA4;
-  --rule: #F5A9CE;
-  --emphasis: #8E1057;
-  --head-bg: #E0218A;
-  --head-ink: #FFF5FA;
-  font-weight: 500;
+  --paper: #F92E8C;
+  --ink: #FFFFFF;
+  --link: #FFE300;
+  --press-bg: #FFE300;
+  --press-ink: #A8005A;
+  --quiet: #FFB3D8;
+  --rule: #FF7EB8;
+  --emphasis: #FFE300;
+  --head-bg: #FFE300;
+  --head-ink: #A8005A;
+  /* Red is the one token the ground swallows: it is a neighbour of the paper here, so an
+   * error line takes the darkest colour in the palette instead. */
+  --error: #2E0014;
+  font-weight: 800;
 }
 
-/* Moulded plastic. */
-body[data-theme="barbie"]::after {
+/* No component reads --emphasis, so a heading takes --ink unless a style says otherwise.
+ * Here the lemon is the second half of the palette and the heading is where it starts. */
+body[data-theme="barbie"] h1,
+body[data-theme="barbie"] h2 {
+  color: #FFE300;
+  color: var(--emphasis, #FFE300);
+}
+
+/* --------------------------------------------------------- 23 barbie dark ---- */
+/* The same pink as light rather than as ground: dim for body text, full brightness for
+ * anything pressable, which is how the phosphor styles above are built. */
+body[data-theme="barbie-dark"] {
+  --paper: #0C0209;
+  --ink: #B01A67;
+  --link: #FF2E9A;
+  --press-bg: #FF2E9A;
+  --press-ink: #0C0209;
+  --quiet: #6E1141;
+  --rule: #3A0A22;
+  --emphasis: #FFFFFF;
+  --head-bg: #FF2E9A;
+  --head-ink: #0C0209;
+  font-weight: 750;
+}
+
+/* White, so a heading sits above both the dim body text and the bright links. */
+body[data-theme="barbie-dark"] h1,
+body[data-theme="barbie-dark"] h2 {
+  color: #FFFFFF;
+  color: var(--emphasis, #FFFFFF);
+}
+
+/* Pink cast over the top of the screen. */
+body[data-theme="barbie-dark"]::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 22%);
-}
-
-body[data-theme="barbie"] h1,
-body[data-theme="barbie"] h2 {
-  background: #E0218A;
-  color: #FFF5FA;
-  padding: 2px 6px;
-  border-radius: 8px;
+  background: radial-gradient(90% 60% at 50% 0%, rgba(255, 46, 154, 0.16), transparent 65%);
 }
 
 /* Every style but the plain one lays a link out as its own row.
@@ -496,6 +523,7 @@ body[data-theme="stn"] a,
 body[data-theme="oled"] a,
 body[data-theme="c64"] a,
 body[data-theme="barbie"] a,
+body[data-theme="barbie-dark"] a,
 body[data-theme="crt-green"] form.inline-action button,
 body[data-theme="crt-amber"] form.inline-action button,
 body[data-theme="plasma"] form.inline-action button,
@@ -503,7 +531,8 @@ body[data-theme="teletext"] form.inline-action button,
 body[data-theme="stn"] form.inline-action button,
 body[data-theme="oled"] form.inline-action button,
 body[data-theme="c64"] form.inline-action button,
-body[data-theme="barbie"] form.inline-action button {
+body[data-theme="barbie"] form.inline-action button,
+body[data-theme="barbie-dark"] form.inline-action button {
   text-decoration: none;
 }
 

@@ -102,6 +102,7 @@ tr:
       workbench: "Workbench"
       c64: "Commodore callback"
       barbie: "Barbiephone"
+      barbie_dark: "Barbiephone dark"
     saved_as: "Konum şu şekilde kaydedildi:"
     language: "Dil:"
     wrong_place:

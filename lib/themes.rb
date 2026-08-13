@@ -14,6 +14,7 @@ module Themes
     unstyled
     crt-amber
     barbie
+    barbie-dark
     stn
     c64
     flap

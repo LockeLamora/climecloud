@@ -102,6 +102,7 @@ ur:
       workbench: "Workbench"
       c64: "Commodore callback"
       barbie: "Barbiephone"
+      barbie_dark: "Barbiephone dark"
     saved_as: "مقام محفوظ ہوا:"
     language: "زبان:"
     wrong_place:

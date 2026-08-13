@@ -101,6 +101,7 @@ en:
       workbench: "Workbench"
       c64: "Commodore callback"
       barbie: "Barbiephone"
+      barbie_dark: "Barbiephone dark"
     saved_as: "Location saved as:"
     language: "Language:"
     wrong_place:

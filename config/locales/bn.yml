@@ -102,6 +102,7 @@ bn:
       workbench: "Workbench"
       c64: "Commodore callback"
       barbie: "Barbiephone"
+      barbie_dark: "Barbiephone dark"
     saved_as: "অবস্থান সংরক্ষিত হয়েছে:"
     language: "ভাষা:"
     wrong_place:
