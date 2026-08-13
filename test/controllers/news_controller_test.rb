@@ -29,6 +29,35 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'national insurance', @response.body
   end
 
+  # A publisher that spells its punctuation out for screen readers had an article reading
+  # "he said double quotation mark the budget is fine". Nothing here rewrites a quotation
+  # mark — the three forms below all come through as typed — the words were hidden text on
+  # the page being read along with the story.
+  test 'leaves out text written only for a screen reader, and leaves quotes alone' do
+    stub_article_lookup
+    stub_page(<<~HTML)
+      <html><body><article>
+        <p>A plain typed quote: he said "the budget is fine" and left the building today.</p>
+        <p>An entity quote: she said &quot;nothing of the sort&quot; before walking out of it.</p>
+        <p>A curly quote: they said &#8220;we will see about that&#8221; and then said no more.</p>
+        <p><span class="visually-hidden">double quotation mark</span>Spelled out for a reader
+          that cannot see it, which is not something to print on a screen.</p>
+        <p><span class="sr-only">double quotation mark</span>The other spelling of the same
+          class name, which publishers use just as often as the first one does.</p>
+      </article></body></html>
+    HTML
+
+    get_article
+
+    assert_response :success
+    assert_no_match(/double quotation mark/, @response.body)
+    assert_match '"the budget is fine"', @response.body
+    assert_match 'nothing of the sort', @response.body
+    assert_match '“we will see about that”', @response.body
+    # The sentences the hidden spans sat inside are still part of the story.
+    assert_match 'Spelled out for a reader', @response.body
+  end
+
   test 'prefers the structured article body the publisher embeds' do
     stub_article_lookup
     stub_page(<<~HTML)

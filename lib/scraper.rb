@@ -17,10 +17,18 @@ module Scraper
   # read as part of the story. The class matches are for paid placements, which are written
   # in full sentences and so survive every other filter: equity release, "browse radios and
   # music centres", "less scrolling, more great TV".
-  BOILERPLATE = 'script, style, noscript, nav, header, footer, aside, form, figcaption, iframe, ' \
-                '[class*="promo"], [class*="advert"], [class*="sponsor"], [class*="partner"], ' \
-                '[class*="affiliate"], [class*="newsletter"], [class*="related"], ' \
-                '[class*="recommend"], [id*="advert"], [id*="promo"]'
+  # The accessibility-only entries are there because text meant for a screen reader is
+  # still text: one publisher spells its quotation marks out in hidden spans, so an article
+  # arrived reading `he said double quotation mark the budget is fine`. Nothing here
+  # rewrites a quote — typed, &quot; and curly all survive — those were the page's own words.
+  BOILERPLATE = [
+    'script, style, noscript, nav, header, footer, aside, form, figcaption, iframe',
+    '[class*="promo"], [class*="advert"], [class*="sponsor"], [class*="partner"]',
+    '[class*="affiliate"], [class*="newsletter"], [class*="related"], [class*="recommend"]',
+    '[id*="advert"], [id*="promo"]',
+    '[aria-hidden="true"], .sr-only, .visually-hidden, .visuallyhidden',
+    '.screen-reader-text, .screen-reader-only, .assistive-text'
+  ].join(', ').freeze
   # Where an article usually sits, tried in order. Without this the fallback was every
   # paragraph on the page, which meant cookie notices, related story teasers and the
   # footer arrived as prose on a 240 pixel screen.

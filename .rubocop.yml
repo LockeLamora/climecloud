@@ -22,6 +22,13 @@ Style/StringConcatenation:
   Exclude:
     - 'lib/gnews.rb'
 
+# Most of Scraper's length is two lists of CSS selectors naming the furniture and the
+# hidden text to leave out of an article. Wrapping them tighter to satisfy a line count
+# makes them harder to read and to add to, which is the opposite of the point.
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/scraper.rb'
+
 Metrics/AbcSize:
   Enabled: false  
 

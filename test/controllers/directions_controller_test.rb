@@ -27,6 +27,19 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Head north on Test Road', @response.body
   end
 
+  # Zero is the menu on every page in this app, and this one had nothing but the browser's
+  # own back button — which a keypad phone does not make obvious.
+  test 'the whole route offers the way back to the menu, as every other page does' do
+    stub_directions(directions_body)
+
+    plan_route
+
+    assert_response :success
+    assert_match(%r{accesskey="0"[^>]*href="/"|href="/"[^>]*accesskey="0"}, @response.body,
+                 'the whole route view has no numbered link back to the menu')
+    assert_match 'Back to menu', @response.body
+  end
+
   test 'shows one turn at a time with a link to the next' do
     stub_directions(directions_body)
 
