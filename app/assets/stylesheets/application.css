@@ -1,19 +1,15 @@
 /*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
+ * A manifest, not a stylesheet. require_tree concatenates every .css file in this
+ * directory into one response, and require_self appends whatever is written below, so
+ * anything added here overrides the components.
  *
- * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
- * vendor/assets/stylesheets directory can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
+ * There are deliberately no @import lines. This file used to declare its contents twice,
+ * once through require_tree and again as three @imports, and the @imports did nothing:
+ * require_self places them after other rules, and CSS requires a browser to ignore an
+ * @import there. Chrome confirmed it — one request, no second fetch. Adding them back
+ * would either stay dead or, if moved above the rules, turn one request into four on a
+ * phone over 4G.
  *
  *= require_tree .
  *= require_self
  */
-
- @import "components/forms";
- @import "components/tables";
- @import "components/text";
