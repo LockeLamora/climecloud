@@ -1,0 +1,60 @@
+/* What a press looks like while the request is in flight.
+ *
+ * Nothing on screen used to change between pressing a link and the next page
+ * arriving, and over 4G that is long enough to wonder whether the keypress
+ * registered. There is no JavaScript to hook a spinner to, and none is needed: the
+ * outgoing page keeps rendering until the response lands, so an animation started by
+ * :active covers exactly that gap and stops when the new page replaces it.
+ *
+ * The pressed line inverts immediately, then a highlight sweeps across it. The
+ * inversion is the part that reads without being looked at directly on a 240x320
+ * screen, because it changes a whole area rather than one glyph, and it moves nothing:
+ * only the colours change, so no line reflows under the thumb.
+ *
+ * Not :focus. A d-pad moves focus through every link on the way to the one it wants,
+ * and inverting each in turn would say "loading" six times over for one press.
+ */
+
+@keyframes press-sweep {
+  from { background-position: -45% 0; }
+  to   { background-position: 145% 0; }
+}
+
+/* a:visited:active is not redundant. components/text.css keeps links blue once
+ * followed, it sorts after this file, and `a:visited` weighs the same as `a:active` —
+ * so a followed link needs the heavier selector to inherit the inversion too. */
+a:active,
+a:visited:active,
+form.inline-action button:active {
+  color: #fff;
+  background-color: blue;
+  text-decoration: none;
+
+  /* A band of lighter blue travelling left to right over the inverted line. Sized
+   * and positioned as a background so it costs no element and cannot shift layout. */
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0)
+  );
+  background-repeat: no-repeat;
+  background-size: 40% 100%;
+  animation: press-sweep 1.1s linear infinite;
+}
+
+/* The credit line is deliberately quiet, so it inverts to match itself rather than
+ * flaring blue at the bottom of every page. */
+.credit a:active {
+  background-color: #767676;
+}
+
+/* Keep the inversion, drop the travelling highlight. The press still reads. */
+@media (prefers-reduced-motion: reduce) {
+  a:active,
+  a:visited:active,
+  form.inline-action button:active {
+    animation: none;
+    background-image: none;
+  }
+}
