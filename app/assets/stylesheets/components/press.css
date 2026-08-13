@@ -58,6 +58,18 @@ form.inline-action button:focus {
   a:focus,
   a:visited:focus,
   form.inline-action button:focus {
+    /* A box of its own, or a link that wraps disappears entirely.
+     *
+     * An inline element that spans several lines is painted as fragments, and the
+     * background geometry is computed over those fragments joined into one virtual box —
+     * so on a news headline running to five lines the two clipped layers stopped landing
+     * on the glyphs at all. The text is transparent by then, which left nothing visible:
+     * the headline was simply a gap in the page.
+     *
+     * inline-block gives the background a single box to measure against. It changes no
+     * geometry here — same width, same height, same position, one client rect instead of
+     * five — and the sweep becomes a straight edge travelling down the whole block. */
+    display: inline-block;
     background-color: transparent;
     color: transparent;
     -webkit-text-fill-color: transparent;

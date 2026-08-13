@@ -70,6 +70,32 @@ class PressTest < ApplicationSystemTestCase
     assert_operator boundaries[2], :>, 60, 'it should be most of the way across by the end'
   end
 
+  # A news headline runs to several lines at 220px. As a wrapping inline it was painted as
+  # fragments, the background was measured over those fragments joined into one virtual
+  # box, and the layers that paint the glyphs missed them completely — with the text
+  # already transparent, the whole headline became a gap in the page. Nothing about the
+  # CSS said so, and no single-line link showed it.
+  test 'a headline that wraps stays visible while it is pressed' do
+    stub_request(:get, /news\.google\.com/).to_return(body: file_fixture('news_response.xml').read)
+    page.driver.browser.manage.add_cookie(name: 'country_code', value: 'gb')
+
+    visit news_url
+    link = first('.news a')
+
+    assert_operator page.evaluate_script('arguments[0].textContent.length', link), :>, 40,
+                    'this test is only meaningful on a headline long enough to wrap'
+
+    page.execute_script('arguments[0].focus()', link)
+
+    assert_equal 1, page.evaluate_script('arguments[0].getClientRects().length', link),
+                 'a pressed link must be one box, or the background is measured over joined fragments'
+    assert_equal 'inline-block', style(link, 'display')
+    assert_equal 'press-reveal', style(link, 'animationName')
+    # The blue that paints the glyphs and the block behind them come from the same layers,
+    # so if one is there the other is.
+    assert_match(/rgb\(0, 0, 255\)/, style(link, 'backgroundImage'))
+  end
+
   # A reader who asked for no motion still has to see the press. Getting this wrong is
   # invisible in the CSS: dropping background-image alone leaves one layer, so a
   # three-value background-clip collapses to `text` and the blue is clipped to the glyphs,
