@@ -23,7 +23,8 @@
  * below is not supported, a press still reads unmistakably. */
 a:focus,
 a:visited:focus,
-form.inline-action button:focus {
+form.inline-action button:focus,
+input[type="submit"]:focus {
   color: #fff;
   background-color: blue;
   text-decoration: none;
@@ -57,7 +58,8 @@ form.inline-action button:focus {
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   a:focus,
   a:visited:focus,
-  form.inline-action button:focus {
+  form.inline-action button:focus,
+  input[type="submit"]:focus {
     /* A box of its own, or a link that wraps disappears entirely.
      *
      * An inline element that spans several lines is painted as fragments, and the
@@ -102,7 +104,8 @@ form.inline-action button:focus {
 @media (prefers-reduced-motion: reduce) {
   a:focus,
   a:visited:focus,
-  form.inline-action button:focus {
+  form.inline-action button:focus,
+  input[type="submit"]:focus {
     animation: none;
     background-image: none;
     -webkit-background-clip: border-box;

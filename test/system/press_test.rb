@@ -96,6 +96,25 @@ class PressTest < ApplicationSystemTestCase
     assert_match(/rgb\(0, 0, 255\)/, style(link, 'backgroundImage'))
   end
 
+  # f.submit renders an <input type="submit">, which matched neither the link rule nor the
+  # button rule, so the one control with the longest wait behind it — planning a route is
+  # two upstream calls and a map image — was the only thing in the app that answered to
+  # nothing at all when pressed.
+  test 'a pressed submit button inverts and sweeps like everything else' do
+    visit directions_url
+
+    button = find('input[type="submit"]')
+    assert_equal 'none', style(button, 'animationName'), 'nothing should be running at rest'
+
+    page.execute_script('arguments[0].focus()', button)
+
+    assert_equal 'press-reveal', style(button, 'animationName')
+    assert_includes style(button, 'backgroundClip'), 'text'
+    assert_match(/rgb\(0, 0, 255\)/, style(button, 'backgroundImage'))
+    # An input is already inline-block, so the box it paints into does not change.
+    assert_equal 'inline-block', style(button, 'display')
+  end
+
   # A reader who asked for no motion still has to see the press. Getting this wrong is
   # invisible in the CSS: dropping background-image alone leaves one layer, so a
   # three-value background-clip collapses to `text` and the blue is clipped to the glyphs,
