@@ -1,18 +1,23 @@
 /* What a press looks like while the request is in flight.
  *
- * Nothing on screen used to change between pressing a link and the next page
- * arriving, and over 4G that is long enough to wonder whether the keypress
- * registered. There is no JavaScript to hook a spinner to, and none is needed: the
- * outgoing page keeps rendering until the response lands, so an animation started by
- * :active covers exactly that gap and stops when the new page replaces it.
+ * Nothing on screen used to change between pressing a link and the next page arriving,
+ * and over 4G that is long enough to doubt the keypress registered. The pressed line
+ * inverts and a highlight sweeps across it until the new page replaces it.
  *
- * The pressed line inverts immediately, then a highlight sweeps across it. The
- * inversion is the part that reads without being looked at directly on a 240x320
- * screen, because it changes a whole area rather than one glyph, and it moves nothing:
- * only the colours change, so no line reflows under the thumb.
+ * Keyed on :focus, not :active. :active lasts only from press to release and the
+ * navigation begins on release, so the entire wait happened after :active had gone: it
+ * showed as one flash and then nothing at all.
  *
- * Not :focus. A d-pad moves focus through every link on the way to the one it wants,
- * and inverting each in turn would say "loading" six times over for one press.
+ * Every route in deliberately: pointer, Enter, and the number keys. Chrome counts an
+ * access key as keyboard focus, so splitting pointer presses out with
+ * :not(:focus-visible) — which is the only way CSS can tell a press from a rest —
+ * silently dropped the sweep for the keypad, which is the input this app is built around.
+ * The cost of not splitting is that a link left sitting under focus keeps sweeping as
+ * though it were loading. On a keypad that is the same moment as pressing it, and there
+ * is no CSS state for "a request is in flight" to do better with.
+ *
+ * a:visited:focus is not redundant: components/text.css keeps followed links blue, sorts
+ * after this file, and `a:visited` weighs the same as `a:focus`.
  */
 
 @keyframes press-sweep {
@@ -20,18 +25,16 @@
   to   { background-position: 145% 0; }
 }
 
-/* a:visited:active is not redundant. components/text.css keeps links blue once
- * followed, it sorts after this file, and `a:visited` weighs the same as `a:active` —
- * so a followed link needs the heavier selector to inherit the inversion too. */
-a:active,
-a:visited:active,
-form.inline-action button:active {
+a:focus,
+a:visited:focus,
+form.inline-action button:focus {
   color: #fff;
   background-color: blue;
   text-decoration: none;
+  outline: none;
 
-  /* A band of lighter blue travelling left to right over the inverted line. Sized
-   * and positioned as a background so it costs no element and cannot shift layout. */
+  /* A band of lighter blue travelling left to right over the inverted line. Sized and
+   * positioned as a background so it costs no element and cannot shift layout. */
   background-image: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0),
@@ -45,15 +48,15 @@ form.inline-action button:active {
 
 /* The credit line is deliberately quiet, so it inverts to match itself rather than
  * flaring blue at the bottom of every page. */
-.credit a:active {
+.credit a:focus {
   background-color: #767676;
 }
 
 /* Keep the inversion, drop the travelling highlight. The press still reads. */
 @media (prefers-reduced-motion: reduce) {
-  a:active,
-  a:visited:active,
-  form.inline-action button:active {
+  a:focus,
+  a:visited:focus,
+  form.inline-action button:focus {
     animation: none;
     background-image: none;
   }
