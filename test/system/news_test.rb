@@ -3,7 +3,14 @@
 require 'application_system_test_case'
 
 class NewsTest < ApplicationSystemTestCase
-  def setup; end
+  # News requires a saved location, so the cookies a reader would have are set first. The
+  # first visit is only there to give the browser a domain to store them against.
+  setup do
+    visit root_url
+    { 'lat' => '51.5', 'lon' => '-0.1', 'city' => 'Testville', 'country_code' => 'gb' }.each do |name, value|
+      page.driver.browser.manage.add_cookie(name: name, value: value)
+    end
+  end
 
   test 'visiting the index and then an article' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)

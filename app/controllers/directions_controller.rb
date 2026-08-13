@@ -4,11 +4,24 @@ require 'maps'
 require 'geocode'
 
 class DirectionsController < ApplicationController
+  # Planning one route spends three Google calls — geocoding what was typed, the route
+  # itself, then a static map image — all against the same key.
+  before_action :require_saved_location
+
   def search
     render :search
   end
 
   def plan
+    # Both ends are needed before anything is asked of Google. An empty field is an
+    # INVALID_REQUEST there, which costs a call to be told what is already known here, and
+    # the reader sees the same message either way.
+    if endpoint_missing?
+      @error = I18n.t('directions.fill_in_both')
+      render :search
+      return
+    end
+
     session['maps'] = Maps.new({
                                  origin: params[:origin],
                                  destination: params[:destination],
@@ -60,6 +73,10 @@ class DirectionsController < ApplicationController
   helper_method :bias_params_for
 
   private
+
+  def endpoint_missing?
+    params[:origin].to_s.strip.empty? || params[:destination].to_s.strip.empty?
+  end
 
   # Google picks one reading of free text without saying so, and a street name common to
   # several towns can resolve to the wrong one. Anything typed as text is worth a second

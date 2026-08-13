@@ -8,7 +8,7 @@
     <%# belongs to is read back off the search. Only when it genuinely belongs to more %>
     <%# than one is the user asked, and then as a short list of the ones that apply. %>
     <%= f.label t('settings.postcode') %>
-    <%= f.text_field :postcode, class: "text_field" %>
+    <%= f.text_field :postcode, class: "text_field", required: true %>
     <br /><br />
 
     <b><%= t('settings.metrics') %></b><br />

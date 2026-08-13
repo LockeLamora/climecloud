@@ -3,6 +3,8 @@
 require 'wikipedia'
 
 class WikipediaController < ApplicationController
+  before_action :require_saved_location
+
   def search
     @query = params[:query]
     if @query.blank?

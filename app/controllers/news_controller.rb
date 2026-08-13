@@ -10,6 +10,13 @@ require 'scraper'
 class NewsController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
   include Scraper
+
+  # Every action here reaches Google, whose rate limit is shared by everyone on this
+  # host's outbound address. A saved location is the cheapest evidence of a reader who
+  # set the app up, so anything arriving without one is sent to do that first rather
+  # than spending the allowance.
+  before_action :require_saved_location
+
   def news
     @gnews = gnews
     change_section

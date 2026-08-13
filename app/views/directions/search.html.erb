@@ -2,10 +2,10 @@
 <%= @error ? "<span class='error'>#{@error}</span>".html_safe : nil %>
 <%= form_with url:"directions_plan", method: :get, local: true do |f| %>
     <%= f.label t('directions.from') %>
-    <%= f.text_field :origin, class: "big_text_field" %>
+    <%= f.text_field :origin, class: "big_text_field", required: true %>
     <br /><br />
     <%= f.label t('directions.to') %>
-    <%= f.text_field :destination, class: "big_text_field" %>
+    <%= f.text_field :destination, class: "big_text_field", required: true %>
     <br /><br />
 
     <%= f.label t('directions.mode') %><br />

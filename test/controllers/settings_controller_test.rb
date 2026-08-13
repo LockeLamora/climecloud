@@ -116,6 +116,13 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_match %r{<br />\s*<br />\s*<div class='credit'>}, @response.body
   end
 
+  test 'the form asks the browser for a postcode before it submits' do
+    get settings_url
+
+    assert_response :success
+    assert_match(/name="postcode"[^>]*required|required[^>]*name="postcode"/, @response.body)
+  end
+
   test 'offers no country dropdown on the form' do
     get settings_url
 

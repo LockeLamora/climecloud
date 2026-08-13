@@ -3,6 +3,22 @@
 require 'test_helper'
 
 class WikipediaControllerTest < ActionDispatch::IntegrationTest
+  # Wikipedia's API is reached on every action, so all of them require a saved location.
+  setup do
+    cookies[:lat] = '51.5'
+    cookies[:lon] = '-0.1'
+  end
+
+  test 'sends anyone without a saved location to settings rather than to Wikipedia' do
+    %w[/wikipedia /wikipedia_article].each do |path|
+      get path, params: { query: 'test', title: 'Test' }, headers: { 'COOKIE' => 'metrics=hybrid' }
+
+      assert_redirected_to '/settings', "#{path} served a reader with no saved location"
+    end
+
+    assert_not_requested :get, /wikipedia\.org/
+  end
+
   test 'offers a search box with nothing typed yet' do
     get '/wikipedia'
 

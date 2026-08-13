@@ -3,16 +3,37 @@
 require 'test_helper'
 
 class NewsControllerTest < ActionDispatch::IntegrationTest
+  COOKIES = 'lat=51.5;lon=-0.1;city=Testville;country_code=gb'
+
+  # Every action reaches Google, so all of them require a saved location.
+  setup do
+    cookies[:lat] = '51.5'
+    cookies[:lon] = '-0.1'
+  end
+
+  # Google's rate limit is shared by everyone on this host's outbound address, so a
+  # crawler that has never been through settings must not be able to spend it. The
+  # settings page is where a reader without a location is sent instead.
+  test 'sends anyone without a saved location to settings rather than to Google' do
+    %w[/news /news_search /news_article].each do |path|
+      get path, headers: { 'COOKIE' => 'country_code=gb' }
+
+      assert_redirected_to '/settings', "#{path} served a reader with no saved location"
+    end
+
+    assert_not_requested :get, /news\.google\.com/
+  end
+
   test 'should load the news index page successfully when cookie is set' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
-    get news_url, headers: { 'COOKIE' => 'country_code=gb;' }
+    get news_url, headers: { 'COOKIE' => COOKIES }
     assert_response :success
     assert_match 'Headlines - Latest', @response.body
   end
 
   test 'reports rather than crashes when the news feed cannot be fetched' do
     stub_request(:get, /news.google.com/).to_return(status: 500, body: '')
-    get news_url, headers: { 'COOKIE' => 'country_code=gb;' }
+    get news_url, headers: { 'COOKIE' => COOKIES }
     assert_response :success
     assert_match 'Could not fetch the news feed', @response.body
   end
@@ -238,7 +259,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   test 'leaves out sources whose pages cannot be shown' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
-    get news_url, headers: { 'COOKIE' => 'country_code=gb;' }
+    get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
     NewsController::BLOCKED_SOURCES.each do |source|
@@ -249,7 +270,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   test 'drops a story whose every source is blocked rather than leaving an empty heading' do
     stub_request(:get, /news.google.com/).to_return(body: blocked_story_feed)
 
-    get news_url, headers: { 'COOKIE' => 'country_code=gb;' }
+    get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
     assert_match 'A story anyone can read', @response.body
@@ -358,7 +379,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   test 'offers every section with a digit of its own' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
-    get news_url, headers: { 'COOKIE' => 'country_code=gb;' }
+    get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
     Gnews::SECTIONS.each_with_index do |section, index|
@@ -373,7 +394,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   test 'names the sections in the language the reader chose' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
-    get news_url, headers: { 'COOKIE' => 'country_code=fr;locale=fr' }
+    get news_url, headers: { 'COOKIE' => 'lat=51.5;lon=-0.1;country_code=fr;locale=fr' }
 
     assert_response :success
     # Nine untranslated words in an app that speaks seventeen languages.
@@ -408,7 +429,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   test 'carries the section into the article links so the way back is known' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
-    get news_url, params: { section: 'BUSINESS' }, headers: { 'COOKIE' => 'country_code=gb;' }
+    get news_url, params: { section: 'BUSINESS' }, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
     assert_match 'section=BUSINESS', @response.body

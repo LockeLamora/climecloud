@@ -11,8 +11,46 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   LONG_STEP_WINDOWS = 7
   LONG_STEP_METRES = Maps::SEGMENT_METRES * (LONG_STEP_WINDOWS - 0.5)
 
+  # Planning a route spends three Google calls against one key, so a crawler that has
+  # never been through settings must not be able to start one.
+  test 'sends anyone without a saved location to settings rather than to Google' do
+    %w[/directions /directions_plan /directions_pick].each do |path|
+      get path, params: { origin: 'a', destination: 'b' }, headers: { 'COOKIE' => 'metrics=hybrid' }
+
+      assert_redirected_to '/settings', "#{path} served a reader with no saved location"
+    end
+
+    assert_not_requested :get, /maps\.googleapis\.com/
+    assert_not_requested :get, /api\.geoapify\.com/
+  end
+
+  # An empty field is an INVALID_REQUEST at Google, so it is refused here instead: the
+  # reader sees the same message and the call is not spent finding that out.
+  test 'refuses a blank endpoint without asking google about it' do
+    [{ origin: '', destination: 'Northgate' },
+     { origin: 'Market Square', destination: '' },
+     { origin: '   ', destination: "\t " },
+     { origin: '', destination: '' }].each do |params|
+      plan_route(params)
+
+      assert_response :success
+      assert_match 'Please fill in both From and To', @response.body, "accepted #{params.inspect}"
+    end
+
+    assert_not_requested :get, /maps\.googleapis\.com/
+    assert_not_requested :get, /api\.geoapify\.com/
+  end
+
+  test 'the search form asks the browser for both endpoints before it submits' do
+    get '/directions', headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match(/name="origin"[^>]*required|required[^>]*name="origin"/, @response.body)
+    assert_match(/name="destination"[^>]*required|required[^>]*name="destination"/, @response.body)
+  end
+
   test 'should load the drections search page successfully when cookie is set' do
-    get '/directions'
+    get '/directions', headers: { 'COOKIE' => COOKIES }
     assert_response :success
     assert_match 'Directions', @response.body
   end
