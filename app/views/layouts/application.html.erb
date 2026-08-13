@@ -10,7 +10,9 @@
     <%= stylesheet_link_tag "application" %>
   </head>
 
-  <body>
+  <%# Themes.resolve, not the raw cookie: an unrecognised name becomes the default rather %>
+  <%# than reaching the markup. %>
+  <body data-theme="<%= Themes.resolve(cookies[:theme]) %>">
     <%= yield %>
   </body>
 </html>

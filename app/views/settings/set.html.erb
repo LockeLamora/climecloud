@@ -3,28 +3,42 @@
 <%# settings_save_path rather than the bare string, because Rails binds the forgery token %>
 <%# to the form's action as written: a relative action mints a token for "settings_save" %>
 <%# while the request that arrives is for "/settings_save", and verification fails. %>
+<%#                                                                                      %>
+<%# Every field is filled in from the cookie that holds it, so changing one setting does %>
+<%# not mean typing the rest again on a keypad. %>
 <%= form_with url: settings_save_path, method: :post, local: true do |f| %>
     <%# No country field: the postcode is asked about on its own, and which country it %>
     <%# belongs to is read back off the search. Only when it genuinely belongs to more %>
     <%# than one is the user asked, and then as a short list of the ones that apply. %>
     <%= f.label t('settings.postcode') %>
-    <%= f.text_field :postcode, class: "text_field", required: true %>
+    <%= f.text_field :postcode, class: "text_field", required: true,
+                                value: cookies[:postcode] %>
     <br /><br />
 
     <b><%= t('settings.metrics') %></b><br />
-    <%= f.radio_button :metrics, 'imperial' %> <%= t('settings.imperial') %><br />
-    <%= f.radio_button :metrics, 'metric' %> <%= t('settings.metric') %> <br />
-    <%= f.radio_button :metrics, 'hybrid', checked: true %> <%= t('settings.hybrid') %> <br />
+    <% metrics = cookies[:metrics].presence || 'hybrid' %>
+    <%= f.radio_button :metrics, 'imperial', checked: metrics == 'imperial' %> <%= t('settings.imperial') %><br />
+    <%= f.radio_button :metrics, 'metric', checked: metrics == 'metric' %> <%= t('settings.metric') %> <br />
+    <%= f.radio_button :metrics, 'hybrid', checked: metrics == 'hybrid' %> <%= t('settings.hybrid') %> <br />
     <br />
     <b><%= t('settings.maps') %></b></br />
-    <%= f.check_box :mapimages %><%= t('settings.show_map') %><br /><br />
+    <%= f.check_box :mapimages, checked: cookies[:show_map] == '1' %><%= t('settings.show_map') %><br /><br />
     <br />
     <b><%= t('settings.news') %></b><br />
     <%= f.label t('settings.default_section') %>
     <%# The same nine sections as the news page, from the same list and the same %>
     <%# translations. Google is sent the value; the reader sees their own language. %>
     <%= f.select :news_default_section,
-                 options_for_select(Gnews::SECTIONS.map { |s| [t("news.section.#{s.downcase}"), s] }) %>
+                 options_for_select(Gnews::SECTIONS.map { |s| [t("news.section.#{s.downcase}"), s] },
+                                    cookies[:news_default_section]) %>
+    <br /><br />
+    <b><%= t('settings.display') %></b><br />
+    <%# Names come from the locale files so a reader sees them in their own language, %>
+    <%# while the value written to the cookie is the one themes.css keys off. %>
+    <%= f.label t('settings.theme') %>
+    <%= f.select :theme,
+                 options_for_select(Themes::NAMES.map { |name| [t("settings.themes.#{name.tr('-', '_')}"), name] },
+                                    Themes.resolve(cookies[:theme])) %>
     <br /><br />
     <%= f.submit %>
   <% end %>

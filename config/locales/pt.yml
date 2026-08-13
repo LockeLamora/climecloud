@@ -86,6 +86,21 @@ pt:
     show_map: "Mostrar um mapa pequeno nos resultados"
     news: "Notícias"
     default_section: "Secção de notícias predefinida"
+    # Screen style names are still English in this file and need translating.
+    display: "Display"
+    theme: "Screen style"
+    themes:
+      unstyled: "Plain (black on white)"
+      crt_green: "Green phosphor"
+      crt_amber: "Amber phosphor"
+      plasma: "Orange plasma"
+      teletext: "Teletext"
+      flap: "Departure board"
+      dmg: "Game Boy"
+      stn: "Blue LCD"
+      nokia: "Nokia LCD"
+      eink: "E-ink paper"
+      oled: "OLED dark"
     saved_as: "Localização guardada como:"
     language: "Idioma:"
     wrong_place:

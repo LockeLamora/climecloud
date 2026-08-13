@@ -86,6 +86,21 @@ nl:
     show_map: "Kleine kaart bij resultaten tonen"
     news: "Nieuws"
     default_section: "Standaard nieuwsrubriek"
+    # Screen style names are still English in this file and need translating.
+    display: "Display"
+    theme: "Screen style"
+    themes:
+      unstyled: "Plain (black on white)"
+      crt_green: "Green phosphor"
+      crt_amber: "Amber phosphor"
+      plasma: "Orange plasma"
+      teletext: "Teletext"
+      flap: "Departure board"
+      dmg: "Game Boy"
+      stn: "Blue LCD"
+      nokia: "Nokia LCD"
+      eink: "E-ink paper"
+      oled: "OLED dark"
     saved_as: "Locatie opgeslagen als:"
     language: "Taal:"
     wrong_place:

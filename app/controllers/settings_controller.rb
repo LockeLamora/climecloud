@@ -17,6 +17,12 @@ class SettingsController < ApplicationController
       return
     end
 
+    if postcode_unchanged?
+      reuse_saved_location
+      save_location(lookup: false)
+      return
+    end
+
     matches = postcode_matches
 
     if matches.empty?
@@ -87,8 +93,8 @@ class SettingsController < ApplicationController
 
   # A postcode or town can match several places. Take the first so the common case
   # stays a single keypress, and only offer the rest when the user says it is wrong.
-  def save_location(alternatives: 0)
-    lookup_locale
+  def save_location(alternatives: 0, lookup: true)
+    lookup_locale if lookup
     set_metrics(params)
     set_show_map(params)
     set_news(params)
@@ -104,8 +110,31 @@ class SettingsController < ApplicationController
     render :saved
   end
 
+  # A submit that carries the postcode already saved is somebody changing their units, the
+  # news section or the screen style. The coordinates for it are already in the cookies, so
+  # neither the postcode search nor the reverse lookup has anything to find: two calls
+  # against a shared Google allowance to arrive back where the request started.
+  def postcode_unchanged?
+    typed = params[:postcode].to_s.strip
+    saved = cookies[:postcode].to_s.strip
+
+    typed.present? && typed.casecmp?(saved) && cookies[:lat].present? && cookies[:lon].present?
+  end
+
+  # The place as it was resolved when the postcode was last searched for, so the
+  # confirmation page reads the same as it did then.
+  def reuse_saved_location
+    @lat = cookies[:lat]
+    @lon = cookies[:lon]
+    @city = cookies[:city]
+    @place = cookies[:city]
+    @state = cookies[:state]
+    @timezone_name = cookies[:timezone_name]
+    @country_code = cookies[:country_code]
+  end
+
   def settings_params
-    params.permit(:postcode, :country_code, :metrics, :mapimages, :news_default_section).to_h
+    params.permit(:postcode, :country_code, :metrics, :mapimages, :news_default_section, :theme).to_h
   end
 
   # City, county and timezone are presentation extras. If the lookup fails we still
@@ -128,6 +157,10 @@ class SettingsController < ApplicationController
   end
 
   def set_cookie
+    # The postcode is kept so the settings form can be shown filled in: changing one
+    # setting should not mean typing the others again.
+    cookies.permanent[:postcode] = params[:postcode]
+    cookies.permanent[:theme] = Themes.resolve(params[:theme])
     cookies.permanent[:lat] = @lat
     cookies.permanent[:lon] = @lon
     cookies.permanent[:city] = @city.presence || @place.presence || params[:postcode]

@@ -86,6 +86,21 @@ hi:
     show_map: "परिणामों में छोटा नक्शा दिखाएँ"
     news: "समाचार"
     default_section: "डिफ़ॉल्ट समाचार अनुभाग"
+    # Screen style names are still English in this file and need translating.
+    display: "Display"
+    theme: "Screen style"
+    themes:
+      unstyled: "Plain (black on white)"
+      crt_green: "Green phosphor"
+      crt_amber: "Amber phosphor"
+      plasma: "Orange plasma"
+      teletext: "Teletext"
+      flap: "Departure board"
+      dmg: "Game Boy"
+      stn: "Blue LCD"
+      nokia: "Nokia LCD"
+      eink: "E-ink paper"
+      oled: "OLED dark"
     saved_as: "स्थान सहेजा गया:"
     language: "भाषा:"
     wrong_place:

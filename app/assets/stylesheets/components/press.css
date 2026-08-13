@@ -22,13 +22,16 @@ a:visited:focus,
 form.inline-action button:focus,
 input[type="submit"]:focus {
   color: #fff;
+  color: var(--press-ink, #fff);
   background-color: blue;
+  background-color: var(--press-bg, blue);
   text-decoration: none;
   outline: none;
 }
 
 .credit a:focus {
   background-color: #767676;
+  background-color: var(--quiet, #767676);
 }
 
 /* The sweep, as three background layers rather than an extra element or a copy of the
@@ -64,9 +67,9 @@ input[type="submit"]:focus {
     color: transparent;
     -webkit-text-fill-color: transparent;
     background-image:
-      linear-gradient(#fff, #fff),
-      linear-gradient(blue, blue),
-      linear-gradient(blue, blue);
+      linear-gradient(var(--press-ink, #fff), var(--press-ink, #fff)),
+      linear-gradient(var(--press-bg, blue), var(--press-bg, blue)),
+      linear-gradient(var(--press-bg, blue), var(--press-bg, blue));
     -webkit-background-clip: text, text, border-box;
     background-clip: text, text, border-box;
     background-repeat: no-repeat;
@@ -98,8 +101,11 @@ input[type="submit"]:focus {
     -webkit-background-clip: border-box;
     background-clip: border-box;
     background-color: blue;
+    background-color: var(--press-bg, blue);
     color: #fff;
+    color: var(--press-ink, #fff);
     -webkit-text-fill-color: #fff;
+    -webkit-text-fill-color: var(--press-ink, #fff);
   }
 
   .credit a:focus {

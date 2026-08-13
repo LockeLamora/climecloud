@@ -86,6 +86,21 @@ bn:
     show_map: "ফলাফলে ছোট মানচিত্র দেখান"
     news: "খবর"
     default_section: "ডিফল্ট খবরের বিভাগ"
+    # Screen style names are still English in this file and need translating.
+    display: "Display"
+    theme: "Screen style"
+    themes:
+      unstyled: "Plain (black on white)"
+      crt_green: "Green phosphor"
+      crt_amber: "Amber phosphor"
+      plasma: "Orange plasma"
+      teletext: "Teletext"
+      flap: "Departure board"
+      dmg: "Game Boy"
+      stn: "Blue LCD"
+      nokia: "Nokia LCD"
+      eink: "E-ink paper"
+      oled: "OLED dark"
     saved_as: "অবস্থান সংরক্ষিত হয়েছে:"
     language: "ভাষা:"
     wrong_place:

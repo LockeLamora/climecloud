@@ -11,7 +11,11 @@ class LocalesTest < ActiveSupport::TestCase
   def dynamic_keys
     %w[language_name places.kind.unnamed] +
       %w[origin destination].map { |field| "directions.field_#{field}" } +
-      place_keys + transport_keys + direction_keys + news_keys
+      place_keys + transport_keys + direction_keys + news_keys + theme_keys
+  end
+
+  def theme_keys
+    Themes::NAMES.map { |name| "settings.themes.#{name.tr('-', '_')}" }
   end
 
   def news_keys

@@ -4,6 +4,7 @@
  * purple, and press.css carries a matching :visited:focus to outweigh it. */
 a, a:visited {
     color: blue;
+    color: var(--link, blue);
   }
 
 .route, .news, .news_topics {
@@ -12,6 +13,7 @@ a, a:visited {
 
 a.change-settings {
     color: green;
+    color: var(--link, green);
   }
 
 .error {
@@ -23,4 +25,5 @@ a.change-settings {
 .credit, .credit a, .credit a:visited {
   font-size: 0.75em;
   color: #767676;
+  color: var(--quiet, #767676);
 }

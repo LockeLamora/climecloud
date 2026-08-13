@@ -116,6 +116,111 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_match %r{<br />\s*<br />\s*<div class='credit'>}, @response.body
   end
 
+  test 'stores the chosen screen style and puts it on the body' do
+    stub_geocode(one_result)
+    stub_geoapify
+
+    save_settings(theme: 'crt-amber')
+
+    assert_response :success
+    assert_equal 'crt-amber', cookies['theme']
+
+    get root_url
+
+    assert_match(/<body data-theme="crt-amber">/, @response.body)
+  end
+
+  # A cookie is a string a reader can edit, so only the names themes.css knows about reach
+  # the markup.
+  test 'falls back to the plain style when the cookie names one that does not exist' do
+    get root_url, headers: { 'COOKIE' => 'lat=51.5;theme=<script>' }
+
+    assert_response :success
+    assert_match(/<body data-theme="unstyled">/, @response.body)
+    assert_no_match(/<script>/, @response.body)
+  end
+
+  # Changing one setting should not mean typing the others again on a keypad.
+  test 'shows the form filled in from what is already saved' do
+    get settings_url, headers: { 'COOKIE' => 'postcode=zz1 1zz;metrics=metric;show_map=1;' \
+                                             'news_default_section=SCIENCE;theme=eink' }
+
+    assert_response :success
+    assert_match 'value="zz1 1zz"', postcode_field
+    assert_match(/value="metric" checked="checked"/, @response.body)
+    assert_match(/name="mapimages"[^>]*checked="checked"|checked="checked"[^>]*name="mapimages"/,
+                 @response.body)
+    assert_match(/<option selected="selected" value="SCIENCE">/, @response.body)
+    assert_match(/<option selected="selected" value="eink">/, @response.body)
+  end
+
+  test 'defaults the form to hybrid units and the plain style with nothing saved' do
+    get settings_url
+
+    assert_response :success
+    assert_match(/value="hybrid" checked="checked"/, @response.body)
+    assert_match(/<option selected="selected" value="unstyled">/, @response.body)
+    assert_no_match(/value="."/, postcode_field, 'the postcode box should start empty')
+  end
+
+  # Changing units or the screen style resubmits the postcode already saved, and both
+  # lookups for it have already happened, so neither is worth a call against the shared
+  # Google allowance.
+  test 'changes a style without asking geoapify about the same postcode again' do
+    saved = 'postcode=zz1 1zz;lat=51.5;lon=-0.1;city=Testville;state=Wales;' \
+            'country_code=gb;timezone_name=Europe/London;theme=unstyled'
+
+    post '/settings_save', params: { postcode: 'zz1 1zz', metrics: 'metric', theme: 'crt-green' },
+                           headers: { 'HTTP_COOKIE' => saved }
+
+    assert_response :success
+    assert_match 'Location saved as', @response.body
+    assert_match 'Testville', @response.body
+    assert_not_requested :get, /api\.geoapify\.com/
+
+    # The change asked for lands, and the location it was made against survives.
+    assert_equal 'crt-green', cookies['theme']
+    assert_equal 'metric', cookies['metrics']
+    assert_equal '51.5', cookies['lat']
+    assert_equal 'Testville', cookies['city']
+  end
+
+  test 'ignores case and spacing when deciding the postcode is the same one' do
+    saved = 'postcode=zz1 1zz;lat=51.5;lon=-0.1;city=Testville;country_code=gb'
+
+    post '/settings_save', params: { postcode: ' ZZ1 1zz ', metrics: 'hybrid' },
+                           headers: { 'HTTP_COOKIE' => saved }
+
+    assert_response :success
+    assert_not_requested :get, /api\.geoapify\.com/
+  end
+
+  test 'still searches when the postcode typed is a different one' do
+    stub_geocode(one_result)
+    stub_geoapify
+
+    with_api_credentials do
+      post '/settings_save', params: { postcode: 'zz9 9zz', metrics: 'hybrid' },
+                             headers: { 'HTTP_COOKIE' => 'postcode=zz1 1zz;lat=51.5;lon=-0.1;city=Testville' }
+    end
+
+    assert_response :success
+    assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete}
+  end
+
+  test 'searches when a postcode is saved but no coordinates are' do
+    stub_geocode(one_result)
+    stub_geoapify
+
+    with_api_credentials do
+      post '/settings_save', params: { postcode: 'zz1 1zz', metrics: 'hybrid' },
+                             headers: { 'HTTP_COOKIE' => 'postcode=zz1 1zz' }
+    end
+
+    assert_response :success
+    assert_requested :get, %r{api\.geoapify\.com/v1/geocode/autocomplete}
+  end
+
   test 'the form asks the browser for a postcode before it submits' do
     get settings_url
 
@@ -247,6 +352,15 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  # Rails does not promise attribute order, so the tag is pulled out and asked about
+  # rather than matched against a pattern that assumes one.
+  def postcode_field
+    field = @response.body[/<input[^>]*name="postcode"[^>]*>/]
+
+    assert field.present?, 'no postcode input on the page at all'
+    field
+  end
 
   # Storing a location is a POST, so the settings gathered so far ride through the country
   # and candidate lists as fields on each button's form rather than in a query string.

@@ -1,0 +1,289 @@
+/* Display treatments, chosen in settings and applied as data-theme on the body.
+ *
+ * Each theme sets custom properties; the components read them. Every rule that consumes
+ * one states the literal first and the variable second:
+ *
+ *     color: blue;
+ *     color: var(--link, blue);
+ *
+ * A browser without var() support drops the second declaration and keeps the first, so
+ * the handset renders exactly what it renders with no theme at all. That is the whole
+ * reason the themes are additive rather than a replacement stylesheet.
+ *
+ * The tokens:
+ *   --paper      page background
+ *   --ink        body text
+ *   --link       anything pressable
+ *   --press-bg   the block a press paints
+ *   --press-ink  text on that block
+ *   --quiet      the attribution line
+ *   --rule       hairlines
+ *   --emphasis   headings and bold
+ */
+
+:root {
+  --paper: #ffffff;
+  --ink: #111111;
+  --link: blue;
+  --press-bg: blue;
+  --press-ink: #ffffff;
+  --quiet: #767676;
+  --rule: #d8d8d8;
+  --emphasis: #000000;
+}
+
+body {
+  background: #ffffff;
+  background: var(--paper, #ffffff);
+  color: #111111;
+  color: var(--ink, #111111);
+}
+
+/* Nothing to do: the tokens above already describe it. Named so the dropdown has
+ * something to select and so a reader can get back to it. */
+body[data-theme="unstyled"] { }
+
+/* The three emissive styles carry one phosphor hue at two intensities: body text dim,
+ * anything pressable at full brightness. A paler link reads as white once the bloom is on
+ * it, which is the opposite of how a phosphor screen distinguishes anything. */
+
+/* ---------------------------------------------------------------- 01 green ---- */
+body[data-theme="crt-green"] {
+  --paper: #060D07;
+  --ink: #35C96C;
+  --link: #52FF8F;
+  --press-bg: #52FF8F;
+  --press-ink: #041006;
+  --quiet: #1E7A42;
+  --rule: #14411F;
+  --emphasis: #52FF8F;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  text-shadow: 0 0 1px #52FF8F, 0 0 7px rgba(82, 255, 143, 0.55), 0 0 18px rgba(82, 255, 143, 0.25);
+}
+
+/* ---------------------------------------------------------------- 02 amber ---- */
+body[data-theme="crt-amber"] {
+  --paper: #0C0803;
+  --ink: #CC8A20;
+  --link: #FFB43C;
+  --press-bg: #FFB43C;
+  --press-ink: #140C02;
+  --quiet: #8A5E18;
+  --rule: #3D2A0C;
+  --emphasis: #FFB43C;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  text-shadow: 0 0 1px #FFB43C, 0 0 8px rgba(255, 180, 60, 0.5), 0 0 20px rgba(255, 140, 20, 0.2);
+}
+
+/* --------------------------------------------------------------- 03 plasma ---- */
+body[data-theme="plasma"] {
+  --paper: #0A0402;
+  --ink: #D4550F;
+  --link: #FF6B18;
+  --press-bg: #FF6B18;
+  --press-ink: #0A0402;
+  --quiet: #7E3309;
+  --rule: #3A1607;
+  --emphasis: #FF6B18;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 2px #FF6B18, 0 0 12px rgba(255, 107, 24, 0.55);
+}
+
+/* The tube: scanlines over everything, and the corners pulled in. Fixed rather than
+ * absolute so it covers a page of any length without stretching. */
+body[data-theme="crt-green"]::after,
+body[data-theme="crt-amber"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.38) 0 1px, transparent 1px 3px);
+  box-shadow: inset 0 0 60px 22px rgba(0, 0, 0, 0.6);
+  animation: crt-roll 9s linear infinite;
+}
+
+body[data-theme="crt-amber"]::after {
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.32) 0 1px, transparent 1px 3px);
+  animation-duration: 13s;
+}
+
+/* Plasma addresses each cell directly, so it has no scanning beam and no lines — just the
+ * glow pooling where the panel is brightest. */
+body[data-theme="plasma"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 60% at 50% 0%, rgba(255, 107, 24, 0.10), transparent 62%);
+}
+
+@keyframes crt-roll { to { background-position: 0 3px; } }
+
+/* ------------------------------------------------------------- 04 teletext ---- */
+body[data-theme="teletext"] {
+  --paper: #000000;
+  --ink: #FFFFFF;
+  --link: #00FFFF;
+  --press-bg: #00FFFF;
+  --press-ink: #000000;
+  --quiet: #FF00FF;
+  --rule: #0000AA;
+  --emphasis: #FFFF00;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+body[data-theme="teletext"] h1,
+body[data-theme="teletext"] h2,
+body[data-theme="teletext"] b {
+  background: #0000AA;
+  color: #FFFF00;
+  padding: 1px 4px;
+}
+
+/* ----------------------------------------------------------------- 05 flap ---- */
+body[data-theme="flap"] {
+  --paper: #0B0B0C;
+  --ink: #D9A62A;
+  --link: #FFC533;
+  --press-bg: #FFC533;
+  --press-ink: #0B0B0C;
+  --quiet: #6E5518;
+  --rule: #26262A;
+  --emphasis: #FFC533;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.04em;
+}
+
+/* Each pressable line is a card with a seam across its middle. */
+body[data-theme="flap"] a {
+  display: inline-block;
+  padding: 2px 4px;
+  background: linear-gradient(180deg, #17171A 0 49%, #101012 51% 100%);
+  border-bottom: 1px solid #26262A;
+}
+
+body[data-theme="flap"] h1,
+body[data-theme="flap"] h2,
+body[data-theme="flap"] b {
+  background: #FFC533;
+  color: #0B0B0C;
+  padding: 2px 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ------------------------------------------------------------------ 06 dmg ---- */
+body[data-theme="dmg"] {
+  --paper: #9BBC0F;
+  --ink: #0F380F;
+  --link: #0F380F;
+  --press-bg: #0F380F;
+  --press-ink: #9BBC0F;
+  --quiet: #306230;
+  --rule: #306230;
+  --emphasis: #0F380F;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+body[data-theme="dmg"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(rgba(15, 56, 15, 0.16) 0.5px, transparent 0.6px) 0 0 / 3px 3px;
+}
+
+body[data-theme="dmg"] h1,
+body[data-theme="dmg"] h2,
+body[data-theme="dmg"] b {
+  background: #0F380F;
+  color: #9BBC0F;
+  padding: 1px 4px;
+}
+
+/* ------------------------------------------------------------------ 07 stn ---- */
+body[data-theme="stn"] {
+  --paper: #12305E;
+  --ink: #BFE9FF;
+  --link: #7FD0F5;
+  --press-bg: #BFE9FF;
+  --press-ink: #12305E;
+  --quiet: #6B93B8;
+  --rule: #2B5688;
+  --emphasis: #FFFFFF;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
+}
+
+/* The backlight, brightest where the LED sits. */
+body[data-theme="stn"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 38%);
+}
+
+/* ---------------------------------------------------------------- 08 nokia ---- */
+body[data-theme="nokia"] {
+  --paper: #C7D66B;
+  --ink: #1B2410;
+  --link: #1B2410;
+  --press-bg: #1B2410;
+  --press-ink: #C7D66B;
+  --quiet: #4A5330;
+  --rule: #4A5330;
+  --emphasis: #1B2410;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+body[data-theme="nokia"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 30%),
+    repeating-linear-gradient(90deg, rgba(27, 36, 16, 0.05) 0 1px, transparent 1px 2px);
+}
+
+body[data-theme="nokia"] h1,
+body[data-theme="nokia"] h2,
+body[data-theme="nokia"] b {
+  background: #1B2410;
+  color: #C7D66B;
+  padding: 1px 4px;
+}
+
+/* ----------------------------------------------------------------- 09 eink ---- */
+body[data-theme="eink"] {
+  --paper: #F4F2ED;
+  --ink: #23231F;
+  --link: #23231F;
+  --press-bg: #23231F;
+  --press-ink: #F4F2ED;
+  --quiet: #7C7973;
+  --rule: #C9C6BE;
+  --emphasis: #000000;
+}
+
+/* ----------------------------------------------------------------- 10 oled ---- */
+body[data-theme="oled"] {
+  --paper: #000000;
+  --ink: #F2F4F7;
+  --link: #6FA8FF;
+  --press-bg: #6FA8FF;
+  --press-ink: #000000;
+  --quiet: #4A505A;
+  --rule: #1C1F24;
+  --emphasis: #FFFFFF;
+}
+
+/* A reader who asked for no motion keeps the scanlines and loses the drift. */
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme="crt-green"]::after,
+  body[data-theme="crt-amber"]::after {
+    animation: none;
+  }
+}
