@@ -7,15 +7,10 @@ require 'webmock/minitest'
 
 module ActiveSupport
   class TestCase
-    # Deliberately serial. Rails only parallelises past fifty tests, and when the suite
-    # crossed that line every worker went looking for a database of its own
-    # ("rails_test-0" and friends) that nothing creates, so the run stalled. Almost
-    # every test here waits on a stubbed HTTP call rather than the database, and the
-    # whole suite finishes in a couple of seconds, so there is nothing to win back.
+    # Deliberately serial. Rails only parallelises past fifty tests, and forking
+    # workers buys nothing here: every test waits on a stubbed HTTP call, and the
+    # whole suite finishes in a couple of seconds.
     parallelize(workers: 1)
-
-    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-    fixtures :all
 
     # Nothing but the test server itself. The allow list that used to sit here named six
     # API hosts, which meant a test that forgot to stub one quietly made a real call and

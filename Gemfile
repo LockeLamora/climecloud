@@ -10,8 +10,8 @@ gem 'rails', '~> 8.0.5', '>= 8.0.5.1'
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
 
-# Use sqlite3 as the database for Active Record
-gem 'pg', '~> 1.5.5'
+# No database gem. The app has no tables and Active Record is not loaded; see
+# config/application.rb.
 
 # connection_pool 3.x is written in Ruby 3.4 syntax and will not parse on 3.3.0.
 # Reached through wombat -> mechanize -> net-http-persistent.
@@ -54,9 +54,6 @@ gem 'tzinfo-data', platforms: %i[windows jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

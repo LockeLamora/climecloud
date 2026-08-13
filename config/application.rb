@@ -1,6 +1,18 @@
 require_relative "boot"
 
-require "rails/all"
+# Deliberately not "rails/all". The app has no tables and no models, so Active
+# Record is dropped, and with it the frameworks that are built on top of it:
+# Active Storage, Action Text and Action Mailbox. Loading Active Record would
+# open a database connection on boot and require a server to be running to
+# serve a single page.
+require "rails"
+
+require "action_cable/engine"
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "action_view/railtie"
+require "active_job/railtie"
+require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
