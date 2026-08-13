@@ -20,8 +20,13 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     # Named in the reader's own language, and only the countries that actually apply.
     assert_match 'United Kingdom', @response.body
     assert_match 'France', @response.body
-    assert_match 'country_code=gb', @response.body
-    assert_match 'country_code=fr', @response.body
+    assert_carries 'country_code', 'gb'
+    assert_carries 'country_code', 'fr'
+    # Confirming a country writes the location, so each one is a button rather than a
+    # link. The digit has to stay on the button itself or the keypress reaches nothing.
+    assert_match(/<button accesskey="1"[^>]*>1 United Kingdom</, @response.body)
+    assert_match(/<button accesskey="2"[^>]*>2 France</, @response.body)
+    assert_match(/<form class="inline-action"/, @response.body)
   end
 
   test 'rejects a typo rather than asking which country it belongs to' do
@@ -82,9 +87,9 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     save_settings(country_code: nil, metrics: 'metric', news_default_section: 'Science')
 
     assert_response :success
-    assert_match 'metrics=metric', @response.body
-    assert_match 'news_default_section=Science', @response.body
-    assert_match 'postcode=zz1+1zz', @response.body
+    assert_carries 'metrics', 'metric'
+    assert_carries 'news_default_section', 'Science'
+    assert_carries 'postcode', 'zz1 1zz'
   end
 
   test 'stops asking once the country has been confirmed' do
@@ -144,7 +149,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'Testville Magna, UK', @response.body
-    assert_match 'lat=52.3', @response.body
+    assert_carries 'lat', '52.3'
     assert_match 'Search again', @response.body
   end
 
@@ -157,6 +162,20 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match 'metrics=metric', @response.body
     assert_match 'news_default_section=Science', @response.body
+  end
+
+  # Choosing a language stores it, so it cannot be a link either. This list is the one
+  # way back to a language you can read, so its number keys have to keep working.
+  test 'offers each language as a numbered button rather than a link' do
+    stub_geocode(one_result)
+    stub_geoapify
+
+    save_settings
+
+    assert_response :success
+    assert_no_match(/href="[^"]*settings_language/, @response.body)
+    assert_match %r{<form class="inline-action" method="post" action="/settings_language">}, @response.body
+    assert_match(/<button accesskey="1"/, @response.body)
   end
 
   test 'reports when there are no other matches to offer' do
@@ -222,6 +241,16 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
+  # Storing a location is a POST, so the settings gathered so far ride through the country
+  # and candidate lists as fields on each button's form rather than in a query string.
+  def assert_carries(field, value)
+    assert_match(
+      /<input type="hidden" name="#{Regexp.escape(field)}" value="#{Regexp.escape(value)}"/,
+      @response.body,
+      "the form does not carry #{field}=#{value} through to the next step"
+    )
+  end
+
   # Pass country_code: nil to submit the form as it now stands, with no country on it.
   def save_settings(extra = {})
     query = {
@@ -232,7 +261,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
       news_default_section: 'Headlines'
     }.merge(extra).compact
 
-    with_api_credentials { get '/settings_save', params: query }
+    with_api_credentials { post '/settings_save', params: query }
   end
 
   def stub_geocode(body)

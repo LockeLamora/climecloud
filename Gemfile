@@ -28,14 +28,10 @@ gem 'country_select', '~> 8.0'
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 
-# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem 'importmap-rails'
-
-# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem 'turbo-rails'
-
-# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem 'stimulus-rails'
+# No JavaScript. Every page is server-rendered and reached with plain links and forms,
+# because the browsers this is built for run little or none of it. Turbo was here and
+# was worse than useless: it fetched links on hover, and since saving a stop was a GET,
+# moving a pointer down a list of nearby stops saved every stop it passed.
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem 'jbuilder'

@@ -51,7 +51,9 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     get '/departures_add', headers: { 'HTTP_COOKIE' => COOKIES }
 
     assert_response :success
-    assert_equal 1, @response.body.scan('Market Square').length
+    # Counted as buttons rather than as occurrences of the name: each stop is a posted
+    # form, so its name appears both on the button and in the field the form carries.
+    assert_equal 1, @response.body.scan(/<button[^>]*>Market Square</).length
   end
 
   test 'lists the nearest stops first however the feed happens to order them' do
@@ -356,6 +358,96 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  # Saving went untested, and a bug hid there for it: the stop list offered plain GET
+  # links, so a browser that fetches links before they are followed saved stops nobody
+  # picked. Choosing the fourth stop of ten saved three others along with it.
+  test 'will not save a stop from a GET, however the request arrives' do
+    get '/departures_save?id=s-test-northgate&name=Northgate', headers: { 'HTTP_COOKIE' => COOKIES }
+
+    assert_response :not_found
+    assert_not_touched :departures_saved
+  end
+
+  test 'will not forget saved stops from a GET' do
+    get '/departures_forget', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :not_found
+    assert_not_touched :departures_saved
+  end
+
+  # The stop list is what a link-fetching browser walked, so it must offer nothing that
+  # a fetch of the href alone could act on.
+  test 'offers stops to save as posted forms rather than followable links' do
+    stub_stops('stops' => [platform('Northgate', 's-test-northgate'), platform('Southgate', 's-test-southgate')])
+
+    get '/departures_add', headers: { 'HTTP_COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_no_match(/href="[^"]*departures_save/, @response.body)
+    assert_match %r{<form[^>]*method="post"[^>]*action="/departures_save"}, @response.body
+  end
+
+  # Every action in this app is a digit, and the digit has to reach the thing that acts.
+  # On a one button form that means the button carries the accesskey: put it on the form
+  # and the keypress lands on nothing. Styled to match, so a POST still reads as a link.
+  test 'keeps the number key on the button that forgets the stops' do
+    get '/departures', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_response :success
+    assert_match(/<button accesskey="9"[^>]*>9 Forget saved stops</, @response.body)
+    assert_match(/<form class="inline-action"/, @response.body)
+  end
+
+  test 'saves the one stop that was chosen and nothing else' do
+    post '/departures_save', params: { id: 's-test-northgate', name: 'Northgate' },
+                             headers: { 'HTTP_COOKIE' => COOKIES }
+
+    assert_redirected_to departures_path
+    assert_equal [{ 'id' => 's-test-northgate', 'name' => 'Northgate' }], saved_stops
+  end
+
+  test 'puts the stop just saved at the top, where the keypad reaches it first' do
+    post '/departures_save', params: { id: 's-test-southgate', name: 'Southgate' },
+                             headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    names = saved_stops.map { |stop| stop['name'] }
+
+    assert_equal %w[Southgate Northgate], names
+  end
+
+  test 'saves a stop once however often it is chosen' do
+    post '/departures_save', params: { id: 's-test-northgate', name: 'Northgate' },
+                             headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_equal 1, saved_stops.length
+  end
+
+  test 'keeps only as many stops as the keypad has digits for' do
+    existing = (1..5).map { |n| { 'id' => "s-test-#{n}", 'name' => "Stop #{n}" } }.to_json
+
+    post '/departures_save', params: { id: 's-test-new', name: 'Newest' },
+                             headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{existing}" }
+
+    assert_equal DeparturesController::MAX_SAVED_STOPS, saved_stops.length
+    assert_equal 'Newest', saved_stops.first['name']
+    # The oldest falls off the end rather than the newest being refused.
+    assert_no_match(/Stop 5/, saved_stops.to_s)
+  end
+
+  test 'ignores a save that names no stop' do
+    post '/departures_save', params: { id: 's-test-northgate' }, headers: { 'HTTP_COOKIE' => COOKIES }
+
+    assert_redirected_to departures_path
+    assert_empty saved_stops
+  end
+
+  test 'forgets every saved stop when asked' do
+    delete '/departures_forget', headers: { 'HTTP_COOKIE' => "#{COOKIES};departures_saved=#{SAVED}" }
+
+    assert_redirected_to departures_path
+    assert_empty saved_stops
+  end
+
   test 'reports rather than crashes when transitland is unreachable' do
     stub_request(:get, %r{transit\.land/api/v2/rest/stops/.+/departures}).to_return(status: 500, body: '')
 
@@ -366,6 +458,21 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  # What the browser is holding after the request, which is the only place a saved stop
+  # ever lives.
+  def saved_stops
+    JSON.parse(cookies[:departures_saved].presence || '[]')
+  end
+
+  # A rejected request must not write the cookie at all, in either direction. Asserting
+  # on the jar instead would prove nothing: it only carries what a response set, so it
+  # reads as empty whether the stops survived or were wiped.
+  def assert_not_touched(name)
+    sent = Array(@response.headers['Set-Cookie']).join("\n")
+
+    assert_not_includes sent, name.to_s, "#{name} was written by a request that should have been refused"
+  end
 
   def stub_stops(body)
     stub_request(:get, %r{transit\.land/api/v2/rest/stops\?}).to_return(

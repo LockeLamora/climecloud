@@ -5,9 +5,9 @@
 <%# Numbered with accesskeys, so confirming the country is one keypress rather than %>
 <%# scrolling a dropdown of every country there is on a four way pad. %>
 <% @countries.each_with_index do |code, index| %>
-<%= link_to "#{index + 1} #{country_name(code)}",
-            settings_save_path(@settings_params.merge('country_code' => code)),
-            accesskey: (index + 1).to_s %><br />
+<%= button_to "#{index + 1} #{country_name(code)}", settings_save_path,
+              params: @settings_params.merge('country_code' => code),
+              accesskey: (index + 1).to_s, form_class: "inline-action" %><br />
 <% end %>
 <br />
 <%= link_to "(#{t('common.none_of_these')})", settings_path %>

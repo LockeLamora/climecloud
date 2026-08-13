@@ -6,7 +6,8 @@
 <% end %>
 <br />
 <%= link_to "8 #{t('departures.add_stop')}", departures_add_path, accesskey: "8" %><br />
-<%= link_to "9 #{t('departures.forget_stops')}", departures_forget_path, accesskey: "9" %>
+<%= button_to "9 #{t('departures.forget_stops')}", departures_forget_path, method: :delete,
+              accesskey: "9", form_class: "inline-action" %>
 <% else %>
 <%= t('departures.none_saved') %><br /><br />
 <%= link_to "1 #{t('departures.find_stops')}", departures_add_path, accesskey: "1" %>

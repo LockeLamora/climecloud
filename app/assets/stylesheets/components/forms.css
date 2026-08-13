@@ -9,3 +9,23 @@
 .big_text_field {
     width: 200px;
 }
+
+/* Saving and forgetting are POSTs rather than links, so they arrive as one-button
+   forms. On a 220px column a real button costs a line of its own and reads as
+   something other than the text around it, so it is stripped back to the link it
+   replaced. Left as a button element, which the keypad still reaches in turn. */
+form.inline-action {
+    display: inline;
+    margin: 0;
+}
+
+form.inline-action button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: blue;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+}

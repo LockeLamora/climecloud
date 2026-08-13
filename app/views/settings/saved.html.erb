@@ -6,9 +6,9 @@
 <%# language you can read after moving to a country that speaks another. %>
 <%= t('settings.language') %><br />
 <% @languages.each_with_index do |locale, index| %>
-<%= link_to "#{index + 1} #{Languages.name_for(locale)}",
-            settings_language_path(locale: locale),
-            accesskey: (index + 1).to_s %><br />
+<%= button_to "#{index + 1} #{Languages.name_for(locale)}", settings_language_path,
+              params: { locale: locale },
+              accesskey: (index + 1).to_s, form_class: "inline-action" %><br />
 <% end %>
 <br />
 <%= link_to "0 #{t('common.continue')}", root_path, accesskey: "0" %><br /><br />

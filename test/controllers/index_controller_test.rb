@@ -3,6 +3,20 @@
 require 'test_helper'
 
 class IndexControllerTest < ActionDispatch::IntegrationTest
+  # The browsers this is built for run little or no JavaScript, so a page that needs any
+  # is a page that does not work. Hotwire arrived with the Rails app template, was never
+  # used by anything here, and fetched links on hover: on a list of nearby stops, where
+  # saving one was a GET, that saved every stop the pointer crossed. Nothing replaced it,
+  # so any script tag reappearing in the layout is a regression.
+  test 'serves no JavaScript at all' do
+    get root_url, headers: { 'COOKIE' => 'lat=57;' }
+
+    assert_response :success
+    assert_no_match(/<script/i, @response.body)
+    assert_no_match(/importmap/i, @response.body)
+    assert_no_match(/\son[a-z]+=/i, @response.body)
+  end
+
   test 'should load the index page successfully when the cookie is set' do
     get root_url, headers: { 'COOKIE' => 'lat=57;' }
     assert_response :success

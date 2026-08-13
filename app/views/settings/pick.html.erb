@@ -4,10 +4,12 @@
 <br /><br />
 <ol>
 <% @candidates.each do |candidate| %>
-    <li><%= link_to candidate[:address], settings_save_path(@settings_params.merge('lat' => candidate[:lat],
-                                                                                  'lon' => candidate[:lon],
-                                                                                  'place' => candidate[:address],
-                                                                                  'place_country' => candidate[:country_code])) %></li>
+    <li><%= button_to candidate[:address], settings_save_path,
+                      params: @settings_params.merge('lat' => candidate[:lat],
+                                                     'lon' => candidate[:lon],
+                                                     'place' => candidate[:address],
+                                                     'place_country' => candidate[:country_code]),
+                      form_class: "inline-action" %></li>
 <% end %>
 </ol>
 <br />

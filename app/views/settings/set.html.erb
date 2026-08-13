@@ -1,6 +1,6 @@
 <%= @error.nil? ? t('settings.intro') : "<span class='error'>#{@error}</span>".html_safe %>
 <br /><br />
-<%= form_with url:"settings_save", method: :get, local: true do |f| %>
+<%= form_with url:"settings_save", method: :post, local: true do |f| %>
     <%# No country field: the postcode is asked about on its own, and which country it %>
     <%# belongs to is read back off the search. Only when it genuinely belongs to more %>
     <%# than one is the user asked, and then as a short list of the ones that apply. %>

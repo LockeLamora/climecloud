@@ -24,7 +24,7 @@
 <% @saved.each do |saved| %>
 <%= link_to saved['place'], places_path(lat: saved['lat'], lon: saved['lon'], place: saved['place']) %><br />
 <% end %>
-<%= link_to "(#{t('places.forget')})", places_forget_path %>
+<%= button_to "(#{t('places.forget')})", places_forget_path, method: :delete, form_class: "inline-action" %>
 <br /><br />
 <% end %>
 <%= form_with url: "places_search", method: :get, local: true do |f| %>

@@ -18,7 +18,9 @@ class SettingsTest < ApplicationSystemTestCase
     # 78000 is a postcode in both France and Bosnia, so the country is confirmed after
     # the search rather than chosen from a dropdown before it.
     assert_text 'Which country is this postcode in?'
-    click_link('France')
+    # A button, not a link. Confirming the country writes the location, and a browser that
+    # fetches links before they are followed would have written it just for passing over.
+    click_button('France')
 
     # The confirmation page is the signal that the cookies have been written. Cookies are
     # read straight out of the browser and nothing waits on them, so assert on the page

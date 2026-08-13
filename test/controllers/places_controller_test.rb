@@ -133,7 +133,7 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
   test 'forgets every saved place when asked' do
     get '/places', params: { lat: '53.4', lon: '-2.6', place: 'Othertown, UK' },
                    headers: { 'COOKIE' => LOCATION_COOKIES }
-    get '/places_forget', headers: { 'COOKIE' => "#{LOCATION_COOKIES};#{cookies_header}" }
+    delete '/places_forget', headers: { 'COOKIE' => "#{LOCATION_COOKIES};#{cookies_header}" }
 
     assert_redirected_to '/places'
     follow_redirect!
