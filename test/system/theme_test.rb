@@ -74,6 +74,61 @@ class ThemeTest < ApplicationSystemTestCase
     assert_equal Themes::NAMES.length, palettes.length
   end
 
+  # A table column header is a filled block, so it follows the style like everything else.
+  # It was the last thing left painting its own green whatever was chosen.
+  test 'the forecast column headers follow the chosen style' do
+    stub_request(:get, /api\.open-meteo\.com/).to_return(
+      status: 200, body: file_fixture('hourly_forecast.json').read,
+      headers: { 'Content-Type' => 'application/json' }
+    )
+
+    page.driver.browser.manage.add_cookie(name: 'theme', value: 'crt-amber')
+    visit '/forecast/hourly'
+
+    assert_selector 'th'
+    assert_equal 'rgb(255, 180, 60)', style('th', 'backgroundColor'), 'the header kept its own green'
+    assert_equal 'rgb(20, 12, 2)', style('th', 'color')
+  end
+
+  # A departure board has no underlines: the card is what says a row can be pressed. The
+  # card is a background-color and the hinge a pseudo-element, because a background-image
+  # here outranks the sweep in press.css and the row goes black on press instead.
+  test 'the departure board draws rows as cards that still sweep when pressed' do
+    visit_with_theme('flap')
+
+    link = first('a')
+
+    assert_equal 'block', style('a', 'display')
+    assert_equal 'none', style('a', 'textDecorationLine')
+    assert_operator page.evaluate_script('arguments[0].getBoundingClientRect().width', link), :>, 200,
+                    'a board row should fill the column, not shrink to its text'
+
+    page.execute_script('arguments[0].focus()', link)
+
+    assert_equal 'press-reveal', page.evaluate_script('getComputedStyle(arguments[0]).animationName', link)
+    assert_match(/rgb\(255, 197, 51\)/,
+                 page.evaluate_script('getComputedStyle(arguments[0]).backgroundImage', link),
+                 'the sweep layers were replaced by the card, so the row goes black')
+  end
+
+  # Brightness says it on a phosphor screen, so an underline is noise.
+  test 'the phosphor styles do not underline their links' do
+    %w[crt-green crt-amber plasma].each do |name|
+      visit_with_theme(name)
+
+      assert_equal 'none', style('a', 'textDecorationLine'), "#{name} still underlines its links"
+    end
+  end
+
+  # Two colours and nothing else, so the underline is the only lever left.
+  test 'the two-colour screens keep their underlines' do
+    %w[dmg nokia].each do |name|
+      visit_with_theme(name)
+
+      assert_equal 'underline', style('a', 'textDecorationLine'), "#{name} has no way left to mark a link"
+    end
+  end
+
   private
 
   def visit_with_theme(name)

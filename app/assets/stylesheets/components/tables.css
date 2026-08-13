@@ -2,11 +2,16 @@ table {
     width:215px;
 }
 
+/* The column header is a filled block with contrasting text, so it follows the chosen
+   screen style. Literal first, so a browser without var() keeps the green. */
 th {
     background-color: #04AA6D;
+    background-color: var(--head-bg, #04AA6D);
     color: white;
+    color: var(--head-ink, white);
   }
 
 th, td {
     border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--rule, #ddd);
   }

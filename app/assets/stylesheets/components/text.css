@@ -18,6 +18,7 @@ a.change-settings {
 
 .error {
   color: red;
+  color: var(--error, red);
 }
 
 /* Attribution the data licence asks for, kept quiet enough not to compete with the times
