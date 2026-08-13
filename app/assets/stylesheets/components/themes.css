@@ -475,6 +475,17 @@ body[data-theme="barbie-dark"]::after {
   background: radial-gradient(90% 60% at 50% 0%, rgba(255, 46, 154, 0.16), transparent 65%);
 }
 
+/* The map on a route or a turn is the one thing on a page that carries information as
+ * picture rather than text, and a scanline, dot grid or vignette drawn over it costs
+ * detail a reader is navigating by. Every one of those is a fixed pseudo-element on the
+ * body with no z-index of its own, so lifting the image above them leaves it exactly as
+ * Google drew it while the text around it keeps the treatment.
+ */
+body:not([data-theme="unstyled"]) img {
+  position: relative;
+  z-index: 1;
+}
+
 /* Every style but the plain one lays a link out as its own row.
  *
  * Which links? The ones the views already put on their own line, which is what a following

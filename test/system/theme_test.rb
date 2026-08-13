@@ -10,6 +10,9 @@ require 'application_system_test_case'
 # without custom property support keeps the plain colours. That fallback is why the tokens
 # are checked through getComputedStyle and not by reading the stylesheet.
 class ThemeTest < ApplicationSystemTestCase
+  # Stands in for a static map: the smallest thing the browser will accept as an image.
+  ONE_PIXEL_PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+
   setup do
     stub_api_credentials
     stub_request(:get, %r{transit\.land/api/v2/rest}).to_return(
@@ -232,7 +235,69 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
+  # A map is the only thing on any page carrying its information as picture rather than
+  # text, and it is what someone is navigating by. Every screen treatment is a fixed
+  # pseudo-element over the whole page, so each one is checked against the map: the image
+  # has to outrank it, or the scanlines and the vignette land on the route.
+  test 'no style draws its screen treatment over the map' do
+    stub_route
+
+    (Themes::NAMES - ['unstyled']).each do |name|
+      page.driver.browser.manage.add_cookie(name: 'theme', value: name)
+      visit '/directions_plan?origin=start+street&destination=end+street&mode=walking&view=turn&step=0'
+
+      assert_selector '.route img'
+
+      overlay, image = page.evaluate_script(<<~JS)
+        (() => {
+          const over = getComputedStyle(document.body, '::after');
+          const img = getComputedStyle(document.querySelector('.route img'));
+          return [over.content === 'none' ? null : over.zIndex, img.zIndex];
+        })()
+      JS
+
+      next if overlay.nil?
+
+      assert_operator image.to_i, :>, (overlay == 'auto' ? 0 : overlay.to_i),
+                      "#{name} draws its screen treatment over the map"
+    end
+  end
+
   private
+
+  # One turn of a walking route, which is the only page carrying a map.
+  def stub_route
+    stub_request(:get, %r{maps\.googleapis\.com/maps/api/staticmap})
+      .to_return(status: 200, body: Base64.decode64(ONE_PIXEL_PNG),
+                 headers: { 'Content-Type' => 'image/png' })
+    stub_request(:get, %r{maps\.googleapis\.com/maps/api/directions/json})
+      .to_return(status: 200, body: route_body.to_json, headers: { 'Content-Type' => 'application/json' })
+  end
+
+  def route_body
+    {
+      'status' => 'OK',
+      'geocoded_waypoints' => [{ 'geocoder_status' => 'OK' }, { 'geocoder_status' => 'OK' }],
+      'routes' => [{
+        'overview_polyline' => { 'points' => 'overviewpoints' },
+        'legs' => [{
+          'start_address' => 'Start Road, Testville', 'end_address' => 'End Road, Testville',
+          'start_location' => { 'lat' => 52.3, 'lng' => 1.17 },
+          'end_location' => { 'lat' => 52.31, 'lng' => 1.18 },
+          'duration' => { 'text' => '12 mins' },
+          'steps' => [{
+            'html_instructions' => 'Head north on Test Road',
+            'distance' => { 'text' => '200 m', 'value' => 200 },
+            'duration' => { 'text' => '3 mins' },
+            'start_location' => { 'lat' => 52.3, 'lng' => 1.17 },
+            'end_location' => { 'lat' => 52.31, 'lng' => 1.18 },
+            # Empty rather than encoded: the step is walked from its endpoints instead.
+            'polyline' => { 'points' => '' }
+          }]
+        }]
+      }]
+    }
+  end
 
   # Headless Chrome will not make a window narrower than about 500px, so the real viewport
   # is emulated. Cleared in teardown: a devtools override outlives the session reset.
