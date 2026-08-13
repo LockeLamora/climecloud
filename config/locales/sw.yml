@@ -82,8 +82,6 @@ sw:
     imperial: "Imperial (°F, in, mph)"
     metric: "Metriki (°C, mm, km/h)"
     hybrid: "Mchanganyiko (°C, mm, mph)"
-    maps: "Ramani"
-    show_map: "Onyesha ramani ndogo kwenye matokeo"
     news: "Habari"
     default_section: "Sehemu chaguo-msingi ya habari"
     # Screen style names are still English in this file and need translating.

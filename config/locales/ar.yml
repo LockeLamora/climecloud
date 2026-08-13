@@ -82,8 +82,6 @@ ar:
     imperial: "إمبراطوري (°F, in, mph)"
     metric: "متري (°C, mm, km/h)"
     hybrid: "مختلط (°C, mm, mph)"
-    maps: "الخرائط"
-    show_map: "إظهار خريطة صغيرة في النتائج"
     news: "الأخبار"
     default_section: "قسم الأخبار الافتراضي"
     # Screen style names are still English in this file and need translating.

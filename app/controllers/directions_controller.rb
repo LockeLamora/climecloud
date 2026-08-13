@@ -52,7 +52,7 @@ class DirectionsController < ApplicationController
       return
     end
 
-    @image = session['maps'].get_static_map_image_api(@overview_polyline) if cookies['show_map'] == '1'
+    @image = session['maps'].get_static_map_image_api(@overview_polyline)
     render :route
   end
 
@@ -158,7 +158,7 @@ class DirectionsController < ApplicationController
     @segment = params[:segment].to_i.clamp(0, @segments - 1)
     @heading = session['maps'].step_heading(@step, @segment)
 
-    @image = session['maps'].get_static_map_step_image_api(@step, @segment) if cookies['show_map'] == '1'
+    @image = session['maps'].get_static_map_step_image_api(@step, @segment)
     render :turn
   end
 

@@ -82,8 +82,6 @@ id:
     imperial: "Imperial (°F, in, mph)"
     metric: "Metrik (°C, mm, km/j)"
     hybrid: "Campuran (°C, mm, mph)"
-    maps: "Peta"
-    show_map: "Tampilkan peta kecil di hasil"
     news: "Berita"
     default_section: "Bagian berita bawaan"
     # Screen style names are still English in this file and need translating.

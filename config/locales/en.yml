@@ -82,8 +82,6 @@ en:
     imperial: "Imperial (°F, in, mph)"
     metric: "Metric (°C, mm, Km/h)"
     hybrid: "Hybrid (°C, mm, mph)"
-    maps: "Maps"
-    show_map: "Show small map image in results"
     news: "News"
     default_section: "Default news section"
     display: "Display"

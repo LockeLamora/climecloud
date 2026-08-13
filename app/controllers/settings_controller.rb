@@ -96,7 +96,6 @@ class SettingsController < ApplicationController
   def save_location(alternatives: 0, lookup: true)
     lookup_locale if lookup
     set_metrics(params)
-    set_show_map(params)
     set_news(params)
     set_cookie
 
@@ -134,7 +133,7 @@ class SettingsController < ApplicationController
   end
 
   def settings_params
-    params.permit(:postcode, :country_code, :metrics, :mapimages, :news_default_section, :theme).to_h
+    params.permit(:postcode, :country_code, :metrics, :news_default_section, :theme).to_h
   end
 
   # City, county and timezone are presentation extras. If the lookup fails we still
@@ -146,10 +145,6 @@ class SettingsController < ApplicationController
 
   def set_metrics(params)
     @metrics = params[:metrics]
-  end
-
-  def set_show_map(params)
-    @show_map = params[:mapimages]
   end
 
   def set_news(params)
@@ -168,7 +163,6 @@ class SettingsController < ApplicationController
     cookies.permanent[:timezone_name] = @timezone_name.presence || 'auto'
     cookies.permanent[:metrics] = @metrics
     cookies.permanent[:country_code] = resolve_country_code
-    cookies.permanent[:show_map] = @show_map
     cookies.permanent[:news_default_section] = @news_default_section
   end
 

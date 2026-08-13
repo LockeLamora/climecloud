@@ -38,7 +38,7 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
     post '/settings_save', params: {
       authenticity_token: token_from(response.body),
       postcode: 'zz1 1zz', country_code: 'GB', metrics: 'hybrid',
-      mapimages: '1', news_default_section: 'HEADLINES'
+      news_default_section: 'HEADLINES'
     }
 
     assert_response :success

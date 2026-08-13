@@ -21,9 +21,6 @@
     <%= f.radio_button :metrics, 'metric', checked: metrics == 'metric' %> <%= t('settings.metric') %> <br />
     <%= f.radio_button :metrics, 'hybrid', checked: metrics == 'hybrid' %> <%= t('settings.hybrid') %> <br />
     <br />
-    <b><%= t('settings.maps') %></b></br />
-    <%= f.check_box :mapimages, checked: cookies[:show_map] == '1' %><%= t('settings.show_map') %><br /><br />
-    <br />
     <b><%= t('settings.news') %></b><br />
     <%= f.label t('settings.default_section') %>
     <%# The same nine sections as the news page, from the same list and the same %>

@@ -82,8 +82,6 @@ vi:
     imperial: "Hệ Anh (°F, in, mph)"
     metric: "Hệ mét (°C, mm, km/h)"
     hybrid: "Hỗn hợp (°C, mm, mph)"
-    maps: "Bản đồ"
-    show_map: "Hiện bản đồ nhỏ trong kết quả"
     news: "Tin tức"
     default_section: "Mục tin mặc định"
     # Screen style names are still English in this file and need translating.

@@ -82,8 +82,6 @@ nl:
     imperial: "Imperiaal (°F, in, mph)"
     metric: "Metrisch (°C, mm, km/u)"
     hybrid: "Gemengd (°C, mm, mph)"
-    maps: "Kaarten"
-    show_map: "Kleine kaart bij resultaten tonen"
     news: "Nieuws"
     default_section: "Standaard nieuwsrubriek"
     # Screen style names are still English in this file and need translating.

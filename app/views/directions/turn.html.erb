@@ -5,10 +5,8 @@
 <%= @step["html_instructions"].html_safe %><br />
 <%= "#{@step["distance"]["text"]} (#{@step["duration"]["text"]})" %>
 <% if @heading %><br /><%= t('directions.heading') %> <b><%= @heading %></b> <%= t('directions.map_north_up') %><% end %>
-<% if cookies["show_map"] == '1' %>
 <br />
 <img src="data:image/png;base64,<%= @image %>" />
-<% end %>
 <br /><br />
 <% if @segment + 1 < @segments %>
 <%= link_to "1 #{t('directions.further_along')}", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index, segment: @segment + 1)), accesskey: "1" %><br />

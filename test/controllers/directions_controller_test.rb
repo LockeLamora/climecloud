@@ -11,6 +11,12 @@ class DirectionsControllerTest < ActionDispatch::IntegrationTest
   LONG_STEP_WINDOWS = 7
   LONG_STEP_METRES = Maps::SEGMENT_METRES * (LONG_STEP_WINDOWS - 0.5)
 
+  # Every route view carries a map now, so every one of these fetches an image.
+  setup do
+    stub_request(:get, %r{maps\.googleapis\.com/maps/api/staticmap})
+      .to_return(status: 200, body: 'PNG', headers: { 'Content-Type' => 'image/png' })
+  end
+
   # Planning a route spends three Google calls against one key, so a crawler that has
   # never been through settings must not be able to start one.
   test 'sends anyone without a saved location to settings rather than to Google' do

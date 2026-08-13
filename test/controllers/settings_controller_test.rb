@@ -142,14 +142,12 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
   # Changing one setting should not mean typing the others again on a keypad.
   test 'shows the form filled in from what is already saved' do
-    get settings_url, headers: { 'COOKIE' => 'postcode=zz1 1zz;metrics=metric;show_map=1;' \
+    get settings_url, headers: { 'COOKIE' => 'postcode=zz1 1zz;metrics=metric;' \
                                              'news_default_section=SCIENCE;theme=eink' }
 
     assert_response :success
     assert_match 'value="zz1 1zz"', postcode_field
     assert_match(/value="metric" checked="checked"/, @response.body)
-    assert_match(/name="mapimages"[^>]*checked="checked"|checked="checked"[^>]*name="mapimages"/,
-                 @response.body)
     assert_match(/<option selected="selected" value="SCIENCE">/, @response.body)
     assert_match(/<option selected="selected" value="eink">/, @response.body)
   end
@@ -226,6 +224,15 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match(/name="postcode"[^>]*required|required[^>]*name="postcode"/, @response.body)
+  end
+
+  # Every route carries a map, so there is nothing to ask about.
+  test 'no longer asks whether to show a map' do
+    get settings_url
+
+    assert_response :success
+    assert_no_match(/mapimages/, @response.body)
+    assert_no_match(/small map image/, @response.body)
   end
 
   test 'offers no country dropdown on the form' do
@@ -378,7 +385,6 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
       postcode: 'zz1 1zz',
       country_code: 'GB',
       metrics: 'hybrid',
-      mapimages: '1',
       news_default_section: 'Headlines'
     }.merge(extra).compact
 

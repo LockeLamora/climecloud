@@ -82,8 +82,6 @@ fr:
     imperial: "Impérial (°F, in, mph)"
     metric: "Métrique (°C, mm, km/h)"
     hybrid: "Mixte (°C, mm, mph)"
-    maps: "Cartes"
-    show_map: "Afficher une petite carte dans les résultats"
     news: "Actualités"
     default_section: "Rubrique d'actualités par défaut"
     # Screen style names are still English in this file and need translating.

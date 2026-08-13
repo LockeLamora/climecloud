@@ -82,8 +82,6 @@ bn:
     imperial: "ইম্পেরিয়াল (°F, in, mph)"
     metric: "মেট্রিক (°C, mm, km/h)"
     hybrid: "মিশ্র (°C, mm, mph)"
-    maps: "মানচিত্র"
-    show_map: "ফলাফলে ছোট মানচিত্র দেখান"
     news: "খবর"
     default_section: "ডিফল্ট খবরের বিভাগ"
     # Screen style names are still English in this file and need translating.

@@ -82,8 +82,6 @@ hi:
     imperial: "इम्पीरियल (°F, in, mph)"
     metric: "मीट्रिक (°C, mm, km/h)"
     hybrid: "मिश्रित (°C, mm, mph)"
-    maps: "नक्शे"
-    show_map: "परिणामों में छोटा नक्शा दिखाएँ"
     news: "समाचार"
     default_section: "डिफ़ॉल्ट समाचार अनुभाग"
     # Screen style names are still English in this file and need translating.

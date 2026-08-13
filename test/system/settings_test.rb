@@ -17,7 +17,6 @@ class SettingsTest < ApplicationSystemTestCase
 
     find_field(name: 'postcode').set('78000')
     choose(option: 'metric')
-    check(name: 'mapimages')
     select('Headlines', from: 'news_default_section')
     click_button(name: 'commit')
 
@@ -38,7 +37,6 @@ class SettingsTest < ApplicationSystemTestCase
     assert_equal 'Ile-de-France', cookie('state')
     assert_equal 'Europe%2FParis', cookie('timezone_name')
     assert_equal 'metric', cookie('metrics')
-    assert_equal '1', cookie('show_map')
     assert_equal 'fr', cookie('country_code')
     # The section is stored as Google names it, not as the reader sees it: the dropdown
     # shows the translated word and submits the value the feed URLs expect.

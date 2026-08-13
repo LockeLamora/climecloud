@@ -82,8 +82,6 @@ tr:
     imperial: "İngiliz (°F, in, mph)"
     metric: "Metrik (°C, mm, km/sa)"
     hybrid: "Karışık (°C, mm, mph)"
-    maps: "Haritalar"
-    show_map: "Sonuçlarda küçük harita göster"
     news: "Haberler"
     default_section: "Varsayılan haber bölümü"
     # Screen style names are still English in this file and need translating.

@@ -6,11 +6,9 @@
 <% end %>
 <%= @overall_time %><br />
 <%= link_to "(#{t('directions.switch_turn_by_turn')})", directions_plan_path(@route_params.merge(view: 'turn', step: 0)) %>
-<% if cookies["show_map"] == '1' %>
 <br />
 <img src="data:image/png;base64,<%= @image %>" />
 <br /><br />
-<% end %>
 <% @steps.each_with_index do |step, i| %>
     <ol>
 <%= "<b>#{i}</b>- #{step["distance"]["text"]}(#{step["duration"]["text"]})<br /> #{step["html_instructions"]}".html_safe %>

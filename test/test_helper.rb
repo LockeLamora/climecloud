@@ -63,7 +63,6 @@ module ActiveSupport
       page.driver.browser.manage.add_cookie(name: 'metrics', value: 'metric')
       page.driver.browser.manage.add_cookie(name: 'timezone_name', value: 'Europe%2FParis')
       page.driver.browser.manage.add_cookie(name: 'state', value: 'Ile-de-France')
-      page.driver.browser.manage.add_cookie(name: 'show_map', value: '1')
       page.driver.browser.manage.add_cookie(name: 'country_code', value: 'fr')
       page.driver.browser.manage.add_cookie(name: 'news_default_section', value: 'HEADLINES')
     end

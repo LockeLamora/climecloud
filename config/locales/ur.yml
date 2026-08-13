@@ -82,8 +82,6 @@ ur:
     imperial: "امپیریل (°F, in, mph)"
     metric: "میٹرک (°C, mm, km/h)"
     hybrid: "مخلوط (°C, mm, mph)"
-    maps: "نقشے"
-    show_map: "نتائج میں چھوٹا نقشہ دکھائیں"
     news: "خبریں"
     default_section: "پہلے سے طے شدہ خبروں کا حصہ"
     # Screen style names are still English in this file and need translating.

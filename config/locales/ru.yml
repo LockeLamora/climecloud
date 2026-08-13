@@ -82,8 +82,6 @@ ru:
     imperial: "Имперские (°F, in, mph)"
     metric: "Метрические (°C, mm, км/ч)"
     hybrid: "Смешанные (°C, mm, mph)"
-    maps: "Карты"
-    show_map: "Показывать маленькую карту в результатах"
     news: "Новости"
     default_section: "Раздел новостей по умолчанию"
     # Screen style names are still English in this file and need translating.
