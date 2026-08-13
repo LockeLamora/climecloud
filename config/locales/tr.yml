@@ -101,6 +101,9 @@ tr:
       nokia: "Nokia LCD"
       eink: "E-ink paper"
       oled: "OLED dark"
+      workbench: "Workbench"
+      c64: "Commodore callback"
+      barbie: "Barbiephone"
     saved_as: "Konum şu şekilde kaydedildi:"
     language: "Dil:"
     wrong_place:

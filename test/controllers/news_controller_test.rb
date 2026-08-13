@@ -24,6 +24,18 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_not_requested :get, /news\.google\.com/
   end
 
+  # Anchors as direct children of a <ul> are invalid, and left every headline in one
+  # unbroken run: a style that draws a box around a link then drew one box per wrapped line.
+  test 'each article is a list item rather than a loose link in a list' do
+    stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match(/<li><a[^>]*news_article/, @response.body)
+    assert_no_match(/<ul>\s*<a/, @response.body)
+  end
+
   test 'should load the news index page successfully when cookie is set' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
     get news_url, headers: { 'COOKIE' => COOKIES }

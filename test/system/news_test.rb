@@ -17,7 +17,7 @@ class NewsTest < ApplicationSystemTestCase
     stub_article_lookup
     visit news_url
     assert_text 'Budget 2024 live: Jeremy Hunt'
-    first('.news > ul > a').click
+    first('.news > ul > li > a').click
     assert_text 'BBC programmes on iPlayer'
   end
 

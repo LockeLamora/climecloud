@@ -101,6 +101,9 @@ hi:
       nokia: "Nokia LCD"
       eink: "E-ink paper"
       oled: "OLED dark"
+      workbench: "Workbench"
+      c64: "Commodore callback"
+      barbie: "Barbiephone"
     saved_as: "स्थान सहेजा गया:"
     language: "भाषा:"
     wrong_place:

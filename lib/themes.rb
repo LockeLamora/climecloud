@@ -7,20 +7,24 @@ module Themes
   # What the app looks like with no theme chosen: black on white with blue links.
   DEFAULT = 'unstyled'
 
-  # Ordered as the dropdown offers them: how the light is made, brightest first, with the
-  # plain look at the top because it is the default.
+  # Ordered as the dropdown offers them: alphabetically by the name a reader sees, with the
+  # plain look first because it is the default. Alphabetical by the English name, so the
+  # order stays the same whichever language the names are read in.
   NAMES = %w[
     unstyled
-    crt-green
     crt-amber
+    barbie
+    stn
+    c64
+    flap
+    eink
+    dmg
+    crt-green
+    nokia
+    oled
     plasma
     teletext
-    flap
-    dmg
-    stn
-    nokia
-    eink
-    oled
+    workbench
   ].freeze
 
   def self.supported?(name)

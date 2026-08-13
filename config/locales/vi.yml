@@ -101,6 +101,9 @@ vi:
       nokia: "Nokia LCD"
       eink: "E-ink paper"
       oled: "OLED dark"
+      workbench: "Workbench"
+      c64: "Commodore callback"
+      barbie: "Barbiephone"
     saved_as: "Đã lưu vị trí là:"
     language: "Ngôn ngữ:"
     wrong_place:

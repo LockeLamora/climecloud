@@ -18,7 +18,10 @@ class ThemeTest < ApplicationSystemTestCase
     seed_location
   end
 
-  teardown { unstub_api_credentials }
+  teardown do
+    unstub_api_credentials
+    clear_viewport
+  end
 
   test 'the plain style leaves the page black on white with blue links' do
     visit_with_theme('unstyled')
@@ -111,25 +114,138 @@ class ThemeTest < ApplicationSystemTestCase
                  'the sweep layers were replaced by the card, so the row goes black')
   end
 
-  # Brightness says it on a phosphor screen, so an underline is noise.
-  test 'the phosphor styles do not underline their links' do
-    %w[crt-green crt-amber plasma].each do |name|
+  # The rule rather than a list: a link has to carry at least one signal that it can be
+  # pressed. Where the link colour differs from the body colour that is enough on its own and
+  # an underline is noise. Where they are the same value — a screen with one ink and one
+  # paper, or Workbench where everything is black — something else has to say it, which is an
+  # underline, a border, or a bevel.
+  #
+  # The plain style is exempt: it is the app as it was, and its links are underlined.
+  test 'every link carries at least one sign that it can be pressed' do
+    (Themes::NAMES - ['unstyled']).each do |name|
       visit_with_theme(name)
 
-      assert_equal 'none', style('a', 'textDecorationLine'), "#{name} still underlines its links"
+      underlined = style('a', 'textDecorationLine') == 'underline'
+
+      if style('a', 'color') == style('body', 'color')
+        boxed = style('a', 'borderBottomStyle') != 'none' || style('a', 'boxShadow') != 'none'
+
+        assert underlined || boxed,
+               "#{name}: the link is the same colour as the body text and nothing else marks it"
+      else
+        assert_not underlined, "#{name}: the colour already says it, so the underline is noise"
+      end
     end
   end
 
-  # Two colours and nothing else, so the underline is the only lever left.
-  test 'the two-colour screens keep their underlines' do
-    %w[dmg nokia].each do |name|
-      visit_with_theme(name)
+  # The views put a line break after any link meant to sit on its own line — one after a
+  # stop, two on the main menu — so inline links have a thumb's worth of room. Every style
+  # but the plain one turns those links into rows, and a row plus its old break would stack
+  # into a blank line between every entry.
+  test 'no style stacks a blank line between its rows' do
+    (Themes::NAMES - ['unstyled']).each do |name|
+      page.driver.browser.manage.add_cookie(name: 'theme', value: name)
+      visit root_url
 
-      assert_equal 'underline', style('a', 'textDecorationLine'), "#{name} has no way left to mark a link"
+      pitch, outer = page.evaluate_script(<<~JS)
+        (() => {
+          const rows = [...document.querySelectorAll('a')].filter(el => el.offsetParent !== null);
+          const first = rows[0].getBoundingClientRect();
+          return [rows[1].getBoundingClientRect().top - first.top,
+                  first.height + parseFloat(getComputedStyle(rows[0]).marginBottom)];
+        })()
+      JS
+
+      assert_in_delta outer, pitch, 2,
+                      "#{name} leaves #{(pitch - outer).round}px of blank line between rows"
+    end
+  end
+
+  # Untouched, so the app looks exactly as it did to anyone who never opens the dropdown.
+  test 'the plain style keeps the inline links and the spacing the app shipped with' do
+    visit_with_theme('unstyled')
+    visit root_url
+
+    assert_equal 'inline', style('a', 'display')
+    assert_equal 'underline', style('a', 'textDecorationLine')
+  end
+
+  test 'the commodore border does not push the page wider than the screen' do
+    narrow_viewport
+    visit_with_theme('c64')
+
+    assert_equal page.evaluate_script('document.documentElement.clientWidth'),
+                 page.evaluate_script('document.documentElement.scrollWidth'),
+                 'the border pushed the page wider than the screen'
+    assert_equal 220,
+                 page.evaluate_script("document.querySelector('.route').getBoundingClientRect().width").round
+  end
+
+  # text-transform is not part of the font shorthand, so a control keeps its own case
+  # unless told to inherit — which leaves the one button on the page in sentence case while
+  # everything around it is capitals.
+  test 'a style that uses capitals reaches the buttons too' do
+    visit_with_theme('c64')
+
+    assert_equal 'uppercase', style('a', 'textTransform')
+    assert_equal 'uppercase', style('form.inline-action button', 'textTransform')
+  end
+
+  # The bevel is what says a row can be pressed, so the button face is a background-color:
+  # an image there outranks the sweep in press.css and the row goes flat on press.
+  test 'workbench rows are bevelled buttons that still sweep when pressed' do
+    visit_with_theme('workbench')
+
+    link = first('a')
+
+    assert_equal 'block', style('a', 'display')
+    assert_equal 'none', style('a', 'textDecorationLine')
+    assert_includes style('a', 'boxShadow'), 'inset'
+
+    page.execute_script('arguments[0].focus()', link)
+
+    assert_equal 'press-reveal', page.evaluate_script('getComputedStyle(arguments[0]).animationName', link)
+    assert_match(/rgb\(0, 85, 170\)/,
+                 page.evaluate_script('getComputedStyle(arguments[0]).backgroundImage', link),
+                 'the bevel replaced the sweep layers')
+  end
+
+  # A headline wraps to several lines at 220px, and the news list runs its articles together
+  # with no break between them, so the rule that keys off a following <br> does not reach
+  # them. A style that draws a box has to make every link a block or the box is drawn once
+  # per line, and nothing may stick out past the screen.
+  test 'the boxed styles draw one box per headline and stay inside the screen' do
+    stub_request(:get, /news\.google\.com/).to_return(body: file_fixture('news_response.xml').read)
+    narrow_viewport
+
+    %w[flap workbench].each do |name|
+      page.driver.browser.manage.add_cookie(name: 'theme', value: name)
+      page.driver.browser.manage.add_cookie(name: 'country_code', value: 'gb')
+      visit news_url
+
+      assert_equal 'block', style('.news a', 'display'), "#{name} leaves headlines inline"
+      assert_equal 1, page.evaluate_script("document.querySelector('.news a').getClientRects().length"),
+                   "#{name} draws the box once per wrapped line"
+      assert_equal page.evaluate_script('document.documentElement.clientWidth'),
+                   page.evaluate_script('document.documentElement.scrollWidth'),
+                   "#{name} pushes the news list wider than the screen"
     end
   end
 
   private
+
+  # Headless Chrome will not make a window narrower than about 500px, so the real viewport
+  # is emulated. Cleared in teardown: a devtools override outlives the session reset.
+  def narrow_viewport
+    page.driver.browser.execute_cdp('Emulation.setDeviceMetricsOverride',
+                                    width: 240, height: 320, deviceScaleFactor: 1, mobile: true)
+  end
+
+  def clear_viewport
+    page.driver.browser.execute_cdp('Emulation.clearDeviceMetricsOverride')
+  rescue StandardError
+    nil
+  end
 
   def visit_with_theme(name)
     page.driver.browser.manage.add_cookie(name: 'theme', value: name)

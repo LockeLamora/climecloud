@@ -101,6 +101,9 @@ bn:
       nokia: "Nokia LCD"
       eink: "E-ink paper"
       oled: "OLED dark"
+      workbench: "Workbench"
+      c64: "Commodore callback"
+      barbie: "Barbiephone"
     saved_as: "অবস্থান সংরক্ষিত হয়েছে:"
     language: "ভাষা:"
     wrong_place:

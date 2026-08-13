@@ -101,6 +101,9 @@ ur:
       nokia: "Nokia LCD"
       eink: "E-ink paper"
       oled: "OLED dark"
+      workbench: "Workbench"
+      c64: "Commodore callback"
+      barbie: "Barbiephone"
     saved_as: "مقام محفوظ ہوا:"
     language: "زبان:"
     wrong_place:

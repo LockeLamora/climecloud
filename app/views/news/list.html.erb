@@ -27,10 +27,10 @@
                 <%# The section travels with the link so the way back lands on the list %>
                 <%# being read, and the headline so an article that will not open can still %>
                 <%# say what it was about. %>
-                <%= link_to article[:article_title],
-                            news_article_path(article: article[:article_url],
-                                              section: @section,
-                                              title: article[:article_title]) %>
+                <li><%= link_to article[:article_title],
+                                news_article_path(article: article[:article_url],
+                                                  section: @section,
+                                                  title: article[:article_title]) %></li>
             <% end %>
             </ul>
             <br />

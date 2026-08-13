@@ -101,6 +101,9 @@ sw:
       nokia: "Nokia LCD"
       eink: "E-ink paper"
       oled: "OLED dark"
+      workbench: "Workbench"
+      c64: "Commodore callback"
+      barbie: "Barbiephone"
     saved_as: "Mahali pamehifadhiwa kama:"
     language: "Lugha:"
     wrong_place:

@@ -100,6 +100,9 @@ en:
       nokia: "Nokia LCD"
       eink: "E-ink paper"
       oled: "OLED dark"
+      workbench: "Workbench"
+      c64: "Commodore callback"
+      barbie: "Barbiephone"
     saved_as: "Location saved as:"
     language: "Language:"
     wrong_place:

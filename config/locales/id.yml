@@ -101,6 +101,9 @@ id:
       nokia: "Nokia LCD"
       eink: "E-ink paper"
       oled: "OLED dark"
+      workbench: "Workbench"
+      c64: "Commodore callback"
+      barbie: "Barbiephone"
     saved_as: "Lokasi disimpan sebagai:"
     language: "Bahasa:"
     wrong_place:

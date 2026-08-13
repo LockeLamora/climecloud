@@ -23,6 +23,8 @@ form.inline-action button {
     color: var(--link, blue);
     text-align: left;
     text-decoration: underline;
+    text-transform: inherit;
+    letter-spacing: inherit;
     cursor: pointer;
 }
 
@@ -40,4 +42,6 @@ select {
     border: 1px solid #767676;
     border: 1px solid var(--quiet, #767676);
     font: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
 }
