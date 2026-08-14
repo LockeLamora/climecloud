@@ -412,6 +412,16 @@ body[data-theme="c64"] {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   border: 6px solid #6C5EB5;
+  /* The frame is the edge of the screen on the machine this borrows from, so the margin the
+   * browser gives body moves inside the border as padding instead, or the frame sits 8px in
+   * with the text against it.
+   *
+   * In em, so the gap is a proportion of the text it holds off the frame rather than a
+   * guess at what one line is worth: a handset rendering at 20px gets a wider gap, and at
+   * 12px it does not waste half the column on white space. The border stays a fixed 6px —
+   * it is the edge of the screen, not part of the text. */
+  margin: 0;
+  padding: 0.5em;
 }
 
 /* -------------------------------------------------------------- 22 barbie ---- */

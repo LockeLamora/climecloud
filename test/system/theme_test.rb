@@ -184,6 +184,42 @@ class ThemeTest < ApplicationSystemTestCase
                  page.evaluate_script("document.querySelector('.route').getBoundingClientRect().width").round
   end
 
+  # A style that draws a frame has to leave a gap inside it. The browser's body margin is
+  # what keeps text off the screen edge everywhere else, and a border sits outside that
+  # margin, so a framed style that keeps it has the frame 8px in and the text against it.
+  #
+  # Measured at three text sizes rather than one. A handset picks its own, and 16px is only
+  # what this desktop browser happens to render at: the gap has to survive a larger size
+  # without a sideways scroll, and a smaller one without disappearing.
+  test 'no style sets its text against its own frame at any text size' do
+    narrow_viewport
+
+    (Themes::NAMES - ['unstyled']).each do |name|
+      visit_with_theme(name)
+
+      ['', '12px', '24px'].each do |size|
+        border, gap, client, scroll = page.evaluate_script(<<~JS)
+          (() => {
+            document.documentElement.style.fontSize = '#{size}';
+            const width = parseFloat(getComputedStyle(document.body).borderLeftWidth);
+            const inside = document.body.getBoundingClientRect().left + width;
+            return [width,
+                    document.querySelector('.route').getBoundingClientRect().left - inside,
+                    document.documentElement.clientWidth,
+                    document.documentElement.scrollWidth];
+          })()
+        JS
+
+        next if border.zero?
+
+        at = size.presence || 'the default size'
+
+        assert_operator gap, :>=, 4, "#{name} sets its text #{gap}px from its own frame at #{at}"
+        assert_equal client, scroll, "#{name} scrolls sideways at #{at}"
+      end
+    end
+  end
+
   # text-transform is not part of the font shorthand, so a control keeps its own case
   # unless told to inherit — which leaves the one button on the page in sentence case while
   # everything around it is capitals.
