@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<%# Themes.resolve, not the raw cookie: an unrecognised name becomes the default rather %>
+<%# than reaching the markup or the stylesheet below. %>
+<% theme = Themes.resolve(cookies[:theme]) %>
 <html lang="<%= I18n.locale %>" dir="<%= Languages.direction_for(I18n.locale) %>">
   <head>
     <title>Climecloud</title>
@@ -8,11 +11,13 @@
 
     <%# No script tag of any kind. See the Gemfile. %>
     <%= stylesheet_link_tag "application" %>
+
+    <%# Must follow the link tag: the palette reuses the components' selectors, so it wins %>
+    <%# on source order rather than on specificity. %>
+    <%= theme_style_tag theme %>
   </head>
 
-  <%# Themes.resolve, not the raw cookie: an unrecognised name becomes the default rather %>
-  <%# than reaching the markup. %>
-  <body data-theme="<%= Themes.resolve(cookies[:theme]) %>">
+  <body data-theme="<%= theme %>">
     <%= yield %>
   </body>
 </html>

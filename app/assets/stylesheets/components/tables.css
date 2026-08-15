@@ -3,17 +3,14 @@ table {
 }
 
 /* The column header is a filled block with contrasting text, so it follows the chosen
-   screen style. Literal first, so a browser without var() keeps the green. */
+   screen style. ApplicationHelper#theme_style_tag supplies the palette's values. */
 th {
     background-color: #04AA6D;
-    background-color: var(--head-bg, #04AA6D);
     color: white;
-    color: var(--head-ink, white);
   }
 
 th, td {
     border-bottom: 1px solid #ddd;
-    border-bottom: 1px solid var(--rule, #ddd);
   }
 
 /* The news list. A browser indents a <ul> by about 40px, which is most of a 220px column,

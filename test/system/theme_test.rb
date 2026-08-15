@@ -2,13 +2,14 @@
 
 require 'application_system_test_case'
 
-# Themes are applied as data-theme on the body and read by components/themes.css. Only a
-# browser can say whether the tokens resolve, so this asks Chrome what it computed rather
-# than whether the attribute is in the markup.
+# A theme reaches a page from two directions: its palette from the style block that
+# ApplicationHelper#theme_style_tag writes into the head, and its treatment from
+# components/themes.css, both keyed off data-theme on the body. Only a browser can say what
+# the two resolve to together, so this asks Chrome for the computed value rather than
+# checking the attribute or reading the stylesheet.
 #
-# Every themed property is declared twice — the literal first, then var() — so a browser
-# without custom property support keeps the plain colours. That fallback is why the tokens
-# are checked through getComputedStyle and not by reading the stylesheet.
+# Colour assertions here therefore cover the head block as much as the stylesheet.
+# ThemePaletteTest covers the markup it emits.
 class ThemeTest < ApplicationSystemTestCase
   # Stands in for a static map: the smallest thing the browser will accept as an image.
   ONE_PIXEL_PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
@@ -51,8 +52,8 @@ class ThemeTest < ApplicationSystemTestCase
     link = first('a')
     page.execute_script('arguments[0].focus()', link)
 
-    # The blue in press.css is a fallback behind var(--press-bg), so an amber screen
-    # must invert amber.
+    # press.css reaches the palette through --press-bg, the blue behind it being only a
+    # default, so an amber screen inverts amber.
     assert_match(/rgb\(255, 180, 60\)/, page.evaluate_script(
                                           'getComputedStyle(arguments[0]).backgroundImage', link
                                         ), 'the sweep should be the theme colour, not blue')
@@ -80,8 +81,8 @@ class ThemeTest < ApplicationSystemTestCase
     assert_equal Themes::NAMES.length, palettes.length
   end
 
-  # A table column header is a filled block, so it follows the style like everything else.
-  # It was the last thing left painting its own green whatever was chosen.
+  # A table column header is a filled block, so it follows the style like everything else
+  # rather than keeping its own green.
   test 'the forecast column headers follow the chosen style' do
     stub_request(:get, /api\.open-meteo\.com/).to_return(
       status: 200, body: file_fixture('hourly_forecast.json').read,
@@ -123,7 +124,7 @@ class ThemeTest < ApplicationSystemTestCase
   # paper, or Workbench where everything is black — something else has to say it, which is an
   # underline, a border, or a bevel.
   #
-  # The plain style is exempt: it is the app as it was, and its links are underlined.
+  # The plain style is exempt: it is the default look, and its links are underlined.
   test 'every link carries at least one sign that it can be pressed' do
     (Themes::NAMES - ['unstyled']).each do |name|
       visit_with_theme(name)
@@ -164,7 +165,7 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
-  # Untouched, so the app looks exactly as it did to anyone who never opens the dropdown.
+  # The look anyone who never opens the dropdown gets: inline links, underlined.
   test 'the plain style keeps the inline links and the spacing the app shipped with' do
     visit_with_theme('unstyled')
     visit root_url

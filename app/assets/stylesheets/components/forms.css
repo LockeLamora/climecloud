@@ -20,7 +20,6 @@ form.inline-action button {
     padding: 0;
     font: inherit;
     color: blue;
-    color: var(--link, blue);
     text-align: left;
     text-decoration: underline;
     text-transform: inherit;
@@ -30,17 +29,14 @@ form.inline-action button {
 
 /* The controls follow the chosen screen style too. Without this the settings page — the
    one page a reader is on while choosing a style — keeps white boxes on a dark ground,
-   and the boxes are most of that page. Literal first, so a browser without var() keeps
-   its native controls. */
+   and the boxes are most of that page. ApplicationHelper#theme_style_tag supplies the
+   palette's values for these three properties. */
 input[type="text"],
 input[type="submit"],
 select {
     background: #ffffff;
-    background: var(--paper, #ffffff);
     color: #111111;
-    color: var(--ink, #111111);
     border: 1px solid #767676;
-    border: 1px solid var(--quiet, #767676);
     font: inherit;
     text-transform: inherit;
     letter-spacing: inherit;

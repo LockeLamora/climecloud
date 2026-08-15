@@ -2,9 +2,11 @@
  * state named here at the same specificity beats the pressed style: :hover would outrank
  * it, and the bare `a` already covers hovering. :visited stays, or a followed link goes
  * purple, and press.css carries a matching :visited:focus to outweigh it. */
+/* The colours below are the app's defaults. ApplicationHelper#theme_style_tag repeats
+ * these selectors in the document head with the chosen palette's values, and supersedes
+ * them on source order. */
 a, a:visited {
     color: blue;
-    color: var(--link, blue);
   }
 
 .route, .news, .news_topics {
@@ -13,12 +15,10 @@ a, a:visited {
 
 a.change-settings {
     color: green;
-    color: var(--link, green);
   }
 
 .error {
   color: red;
-  color: var(--error, red);
 }
 
 /* Attribution the data licence asks for, kept quiet enough not to compete with the times
@@ -26,5 +26,4 @@ a.change-settings {
 .credit, .credit a, .credit a:visited {
   font-size: 0.75em;
   color: #767676;
-  color: var(--quiet, #767676);
 }

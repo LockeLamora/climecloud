@@ -11,8 +11,13 @@
  * keypad, and the keypad is this app's main input. The trade is that a link left sitting
  * under focus keeps sweeping: CSS has no state meaning "a request is in flight".
  *
- * a:visited:focus carries its own weight because components/text.css keeps followed links
- * blue, sorts after this file, and `a:visited` is the same specificity as `a:focus`.
+ * a:visited:focus carries its own weight because `a:visited` is the same specificity as
+ * `a:focus` and is set later, both by components/text.css and by the palette in the
+ * document head.
+ *
+ * This is the one file that reads the palette through custom properties rather than
+ * through resolved declarations: the palette covers the resting state only, and the sweep
+ * below composes two of its colours into gradients, which needs a token.
  */
 
 /* The inversion on its own, which every browser can manage, and the fallback wherever the
