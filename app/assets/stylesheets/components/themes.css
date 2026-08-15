@@ -32,22 +32,135 @@
 body[data-theme="unstyled"] { }
 
 /* The three emissive styles carry one phosphor hue at one brightness on a near-black
- * ground, with the bloom doing the work of lifting a lit stroke off it. */
+ * ground: a tube, its beam, and the light spilling off a lit stroke.
+ *
+ * Drawn twice. The rules here build it from a colour, a background and a border, which are
+ * what OBML carries, so this is the version the handset receives. The @supports block below
+ * builds the same screen out of a shadow, a gradient and a radius for a browser that draws
+ * its own page, and switches this version off where that one takes over.
+ *
+ * Capitals and a frame on both. The tube is the dimmest tone in each palette, bright enough
+ * to read against the ground and dim enough not to compete with the text inside it, and the
+ * browser's margin on body moves inside it as padding so the text is not pressed against
+ * the glass.
+ */
 
 /* ---------------------------------------------------------------- 01 green ---- */
 body[data-theme="crt-green"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 5px solid #14411F;
+  margin: 0;
+  padding: 0.5em;
 }
 
 /* ---------------------------------------------------------------- 02 amber ---- */
 body[data-theme="crt-amber"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 5px solid #3D2A0C;
+  margin: 0;
+  padding: 0.5em;
 }
 
 /* --------------------------------------------------------------- 03 plasma ---- */
 body[data-theme="plasma"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 5px solid #3A1607;
+  margin: 0;
+  padding: 0.5em;
+}
+
+/* The spill, as the ground a lit stroke sits on rather than as light around it. A bloom is
+ * a blur and a blur is alpha, which OBML has nowhere to put; a background colour it carries
+ * without trouble, and a dim wash of the hue behind a row is what the bloom falls on.
+ *
+ * One wash to a row and not one to a line of text, which is why the rows are blocks: a
+ * background on an inline box is painted once per line fragment, so a label long enough to
+ * wrap comes out as two ragged cells. */
+body[data-theme="crt-green"] a,
+body[data-theme="crt-amber"] a,
+body[data-theme="plasma"] a,
+body[data-theme="crt-green"] form.inline-action button,
+body[data-theme="crt-amber"] form.inline-action button,
+body[data-theme="plasma"] form.inline-action button {
+  display: block;
+  position: relative;
+  padding: 0.125em 0.3125em;
+  margin-bottom: 0.1875em;
+  text-align: left;
+}
+
+body[data-theme="crt-green"] a,
+body[data-theme="crt-green"] form.inline-action button {
+  background-color: #0D2214;
+}
+
+body[data-theme="crt-amber"] a,
+body[data-theme="crt-amber"] form.inline-action button {
+  background-color: #241809;
+}
+
+body[data-theme="plasma"] a,
+body[data-theme="plasma"] form.inline-action button {
+  background-color: #241105;
+}
+
+/* The beam, scored across the text rather than laid behind it.
+ *
+ * A border on a pseudo-element inside the row, which is how the departure board draws the
+ * hinge across its cards and the one treatment of this kind the handset is known to draw.
+ * A border is a line and OBML is made of lines; a repeating gradient is not one. Inside the
+ * row rather than over the page, so the line is part of the link and pressing it presses
+ * the option under it.
+ */
+body[data-theme="crt-green"] a::before,
+body[data-theme="crt-amber"] a::before,
+body[data-theme="plasma"] a::before,
+body[data-theme="crt-green"] form.inline-action button::before,
+body[data-theme="crt-amber"] form.inline-action button::before,
+body[data-theme="plasma"] form.inline-action button::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 30%;
+  border-top: 1px solid #000000;
+}
+
+body[data-theme="crt-green"] a::after,
+body[data-theme="crt-amber"] a::after,
+body[data-theme="plasma"] a::after,
+body[data-theme="crt-green"] form.inline-action button::after,
+body[data-theme="crt-amber"] form.inline-action button::after,
+body[data-theme="plasma"] form.inline-action button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 65%;
+  border-top: 1px solid #000000;
+}
+
+/* The breaks go with the rows, as they do for the board and Workbench: the rules above name
+ * no :has(), so these are rows on the handset too. */
+body[data-theme="crt-green"] a + br,
+body[data-theme="crt-green"] a + br + br,
+body[data-theme="crt-amber"] a + br,
+body[data-theme="crt-amber"] a + br + br,
+body[data-theme="plasma"] a + br,
+body[data-theme="plasma"] a + br + br {
+  display: none;
+}
+
+body[data-theme="crt-green"] a:focus,
+body[data-theme="crt-amber"] a:focus,
+body[data-theme="plasma"] a:focus {
+  display: block;
 }
 
 /* The tube, and every part of it behind the one condition.
@@ -149,6 +262,32 @@ body[data-theme="plasma"] {
   body[data-theme="workbench"] h2 {
     border-color: #000000;
     box-shadow: inset -1px -1px 0 #003B77, inset 1px 1px 0 #3A8AD8;
+  }
+
+  /* The drawn-from-borders version of the same screen comes off here: the wash behind a row
+   * and the two lines scored across it are what the bloom and the beam above replace. */
+  body[data-theme="crt-green"] a,
+  body[data-theme="crt-amber"] a,
+  body[data-theme="plasma"] a,
+  body[data-theme="crt-green"] form.inline-action button,
+  body[data-theme="crt-amber"] form.inline-action button,
+  body[data-theme="plasma"] form.inline-action button {
+    background-color: transparent;
+  }
+
+  body[data-theme="crt-green"] a::before,
+  body[data-theme="crt-amber"] a::before,
+  body[data-theme="plasma"] a::before,
+  body[data-theme="crt-green"] a::after,
+  body[data-theme="crt-amber"] a::after,
+  body[data-theme="plasma"] a::after,
+  body[data-theme="crt-green"] form.inline-action button::before,
+  body[data-theme="crt-amber"] form.inline-action button::before,
+  body[data-theme="plasma"] form.inline-action button::before,
+  body[data-theme="crt-green"] form.inline-action button::after,
+  body[data-theme="crt-amber"] form.inline-action button::after,
+  body[data-theme="plasma"] form.inline-action button::after {
+    content: none;
   }
 }
 
