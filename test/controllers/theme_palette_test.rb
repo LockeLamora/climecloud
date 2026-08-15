@@ -98,22 +98,24 @@ class ThemePaletteTest < ActionDispatch::IntegrationTest
                     'the palette has to follow the stylesheet link to win on source order'
   end
 
-  # An overlay is how a style draws anything across the page it is on, and inset is the
-  # short way of giving one a size. It is a property from 2018 and the engine rendering for
-  # the handset predates it, which leaves the element with auto offsets on all four sides,
-  # no size, and nothing drawn. That, and not any of the reasons I reached for first, is why
-  # the scanlines and the vignette never arrived there.
+  # An overlay drawn across the whole page is a target across the whole page. The only thing
+  # holding one off the links under it is pointer-events, which the engine rendering for the
+  # handset has no reason to honour on an HTML element, and when one of these was given a
+  # real size the settings button stopped answering.
   #
-  # Checked against the stylesheet as written rather than through a browser, because a
-  # browser that understands the shorthand expands it into the four longhands and then folds
-  # them back again on the way out, and would answer for itself rather than for the handset.
-  test 'no overlay is sized with a property the handset cannot read' do
+  # So every page-sized overlay lives behind the @supports condition, where the browser
+  # reading it is one that honours pointer-events. Checked against the stylesheet as written:
+  # a browser expands and refolds shorthands on the way through and would answer for itself.
+  test 'no overlay covers the page for a browser that cannot be told to ignore it' do
     Dir[Rails.root.join('app/assets/stylesheets/components/*.css')].each do |path|
-      source = File.read(path)
+      ungated = File.read(path).gsub(/@supports[^{]*\{.*?\n\}/m, '')
 
-      assert_no_match(/^\s*inset\s*:/, source,
-                      "#{File.basename(path)} sizes something with inset, which draws nothing " \
-                      'on the handset. State top, right, bottom and left.')
+      assert_no_match(/^\s*inset\s*:/, ungated,
+                      "#{File.basename(path)} sizes something with inset, which is a property " \
+                      'from 2018 and draws nothing on the handset')
+      assert_no_match(/^\s*pointer-events\s*:/, ungated,
+                      "#{File.basename(path)} has an overlay outside @supports that relies on " \
+                      'pointer-events to stay off the links underneath it')
     end
   end
 

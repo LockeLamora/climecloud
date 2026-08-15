@@ -448,6 +448,27 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
+  # Every other check in this file reads a colour, a width or a weight out of the browser,
+  # and not one of them presses anything. A page-sized overlay went up over the whole app,
+  # the settings button stopped answering, and all of them still passed: a style that cannot
+  # be operated computes exactly the same colours as one that can. The flow that does press a
+  # button, in settings_test, only ever ran on the plain style, where there is no overlay.
+  #
+  # So every style has to let a press reach what is under it. Selenium refuses to click an
+  # element something else is covering, which is the failure this missed.
+  test 'every style lets a press reach the option underneath it' do
+    Themes::NAMES.each do |name|
+      page.driver.browser.manage.add_cookie(name: 'theme', value: name)
+      visit root_url
+
+      # Settings, because it is the one option on the menu that reaches nothing external.
+      find('a.change-settings').click
+
+      assert_equal '/settings', URI.parse(page.current_url).path,
+                   "#{name}: pressing an option did not take the reader anywhere"
+    end
+  end
+
   # A map is the only thing on any page carrying its information as picture rather than
   # text, and it is what someone is navigating by. Every screen treatment is a fixed
   # pseudo-element over the whole page, so each one is checked against the map: the image

@@ -125,40 +125,20 @@ body[data-theme="stn"] {
   }
 }
 
-/* The tube: scanlines over everything, and the corners pulled in.
+/* The tube, and why the whole of it is behind the condition below rather than half of it.
  *
- * Absolute and with each offset named. inset was the whole reason none of this reached the
- * handset: it is a property from 2018 and the engine rendering for that phone predates it,
- * so the overlay had auto offsets on all four sides, no size, and nothing to draw. The
- * vignette below went with it, being on the same element. position: fixed went the same way
- * — a viewport-anchored layer means nothing in a page reflowed to one column.
+ * A page-sized overlay is a page-sized target. The only thing keeping one off the links
+ * underneath it is pointer-events: none, and that is a property the engine rendering for
+ * the handset has no reason to honour on an HTML element. While the overlay carried
+ * inset: 0 it had auto offsets, no size and nothing to draw, so the question never came up;
+ * given real offsets it covered the page and the settings button stopped answering.
  *
- * The departure board proves the rest: its hinge is an absolutely positioned pseudo-element
- * with a solid border, and it cuts across the text on the handset. A line over a glyph is a
- * positioned rectangle, which is exactly what OBML is made of.
- *
- * The lines are opaque here for the reason the glow above is: a partly transparent layer is
- * not something that format can write down. The softer alpha version is restored in the
- * @supports block, where there is a compositor to soften it with.
+ * The lines themselves would have arrived — the departure board's hinge is an absolutely
+ * positioned pseudo-element with a solid border and it cuts across the text on that screen.
+ * What cannot be made safe is a rectangle over every link in the app, on a browser with no
+ * way to be told to ignore it. An app that cannot be operated is a worse trade than a
+ * screen without scanlines on it.
  */
-body[data-theme="crt-green"],
-body[data-theme="crt-amber"],
-body[data-theme="plasma"] {
-  position: relative;
-}
-
-body[data-theme="crt-green"]::after,
-body[data-theme="crt-amber"]::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(0deg, #000000 0 1px, transparent 1px 4px);
-}
-
 @keyframes crt-roll { to { background-position: 0 3px; } }
 
 /* The softer tube, for a compositor that can draw one: the lines go back to a fraction of
@@ -170,7 +150,13 @@ body[data-theme="crt-amber"]::after {
 @supports (color: var(--ink)) {
   body[data-theme="crt-green"]::after,
   body[data-theme="crt-amber"]::after {
+    content: "";
     position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
     background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.38) 0 1px, transparent 1px 3px);
     box-shadow: inset 0 0 60px 22px rgba(0, 0, 0, 0.6);
     animation: crt-roll 9s linear infinite;
@@ -272,15 +258,17 @@ body[data-theme="dmg"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-body[data-theme="dmg"]::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  background: radial-gradient(rgba(15, 56, 15, 0.16) 0.5px, transparent 0.6px) 0 0 / 3px 3px;
+@supports (color: var(--ink)) {
+  body[data-theme="dmg"]::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background: radial-gradient(rgba(15, 56, 15, 0.16) 0.5px, transparent 0.6px) 0 0 / 3px 3px;
+  }
 }
 
 body[data-theme="dmg"] h1,
@@ -300,15 +288,17 @@ body[data-theme="stn"] {
 }
 
 /* The backlight, brightest where the LED sits. */
-body[data-theme="stn"]::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 38%);
+@supports (color: var(--ink)) {
+  body[data-theme="stn"]::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 38%);
+  }
 }
 
 /* ---------------------------------------------------------------- 08 nokia ---- */
@@ -316,17 +306,19 @@ body[data-theme="nokia"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-body[data-theme="nokia"]::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 30%),
-    repeating-linear-gradient(90deg, rgba(27, 36, 16, 0.05) 0 1px, transparent 1px 2px);
+@supports (color: var(--ink)) {
+  body[data-theme="nokia"]::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 30%),
+      repeating-linear-gradient(90deg, rgba(27, 36, 16, 0.05) 0 1px, transparent 1px 2px);
+  }
 }
 
 body[data-theme="nokia"] h1,
@@ -438,15 +430,17 @@ body[data-theme="barbie-dark"] h2 {
 }
 
 /* Pink cast over the top of the screen. */
-body[data-theme="barbie-dark"]::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  background: radial-gradient(90% 60% at 50% 0%, rgba(255, 46, 154, 0.16), transparent 65%);
+@supports (color: var(--ink)) {
+  body[data-theme="barbie-dark"]::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background: radial-gradient(90% 60% at 50% 0%, rgba(255, 46, 154, 0.16), transparent 65%);
+  }
 }
 
 /* The map on a route or a turn is the one thing on a page that carries information as
