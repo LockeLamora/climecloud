@@ -41,13 +41,17 @@ class TotpControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Show setup key', @response.body
   end
 
-  # This cookie is the only copy of the secret, so there has to be a way to copy it down.
-  test 'reveals the stored setup key only when asked' do
+  # This cookie is the only copy of the secret, so there has to be a way to copy it down —
+  # laid out in rows of two four-character groups, since the key whole is one unbreakable
+  # word that runs off the side of a narrow screen.
+  test 'reveals the stored setup key only when asked, in rows a hand can copy' do
     get totp_code_url(name: 'GitHub', reveal: '1'),
         headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(SAVED)}" }
 
     assert_response :success
-    assert_match SECRET, @response.body
+    assert_match 'JBSW Y3DP', @response.body
+    assert_match 'EHPK 3PXP', @response.body
+    assert_no_match(/JBSWY3DPEHPK3PXP/, @response.body)
   end
 
   test 'an account that is not saved goes back to the list rather than erroring' do
@@ -140,9 +144,9 @@ class TotpControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match 'Write these down', @response.body
     assert_match 'GitHub', @response.body
-    assert_match SECRET, @response.body
+    assert_match 'JBSW Y3DP', @response.body
     assert_match 'Mastodon', @response.body
-    assert_match 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', @response.body
+    assert_match 'GEZD GNBV', @response.body
   end
 
   test 'the backup page is not offered while there is nothing to back up' do

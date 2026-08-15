@@ -35,4 +35,11 @@ module Totp
   def self.seconds_remaining(at: Time.now)
     PERIOD - (at.to_i % PERIOD)
   end
+
+  # A key laid out for copying by hand: groups of four, two to a row, which is how the
+  # sites display theirs. Left whole it is one unbroken word that nothing can wrap, and it
+  # runs off the side of a narrow screen.
+  def self.rows(secret)
+    secret.scan(/.{1,4}/).each_slice(2).map { |pair| pair.join(' ') }
+  end
 end

@@ -8,7 +8,7 @@
 <%# The key as the site issued it, for writing down or enrolling elsewhere: this cookie is
     the only copy, and losing it is being locked out. %>
 <%= phosphor_text t('totp.secret_is') %><br />
-<b><%= phosphor_text @account['secret'] %></b><br /><br />
+<b><%= setup_key @account['secret'] %></b><br /><br />
 <% else %>
 <%= link_to "8 #{t('totp.show_secret')}", totp_code_path(name: @account['name'], reveal: '1'),
             accesskey: "8" %><br /><br />

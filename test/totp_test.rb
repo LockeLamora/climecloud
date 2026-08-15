@@ -36,6 +36,14 @@ class TotpTest < ActiveSupport::TestCase
     assert Totp.valid?(Totp.normalise('jbsw y3dp ehpk 3pxp'))
   end
 
+  # Two groups of four to a row: how the sites display keys, and narrow enough that no
+  # row can run off a 240px screen.
+  test 'lays a key out in rows a hand can copy' do
+    assert_equal ['JBSW Y3DP', 'EHPK 3PXP'], Totp.rows('JBSWY3DPEHPK3PXP')
+    assert_equal 4, Totp.rows(RFC_SECRET).length
+    assert_operator Totp.rows(RFC_SECRET).map(&:length).max, :<=, 9
+  end
+
   test 'the seconds remaining count down the period' do
     assert_equal 30, Totp.seconds_remaining(at: Time.at(0))
     assert_equal 1, Totp.seconds_remaining(at: Time.at(29))

@@ -6,7 +6,7 @@
 <%= phosphor_text t('totp.backup_hint') %><br /><br />
 <% @accounts.each do |account| %>
 <%= phosphor_text account['name'] %><br />
-<b><%= phosphor_text account['secret'] %></b><br /><br />
+<b><%= setup_key account['secret'] %></b><br /><br />
 <% end %>
 <% end %>
 <%= link_to "9 #{t('totp.back_to_codes')}", totp_path, accesskey: "9" %><br />
