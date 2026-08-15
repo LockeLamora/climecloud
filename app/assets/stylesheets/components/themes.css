@@ -23,18 +23,38 @@ body[data-theme="unstyled"] { }
  * anything pressable at full brightness. A paler link reads as white once the bloom is on
  * it, which is the opposite of how a phosphor screen distinguishes anything. */
 
+/* The shadow declared here is the one built for the handset, and the block further down
+ * replaces it with the wide soft version wherever the page is drawn by the browser reading
+ * it. Both are stated per style rather than shared, since each carries its own hue.
+ *
+ * Every layer sits within a pixel of the glyph. A blur of 7px or 20px is most of what makes
+ * the bloom on a screen that draws it, and none of that reaches the phone: what arrives is
+ * a trace of the tightest layer and nothing else. So the halo is assembled out of the only
+ * radius that survives, as a ring of eight offset copies rather than one soft cloud.
+ */
+
 /* ---------------------------------------------------------------- 01 green ---- */
 body[data-theme="crt-green"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-weight: bold;
-  text-shadow: 0 0 1px #52FF8F, 0 0 7px rgba(82, 255, 143, 0.55), 0 0 18px rgba(82, 255, 143, 0.25);
+  text-shadow:
+    0 0 1px #52FF8F,
+    1px 0 1px #52FF8F, -1px 0 1px #52FF8F,
+    0 1px 1px #52FF8F, 0 -1px 1px #52FF8F,
+    1px 1px 1px rgba(82, 255, 143, 0.7), -1px -1px 1px rgba(82, 255, 143, 0.7),
+    1px -1px 1px rgba(82, 255, 143, 0.7), -1px 1px 1px rgba(82, 255, 143, 0.7);
 }
 
 /* ---------------------------------------------------------------- 02 amber ---- */
 body[data-theme="crt-amber"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-weight: bold;
-  text-shadow: 0 0 1px #FFB43C, 0 0 8px rgba(255, 180, 60, 0.5), 0 0 20px rgba(255, 140, 20, 0.2);
+  text-shadow:
+    0 0 1px #FFB43C,
+    1px 0 1px #FFB43C, -1px 0 1px #FFB43C,
+    0 1px 1px #FFB43C, 0 -1px 1px #FFB43C,
+    1px 1px 1px rgba(255, 180, 60, 0.7), -1px -1px 1px rgba(255, 180, 60, 0.7),
+    1px -1px 1px rgba(255, 180, 60, 0.7), -1px 1px 1px rgba(255, 180, 60, 0.7);
 }
 
 /* --------------------------------------------------------------- 03 plasma ---- */
@@ -42,7 +62,12 @@ body[data-theme="plasma"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-weight: bold;
   letter-spacing: 0.02em;
-  text-shadow: 0 0 2px #FF6B18, 0 0 12px rgba(255, 107, 24, 0.55);
+  text-shadow:
+    0 0 1px #FF6B18,
+    1px 0 1px #FF6B18, -1px 0 1px #FF6B18,
+    0 1px 1px #FF6B18, 0 -1px 1px #FF6B18,
+    1px 1px 1px rgba(255, 107, 24, 0.7), -1px -1px 1px rgba(255, 107, 24, 0.7),
+    1px -1px 1px rgba(255, 107, 24, 0.7), -1px 1px 1px rgba(255, 107, 24, 0.7);
 }
 
 /* These three depend on their text-shadow for two things: it thickens the strokes, and its
@@ -70,6 +95,19 @@ body[data-theme="plasma"] {
   body[data-theme="crt-amber"],
   body[data-theme="plasma"] {
     font-weight: normal;
+  }
+
+  /* The wide soft bloom, for a browser that will actually draw one. */
+  body[data-theme="crt-green"] {
+    text-shadow: 0 0 1px #52FF8F, 0 0 7px rgba(82, 255, 143, 0.55), 0 0 18px rgba(82, 255, 143, 0.25);
+  }
+
+  body[data-theme="crt-amber"] {
+    text-shadow: 0 0 1px #FFB43C, 0 0 8px rgba(255, 180, 60, 0.5), 0 0 20px rgba(255, 140, 20, 0.2);
+  }
+
+  body[data-theme="plasma"] {
+    text-shadow: 0 0 2px #FF6B18, 0 0 12px rgba(255, 107, 24, 0.55);
   }
 
   body[data-theme="crt-green"] a,
