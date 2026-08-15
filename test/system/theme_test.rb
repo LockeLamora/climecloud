@@ -118,18 +118,17 @@ class ThemeTest < ApplicationSystemTestCase
                  'the sweep layers were replaced by the card, so the row goes black')
   end
 
-  # Everything that makes a phosphor style look like a tube is a compositing effect and none
-  # of it reaches the handset: a bloom is a blur, a blur is alpha, and OBML has nowhere to
-  # put a partly transparent layer. So the whole tube sits behind the condition, and what is
-  # left outside it is the hue on its ground, which is what that screen gets.
-  test 'a phosphor style keeps its tube behind the condition and its colour outside' do
+  # The glow is one ungated declaration serving both paths: the tight opaque ring is the
+  # halo the handset shows, and the wide layers behind it are alpha, which Opera's servers
+  # drop, so a compositor draws the whole bloom off the same rule. Gating it costs the
+  # handset the one part it can have, which is what this test refuses.
+  test 'a phosphor style glows on both paths from one declaration' do
     %w[crt-green crt-amber].each do |name|
       visit_with_theme(name)
 
-      assert_not_equal 'none', style('body', 'textShadow'), "#{name}: no bloom where one can be drawn"
       assert_not_equal 'none',
                        page.evaluate_script("getComputedStyle(document.body, '::before').backgroundImage"),
-                       "#{name}: no scanlines where they can be drawn"
+                       "#{name}: no page-wide raster where one can be drawn"
 
       shadow, ink, paper, underline = page.evaluate_script(<<~JS)
         (() => {
@@ -144,11 +143,13 @@ class ThemeTest < ApplicationSystemTestCase
         })()
       JS
 
-      assert_equal 'none', shadow, "#{name}: a shadow outside the condition arrives mangled"
+      assert_not_equal 'none', shadow, "#{name}: the ring the handset can show is gated away"
+      assert_match(/\) 0px 0px 1px/, shadow,
+                   "#{name}: the first layer is the ring, opaque and tight, or nothing arrives")
       assert_not_equal ink, paper, "#{name}: the hue has to carry the style on its own"
-      # Without the bloom the ink and the link are one colour, so the underline marks a link
-      # here as it does on Game Boy and Nokia.
-      assert_equal 'underline', underline, "#{name}: nothing marks a link once the bloom is gone"
+      # The ink and the link are one colour, so the underline marks a link here as it does
+      # on Game Boy and Nokia.
+      assert_equal 'underline', underline, "#{name}: nothing marks a link"
     end
   end
 
@@ -164,12 +165,12 @@ class ThemeTest < ApplicationSystemTestCase
       visit_with_theme(name)
 
       %w[a h2].each do |element|
-        raster, spans, line, gradient = beam_of(element)
+        raster, spans, gradient = beam_of(element)
         next if raster.nil?
 
-        assert_includes raster, 'scanline', "#{name} #{element}: no raster is tiled across it"
+        assert_includes raster, "scanline-#{name}",
+                        "#{name} #{element}: no raster in this theme's own tone is tiled across it"
         assert spans, "#{name} #{element}: the raster does not span the row"
-        assert_operator line, :>, 0, "#{name} #{element}: no border line as the floor"
         assert_not gradient, "#{name} #{element}: a gradient is disabled on Opera's servers"
       end
     end
@@ -581,10 +582,9 @@ class ThemeTest < ApplicationSystemTestCase
     JS
   end
 
-  # The two halves of the per-row beam on an element, read with every gated rule deleted the
-  # way the handset's path resolves them: the raster image and whether it spans the row, the
-  # border line's width, and whether anything leans on a gradient. nil where the page has no
-  # such element.
+  # The per-row beam on an element, read with every gated rule deleted the way the handset's
+  # path resolves them: the raster image, whether it spans the row, and whether anything
+  # leans on a gradient. nil where the page has no such element.
   def beam_of(element)
     page.evaluate_script(<<~JS)
       (() => {
@@ -598,7 +598,6 @@ class ThemeTest < ApplicationSystemTestCase
         const before = getComputedStyle(el, '::before');
         return [before.backgroundImage,
                 before.top === '0px' && before.bottom === '0px',
-                parseFloat(getComputedStyle(el, '::after').borderTopWidth),
                 before.backgroundImage.includes('gradient')];
       })()
     JS

@@ -32,12 +32,17 @@
 body[data-theme="unstyled"] { }
 
 /* The three emissive styles carry one phosphor hue at one brightness on a near-black
- * ground, with the beam scored across the text.
+ * ground, with a glow on every stroke and the beam scored across the text.
  *
- * The beam is drawn twice. The rules here draw it as lines through each row and heading,
- * built from borders, which is what OBML carries, so this is the version the handset
- * receives. The @supports block below draws it as one raster across the whole page for a
- * browser that composites, and switches the per-row version off where that takes over.
+ * The glow is one declaration serving both paths. Its tight opaque ring survives to the
+ * handset — a faint halo, but a real one — while the wide layers behind it are alpha, which
+ * Opera's servers drop, so on that screen only the ring arrives and on a compositing
+ * browser the whole bloom does. That is why it is not gated: gating it costs the handset
+ * the one part it can have.
+ *
+ * The beam is drawn twice: here as a raster tiled through each row and heading, and in the
+ * @supports block as one drifting raster across the whole page, which switches this
+ * version off where it takes over.
  */
 
 /* ---------------------------------------------------------------- 01 green ---- */
@@ -45,6 +50,7 @@ body[data-theme="crt-green"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  text-shadow: 0 0 1px #52FF8F, 0 0 7px rgba(82, 255, 143, 0.55), 0 0 18px rgba(82, 255, 143, 0.25);
 }
 
 /* ---------------------------------------------------------------- 02 amber ---- */
@@ -52,6 +58,7 @@ body[data-theme="crt-amber"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  text-shadow: 0 0 1px #FFB43C, 0 0 8px rgba(255, 180, 60, 0.5), 0 0 20px rgba(255, 140, 20, 0.2);
 }
 
 /* --------------------------------------------------------------- 03 plasma ---- */
@@ -59,6 +66,7 @@ body[data-theme="plasma"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  text-shadow: 0 0 2px #FF6B18, 0 0 12px rgba(255, 107, 24, 0.55);
 }
 
 /* A row is a block so the lines below have a box to span. An absolutely positioned
@@ -78,18 +86,12 @@ body[data-theme="plasma"] form.inline-action button {
 
 /* The beam, scored across the text rather than laid behind it.
  *
- * Two mechanisms on the same rows, and both are inside the row rather than over the page,
- * so the beam is part of the link and pressing it presses the option under it.
- *
- * ::before spans the whole row and tiles a three pixel image down it: one black line, two
- * clear, so the raster crosses every line of text at the pitch of the tube. An image
- * because Opera disables gradients on its servers outright, while a tiled image is carried
- * — the ground of this page banded visibly when one was laid behind it — and PNG-8
- * transparency is as old as transparency gets.
- *
- * ::after is one line drawn as a border at the row's middle, which is how the departure
- * board draws the hinge across its cards. A border is the one treatment of this kind the
- * handset is certain to draw, so it is the floor if the image is refused.
+ * A pseudo-element spans the whole row and tiles a four pixel image down it: one line in
+ * the theme's own dark tone, three rows clear, so the raster crosses every line of text at
+ * the pitch of the tube without cutting the glyphs the way black would. An image because
+ * Opera disables gradients on its servers outright, while a tiled image with PNG-8
+ * transparency is carried. Inside the row rather than over the page, so the beam is part
+ * of the link and pressing it presses the option under it.
  */
 body[data-theme="crt-green"] h1,
 body[data-theme="crt-amber"] h1,
@@ -118,28 +120,28 @@ body[data-theme="plasma"] h2::before {
   right: 0;
   bottom: 0;
   left: 0;
-  background-image: url("/screens/scanline.png");
   background-repeat: repeat;
 }
 
-body[data-theme="crt-green"] a::after,
-body[data-theme="crt-amber"] a::after,
-body[data-theme="plasma"] a::after,
-body[data-theme="crt-green"] form.inline-action button::after,
-body[data-theme="crt-amber"] form.inline-action button::after,
-body[data-theme="plasma"] form.inline-action button::after,
-body[data-theme="crt-green"] h1::after,
-body[data-theme="crt-amber"] h1::after,
-body[data-theme="plasma"] h1::after,
-body[data-theme="crt-green"] h2::after,
-body[data-theme="crt-amber"] h2::after,
-body[data-theme="plasma"] h2::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  border-top: 1px solid #000000;
+body[data-theme="crt-green"] a::before,
+body[data-theme="crt-green"] form.inline-action button::before,
+body[data-theme="crt-green"] h1::before,
+body[data-theme="crt-green"] h2::before {
+  background-image: url("/screens/scanline-crt-green.png");
+}
+
+body[data-theme="crt-amber"] a::before,
+body[data-theme="crt-amber"] form.inline-action button::before,
+body[data-theme="crt-amber"] h1::before,
+body[data-theme="crt-amber"] h2::before {
+  background-image: url("/screens/scanline-crt-amber.png");
+}
+
+body[data-theme="plasma"] a::before,
+body[data-theme="plasma"] form.inline-action button::before,
+body[data-theme="plasma"] h1::before,
+body[data-theme="plasma"] h2::before {
+  background-image: url("/screens/scanline-plasma.png");
 }
 
 /* The breaks go with the rows, as they do for the board and Workbench: the rules above name
@@ -173,22 +175,11 @@ body[data-theme="plasma"] a:focus {
  * for that renderer instead of for the screen, and answers yes.
  */
 @supports (color: var(--ink)) {
-  body[data-theme="crt-green"] {
-    text-shadow: 0 0 1px #52FF8F, 0 0 7px rgba(82, 255, 143, 0.55), 0 0 18px rgba(82, 255, 143, 0.25);
-    border-radius: 13px / 9px;
-  }
-
+  /* The tube corners. The glow needs no rule here: the one declaration above carries the
+   * whole bloom, and only a compositor draws its wide layers. */
+  body[data-theme="crt-green"],
   body[data-theme="crt-amber"] {
-    text-shadow: 0 0 1px #FFB43C, 0 0 8px rgba(255, 180, 60, 0.5), 0 0 20px rgba(255, 140, 20, 0.2);
     border-radius: 13px / 9px;
-  }
-
-  body[data-theme="plasma"] {
-    text-shadow: 0 0 2px #FF6B18, 0 0 12px rgba(255, 107, 24, 0.55);
-  }
-
-  body[data-theme="stn"] {
-    text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
   }
 
   /* The beam, drifting. Amber rolls slower than green so a reader who switches between the
@@ -265,27 +256,15 @@ body[data-theme="plasma"] a:focus {
   body[data-theme="crt-green"] a::before,
   body[data-theme="crt-amber"] a::before,
   body[data-theme="plasma"] a::before,
-  body[data-theme="crt-green"] a::after,
-  body[data-theme="crt-amber"] a::after,
-  body[data-theme="plasma"] a::after,
   body[data-theme="crt-green"] form.inline-action button::before,
   body[data-theme="crt-amber"] form.inline-action button::before,
   body[data-theme="plasma"] form.inline-action button::before,
-  body[data-theme="crt-green"] form.inline-action button::after,
-  body[data-theme="crt-amber"] form.inline-action button::after,
-  body[data-theme="plasma"] form.inline-action button::after,
   body[data-theme="crt-green"] h1::before,
   body[data-theme="crt-amber"] h1::before,
   body[data-theme="plasma"] h1::before,
   body[data-theme="crt-green"] h2::before,
   body[data-theme="crt-amber"] h2::before,
-  body[data-theme="plasma"] h2::before,
-  body[data-theme="crt-green"] h1::after,
-  body[data-theme="crt-amber"] h1::after,
-  body[data-theme="plasma"] h1::after,
-  body[data-theme="crt-green"] h2::after,
-  body[data-theme="crt-amber"] h2::after,
-  body[data-theme="plasma"] h2::after {
+  body[data-theme="plasma"] h2::before {
     content: none;
   }
 }
@@ -399,11 +378,11 @@ body[data-theme="dmg"] b {
 }
 
 /* ------------------------------------------------------------------ 07 stn ---- */
-/* The soft edge this has on its text is in the @supports block with the phosphor glows,
- * and for the same reason. It needs no stand-in the way they do: it is a hint of bleed
- * rather than half the brightness, and a link here is told apart by hue. */
+/* The soft edge on the text is one alpha layer, which Opera's servers drop, so the handset
+ * gets the colours alone and a compositor gets the bleed — no gate needed. */
 body[data-theme="stn"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
 }
 
 /* The backlight, brightest where the LED sits. */
