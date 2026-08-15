@@ -77,6 +77,24 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Set your location again', @response.body
   end
 
+  # On the phosphor styles the table travels as a few glyph images — each row one monospace
+  # line — because a hundred cells is a page the handset gives up assembling, and a fixed
+  # table at four columns wraps its own brackets onto lines of their own.
+  test 'the phosphor styles draw the forecast as a terminal table' do
+    stub_request(:get, /api\.open-meteo\.com/)
+      .to_return(status: 200, body: file_fixture('hourly_forecast.json').read,
+                 headers: { 'Content-Type' => 'application/json' })
+
+    get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};theme=crt-amber" }
+
+    assert_response :success
+    assert_no_match(/<table>/, @response.body, 'the cell table has nothing lit about it')
+    glyphs = @response.body.scan(%r{<img src="/phosphor}).length
+
+    assert_operator glyphs, :>, 1, 'the forecast lost its screen entirely'
+    assert_operator glyphs, :<=, 10, 'this many images is a page the handset gives up on'
+  end
+
   test 'falls back to a relay when open-meteo refuses on the daily limit' do
     stub_request(:get, /api\.open-meteo\.com/)
       .to_return(status: 429, body: '{"error":true,"reason":"Daily API request limit exceeded."}')

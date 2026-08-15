@@ -2,7 +2,21 @@
 <%= "#{cookies["city"]}, #{cookies["state"]}"%><br />
 <%=link_to "1 #{t('forecast.switch_to_hourly')}", "/forecast/hourly", accesskey: "1" %>
 
+<%# On the phosphor styles the table travels as one glyph image, each row a monospace
+    line; see the hourly view. %>
+<% if phosphor_theme %>
+<% rows = ["DATE #{@units[:temp]} WIND RAIN"] + @times.each_index.map do |i|
+     row = "#{@times[i].split('-', 2).last} #{@temps_min[i].round}-#{@temps_max[i].round}° " \
+           "#{@wind_min[i].round}-#{@wind_max[i].round}#{@units[:wind]} #{@rain_prob[i]}%"
+     row += " SNOW #{@snow[i]}#{@units[:snowfall]}" if @snow[i].positive?
+     row
+   end %>
+<%= phosphor_screen(rows) %>
+<% else %>
 <table>
+<colgroup>
+  <col style="width:22%"><col style="width:30%"><col style="width:26%"><col style="width:22%">
+</colgroup>
 <thead>
     <tr>
       <th><%= t('forecast.date') %></th>
@@ -24,14 +38,13 @@
     <% if @snow[i] > 0 %>
       <td> <%= "<b>#{t('forecast.snow')}</b>: #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
     <% else %>
-      <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
+      <td> <%= "#{@rain[i]}#{@units[:rain]}(#{@rain_prob[i]}%)"%></td>
     <% end %>
     </tr>
     <% end %>
   </tbody>
   </table>
+<% end %>
   <br /><br />
   <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
   <%= render "credit" %>
-
-  

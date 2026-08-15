@@ -65,6 +65,35 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/&amp;nbsp;|nbsp/i, @response.body)
   end
 
+  # Every glyph on an article is a request Opera's proxy makes and an SVG it rasterises
+  # before the page ships, and a page that takes too long to assemble is reported as one
+  # that could not be opened. So a long story glows for its first stretch and runs as plain
+  # text after, rather than costing the whole page.
+  test 'a long article stays under the glyph budget rather than failing to open' do
+    stub_article_lookup
+    stub_request(:get, /theguardian\.com/).to_return(
+      status: 200,
+      body: '<html><body><article>' \
+            "#{(1..30).map do |n|
+              "<p>Paragraph #{n}: #{'deployments typically last about six months. ' * 11}</p>"
+            end.join}" \
+            '</article></body></html>'
+    )
+
+    get news_article_url,
+        params: { article: 'https://news.google.com/rss/articles/CBMinQFo?oc=5' },
+        headers: { 'COOKIE' => "#{COOKIES};theme=crt-amber" }
+
+    assert_response :success
+    glyphs = @response.body.scan(%r{<img src="/phosphor\?c=1}).length
+
+    assert_operator glyphs, :<=, ApplicationHelper::PROSE_GLYPHS,
+                    'this many images is a page the handset gives up assembling'
+    assert_operator glyphs, :>, 0, 'the story lost its glow entirely'
+    assert_match(/<p>Paragraph 30:/, @response.body,
+                 'the story past the budget should run as plain text, not be dropped')
+  end
+
   # One source for each story rather than every outlet that ran it. Eight versions of the
   # same story is not a choice worth scrolling past on a 240px screen, and it was most of
   # the weight of the page.

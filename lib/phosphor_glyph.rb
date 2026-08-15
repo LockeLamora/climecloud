@@ -18,11 +18,17 @@ module PhosphorGlyph
   LINE_HEIGHT = 19
   PADDING = 4
   MAX_CHARS = 23
-  # Long enough for any label or headline; a crawler feeding the endpoint a novel gets it
-  # cut, not rendered.
-  MAX_TEXT = 240
+  # Long enough for a fat paragraph; a crawler feeding the endpoint a novel gets it cut,
+  # not rendered. The ceiling matters at the other end too: every glyph is a request
+  # Opera's proxy makes and an SVG it rasterises before the page ships, and a page that
+  # takes too long to assemble is reported as one that could not be opened. Bigger chunks
+  # mean fewer of them.
+  MAX_TEXT = 480
 
-  # Words wrapped to the column, the way the browser would wrap the text this replaces.
+  # Words wrapped to the column, the way the browser would wrap the text this replaces,
+  # with a newline in the text starting a fresh line — which is how a table travels as one
+  # glyph: each row a line, the columns aligned by the monospace itself.
+  #
   # A word longer than a line is split rather than overflowing: an image wider than the
   # screen costs the handset its single-column reflow.
   #
@@ -30,8 +36,14 @@ module PhosphorGlyph
   # set theirs; prose keeps its case, because a whole article in capitals is a wall.
   def self.lines(text, keep_case: false)
     text = text.to_s[0, MAX_TEXT]
-    words = (keep_case ? text : text.upcase).split
-    words = [''] if words.empty?
+    text = text.upcase unless keep_case
+
+    text.split("\n", -1).flat_map { |row| wrap(row) }.presence || ['']
+  end
+
+  def self.wrap(row)
+    words = row.split
+    return [''] if words.empty?
 
     words.each_with_object([]) do |word, lines|
       word.scan(/.{1,#{MAX_CHARS}}/).each do |piece|

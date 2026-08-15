@@ -54,9 +54,9 @@ class ThemeTest < ApplicationSystemTestCase
 
     # press.css reaches the palette through --press-bg, the blue behind it being only a
     # default, so an amber screen inverts amber.
-    assert_match(/rgb\(255, 180, 60\)/, page.evaluate_script(
-                                          'getComputedStyle(arguments[0]).backgroundImage', link
-                                        ), 'the sweep should be the theme colour, not blue')
+    assert_match(/rgb\(255, 129, 0\)/, page.evaluate_script(
+                                         'getComputedStyle(arguments[0]).backgroundImage', link
+                                       ), 'the sweep should be the theme colour, not blue')
   end
 
   test 'e-ink is paper and ink with no glow at all' do
@@ -89,12 +89,14 @@ class ThemeTest < ApplicationSystemTestCase
       headers: { 'Content-Type' => 'application/json' }
     )
 
-    page.driver.browser.manage.add_cookie(name: 'theme', value: 'crt-amber')
+    # Teletext rather than a phosphor style: those draw the forecast as glyph images and
+    # render no table at all.
+    page.driver.browser.manage.add_cookie(name: 'theme', value: 'teletext')
     visit '/forecast/hourly'
 
     assert_selector 'th'
-    assert_equal 'rgb(255, 180, 60)', style('th', 'backgroundColor'), 'the header kept its own green'
-    assert_equal 'rgb(20, 12, 2)', style('th', 'color')
+    assert_equal 'rgb(0, 0, 170)', style('th', 'backgroundColor'), 'the header kept its own green'
+    assert_equal 'rgb(255, 255, 0)', style('th', 'color')
   end
 
   # A departure board has no underlines: the card is what says a row can be pressed. The

@@ -29,6 +29,13 @@ module ApplicationHelper
     phosphor_theme ? phosphor_glyph(text) : text
   end
 
+  # Every glyph on a page is a request Opera's proxy makes and an SVG it rasterises before
+  # anything ships, and a page that takes too long to assemble is reported to the reader as
+  # one that could not be opened. The main menu's seven arrive comfortably; an unbounded
+  # article's fifty do not, so past this many the rest of the story runs as plain text —
+  # still readable, still the right colours — rather than costing the whole page.
+  PROSE_GLYPHS = 12
+
   # Body text — an article, a summary — glyphed a paragraph at a time, in its own case.
   # Each chunk stays under the glyph's text cap so nothing is cut, and a browser on any
   # other theme gets the original back untouched.
@@ -39,7 +46,10 @@ module ApplicationHelper
                  .filter_map { |part| strip_tags(part).squish.presence }
                  .flat_map { |text| prose_chunks(text) }
 
-    safe_join(chunks.map { |chunk| tag.p(phosphor_glyph(chunk, keep_case: true)) })
+    glyphed = chunks.first(PROSE_GLYPHS).map { |chunk| tag.p(phosphor_glyph(chunk, keep_case: true)) }
+    plain = chunks.drop(PROSE_GLYPHS).map { |chunk| tag.p(chunk) }
+
+    safe_join(glyphed + plain)
   end
 
   # The alt is the label, so a failed image degrades to the plain text link it replaced.
@@ -49,6 +59,15 @@ module ApplicationHelper
 
     tag.img(src: phosphor_path(t: text, s: phosphor_theme, c: keep_case ? '1' : nil),
             alt: text, width: PhosphorGlyph.width(lines), height: PhosphorGlyph.height(lines))
+  end
+
+  # A table drawn as a terminal would draw it: each row one line, columns aligned by the
+  # monospace itself, the whole thing a handful of glyphs instead of a hundred cells. Eight
+  # rows to a glyph keeps every URL short and the request count low.
+  def phosphor_screen(rows)
+    safe_join(rows.each_slice(8).map do |slice|
+      tag.p(phosphor_glyph(slice.join("\n")))
+    end)
   end
 
   def phosphor_theme

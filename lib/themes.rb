@@ -91,9 +91,11 @@ module Themes
                      rule: '#14411F', emphasis: '#52FF8F', head_bg: '#52FF8F',
                      head_ink: '#041006' },
 
-    'crt-amber' => { paper: '#0C0803', ink: '#FFB43C', link: '#FFB43C',
-                     press_bg: '#FFB43C', press_ink: '#140C02', quiet: '#9A6A22',
-                     rule: '#3D2A0C', emphasis: '#FFB43C', head_bg: '#FFB43C',
+    # The amber is cool-retro-term's own preset value, warmer and easier over a read
+    # than the paler bench amber.
+    'crt-amber' => { paper: '#0C0803', ink: '#FF8100', link: '#FF8100',
+                     press_bg: '#FF8100', press_ink: '#140C02', quiet: '#9A6A22',
+                     rule: '#3D2A0C', emphasis: '#FF8100', head_bg: '#FF8100',
                      head_ink: '#140C02' },
 
     'plasma' => { paper: '#0A0402', ink: '#FF6B18', link: '#FF6B18',

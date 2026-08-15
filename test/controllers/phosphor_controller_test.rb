@@ -17,7 +17,7 @@ class PhosphorControllerTest < ActionDispatch::IntegrationTest
     assert_match 'feGaussianBlur', @response.body
     assert_match 'feMerge', @response.body
     assert_match '<pattern', @response.body
-    assert_match 'fill="#FFB43C"', @response.body
+    assert_match 'fill="#FF8100"', @response.body
     assert_match 'fill="#0C0803"', @response.body
     assert_match '1 WEATHER FORECAST', @response.body
   end
@@ -42,6 +42,16 @@ class PhosphorControllerTest < ActionDispatch::IntegrationTest
     assert_match '&lt;SCRIPT&gt;', @response.body
   end
 
+  # A newline in the label starts a fresh line, which is how a table travels as one glyph:
+  # each row a line, the columns aligned by the monospace itself.
+  test 'a newline in the label starts a fresh line' do
+    get phosphor_url, params: { t: "TIME TEMP\n21:00 17°", s: 'crt-green' }
+
+    texts = @response.body.scan(%r{<text[^>]*>([^<]*)</text>}).flatten
+
+    assert_equal ['TIME TEMP', '21:00 17°'], texts
+  end
+
   test 'is cacheable, since the same label in the same hue is the same picture' do
     get phosphor_url, params: { t: '0 Back to menu' }, headers: { 'HTTP_COOKIE' => 'theme=plasma' }
 
@@ -55,7 +65,7 @@ class PhosphorControllerTest < ActionDispatch::IntegrationTest
                       headers: { 'HTTP_COOKIE' => 'theme=crt-amber' }
 
     assert_match 'fill="#52FF8F"', @response.body
-    assert_no_match(/FFB43C/, @response.body)
+    assert_no_match(/FF8100/, @response.body)
   end
 
   test 'headings and one-button forms are glyphed alongside the links' do

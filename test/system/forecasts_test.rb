@@ -52,7 +52,7 @@ class ForecastsTest < ApplicationSystemTestCase
     visit '/forecast/hourly'
     assert_text 'feels like'
     assert_text '18:00'
-    assert_text '6°C (3)'
+    assert_text '6°C(3)'
     assert_text 'snow: 53.45cm'
   end
 
