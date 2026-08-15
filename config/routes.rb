@@ -36,8 +36,10 @@ Rails.application.routes.draw do
   get 'totp/code' => 'totp#code'
   get 'totp/add' => 'totp#add'
   get 'totp/backup' => 'totp#backup'
+  get 'totp/confirm' => 'totp#confirm'
   post 'totp/save' => 'totp#save'
   delete 'totp/forget' => 'totp#forget'
+  delete 'totp/forget_all' => 'totp#forget_all'
 
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'

@@ -1,7 +1,7 @@
 <div class='route'>
 <h2><%= phosphor_text t('totp.add_title') %></h2>
 <% if @error %>
-<span class='error'><%= t("totp.error.#{@error}") %></span><br /><br />
+<span class='error'><%= t("totp.error.#{@error}", count: TotpController::MAX_ACCOUNTS) %></span><br /><br />
 <% end %>
 <%# What to type: the "can't scan the code?" key the site shows beside its QR — letters
     and the digits two to seven. Spaces, dashes and case do not matter; save tidies them. %>

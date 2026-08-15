@@ -1,19 +1,27 @@
 <div class='route'>
 <h2><%= phosphor_text t('totp.title') %></h2>
-<% if @accounts.empty? %>
+<% if !@any %>
 <%= phosphor_text t('totp.none_saved') %><br /><br />
 <% else %>
-<%# Numbered like every other list here, so an account is one keypress on a browser that
-    honours access keys and a short scroll on one that does not. %>
+<%# Six to a page, numbered like every other list here: the digits 1 to 6 select an
+    account, 7 turns the page, and 8, 9 and 0 keep their fixed jobs whichever page this
+    is. The numbering restarts per page for the same reason. %>
 <% @accounts.each_with_index do |account, index| %>
 <%= link_to "#{index + 1} #{account['name']}", totp_code_path(name: account['name']),
-            accesskey: index < 7 ? (index + 1).to_s : nil %><br />
+            accesskey: (index + 1).to_s %><br />
 <% end %>
 <br />
+<% if @more %>
+<%= link_to "7 #{t('totp.more_codes')}", totp_path(page: @page + 1), accesskey: "7" %><br />
+<% end %>
+<% if @page.positive? %>
+<%= link_to "(#{t('totp.previous_codes')})", totp_path(page: @page - 1) %><br />
+<% end %>
 <% end %>
 <%= link_to "8 #{t('totp.add_account')}", totp_add_path, accesskey: "8" %><br />
-<% if @accounts.any? %>
+<% if @any %>
 <%= link_to "9 #{t('totp.backup_all')}", totp_backup_path, accesskey: "9" %><br />
+<%= link_to "(#{t('totp.forget_all')})", totp_confirm_path %><br />
 <% end %>
 <br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

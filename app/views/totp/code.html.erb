@@ -13,8 +13,10 @@
 <%= link_to "8 #{t('totp.show_secret')}", totp_code_path(name: @account['name'], reveal: '1'),
             accesskey: "8" %><br /><br />
 <% end %>
-<%= button_to "7 #{t('totp.forget_account')}", totp_forget_path(name: @account['name']),
-              method: :delete, accesskey: "7", form_class: "inline-action" %><br />
+<%# A link to the question, not the deletion itself: the only copy of this secret is the
+    cookie, so one slip of a thumb must not be enough. %>
+<%= link_to "7 #{t('totp.forget_account')}", totp_confirm_path(name: @account['name']),
+            accesskey: "7" %><br />
 <%= link_to "9 #{t('totp.back_to_codes')}", totp_path, accesskey: "9" %><br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
 </div>

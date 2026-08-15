@@ -96,13 +96,16 @@ class TotpControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to totp_add_path(error: 'name')
   end
 
-  test 'holds ten accounts and refuses an eleventh' do
-    full = (1..10).map { |n| { 'name' => "Site #{n}", 'secret' => SECRET } }.to_json
+  test 'holds thirty accounts and refuses a thirty-first, saying so with the number' do
+    full = (1..TotpController::MAX_ACCOUNTS).map { |n| { 'name' => "Site #{n}", 'secret' => SECRET } }.to_json
 
-    post totp_save_url, params: { name: 'Eleventh', secret: SECRET },
+    post totp_save_url, params: { name: 'One more', secret: SECRET },
                         headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(full)}" }
 
     assert_redirected_to totp_add_path(error: 'full')
+    follow_redirect!
+
+    assert_match "#{TotpController::MAX_ACCOUNTS} accounts is the most", @response.body
   end
 
   test 'forgets one account and keeps the rest' do
@@ -153,6 +156,52 @@ class TotpControllerTest < ActionDispatch::IntegrationTest
     get totp_url
 
     assert_no_match(/Show all setup keys/, @response.body)
+  end
+
+  # Forgetting a code is being locked out of the account it guards, so both deletions pass
+  # through a question first: the code page links to it, and yes and no are a keypress each.
+  test 'forgetting one account asks first, names it, and honours the answer' do
+    get totp_code_url(name: 'GitHub'), headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(SAVED)}" }
+
+    assert_match %r{<a accesskey="7" href="/totp/confirm\?name=GitHub">}, @response.body
+    assert_no_match(%r{action="/totp/forget}, @response.body)
+
+    get totp_confirm_url(name: 'GitHub'), headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(SAVED)}" }
+
+    assert_match 'Are you sure? GitHub will be deleted.', @response.body
+    assert_match(/1 Yes/, @response.body)
+    assert_match %r{<a accesskey="9" href="/totp/code\?name=GitHub">9 No}, @response.body
+  end
+
+  test 'forgetting everything asks first and deletes the cookie on yes' do
+    get totp_confirm_url, headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(SAVED)}" }
+
+    assert_match 'Are you sure? All 2FA codes will be deleted.', @response.body
+
+    delete totp_forget_all_url, headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(SAVED)}" }
+
+    assert_redirected_to totp_path
+    assert_not cookies[:totp].present?
+  end
+
+  # Six accounts to a page: 1 to 6 select, 7 turns the page, and 8, 9 and 0 keep their
+  # fixed jobs whichever page is showing.
+  test 'a long list paginates rather than outrunning the access keys' do
+    many = (1..8).map { |n| { 'name' => "Site #{n}", 'secret' => SECRET } }.to_json
+
+    get totp_url, headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(many)}" }
+
+    assert_match 'Site 6', @response.body
+    assert_no_match(/Site 7/, @response.body)
+    assert_match %r{<a accesskey="7" href="/totp\?page=1">7 More codes}, @response.body
+    assert_no_match(/Previous codes/, @response.body)
+
+    get totp_url(page: 1), headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(many)}" }
+
+    assert_match(/<a accesskey="1"[^>]*>1 Site 7/, @response.body)
+    assert_match 'Site 8', @response.body
+    assert_no_match(/More codes/, @response.body)
+    assert_match 'Previous codes', @response.body
   end
 
   # A mangled cookie is a fresh start, not a crash.

@@ -11,13 +11,26 @@ require 'totp'
 # rather than every fetch of a headline or a glyph. That is also why every route here
 # lives under the /totp prefix: the browser withholds the cookie anywhere else.
 class TotpController < ApplicationController
-  # Enough for anyone enrolling by keypad, and it keeps the cookie a fraction of its 4KB.
-  MAX_ACCOUNTS = 10
+  # Comfortably inside the 4KB a cookie holds even with long names and long keys, and far
+  # past what anyone enrols by keypad.
+  MAX_ACCOUNTS = 30
+  # The digits 1 to 6 select an account; 7 turns the page and 8, 9 and 0 are the fixed
+  # actions, so six is what one screen can offer a keypad.
+  PER_PAGE = 6
   # What save can refuse, named so the locale check can enumerate totp.error.* keys.
   ERRORS = %w[name secret full].freeze
 
   def index
-    @accounts = accounts
+    @page = [params[:page].to_i, 0].max
+    @accounts = accounts.slice(@page * PER_PAGE, PER_PAGE) || []
+    @any = accounts.any?
+    @more = accounts.length > (@page + 1) * PER_PAGE
+  end
+
+  # The one question a slip must pass through before a secret is gone: forgetting a code
+  # here is being locked out of the account it guards, not retyping a bus stop.
+  def confirm
+    @name = params[:name].presence
   end
 
   def code
@@ -58,10 +71,15 @@ class TotpController < ApplicationController
     redirect_to totp_code_path(name: name)
   end
 
-  # One account at a time, never the lot: a slip here is being locked out of something,
-  # not retyping a bus stop.
+  # Reached only through confirm, both of them: the views link there and nowhere posts
+  # here directly.
   def forget
     write_accounts(accounts.reject { |account| account['name'] == params[:name] })
+    redirect_to totp_path
+  end
+
+  def forget_all
+    cookies.delete(:totp, path: '/totp')
     redirect_to totp_path
   end
 
