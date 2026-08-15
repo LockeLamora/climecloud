@@ -73,7 +73,7 @@ class Gnews
     Rails.logger.warn("News feed refused by google - #{res.code}")
     return nil unless res.code == Relay::RATE_LIMITED
 
-    Relay.fetch(uri, subject: 'News feed') { |body| feed_in(body) }
+    Relay.fetch(uri, subject: 'News feed', impatient: true) { |body| feed_in(body) }
   end
 
   # A relay reports its own success rather than Google's, and the first of them rewrites

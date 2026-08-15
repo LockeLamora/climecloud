@@ -38,6 +38,16 @@ module Relay
   # another timeout to the wait before the reader is told the service is busy.
   BUDGET_SECONDS = 10
 
+  # What a caller can spend where something else is already waiting on it.
+  #
+  # Opera Mini fetches a page through Opera's own servers, and those give up on a request
+  # that takes too long: the handset is then told the page could not be opened, which is
+  # worse than any answer the page could have carried. A relay run that spends the full
+  # budget above puts a page over ten seconds behind Google's own refusal, so a caller
+  # sitting in front of a reader passes something tighter and takes fewer chances.
+  IMPATIENT_TIMEOUT_SECONDS = 2
+  IMPATIENT_BUDGET_SECONDS = 5
+
   # Each relay in turn until one returns a body the caller can use.
   #
   # The block is handed the body and returns what it read out of it, or nil if the body is
@@ -47,8 +57,10 @@ module Relay
   #
   # subject names the caller in the log, so a relay failure is not read as the service
   # behind it being busy.
-  def self.fetch(uri, subject:, &usable)
-    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + BUDGET_SECONDS
+  def self.fetch(uri, subject:, impatient: false, &usable)
+    timeout = impatient ? IMPATIENT_TIMEOUT_SECONDS : TIMEOUT_SECONDS
+    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) +
+               (impatient ? IMPATIENT_BUDGET_SECONDS : BUDGET_SECONDS)
 
     PROXIES.each do |proxy|
       if Process.clock_gettime(Process::CLOCK_MONOTONIC) >= deadline
@@ -56,7 +68,7 @@ module Relay
         break
       end
 
-      value = attempt(proxy, uri, subject, &usable)
+      value = attempt(proxy, uri, subject, timeout, &usable)
       next if value.nil?
 
       Rails.logger.info("#{subject} relayed by #{host(proxy)}")
@@ -69,8 +81,8 @@ module Relay
 
   # Logged either way. A relay is somebody else's free service and will eventually stop
   # answering, and the line here names which one.
-  def self.attempt(proxy, uri, subject)
-    res = get_with_timeout(proxy_uri(proxy, uri), proxy[:headers], subject)
+  def self.attempt(proxy, uri, subject, timeout)
+    res = get_with_timeout(proxy_uri(proxy, uri), proxy[:headers], subject, timeout)
     # Nothing came back at all, and the rescue that caught it has already said why.
     return nil if res.nil?
     return failed(proxy, subject, "response #{res.code}") unless res.is_a?(Net::HTTPSuccess)
@@ -98,11 +110,11 @@ module Relay
 
   # A relay that hangs would leave the phone waiting on a page that may never come, so
   # anything going wrong here is simply the next relay's turn.
-  def self.get_with_timeout(uri, headers, subject)
+  def self.get_with_timeout(uri, headers, subject, timeout)
     Net::HTTP.start(uri.host, uri.port,
                     use_ssl: uri.scheme == 'https',
-                    open_timeout: TIMEOUT_SECONDS,
-                    read_timeout: TIMEOUT_SECONDS) do |http|
+                    open_timeout: timeout,
+                    read_timeout: timeout) do |http|
       http.request(Net::HTTP::Get.new(uri, headers))
     end
   rescue StandardError => e

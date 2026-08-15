@@ -39,8 +39,8 @@ class ThemeTest < ApplicationSystemTestCase
     visit_with_theme('crt-green')
 
     assert_equal 'rgb(6, 13, 7)', style('body', 'backgroundColor')
-    # One hue, two intensities: dim body text, full brightness for the link.
-    assert_equal 'rgb(53, 201, 108)', style('body', 'color')
+    # One hue at one brightness, the bloom being what lifts a lit stroke off the ground.
+    assert_equal 'rgb(82, 255, 143)', style('body', 'color')
     assert_equal 'rgb(82, 255, 143)', style('a', 'color')
     assert_includes style('body', 'fontFamily'), 'mono'
     assert_not_equal 'none', style('body', 'textShadow'), 'the phosphor bloom is the point'
@@ -118,47 +118,44 @@ class ThemeTest < ApplicationSystemTestCase
                  'the sweep layers were replaced by the card, so the row goes black')
   end
 
-  # The glow is the whole of a phosphor style, and it has to be drawn in the form the handset
-  # can take. Two things about that form are settled by what the screen has already shown,
-  # and both are checked here on the ungated rules, which are the ones it reads.
-  #
-  # Opaque: a layer at 0.5 or 0.2 alpha arrived as nothing, the same way the scanline overlay
-  # and the vignette did, OBML being pre-rendered lines and rectangles with nowhere to put a
-  # partly transparent one. Unoffset: a ring of copies displaced a pixel each way arrived as
-  # a mark on the first glyph of every word, an offset copy being a displaced run of text.
-  test 'a phosphor style glows in the form the handset can take' do
-    %w[crt-green crt-amber plasma stn].each do |name|
+  # Everything that makes a phosphor style look like a tube is a compositing effect and none
+  # of it reaches the handset: a bloom is a blur, a blur is alpha, and OBML has nowhere to
+  # put a partly transparent layer. So the whole tube sits behind the condition, and what is
+  # left outside it is the hue on its ground, which is what that screen gets.
+  test 'a phosphor style keeps its tube behind the condition and its colour outside' do
+    %w[crt-green crt-amber].each do |name|
       visit_with_theme(name)
 
-      shadow = page.evaluate_script(<<~JS)
+      assert_not_equal 'none', style('body', 'textShadow'), "#{name}: no bloom where one can be drawn"
+      assert_not_equal 'none',
+                       page.evaluate_script("getComputedStyle(document.body, '::before').backgroundImage"),
+                       "#{name}: no scanlines where they can be drawn"
+
+      shadow, ink, paper, underline = page.evaluate_script(<<~JS)
         (() => {
           for (const sheet of document.styleSheets) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
               if (sheet.cssRules[i].conditionText) sheet.deleteRule(i);
             }
           }
-          return getComputedStyle(document.body).textShadow;
+          const body = getComputedStyle(document.body);
+          return [body.textShadow, body.color, body.backgroundColor,
+                  getComputedStyle(document.querySelector('a')).textDecorationLine];
         })()
       JS
 
-      assert_not_equal 'none', shadow, "#{name}: no glow reaches a browser without the wide one"
-      assert_not_includes shadow, 'inset',
-                          "#{name}: inset is a property from 2018 and the handset's engine predates it"
-      assert_not_includes shadow, 'rgba',
-                          "#{name}: a layer with alpha in it arrives as nothing at all"
-
-      # Every layer reads "rgb(...) <x> <y> <blur>", and both offsets have to be zero.
-      shadow.scan(/\)\s*([-\d.]+)px\s+([-\d.]+)px/).each do |x, y|
-        assert_equal [0.0, 0.0], [x.to_f, y.to_f],
-                     "#{name}: an offset layer lands on the first glyph of each word, not around it"
-      end
+      assert_equal 'none', shadow, "#{name}: a shadow outside the condition arrives mangled"
+      assert_not_equal ink, paper, "#{name}: the hue has to carry the style on its own"
+      # Without the bloom the ink and the link are one colour, so the underline marks a link
+      # here as it does on Game Boy and Nokia.
+      assert_equal 'underline', underline, "#{name}: nothing marks a link once the bloom is gone"
     end
   end
 
   # Telling a name from what is written under it, which is a different question from whether
   # it can be pressed. A style with one ink and one paper spends the same colour on both, so
-  # a list of places came out as one undifferentiated block. Weight is what those use, being
-  # the only thing left that the handset can draw too.
+  # a list of places has nothing but weight to separate a name from its details, weight being
+  # the one thing left that the handset can draw too.
   test 'a style with one ink tells a name from the lines under it by weight' do
     Themes::NAMES.each do |name|
       palette = Themes.palette(name)
@@ -166,8 +163,9 @@ class ThemeTest < ApplicationSystemTestCase
 
       visit_with_theme(name)
 
-      # The styles that draw a box round every row do this job with the box instead.
+      # A box round every row does this job, and so does an underline.
       next if style('a', 'borderBottomStyle') != 'none' || style('a', 'boxShadow') != 'none'
+      next if style('a', 'textDecorationLine') == 'underline'
 
       assert_operator style('a', 'fontWeight').to_i, :>, style('body', 'fontWeight').to_i,
                       "#{name}: a name is the same colour and the same weight as its details"
@@ -448,14 +446,13 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
-  # Every other check in this file reads a colour, a width or a weight out of the browser,
-  # and not one of them presses anything. A page-sized overlay went up over the whole app,
-  # the settings button stopped answering, and all of them still passed: a style that cannot
-  # be operated computes exactly the same colours as one that can. The flow that does press a
-  # button, in settings_test, only ever ran on the plain style, where there is no overlay.
+  # Every other check in this file reads a colour, a width or a weight, and none of them
+  # presses anything. A style that cannot be operated computes exactly the same colours as
+  # one that can, and the flow that does press a button, in settings_test, runs on the plain
+  # style alone. So this one presses something under every style.
   #
-  # So every style has to let a press reach what is under it. Selenium refuses to click an
-  # element something else is covering, which is the failure this missed.
+  # Selenium refuses to click an element that something else is covering, which is the whole
+  # point of doing it here rather than reading a property.
   test 'every style lets a press reach the option underneath it' do
     Themes::NAMES.each do |name|
       page.driver.browser.manage.add_cookie(name: 'theme', value: name)

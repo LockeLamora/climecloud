@@ -35,6 +35,40 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
   # Anchors as direct children of a <ul> are invalid, and left every headline in one
   # unbroken run: a style that draws a box around a link then drew one box per wrapped line.
+  # Opera Mini times itself out on a large page over a slow connection and the handset is
+  # told the page could not be opened, so a page big enough is a page that does not exist.
+  # This one was ninety-seven kilobytes across two hundred and eighty-seven links, Google
+  # covering each story with eight outlets and every one of them carrying an encoded Google
+  # URL in its href. Nothing else in the app comes near a tenth of that.
+  test 'the news list is small enough to arrive on the handset' do
+    stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_operator @response.body.bytesize, :<, 25_000,
+                    'this is heavy enough that the handset may be told it cannot be opened'
+    assert_operator @response.body.scan(/<a /).size, :<=,
+                    Gnews::SECTIONS.length + NewsController::STORIES + 4,
+                    'more links than the sections, the stories and the furniture around them'
+  end
+
+  # One source for each story rather than every outlet that ran it. Eight versions of the
+  # same story is not a choice worth scrolling past on a 240px screen, and it was most of
+  # the weight of the page.
+  test 'a story is offered once rather than once per outlet' do
+    stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    stories = @response.body.scan(%r{<b>.*?</ul>}m)
+
+    assert_not_empty stories
+    stories.each do |story|
+      assert_equal 1, story.scan('<li>').size, "a story offers more than one way in: #{story[0, 80]}"
+    end
+  end
+
   test 'each article is a list item rather than a loose link in a list' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 

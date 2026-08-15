@@ -100,8 +100,8 @@ class ThemePaletteTest < ActionDispatch::IntegrationTest
 
   # An overlay drawn across the whole page is a target across the whole page. The only thing
   # holding one off the links under it is pointer-events, which the engine rendering for the
-  # handset has no reason to honour on an HTML element, and when one of these was given a
-  # real size the settings button stopped answering.
+  # handset has no reason to honour on an HTML element, which puts a target over every link
+  # in the app.
   #
   # So every page-sized overlay lives behind the @supports condition, where the browser
   # reading it is one that honours pointer-events. Checked against the stylesheet as written:

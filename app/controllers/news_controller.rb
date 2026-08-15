@@ -79,15 +79,33 @@ class NewsController < ApplicationController
     'Facebook'
   ].freeze
 
+  # One source per story, and a ceiling on the stories.
+  #
+  # Opera Mini gives up on a page that takes too long to fetch and the handset is told the
+  # page could not be opened, so weight here is not a matter of scrolling: past a point the
+  # section does not open at all. Google covers each story with eight or so outlets and each
+  # link carries an encoded Google URL in its href, so the full feed runs to hundreds of
+  # links and tens of kilobytes, against four for every other page in the app.
+  #
+  # The first readable source rather than a choice between them: eight versions of one story
+  # is not a choice worth scrolling past on a 240px screen, and the ones that will not open
+  # are already dropped by BLOCKED_SOURCES above.
+  SOURCES_PER_STORY = 1
+  # Enough to be worth reading and few enough to arrive. Nine sections sit one keypress
+  # apart at the top of the page, so a reader who wants different stories has somewhere else
+  # to go rather than further down.
+  STORIES = 15
+
   def prepare_articles
-    @news_items = @articles.filter_map do |item|
+    @news_items = @articles.first(STORIES).filter_map do |item|
       articles = readable_articles(item)
       # A story covered only by blocked sources is dropped whole. Leaving its heading with
       # an empty list underneath reads as a fault, and with nearly forty sources blocked it
       # happens often enough to matter.
       next if articles.empty?
 
-      { item_title: item['title'].rpartition('-')[0], articles: articles }
+      { item_title: item['title'].rpartition('-')[0],
+        articles: articles.first(SOURCES_PER_STORY) }
     end
   end
 
@@ -101,7 +119,17 @@ class NewsController < ApplicationController
       url = URI.extract(article, /http(s)?/).first
       next if url.blank?
 
-      { article_title: strip_links(article).html_safe, article_url: url }
+      # Every tag, and text rather than html_safe.
+      #
+      # An entry arrives from the feed as a list item wrapped around a link and a <font> tag
+      # naming the outlet. Stripping the anchor alone leaves the rest: the <li> nests inside
+      # the one the view draws, and it goes into the href too, since the headline travels
+      # with the link so a page that will not open can still say what it was about. The
+      # <font> sets a colour, and a colour from a news feed lands on top of whichever screen
+      # style the reader chose.
+      #
+      # Nothing here is ours, so none of it is marked safe to render as markup either.
+      { article_title: strip_tags(article).squish, article_url: url }
     end
   end
 

@@ -31,74 +31,47 @@
  * it in full; this rule exists so the dropdown has an entry to select. */
 body[data-theme="unstyled"] { }
 
-/* The three emissive styles carry one phosphor hue at two intensities: body text dim,
- * anything pressable at full brightness. A paler link reads as white once the bloom is on
- * it, which is the opposite of how a phosphor screen distinguishes anything. */
+/* The three emissive styles carry one phosphor hue at one brightness on a near-black
+ * ground, with the bloom doing the work of lifting a lit stroke off it. */
 
-/* The glow, in the form that reaches the handset: every layer opaque, and none of them
- * offset from the glyph.
- *
- * Both of those come from what the screen has already shown. A three layer shadow of one
- * opaque 1px ring and two wide rings at 0.5 and 0.2 alpha arrived as the opaque ring alone
- * and nothing else, which is the same way the scanline overlay at 0.38 alpha and the
- * vignette at 0.6 arrived as nothing at all: OBML is pre-rendered output made of positioned
- * lines and rectangles, and a partly transparent layer is not something it can write down.
- * A ring of nine copies offset by a pixel each way arrived as a mark on the first glyph of
- * every word, an offset copy being a displaced run of text rather than a halo around one.
- *
- * So the halo is stacked opaque rings at no offset, and the radii are small because the
- * screen is: two and four pixels around text of twelve or so is the same proportion as the
- * eight and twenty in the @supports block are around text on a desktop.
- */
 /* ---------------------------------------------------------------- 01 green ---- */
 body[data-theme="crt-green"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  text-shadow: 0 0 2px #52FF8F, 0 0 4px #52FF8F;
 }
 
 /* ---------------------------------------------------------------- 02 amber ---- */
 body[data-theme="crt-amber"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  text-shadow: 0 0 2px #FFB43C, 0 0 4px #FFB43C;
 }
 
 /* --------------------------------------------------------------- 03 plasma ---- */
 body[data-theme="plasma"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   letter-spacing: 0.02em;
-  text-shadow: 0 0 2px #FF6B18, 0 0 4px #FF6B18;
 }
 
-/* The bleed on an LCD, opaque for the same reason. */
-body[data-theme="stn"] {
-  text-shadow: 0 0 1px #BFE9FF;
-}
-
-/* The glow, and the one thing these styles were using it for besides looking like a glow.
+/* The tube, and every part of it behind the one condition.
  *
- * Its brightness is the second of the two intensities that tell a link from body text on a
- * phosphor screen. Withheld from the handset for the reason given above, that job needs
- * doing another way there, and the default rules leave the underline in place to do it.
- * This block is the other side of that: the shadow itself, and the underline it replaces.
+ * A bloom is a blur, a blur is alpha, and OBML has nowhere to put a partly transparent
+ * layer, so nothing in this block reaches the handset whatever form it takes. What reaches
+ * it is the ground and the hue, which the palette carries: green or amber on near-black,
+ * flat. That is the trade these three make and it is the reason the underline stays on
+ * their links, the brightness that would otherwise mark one being made of shadow.
  *
- * The condition is custom properties, and it has to be something of that kind rather than
- * the shadow itself. Opera Mini renders on Opera's servers with an engine that is not the
- * 4.4 on the handset, and that engine implements @supports and computes a text-shadow
- * happily; what it cannot do is deliver one. Asking whether a shadow is supported therefore
- * answers for the renderer rather than for the screen, and answers yes.
- *
- * Custom properties are what actually separates the two paths, being the reason the palette
- * is resolved server-side at all: no engine that ever rendered OBML has them, and every
- * browser that draws its own page does. A browser with no @supports at all skips the block
- * and lands on the handset styling too, which is the right side to fail towards.
+ * The condition is custom properties rather than any of the effects here. The engine
+ * rendering for the handset implements @supports and computes a shadow, a gradient and a
+ * radius quite happily; what it cannot do is deliver them. Asking about an effect answers
+ * for that renderer instead of for the screen, and answers yes.
  */
 @supports (color: var(--ink)) {
   body[data-theme="crt-green"] {
     text-shadow: 0 0 1px #52FF8F, 0 0 7px rgba(82, 255, 143, 0.55), 0 0 18px rgba(82, 255, 143, 0.25);
+    border-radius: 13px / 9px;
   }
 
   body[data-theme="crt-amber"] {
     text-shadow: 0 0 1px #FFB43C, 0 0 8px rgba(255, 180, 60, 0.5), 0 0 20px rgba(255, 140, 20, 0.2);
+    border-radius: 13px / 9px;
   }
 
   body[data-theme="plasma"] {
@@ -109,9 +82,63 @@ body[data-theme="stn"] {
     text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
   }
 
+  /* The beam, drifting. Amber rolls slower than green so a reader who switches between the
+   * two does not see the same sweep twice. */
+  body[data-theme="crt-green"]::before,
+  body[data-theme="crt-amber"]::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.42) 0 1px, transparent 1px 3px);
+    animation: crt-roll 9s linear infinite;
+  }
+
+  body[data-theme="crt-amber"]::before {
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.36) 0 1px, transparent 1px 3px);
+    animation-duration: 13s;
+  }
+
+  /* The corners pulled in, and on the green tube a breath of the phosphor pooling inside
+   * the glass with it. The flicker is one dropped frame every few seconds. */
+  body[data-theme="crt-green"]::after,
+  body[data-theme="crt-amber"]::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    border-radius: 13px / 9px;
+    box-shadow: inset 0 0 34px 12px rgba(0, 0, 0, 0.72), inset 0 0 90px 6px rgba(30, 255, 120, 0.06);
+    animation: crt-flicker 5.5s steps(1) infinite;
+  }
+
+  body[data-theme="crt-amber"]::after {
+    box-shadow: inset 0 0 30px 10px rgba(0, 0, 0, 0.66);
+    animation: none;
+  }
+
+  /* Plasma addresses each cell directly, so it has no scanning beam and no lines — what it
+   * has is the glow pooling where the panel is brightest. */
+  body[data-theme="plasma"]::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 0%, rgba(255, 107, 24, 0.10), transparent 62%);
+  }
+
   /* Workbench's bevel as an inset shadow, which leaves the border free to be the black
-   * outline around it. The border version above is the same four colours in the only place
-   * the handset can take them. */
+   * outline around it. The border version further down is the same four colours in the only
+   * place the handset can take them. */
   body[data-theme="workbench"] a,
   body[data-theme="workbench"] form.inline-action button {
     border-color: #000000;
@@ -125,58 +152,12 @@ body[data-theme="stn"] {
   }
 }
 
-/* The tube, and why the whole of it is behind the condition below rather than half of it.
- *
- * A page-sized overlay is a page-sized target. The only thing keeping one off the links
- * underneath it is pointer-events: none, and that is a property the engine rendering for
- * the handset has no reason to honour on an HTML element. While the overlay carried
- * inset: 0 it had auto offsets, no size and nothing to draw, so the question never came up;
- * given real offsets it covered the page and the settings button stopped answering.
- *
- * The lines themselves would have arrived — the departure board's hinge is an absolutely
- * positioned pseudo-element with a solid border and it cuts across the text on that screen.
- * What cannot be made safe is a rectangle over every link in the app, on a browser with no
- * way to be told to ignore it. An app that cannot be operated is a worse trade than a
- * screen without scanlines on it.
- */
 @keyframes crt-roll { to { background-position: 0 3px; } }
 
-/* The softer tube, for a compositor that can draw one: the lines go back to a fraction of
- * black rather than all of it, the corners are pulled in, and the whole raster drifts.
- *
- * Plasma's is here in full and has no ungated half. It addresses each cell directly, so it
- * has no scanning beam and no lines — what it has is a pool of glow, which is a soft
- * gradient and nothing else, and there is no version of that the handset can be given. */
-@supports (color: var(--ink)) {
-  body[data-theme="crt-green"]::after,
-  body[data-theme="crt-amber"]::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.38) 0 1px, transparent 1px 3px);
-    box-shadow: inset 0 0 60px 22px rgba(0, 0, 0, 0.6);
-    animation: crt-roll 9s linear infinite;
-  }
-
-  body[data-theme="crt-amber"]::after {
-    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.32) 0 1px, transparent 1px 3px);
-    animation-duration: 13s;
-  }
-
-  body[data-theme="plasma"]::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    pointer-events: none;
-    background: radial-gradient(120% 60% at 50% 0%, rgba(255, 107, 24, 0.10), transparent 62%);
-  }
+@keyframes crt-flicker {
+  0%, 96% { opacity: 1; }
+  97% { opacity: 0.9; }
+  98%, 100% { opacity: 1; }
 }
 
 /* ------------------------------------------------------------- 04 teletext ---- */
@@ -546,22 +527,16 @@ body[data-theme="eink"] form.inline-action button {
  * link colour and the body colour are the same value and nothing else is left to mark it.
  * The plain style keeps its underline because that is the default look.
  *
- * The phosphor styles are here too, which they were not while their only mark was a
- * brightness that depends on a shadow. Both halves of that now reach the handset: a tight
- * opaque halo on the text, and the scanlines over it.
+ * The phosphor styles are not here, and keep their underline for the same reason Game Boy
+ * does. Their ink and their link are one colour, told apart by the bloom around a lit
+ * stroke, and the bloom is a compositing effect the handset never receives.
  */
-body[data-theme="crt-green"] a,
-body[data-theme="crt-amber"] a,
-body[data-theme="plasma"] a,
 body[data-theme="teletext"] a,
 body[data-theme="stn"] a,
 body[data-theme="oled"] a,
 body[data-theme="c64"] a,
 body[data-theme="barbie"] a,
 body[data-theme="barbie-dark"] a,
-body[data-theme="crt-green"] form.inline-action button,
-body[data-theme="crt-amber"] form.inline-action button,
-body[data-theme="plasma"] form.inline-action button,
 body[data-theme="teletext"] form.inline-action button,
 body[data-theme="stn"] form.inline-action button,
 body[data-theme="oled"] form.inline-action button,
@@ -571,8 +546,11 @@ body[data-theme="barbie-dark"] form.inline-action button {
   text-decoration: none;
 }
 
-/* A reader who asked for no motion keeps the scanlines and loses the drift. */
+/* A reader who asked for no motion keeps the scanlines and the vignette, and loses the
+ * drift and the flicker. */
 @media (prefers-reduced-motion: reduce) {
+  body[data-theme="crt-green"]::before,
+  body[data-theme="crt-amber"]::before,
   body[data-theme="crt-green"]::after,
   body[data-theme="crt-amber"]::after {
     animation: none;
