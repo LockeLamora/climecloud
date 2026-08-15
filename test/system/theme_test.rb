@@ -152,6 +152,29 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
+  # The raster on the handset, checked on the ungated rules, which are the ones it reads.
+  #
+  # Two mechanisms per row and both inside it, so pressing the beam presses the option.
+  # ::before spans the row and tiles the scanline image down it — a tiled image is carried
+  # to the handset where a gradient is disabled on Opera's servers outright — and ::after
+  # is one border line at the middle, which is how the departure board draws its hinge and
+  # the one treatment of this kind certain to arrive. Nothing here may be a gradient.
+  test 'a phosphor style scores its beam across rows and headings without a compositor' do
+    %w[crt-green crt-amber plasma].each do |name|
+      visit_with_theme(name)
+
+      %w[a h2].each do |element|
+        raster, spans, line, gradient = beam_of(element)
+        next if raster.nil?
+
+        assert_includes raster, 'scanline', "#{name} #{element}: no raster is tiled across it"
+        assert spans, "#{name} #{element}: the raster does not span the row"
+        assert_operator line, :>, 0, "#{name} #{element}: no border line as the floor"
+        assert_not gradient, "#{name} #{element}: a gradient is disabled on Opera's servers"
+      end
+    end
+  end
+
   # Telling a name from what is written under it, which is a different question from whether
   # it can be pressed. A style with one ink and one paper spends the same colour on both, so
   # a list of places has nothing but weight to separate a name from its details, weight being
@@ -554,6 +577,29 @@ class ThemeTest < ApplicationSystemTestCase
           link: pair([...document.querySelectorAll('a')].find(el => el.offsetParent !== null)),
           button: pair(document.querySelector('form.inline-action'))
         };
+      })()
+    JS
+  end
+
+  # The two halves of the per-row beam on an element, read with every gated rule deleted the
+  # way the handset's path resolves them: the raster image and whether it spans the row, the
+  # border line's width, and whether anything leans on a gradient. nil where the page has no
+  # such element.
+  def beam_of(element)
+    page.evaluate_script(<<~JS)
+      (() => {
+        for (const sheet of document.styleSheets) {
+          for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+            if (sheet.cssRules[i].conditionText) sheet.deleteRule(i);
+          }
+        }
+        const el = document.querySelector('#{element}');
+        if (!el) return null;
+        const before = getComputedStyle(el, '::before');
+        return [before.backgroundImage,
+                before.top === '0px' && before.bottom === '0px',
+                parseFloat(getComputedStyle(el, '::after').borderTopWidth),
+                before.backgroundImage.includes('gradient')];
       })()
     JS
   end
