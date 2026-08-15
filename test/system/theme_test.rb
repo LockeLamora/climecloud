@@ -118,6 +118,37 @@ class ThemeTest < ApplicationSystemTestCase
                  'the sweep layers were replaced by the card, so the row goes black')
   end
 
+  # The phosphor styles put their whole character into a text-shadow, which is the one thing
+  # that reaches the handset as an artefact rather than as itself. Everything they show there
+  # has to be built from what Opera says survives the crossing: background colours and
+  # per-side borders. Each option gets a block of its own hue behind it and a bright cursor
+  # down its left, which is both the bloom and the mark that says it can be pressed.
+  test 'a phosphor style is more than coloured text where no bloom can be drawn' do
+    %w[crt-green crt-amber plasma].each do |name|
+      visit_with_theme(name)
+
+      lit = page.evaluate_script(<<~JS)
+        (() => {
+          for (const sheet of document.styleSheets) {
+            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+              if (sheet.cssRules[i].conditionText) sheet.deleteRule(i);
+            }
+          }
+          const style = getComputedStyle(document.querySelector('a'));
+          return [style.backgroundColor, style.borderLeftWidth, style.textShadow];
+        })()
+      JS
+
+      background, cursor, shadow = lit
+
+      assert_equal 'none', shadow, 'the shadow is meant to be the gated half of this'
+      assert_not_equal 'rgba(0, 0, 0, 0)', background,
+                       "#{name}: an option has no lit block behind it, so the screen is plain text"
+      assert_operator cursor.to_f, :>, 0,
+                      "#{name}: an option has no cursor in front of it"
+    end
+  end
+
   # Telling a name from what is written under it, which is a different question from whether
   # it can be pressed. A style with one ink and one paper spends the same colour on both, so
   # a list of places came out as one undifferentiated block. Weight is what those use, being

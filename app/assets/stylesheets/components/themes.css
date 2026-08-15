@@ -61,6 +61,42 @@ body[data-theme="plasma"] {
   letter-spacing: 0.02em;
 }
 
+/* What a lit line looks like when the light itself cannot be drawn.
+ *
+ * A bloom is the phosphor still glowing around the strokes, and the only part of that a
+ * handset can be given is the ground it falls on: a block of the hue, dark enough to read
+ * as spill rather than as a button, behind the text it would have surrounded. Opera's own
+ * guidance is explicit that background colours and per-side borders both survive the
+ * crossing, which makes these the two properties left to build a screen out of.
+ *
+ * The bar down the left is a cursor. A terminal marks the line it is on rather than
+ * underlining it, an underline being a printer's mark and not a screen's, and an inline
+ * element draws a left border once at the start of its first line. So each option gets a
+ * lit block and a bright edge in front of it, and that is what says it can be pressed.
+ *
+ * Undone in the @supports block below, where there is a real bloom to do the same job.
+ */
+body[data-theme="crt-green"] a,
+body[data-theme="crt-green"] form.inline-action button {
+  background-color: #0F2313;
+  border-left: 2px solid #52FF8F;
+  padding: 0 0.3em;
+}
+
+body[data-theme="crt-amber"] a,
+body[data-theme="crt-amber"] form.inline-action button {
+  background-color: #21160A;
+  border-left: 2px solid #FFB43C;
+  padding: 0 0.3em;
+}
+
+body[data-theme="plasma"] a,
+body[data-theme="plasma"] form.inline-action button {
+  background-color: #21100A;
+  border-left: 2px solid #FF6B18;
+  padding: 0 0.3em;
+}
+
 /* The glow, and the one thing these styles were using it for besides looking like a glow.
  *
  * Its brightness is the second of the two intensities that tell a link from body text on a
@@ -96,13 +132,16 @@ body[data-theme="plasma"] {
     text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
   }
 
+  /* The bloom does the marking here, so the block and the cursor come back off. */
   body[data-theme="crt-green"] a,
   body[data-theme="crt-amber"] a,
   body[data-theme="plasma"] a,
   body[data-theme="crt-green"] form.inline-action button,
   body[data-theme="crt-amber"] form.inline-action button,
   body[data-theme="plasma"] form.inline-action button {
-    text-decoration: none;
+    background-color: transparent;
+    border-left: 0;
+    padding: 0;
   }
 
   /* Workbench's bevel as an inset shadow, which leaves the border free to be the black
@@ -498,16 +537,22 @@ body[data-theme="eink"] form.inline-action button {
  * link colour and the body colour are the same value and nothing else is left to mark it.
  * The plain style keeps its underline because that is the default look.
  *
- * The phosphor styles are not listed here. A link is marked by brightness on those, which
- * depends on a shadow not every browser draws, so they drop their underline in the
- * @supports block above instead.
+ * The phosphor styles are here too, which they were not while their only mark was a
+ * brightness that depends on a shadow. A lit block and a cursor down the left carry it on a
+ * browser that draws no shadow, and the bloom carries it on one that does.
  */
+body[data-theme="crt-green"] a,
+body[data-theme="crt-amber"] a,
+body[data-theme="plasma"] a,
 body[data-theme="teletext"] a,
 body[data-theme="stn"] a,
 body[data-theme="oled"] a,
 body[data-theme="c64"] a,
 body[data-theme="barbie"] a,
 body[data-theme="barbie-dark"] a,
+body[data-theme="crt-green"] form.inline-action button,
+body[data-theme="crt-amber"] form.inline-action button,
+body[data-theme="plasma"] form.inline-action button,
 body[data-theme="teletext"] form.inline-action button,
 body[data-theme="stn"] form.inline-action button,
 body[data-theme="oled"] form.inline-action button,
