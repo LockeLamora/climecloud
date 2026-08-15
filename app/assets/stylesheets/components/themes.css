@@ -18,6 +18,13 @@
  *
  * Every selector here is a descendant of body[data-theme], so these rules outrank the
  * head's, which use the components' bare selectors.
+ *
+ * Nothing here is measured in pixels except the things that are pixels. The screens this
+ * runs on differ by more than a factor of two, so a width is a share of the screen and a
+ * gap is a proportion of the text it holds apart; what stays in px is a border, a line, and
+ * the frame that stands for the edge of a screen, none of which are text and none of which
+ * should grow when the text does. The em values are the exact equivalents of the pixel
+ * counts they replaced at the default size, so nothing moved on a screen already at it.
  */
 
 /* The default look, and the value an unrecognised cookie resolves to. The palette defines
@@ -154,7 +161,7 @@ body[data-theme="teletext"] h2,
 body[data-theme="teletext"] b {
   background: #0000AA;
   color: #FFFF00;
-  padding: 1px 4px;
+  padding: 0.0625em 0.25em;
 }
 
 /* ----------------------------------------------------------------- 05 flap ---- */
@@ -176,7 +183,8 @@ body[data-theme="flap"] a,
 body[data-theme="flap"] form.inline-action button {
   display: block;
   position: relative;
-  padding: 3px 5px;
+  padding: 0.1875em 0.3125em;
+  margin-bottom: 0.1875em;
   background-color: #15151A;
   border-bottom: 1px solid #26262A;
   text-decoration: none;
@@ -212,7 +220,7 @@ body[data-theme="flap"] h2,
 body[data-theme="flap"] b {
   background: #FFC533;
   color: #0B0B0C;
-  padding: 2px 5px;
+  padding: 0.125em 0.3125em;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -235,7 +243,7 @@ body[data-theme="dmg"] h2,
 body[data-theme="dmg"] b {
   background: #0F380F;
   color: #9BBC0F;
-  padding: 1px 4px;
+  padding: 0.0625em 0.25em;
 }
 
 /* ------------------------------------------------------------------ 07 stn ---- */
@@ -275,7 +283,7 @@ body[data-theme="nokia"] h2,
 body[data-theme="nokia"] b {
   background: #1B2410;
   color: #C7D66B;
-  padding: 1px 4px;
+  padding: 0.0625em 0.25em;
 }
 
 /* 09 eink and 10 oled are defined entirely by their palettes in lib/themes.rb and add no
@@ -300,7 +308,8 @@ body[data-theme="workbench"] {
 body[data-theme="workbench"] a,
 body[data-theme="workbench"] form.inline-action button {
   display: block;
-  padding: 1px 4px;
+  padding: 0.0625em 0.25em;
+  margin-bottom: 0.1875em;
   background-color: #C8C8C8;
   border: 1px solid #FFFFFF;
   border-color: #FFFFFF #7A7A7A #7A7A7A #FFFFFF;
@@ -323,15 +332,16 @@ body[data-theme="workbench"] h1,
 body[data-theme="workbench"] h2 {
   background: #0055AA;
   color: #FFFFFF;
-  padding: 2px 5px;
+  padding: 0.125em 0.3125em;
   border: 1px solid #3A8AD8;
   border-color: #3A8AD8 #003B77 #003B77 #3A8AD8;
 }
 
 /* ----------------------------------------------------------------- 21 c64 ---- */
 /* VIC-II colours. The light blue border is the icon and the cost: 6px each side takes 12px
- * off the width, which body absorbs by shrinking its content box, so the 220px column
- * still fits. Capitals because the default character set had no lower case. */
+ * off the width, which body absorbs by shrinking its content box, and the column inside
+ * takes what is left rather than holding a width of its own. Capitals because the default
+ * character set had no lower case. */
 body[data-theme="c64"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   text-transform: uppercase;
@@ -410,7 +420,7 @@ body:not([data-theme="unstyled"]) img {
  */
 body:not([data-theme="unstyled"]) a:has(+ br) {
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 0.1875em;
 }
 
 body:not([data-theme="unstyled"]) form.inline-action {
@@ -422,7 +432,7 @@ body:not([data-theme="unstyled"]) form.inline-action button {
   width: 100%;
   box-sizing: border-box;
   text-align: left;
-  margin-bottom: 3px;
+  margin-bottom: 0.1875em;
 }
 
 body:not([data-theme="unstyled"]) a:has(+ br) + br,
@@ -445,6 +455,15 @@ body[data-theme="workbench"] a + br + br {
   display: none;
 }
 
+/* The gap between rows travels with the rules that make them rows, for the same reason.
+ * The gap above is stated in the :has() rule as well, which the handset drops along with
+ * everything else :has() names, so the board and Workbench carry their own copy of it in
+ * the blocks further up. Without it their rows sat flush against each other.
+ *
+ * The gap is what a row is given everywhere else, and both extremes are wrong: a break here
+ * is a whole blank line between every option, and nothing at all runs the cards together
+ * into one slab. */
+
 /* And the same pairing for the one-button forms, which are rows on every style but the
  * plain one and are so unconditionally, the rule above making no mention of :has(). The
  * views put a break after each of them for the plain style's benefit, so on the language
@@ -452,6 +471,23 @@ body[data-theme="workbench"] a + br + br {
  * separate it, with a blank line between each. */
 body:not([data-theme="unstyled"]) form.inline-action + br {
   display: none;
+}
+
+/* Weight on the styles that have no second colour to spend.
+ *
+ * Game Boy, Nokia and e-ink each have one ink and one paper, so a name and the line under
+ * it are the same colour and a list of places reads as a block of text. The underline below
+ * says a link can be pressed; this says which of the lines is the name. Weight is the one
+ * thing left that both a browser and the handset can draw, the colour being spoken for and
+ * a box belonging to the styles built out of boxes.
+ */
+body[data-theme="nokia"] a,
+body[data-theme="dmg"] a,
+body[data-theme="eink"] a,
+body[data-theme="nokia"] form.inline-action button,
+body[data-theme="dmg"] form.inline-action button,
+body[data-theme="eink"] form.inline-action button {
+  font-weight: bold;
 }
 
 /* No underline wherever the style has another way of saying "you can press this": a

@@ -118,6 +118,25 @@ class ThemeTest < ApplicationSystemTestCase
                  'the sweep layers were replaced by the card, so the row goes black')
   end
 
+  # Telling a name from what is written under it, which is a different question from whether
+  # it can be pressed. A style with one ink and one paper spends the same colour on both, so
+  # a list of places came out as one undifferentiated block. Weight is what those use, being
+  # the only thing left that the handset can draw too.
+  test 'a style with one ink tells a name from the lines under it by weight' do
+    Themes::NAMES.each do |name|
+      palette = Themes.palette(name)
+      next unless palette[:ink] == palette[:link]
+
+      visit_with_theme(name)
+
+      # The styles that draw a box round every row do this job with the box instead.
+      next if style('a', 'borderBottomStyle') != 'none' || style('a', 'boxShadow') != 'none'
+
+      assert_operator style('a', 'fontWeight').to_i, :>, style('body', 'fontWeight').to_i,
+                      "#{name}: a name is the same colour and the same weight as its details"
+    end
+  end
+
   # The rule rather than a list: a link has to carry at least one signal that it can be
   # pressed. Where the link colour differs from the body colour that is enough on its own and
   # an underline is noise. Where they are the same value — a screen with one ink and one
@@ -220,10 +239,14 @@ class ThemeTest < ApplicationSystemTestCase
     (Themes::NAMES - ['unstyled']).each do |name|
       visit_with_theme(name)
 
-      rows_without_has.compact.each do |kind, (display, following)|
+      rows_without_has.compact.each do |kind, (display, following, gap)|
         assert_equal display == 'block', following == 'none',
                      "#{name}: the #{kind} is #{display} and the break after it is #{following}, " \
                      'so the options either run together or come out double spaced'
+        next unless display == 'block'
+
+        assert_operator gap, :>, 0,
+                        "#{name}: the #{kind} is a row with nothing under it, so the rows sit flush"
       end
     end
   end
@@ -291,8 +314,42 @@ class ThemeTest < ApplicationSystemTestCase
     assert_equal page.evaluate_script('document.documentElement.clientWidth'),
                  page.evaluate_script('document.documentElement.scrollWidth'),
                  'the border pushed the page wider than the screen'
-    assert_equal 220,
-                 page.evaluate_script("document.querySelector('.route').getBoundingClientRect().width").round
+
+    # The column takes what the frame leaves rather than a width of its own, which is the
+    # only way the two can agree on a screen whose size is not known here.
+    column, inside = page.evaluate_script(<<~JS)
+      (() => {
+        const body = getComputedStyle(document.body);
+        return [document.querySelector('.route').getBoundingClientRect().width,
+                document.body.clientWidth
+                  - parseFloat(body.paddingLeft) - parseFloat(body.paddingRight)];
+      })()
+    JS
+
+    assert_in_delta inside, column, 1, 'the column does not fill the space inside the frame'
+  end
+
+  # The screens this runs on differ by more than a factor of two, so the column is a ceiling
+  # rather than a width: it takes what a narrow screen has and stops once the lines get long
+  # enough to lose your place tracking back across them.
+  test 'the reading column fills a narrow screen and is capped on a wide one' do
+    narrow_viewport
+    visit_with_theme('unstyled')
+
+    narrow = page.evaluate_script("document.querySelector('.route').getBoundingClientRect().width")
+    screen = page.evaluate_script('document.documentElement.clientWidth')
+
+    assert_operator narrow, :>, screen * 0.8, 'the column leaves a narrow screen half empty'
+    assert_operator narrow, :<=, screen
+
+    clear_viewport
+    visit_with_theme('unstyled')
+
+    wide = page.evaluate_script("document.querySelector('.route').getBoundingClientRect().width")
+
+    assert_operator wide, :>, narrow, 'the column does not grow with the screen at all'
+    assert_operator wide, :<, page.evaluate_script('document.documentElement.clientWidth'),
+                    'the column runs the full width of a desktop window'
   end
 
   # A style that draws a frame has to leave a gap inside it. The browser's body margin is
@@ -461,8 +518,10 @@ class ThemeTest < ApplicationSystemTestCase
         const pair = el => {
           if (!el) return null;
           const next = el.nextElementSibling;
+          const inner = el.tagName === 'FORM' ? el.querySelector('button') : el;
           return [getComputedStyle(el).display,
-                  next && next.tagName === 'BR' ? getComputedStyle(next).display : 'none'];
+                  next && next.tagName === 'BR' ? getComputedStyle(next).display : 'none',
+                  parseFloat(getComputedStyle(inner).marginBottom)];
         };
         return {
           link: pair([...document.querySelectorAll('a')].find(el => el.offsetParent !== null)),

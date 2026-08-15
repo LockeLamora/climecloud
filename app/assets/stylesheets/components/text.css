@@ -9,8 +9,17 @@ a, a:visited {
     color: blue;
   }
 
+/* The reading column. 220px was the usable width of a 240px screen written down as a
+   number, which is the right answer on that screen and the wrong one on every other: a
+   modern phone gave over a third of itself to empty space beside it.
+
+   A ceiling instead of a width, so the column takes whatever the screen has and stops
+   before the lines get too long to track back across. In em, so the stop comes after a
+   count of characters rather than a count of pixels, and a reader who turns their text size
+   up gets a wider column rather than a narrower one. The handset is nowhere near the
+   ceiling and simply fills its screen. */
 .route, .news, .news_topics {
-    width: 220px;
+    max-width: 24em;
   }
 
 a.change-settings {

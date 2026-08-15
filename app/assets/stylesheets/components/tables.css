@@ -4,10 +4,15 @@
    column reflow.
 
    Fixed layout takes the width as given and apportions it across the columns in the first
-   row, so four columns are 215px wide whatever is in them. The cells wrap to suit, and the
-   page grows downwards, which is the direction a phone can scroll. */
+   row, so four columns divide the table between them whatever is in them. The cells wrap to
+   suit, and the page grows downwards, which is the direction a phone can scroll.
+
+   The width itself is the screen rather than a number of pixels off it, capped at the same
+   measure the reading column uses so a desktop window does not stretch four columns across
+   a metre of glass. */
 table {
-    width: 215px;
+    width: 100%;
+    max-width: 24em;
     table-layout: fixed;
 }
 
@@ -30,7 +35,7 @@ th, td {
     border-bottom: 1px solid #ddd;
   }
 
-/* The news list. A browser indents a <ul> by about 40px, which is most of a 220px column,
+/* The news list. A browser indents a <ul> by about 40px, which is most of a narrow column,
    and the marker costs another few — neither buys anything when every item is one headline.
    The feed's own markup arrives wrapped in <font> tags, so the wrapping rules go on the
    item rather than on a selector that only matches this week's HTML. */
@@ -41,6 +46,6 @@ th, td {
   }
 
 .news li {
-    margin-bottom: 4px;
+    margin-bottom: 0.25em;
     overflow-wrap: break-word;
   }
