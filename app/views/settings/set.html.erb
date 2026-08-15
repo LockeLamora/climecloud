@@ -1,4 +1,4 @@
-<%= @error.nil? ? t('settings.intro') : "<span class='error'>#{@error}</span>".html_safe %>
+<%= @error.nil? ? phosphor_text(t('settings.intro')) : "<span class='error'>#{@error}</span>".html_safe %>
 <br /><br />
 <%# settings_save_path rather than the bare string, because Rails binds the forgery token %>
 <%# to the form's action as written: a relative action mints a token for "settings_save" %>
@@ -10,29 +10,29 @@
     <%# No country field: the postcode is asked about on its own, and which country it %>
     <%# belongs to is read back off the search. Only when it genuinely belongs to more %>
     <%# than one is the user asked, and then as a short list of the ones that apply. %>
-    <%= f.label t('settings.postcode') %>
+    <%= f.label(t('settings.postcode')) { phosphor_text t('settings.postcode') } %>
     <%= f.text_field :postcode, class: "text_field", required: true,
                                 value: cookies[:postcode] %>
     <br /><br />
 
-    <b><%= t('settings.metrics') %></b><br />
+    <b><%= phosphor_text t('settings.metrics') %></b><br />
     <% metrics = cookies[:metrics].presence || 'hybrid' %>
-    <%= f.radio_button :metrics, 'imperial', checked: metrics == 'imperial' %> <%= t('settings.imperial') %><br />
-    <%= f.radio_button :metrics, 'metric', checked: metrics == 'metric' %> <%= t('settings.metric') %> <br />
-    <%= f.radio_button :metrics, 'hybrid', checked: metrics == 'hybrid' %> <%= t('settings.hybrid') %> <br />
+    <%= f.radio_button :metrics, 'imperial', checked: metrics == 'imperial' %> <%= phosphor_text t('settings.imperial') %><br />
+    <%= f.radio_button :metrics, 'metric', checked: metrics == 'metric' %> <%= phosphor_text t('settings.metric') %> <br />
+    <%= f.radio_button :metrics, 'hybrid', checked: metrics == 'hybrid' %> <%= phosphor_text t('settings.hybrid') %> <br />
     <br />
-    <b><%= t('settings.news') %></b><br />
-    <%= f.label t('settings.default_section') %>
+    <b><%= phosphor_text t('settings.news') %></b><br />
+    <%= f.label(t('settings.default_section')) { phosphor_text t('settings.default_section') } %>
     <%# The same nine sections as the news page, from the same list and the same %>
     <%# translations. Google is sent the value; the reader sees their own language. %>
     <%= f.select :news_default_section,
                  options_for_select(Gnews::SECTIONS.map { |s| [t("news.section.#{s.downcase}"), s] },
                                     cookies[:news_default_section]) %>
     <br /><br />
-    <b><%= t('settings.display') %></b><br />
+    <b><%= phosphor_text t('settings.display') %></b><br />
     <%# Names come from the locale files so a reader sees them in their own language, %>
     <%# while the value written to the cookie is the one themes.css keys off. %>
-    <%= f.label t('settings.theme') %>
+    <%= f.label(t('settings.theme')) { phosphor_text t('settings.theme') } %>
     <%= f.select :theme,
                  options_for_select(Themes::NAMES.map { |name| [t("settings.themes.#{name.tr('-', '_')}"), name] },
                                     Themes.resolve(cookies[:theme])) %>

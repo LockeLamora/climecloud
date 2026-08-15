@@ -9,6 +9,25 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Change your settings', @response.body
   end
 
+  # On the phosphor styles everything textual on the settings page is a glyph: the intro,
+  # the labels, the section headers and the radio captions. What stays native is what has
+  # to: the option lists inside the two selects and the submit face are drawn by the
+  # phone's own widgets, which cannot carry an image and take the palette colours instead.
+  test 'the settings page is lit throughout on a phosphor style' do
+    get settings_url, headers: { 'HTTP_COOKIE' => 'theme=crt-amber' }
+
+    assert_response :success
+    body = @response.body[%r{<body.*</body>}m]
+    unlit = body.gsub(/<[^>]+>/, ' ').split.reject { |w| w.length < 3 }
+
+    assert_operator body.scan(%r{<img src="/phosphor}).length, :>=, 10,
+                    'the labels and headers are not glyphed'
+    unlit.each do |word|
+      assert_match(/<option[^>]*>[^<]*#{Regexp.escape(word)}/, body,
+                   "#{word} is unlit and not inside a native option list")
+    end
+  end
+
   test 'asks which country only when the postcode really belongs to more than one' do
     stub_geocode('features' => [geocode_result('Testville, UK'),
                                 geocode_result('Testville, France', country: 'fr')])

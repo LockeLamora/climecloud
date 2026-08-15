@@ -28,7 +28,7 @@
 <br /><br />
 <% end %>
 <%= form_with url: "places_search", method: :get, local: true do |f| %>
-    <%= f.label t('places.somewhere_else') %>
+    <%= f.label(t('places.somewhere_else')) { phosphor_text t('places.somewhere_else') } %>
     <%= f.text_field :query, class: "big_text_field" %>
     <br /><br />
     <%= f.submit t('common.search') %>
