@@ -1,4 +1,28 @@
 module ApplicationHelper
+  # The styles whose glow can only reach the handset as an image. See PhosphorGlyph.
+  PHOSPHOR_THEMES = %w[crt-green crt-amber plasma].freeze
+
+  # On the phosphor styles every text link is drawn as a phosphor screen: the label goes to
+  # the SVG endpoint and comes back as an image with the bloom and the raster baked in,
+  # inside the same anchor, so the keypad and the access keys reach it exactly as before.
+  #
+  # Overridden here rather than changed at each call site, so every view keeps writing
+  # plain link_to and every other style keeps plain text. Block and non-string forms pass
+  # through untouched: those wrap markup of their own.
+  def link_to(name = nil, options = nil, html_options = nil, &)
+    return super if block_given? || !name.is_a?(String)
+    return super unless PHOSPHOR_THEMES.include?(Themes.resolve(cookies[:theme]))
+
+    super(options, html_options) { phosphor_glyph(name) }
+  end
+
+  # The alt is the label, so a failed image degrades to the plain text link it replaced.
+  def phosphor_glyph(text)
+    lines = PhosphorGlyph.lines(text)
+
+    tag.img(src: phosphor_path(t: text), alt: text,
+            width: PhosphorGlyph.width(lines), height: PhosphorGlyph.height(lines))
+  end
   # The chosen palette, as a style block for the document head. See Themes::BASE_PALETTE
   # for why the palette is resolved here rather than left to var() in the stylesheet.
   #

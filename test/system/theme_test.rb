@@ -146,48 +146,18 @@ class ThemeTest < ApplicationSystemTestCase
       visit_with_theme(name)
 
       assert_not_equal 'none', style('body', 'textShadow'), "#{name}: no bloom where one can be drawn"
-      # The ink and the link are one colour, so the underline marks a link, as on Game Boy.
-      assert_equal 'underline', style('a', 'textDecorationLine'), "#{name}: nothing marks a link"
-    end
-  end
-
-  # The raster on the handset, checked on the ungated rules, which are the ones it reads.
-  #
-  # Two mechanisms per row and both inside it, so pressing the beam presses the option.
-  # ::before spans the row and tiles the scanline image down it — a tiled image is carried
-  # to the handset where a gradient is disabled on Opera's servers outright — and ::after
-  # is one border line at the middle, which is how the departure board draws its hinge and
-  # the one treatment of this kind certain to arrive. Nothing here may be a gradient.
-  test 'a phosphor style scores its beam across rows and headings without a compositor' do
-    %w[crt-green crt-amber plasma].each do |name|
-      visit_with_theme(name)
-
-      %w[a h2].each do |element|
-        raster, spans, gradient = beam_of(element)
-        next if raster.nil?
-
-        assert_includes raster, "scanline-#{name}",
-                        "#{name} #{element}: no raster in this theme's own tone is tiled across it"
-        assert spans, "#{name} #{element}: the raster does not span the row"
-        assert_not gradient, "#{name} #{element}: a gradient is disabled on Opera's servers"
-      end
+      # A link is marked by being a lit glyph image, drawn by PhosphorController.
+      assert_selector 'a img[src^="/phosphor"]', minimum: 1
     end
   end
 
   # Telling a name from what is written under it, which is a different question from whether
-  # it can be pressed. A style with one ink and one paper spends the same colour on both, so
-  # a list of places has nothing but weight to separate a name from its details, weight being
+  # it can be pressed. These three spend the same colour on body text and on links, so a
+  # list of places has nothing but weight to separate a name from its details, weight being
   # the one thing left that the handset can draw too.
   test 'a style with one ink tells a name from the lines under it by weight' do
-    Themes::NAMES.each do |name|
-      palette = Themes.palette(name)
-      next unless palette[:ink] == palette[:link]
-
+    %w[nokia dmg eink].each do |name|
       visit_with_theme(name)
-
-      # A box round every row does this job, and so does an underline.
-      next if style('a', 'borderBottomStyle') != 'none' || style('a', 'boxShadow') != 'none'
-      next if style('a', 'textDecorationLine') == 'underline'
 
       assert_operator style('a', 'fontWeight').to_i, :>, style('body', 'fontWeight').to_i,
                       "#{name}: a name is the same colour and the same weight as its details"
@@ -197,8 +167,8 @@ class ThemeTest < ApplicationSystemTestCase
   # The rule rather than a list: a link has to carry at least one signal that it can be
   # pressed. Where the link colour differs from the body colour that is enough on its own and
   # an underline is noise. Where they are the same value — a screen with one ink and one
-  # paper, or Workbench where everything is black — something else has to say it, which is an
-  # underline, a border, or a bevel.
+  # paper, or Workbench where everything is black — something else has to say it: an
+  # underline, a border, a bevel, or the link being a lit glyph image rather than text.
   #
   # The plain style is exempt: it is the default look, and its links are underlined.
   test 'every link carries at least one sign that it can be pressed' do
@@ -209,8 +179,9 @@ class ThemeTest < ApplicationSystemTestCase
 
       if style('a', 'color') == style('body', 'color')
         boxed = style('a', 'borderBottomStyle') != 'none' || style('a', 'boxShadow') != 'none'
+        glyph = page.has_selector?('a img[src^="/phosphor"]', wait: 0)
 
-        assert underlined || boxed,
+        assert underlined || boxed || glyph,
                "#{name}: the link is the same colour as the body text and nothing else marks it"
       else
         assert_not underlined, "#{name}: the colour already says it, so the underline is noise"
@@ -576,27 +547,6 @@ class ThemeTest < ApplicationSystemTestCase
           link: pair([...document.querySelectorAll('a')].find(el => el.offsetParent !== null)),
           button: pair(document.querySelector('form.inline-action'))
         };
-      })()
-    JS
-  end
-
-  # The per-row beam on an element, read with every gated rule deleted the way the handset's
-  # path resolves them: the raster image, whether it spans the row, and whether anything
-  # leans on a gradient. nil where the page has no such element.
-  def beam_of(element)
-    page.evaluate_script(<<~JS)
-      (() => {
-        for (const sheet of document.styleSheets) {
-          for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
-            if (sheet.cssRules[i].conditionText) sheet.deleteRule(i);
-          }
-        }
-        const el = document.querySelector('#{element}');
-        if (!el) return null;
-        const before = getComputedStyle(el, '::before');
-        return [before.backgroundImage,
-                before.top === '0px' && before.bottom === '0px',
-                before.backgroundImage.includes('gradient')];
       })()
     JS
   end

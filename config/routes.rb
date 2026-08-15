@@ -26,6 +26,10 @@ Rails.application.routes.draw do
   delete 'places_forget' => 'places#forget'
   get 'wikipedia' => 'wikipedia#search'
   get 'wikipedia_article' => 'wikipedia#article'
+  # Text rendered as a phosphor screen, for the styles whose glow can only reach the
+  # handset inside an image. Reads nothing and calls nothing external.
+  get 'phosphor' => 'phosphor#text'
+
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'
   get 'news_search' => 'news#search'
