@@ -173,7 +173,27 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'Hours', @response.body
-    assert_match 'Mo-Fr 09:00-18:00', @response.body
+    # Unchanged to read, once the wrappers below are taken back out.
+    assert_match 'Mo-Fr 09:00-18:00; Sa 09:00-13:00', @response.body.gsub(%r{</?span>}, '')
+  end
+
+  # A phone offers to dial anything on a page that reads as a number worth dialling, and
+  # opening times were being offered as the shop's own number: pressing them started a call.
+  # The times are wrapped so the run the detection reads is broken up, and the page asks not
+  # to be scanned at all for the browsers that honour that.
+  test 'opening times are not offered as a phone number to dial' do
+    stub_places([{ 'properties' => { 'name' => 'Corner Chemist', 'distance' => 300, 'lat' => 52.31, 'lon' => 1.18,
+                                     'opening_hours' => 'Mo-Fr 09:00-18:00; Sa 09:00-13:00' } }])
+
+    with_api_credentials do
+      get '/places_list', params: { kind: 'pharmacy' }, headers: { 'COOKIE' => LOCATION_COOKIES }
+    end
+
+    assert_match '<meta name="format-detection" content="telephone=no">', @response.body
+    assert_match '<span>09:00</span>-<span>18:00</span>', @response.body
+    # Nothing left in the text is long enough to read as a number to call.
+    runs = @response.body.scan(/>([^<>]+)</).flatten
+    assert_empty runs.grep(/\d[\d\s:.-]{6,}/), 'a run of digits this long is a candidate for dialling'
   end
 
   test 'says how a car park is built and whether it charges' do

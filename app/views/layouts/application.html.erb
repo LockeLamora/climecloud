@@ -6,6 +6,13 @@
   <head>
     <title>Climecloud</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <%# A phone offers to dial anything on a page that looks like a number worth dialling, %>
+    <%# and this app is full of times and distances that qualify: an opening time of %>
+    <%# 09:00-18:00 was being offered as the shop's phone number. Nothing here is ever a %>
+    <%# number to call, so the whole document opts out. Browsers that ignore this are why %>
+    <%# PlacesHelper#opening_hours also splits the run the detection reads. %>
+    <meta name="format-detection" content="telephone=no">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 

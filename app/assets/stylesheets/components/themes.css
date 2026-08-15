@@ -7,9 +7,14 @@
  * and dot grids, card and bevel effects, and the blocks behind headings. Colours here are
  * literal, being part of a treatment rather than of the palette.
  *
- * Opera Mini 4.4 on the target handset supports none of text-shadow, gradients or
- * box-shadow, and ignores those rules. It applies the palette and whatever plain borders
- * and filled blocks a treatment is built from.
+ * Almost none of it reaches the handset, and not because its browser ignores the rules.
+ * Opera Mini renders on Opera's servers with an engine that understands all of this and
+ * then writes the result into OBML, which has no shadows, no gradients, no compositing
+ * layers and no fonts of its own: the phone draws the text in a device font. What survives
+ * the crossing is colour, weight, underline, borders, background colours, and images in the
+ * flow. Treatments built from those work there; the rest are for a browser drawing its own
+ * page, and a treatment that arrives mangled rather than absent belongs behind the
+ * @supports condition below.
  *
  * Every selector here is a descendant of body[data-theme], so these rules outrank the
  * head's, which use the components' bare selectors.
@@ -23,81 +28,51 @@ body[data-theme="unstyled"] { }
  * anything pressable at full brightness. A paler link reads as white once the bloom is on
  * it, which is the opposite of how a phosphor screen distinguishes anything. */
 
-/* The shadow declared here is the one built for the handset, and the block further down
- * replaces it with the wide soft version wherever the page is drawn by the browser reading
- * it. Both are stated per style rather than shared, since each carries its own hue.
+/* No text-shadow on these three here, only in the @supports block further down.
  *
- * Every layer sits within a pixel of the glyph. A blur of 7px or 20px is most of what makes
- * the bloom on a screen that draws it, and none of that reaches the phone: what arrives is
- * a trace of the tightest layer and nothing else. So the halo is assembled out of the only
- * radius that survives, as a ring of eight offset copies rather than one soft cloud.
+ * A shadow that cannot be delivered is not simply dropped on the way to the handset. The
+ * engine rendering for it computes one and then has to write the result into a format with
+ * no shadow in it, and what arrives is an artefact: a trace of the tightest layer, landing
+ * on the first glyph of each word and reading as though that letter alone were bold.
+ * Nothing about the radius or the number of layers changes it, so the shadow is withheld
+ * and the handset gets clean type instead.
  */
 
 /* ---------------------------------------------------------------- 01 green ---- */
 body[data-theme="crt-green"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-weight: bold;
-  text-shadow:
-    0 0 1px #52FF8F,
-    1px 0 1px #52FF8F, -1px 0 1px #52FF8F,
-    0 1px 1px #52FF8F, 0 -1px 1px #52FF8F,
-    1px 1px 1px rgba(82, 255, 143, 0.7), -1px -1px 1px rgba(82, 255, 143, 0.7),
-    1px -1px 1px rgba(82, 255, 143, 0.7), -1px 1px 1px rgba(82, 255, 143, 0.7);
 }
 
 /* ---------------------------------------------------------------- 02 amber ---- */
 body[data-theme="crt-amber"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-weight: bold;
-  text-shadow:
-    0 0 1px #FFB43C,
-    1px 0 1px #FFB43C, -1px 0 1px #FFB43C,
-    0 1px 1px #FFB43C, 0 -1px 1px #FFB43C,
-    1px 1px 1px rgba(255, 180, 60, 0.7), -1px -1px 1px rgba(255, 180, 60, 0.7),
-    1px -1px 1px rgba(255, 180, 60, 0.7), -1px 1px 1px rgba(255, 180, 60, 0.7);
 }
 
 /* --------------------------------------------------------------- 03 plasma ---- */
 body[data-theme="plasma"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-weight: bold;
   letter-spacing: 0.02em;
-  text-shadow:
-    0 0 1px #FF6B18,
-    1px 0 1px #FF6B18, -1px 0 1px #FF6B18,
-    0 1px 1px #FF6B18, 0 -1px 1px #FF6B18,
-    1px 1px 1px rgba(255, 107, 24, 0.7), -1px -1px 1px rgba(255, 107, 24, 0.7),
-    1px -1px 1px rgba(255, 107, 24, 0.7), -1px 1px 1px rgba(255, 107, 24, 0.7);
 }
 
-/* These three depend on their text-shadow for two things: it thickens the strokes, and its
- * brightness is what separates a link from body text. A browser that draws no shadow gets
- * thin type in a single colour, with nothing marking a link.
+/* The glow, and the one thing these styles were using it for besides looking like a glow.
  *
- * Bold replaces the thickening, and the underline replaces the brightness, both declared
- * unconditionally above and in the default rules. The block here removes them again
- * wherever a shadow will be drawn.
+ * Its brightness is the second of the two intensities that tell a link from body text on a
+ * phosphor screen. Withheld from the handset for the reason given above, that job needs
+ * doing another way there, and the default rules leave the underline in place to do it.
+ * This block is the other side of that: the shadow itself, and the underline it replaces.
  *
- * The condition is custom properties, and it has to be something like that rather than the
- * shadow itself. Opera Mini renders on Opera's servers with an engine that is not the 4.4
- * on the handset, and that engine both implements @supports and computes a text-shadow
- * happily; what it cannot do is carry the shadow through OBML to the phone, where a trace
- * of the tightest layer arrives and none of the bloom. Asking whether a shadow is supported
- * therefore answers for the renderer and not for the screen, and answers yes.
+ * The condition is custom properties, and it has to be something of that kind rather than
+ * the shadow itself. Opera Mini renders on Opera's servers with an engine that is not the
+ * 4.4 on the handset, and that engine implements @supports and computes a text-shadow
+ * happily; what it cannot do is deliver one. Asking whether a shadow is supported therefore
+ * answers for the renderer rather than for the screen, and answers yes.
  *
- * Custom properties are the one thing that separates the two paths, being the reason the
- * palette is resolved server-side at all: no engine that ever rendered OBML has them, and
- * every browser that draws its own page does. A browser with no @supports at all skips the
- * block and lands on the handset styling too, which is the right side to fail towards.
+ * Custom properties are what actually separates the two paths, being the reason the palette
+ * is resolved server-side at all: no engine that ever rendered OBML has them, and every
+ * browser that draws its own page does. A browser with no @supports at all skips the block
+ * and lands on the handset styling too, which is the right side to fail towards.
  */
 @supports (color: var(--ink)) {
-  body[data-theme="crt-green"],
-  body[data-theme="crt-amber"],
-  body[data-theme="plasma"] {
-    font-weight: normal;
-  }
-
-  /* The wide soft bloom, for a browser that will actually draw one. */
   body[data-theme="crt-green"] {
     text-shadow: 0 0 1px #52FF8F, 0 0 7px rgba(82, 255, 143, 0.55), 0 0 18px rgba(82, 255, 143, 0.25);
   }
@@ -110,6 +85,10 @@ body[data-theme="plasma"] {
     text-shadow: 0 0 2px #FF6B18, 0 0 12px rgba(255, 107, 24, 0.55);
   }
 
+  body[data-theme="stn"] {
+    text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
+  }
+
   body[data-theme="crt-green"] a,
   body[data-theme="crt-amber"] a,
   body[data-theme="plasma"] a,
@@ -117,6 +96,21 @@ body[data-theme="plasma"] {
   body[data-theme="crt-amber"] form.inline-action button,
   body[data-theme="plasma"] form.inline-action button {
     text-decoration: none;
+  }
+
+  /* Workbench's bevel as an inset shadow, which leaves the border free to be the black
+   * outline around it. The border version above is the same four colours in the only place
+   * the handset can take them. */
+  body[data-theme="workbench"] a,
+  body[data-theme="workbench"] form.inline-action button {
+    border-color: #000000;
+    box-shadow: inset -1px -1px 0 #7A7A7A, inset 1px 1px 0 #FFFFFF;
+  }
+
+  body[data-theme="workbench"] h1,
+  body[data-theme="workbench"] h2 {
+    border-color: #000000;
+    box-shadow: inset -1px -1px 0 #003B77, inset 1px 1px 0 #3A8AD8;
   }
 }
 
@@ -245,9 +239,11 @@ body[data-theme="dmg"] b {
 }
 
 /* ------------------------------------------------------------------ 07 stn ---- */
+/* The soft edge this has on its text is in the @supports block with the phosphor glows,
+ * and for the same reason. It needs no stand-in the way they do: it is a hint of bleed
+ * rather than half the brightness, and a link here is told apart by hue. */
 body[data-theme="stn"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
 }
 
 /* The backlight, brightest where the LED sits. */
@@ -295,13 +291,19 @@ body[data-theme="workbench"] {
  * followed with a break: an inline box fragments across each line a headline wraps to, and
  * the news list runs its article links together with no break at all. background-color rather than an image, for
  * the same reason as the departure board: an image outranks the sweep in press.css. */
+/* The bevel is four border colours rather than an inset shadow, which is how this was done
+ * on the machine it borrows from and long before box-shadow existed. A shadow does not
+ * survive the crossing to the handset and the buttons arrived flat; borders do, so the
+ * light top and left and the dark bottom and right are drawn with those. The black outline
+ * the shadow version sits inside is given back in the @supports block, where there is a
+ * shadow to sit inside it. */
 body[data-theme="workbench"] a,
 body[data-theme="workbench"] form.inline-action button {
   display: block;
   padding: 1px 4px;
   background-color: #C8C8C8;
-  border: 1px solid #000000;
-  box-shadow: inset -1px -1px 0 #7A7A7A, inset 1px 1px 0 #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-color: #FFFFFF #7A7A7A #7A7A7A #FFFFFF;
   text-decoration: none;
   text-align: left;
 }
@@ -322,8 +324,8 @@ body[data-theme="workbench"] h2 {
   background: #0055AA;
   color: #FFFFFF;
   padding: 2px 5px;
-  border: 1px solid #000000;
-  box-shadow: inset -1px -1px 0 #003B77, inset 1px 1px 0 #3A8AD8;
+  border: 1px solid #3A8AD8;
+  border-color: #3A8AD8 #003B77 #003B77 #3A8AD8;
 }
 
 /* ----------------------------------------------------------------- 21 c64 ---- */
@@ -425,6 +427,30 @@ body:not([data-theme="unstyled"]) form.inline-action button {
 
 body:not([data-theme="unstyled"]) a:has(+ br) + br,
 body:not([data-theme="unstyled"]) a:has(+ br) + br + br {
+  display: none;
+}
+
+/* The board and Workbench are the exception, and have to be stated separately.
+ *
+ * Both draw every link as a block in their own rules further up, with no :has() in the
+ * selector, so their rows are blocks on a browser that has never heard of :has() as well as
+ * on one that has. The suppression above is not, so on the handset those two ended up with
+ * a card and then the two breaks that used to separate the text version of it, and every
+ * option was double spaced. Tied to the same condition as the rule that makes them blocks,
+ * which for these two is no condition at all. */
+body[data-theme="flap"] a + br,
+body[data-theme="flap"] a + br + br,
+body[data-theme="workbench"] a + br,
+body[data-theme="workbench"] a + br + br {
+  display: none;
+}
+
+/* And the same pairing for the one-button forms, which are rows on every style but the
+ * plain one and are so unconditionally, the rule above making no mention of :has(). The
+ * views put a break after each of them for the plain style's benefit, so on the language
+ * list and the country list every option was a row followed by the break that used to
+ * separate it, with a blank line between each. */
+body:not([data-theme="unstyled"]) form.inline-action + br {
   display: none;
 }
 

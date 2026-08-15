@@ -142,6 +142,34 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
+  # A shadow the handset cannot be given is not simply dropped on the way there: the engine
+  # rendering for it computes one, writes it into a format with nowhere to put it, and a
+  # trace lands on the first glyph of each word, which reads as that letter being bold. So
+  # no phosphor style may declare a text-shadow outside the gated block.
+  test 'no glow is declared where a browser that cannot deliver one would read it' do
+    ungated = page.evaluate_script(<<~JS)
+      (() => {
+        const out = [];
+        for (const sheet of document.styleSheets) {
+          for (const rule of sheet.cssRules) {
+            if (rule.style && rule.style.textShadow && rule.style.textShadow !== 'none') {
+              out.push(rule.selectorText);
+            }
+          }
+        }
+        return out;
+      })()
+    JS
+
+    assert_empty ungated,
+                 "a glow declared here reaches a browser that turns it into an artefact: #{ungated}"
+
+    # And it still has to be drawn where it can be.
+    visit_with_theme('crt-amber')
+
+    assert_not_equal 'none', style('body', 'textShadow')
+  end
+
   # Anything held back from the handset has to be gated on custom properties, not on the
   # effect being held back.
   #
@@ -178,28 +206,50 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
-  # Turning a link into a row and suppressing the break that used to separate it are one
-  # change, not two: a browser that applies the second without the first runs the whole menu
-  # into a single paragraph. :has() is what the handset's browser does not support, so it
-  # has to appear in the selector of both or neither.
-  test 'the rows and the breaks they replace are keyed off the same selector' do
-    rules = page.evaluate_script(<<~JS)
+  # Making a link a row and taking away the break that used to separate it are one change,
+  # not two, and a browser that applies one without the other gets a mess either way: all
+  # the options run into a single paragraph, or every option is double spaced.
+  #
+  # Checked against what the browser computes rather than against the text of the selectors,
+  # and with every :has() rule deleted from the live stylesheet first, which is what the
+  # handset's browser does to them. What is left has to agree with itself: rows that are
+  # still blocks need their breaks gone, and rows that have fallen back to running inline
+  # need them kept. The board and Workbench make blocks in their own rules with no :has() in
+  # the selector, so they carry their own suppression to match.
+  test 'the rows and the breaks they replace stand or fall together without :has()' do
+    (Themes::NAMES - ['unstyled']).each do |name|
+      visit_with_theme(name)
+
+      rows_without_has.compact.each do |kind, (display, following)|
+        assert_equal display == 'block', following == 'none',
+                     "#{name}: the #{kind} is #{display} and the break after it is #{following}, " \
+                     'so the options either run together or come out double spaced'
+      end
+    end
+  end
+
+  # box-shadow does not survive the crossing to the handset any more than text-shadow does,
+  # and Workbench's buttons arrived flat. The bevel is four border colours there, which is
+  # how the machine it borrows from drew one and what the handset can still take; the shadow
+  # version is restored only where there is something to draw it.
+  test 'workbench keeps its bevel where no shadow can be drawn' do
+    visit_with_theme('workbench')
+
+    top, bottom, shadow = page.evaluate_script(<<~JS)
       (() => {
-        const out = [];
         for (const sheet of document.styleSheets) {
-          for (const rule of sheet.cssRules) {
-            if (rule.selectorText && /\\bbr\\b/.test(rule.selectorText)) out.push(rule.cssText);
+          for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+            if (sheet.cssRules[i].conditionText) sheet.deleteRule(i);
           }
         }
-        return out;
+        const style = getComputedStyle(document.querySelector('a'));
+        return [style.borderTopColor, style.borderBottomColor, style.boxShadow];
       })()
     JS
 
-    assert_not_empty rules, 'no rule targets a break at all'
-    rules.each do |rule|
-      assert_includes rule, ':has(',
-                      "this hides a break in browsers that cannot make the link a row: #{rule}"
-    end
+    assert_equal 'none', shadow, 'the shadow is meant to be the gated half of this'
+    assert_not_equal top, bottom,
+                     'the button is flat without a shadow, so the handset sees no bevel at all'
   end
 
   # The views put a line break after any link meant to sit on its own line — one after a
@@ -394,6 +444,32 @@ class ThemeTest < ApplicationSystemTestCase
         }]
       }]
     }
+  end
+
+  # A row and the break after it, for a link and for a one-button form, with every :has()
+  # rule dropped from the live stylesheet first the way the handset's browser drops them.
+  # Either member is nil where the page carries no such element.
+  def rows_without_has
+    page.evaluate_script(<<~JS)
+      (() => {
+        for (const sheet of document.styleSheets) {
+          for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+            const sel = sheet.cssRules[i].selectorText;
+            if (sel && sel.includes(':has(')) sheet.deleteRule(i);
+          }
+        }
+        const pair = el => {
+          if (!el) return null;
+          const next = el.nextElementSibling;
+          return [getComputedStyle(el).display,
+                  next && next.tagName === 'BR' ? getComputedStyle(next).display : 'none'];
+        };
+        return {
+          link: pair([...document.querySelectorAll('a')].find(el => el.offsetParent !== null)),
+          button: pair(document.querySelector('form.inline-action'))
+        };
+      })()
+    JS
   end
 
   def visit_with_theme(name)

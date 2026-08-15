@@ -19,7 +19,7 @@
     <%# walking to it. Anything the data does not say is left unsaid. %>
     <%= (([place[:kind], place_distance(place[:distance])].compact) + place[:notes].to_a).join(', ') %>
     <% if place[:hours].present? %>
-    <br /><%= t('places.hours') %>: <%= place[:hours] %>
+    <br /><%= t('places.hours') %>: <%= opening_hours(place[:hours]) %>
     <% end %></li>
 <% end %>
 </ol>
