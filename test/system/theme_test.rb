@@ -118,37 +118,40 @@ class ThemeTest < ApplicationSystemTestCase
                  'the sweep layers were replaced by the card, so the row goes black')
   end
 
-  # A phosphor style is a lit tube, and everything that says so on a browser drawing its own
-  # page — the bloom, the scanlines over the text, the vignette — is a compositing effect
-  # that cannot reach the handset. What is left there has to be the ground: a tint of the
-  # style's own hue rather than black, since a tube at rest is never quite off, and a raster
-  # tiled into the background rather than drawn over the glyphs.
-  test 'a phosphor style is a lit screen where no bloom can be drawn' do
-    %w[crt-green crt-amber plasma].each do |name|
+  # The glow is the whole of a phosphor style, and it has to be drawn in the form the handset
+  # can take. Two things about that form are settled by what the screen has already shown,
+  # and both are checked here on the ungated rules, which are the ones it reads.
+  #
+  # Opaque: a layer at 0.5 or 0.2 alpha arrived as nothing, the same way the scanline overlay
+  # and the vignette did, OBML being pre-rendered lines and rectangles with nowhere to put a
+  # partly transparent one. Unoffset: a ring of copies displaced a pixel each way arrived as
+  # a mark on the first glyph of every word, an offset copy being a displaced run of text.
+  test 'a phosphor style glows in the form the handset can take' do
+    %w[crt-green crt-amber plasma stn].each do |name|
       visit_with_theme(name)
 
-      paper, raster, shadow = page.evaluate_script(<<~JS)
+      shadow = page.evaluate_script(<<~JS)
         (() => {
           for (const sheet of document.styleSheets) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
               if (sheet.cssRules[i].conditionText) sheet.deleteRule(i);
             }
           }
-          const style = getComputedStyle(document.body);
-          return [style.backgroundColor, style.backgroundImage, style.textShadow];
+          return getComputedStyle(document.body).textShadow;
         })()
       JS
 
-      assert_equal 'none', shadow, 'the shadow is meant to be the gated half of this'
-      assert_includes raster, name,
-                      "#{name}: the ground carries no raster, so the screen is flat colour"
+      assert_not_equal 'none', shadow, "#{name}: no glow reaches a browser without the wide one"
+      assert_not_includes shadow, 'inset',
+                          "#{name}: inset is a property from 2018 and the handset's engine predates it"
+      assert_not_includes shadow, 'rgba',
+                          "#{name}: a layer with alpha in it arrives as nothing at all"
 
-      # A tint of the hue and not black: two of the three channels have to differ, or the
-      # ground is a neutral dark and the style reads as a dark page rather than a screen.
-      channels = paper.scan(/\d+/).first(3).map(&:to_i)
-
-      assert_operator channels.max - channels.min, :>, 4,
-                      "#{name}: the ground is neutral, so nothing but the text carries the hue"
+      # Every layer reads "rgb(...) <x> <y> <blur>", and both offsets have to be zero.
+      shadow.scan(/\)\s*([-\d.]+)px\s+([-\d.]+)px/).each do |x, y|
+        assert_equal [0.0, 0.0], [x.to_f, y.to_f],
+                     "#{name}: an offset layer lands on the first glyph of each word, not around it"
+      end
     end
   end
 
@@ -193,34 +196,6 @@ class ThemeTest < ApplicationSystemTestCase
         assert_not underlined, "#{name}: the colour already says it, so the underline is noise"
       end
     end
-  end
-
-  # A shadow the handset cannot be given is not simply dropped on the way there: the engine
-  # rendering for it computes one, writes it into a format with nowhere to put it, and a
-  # trace lands on the first glyph of each word, which reads as that letter being bold. So
-  # no phosphor style may declare a text-shadow outside the gated block.
-  test 'no glow is declared where a browser that cannot deliver one would read it' do
-    ungated = page.evaluate_script(<<~JS)
-      (() => {
-        const out = [];
-        for (const sheet of document.styleSheets) {
-          for (const rule of sheet.cssRules) {
-            if (rule.style && rule.style.textShadow && rule.style.textShadow !== 'none') {
-              out.push(rule.selectorText);
-            }
-          }
-        }
-        return out;
-      })()
-    JS
-
-    assert_empty ungated,
-                 "a glow declared here reaches a browser that turns it into an artefact: #{ungated}"
-
-    # And it still has to be drawn where it can be.
-    visit_with_theme('crt-amber')
-
-    assert_not_equal 'none', style('body', 'textShadow')
   end
 
   # Anything held back from the handset has to be gated on custom properties, not on the

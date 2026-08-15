@@ -98,6 +98,25 @@ class ThemePaletteTest < ActionDispatch::IntegrationTest
                     'the palette has to follow the stylesheet link to win on source order'
   end
 
+  # An overlay is how a style draws anything across the page it is on, and inset is the
+  # short way of giving one a size. It is a property from 2018 and the engine rendering for
+  # the handset predates it, which leaves the element with auto offsets on all four sides,
+  # no size, and nothing drawn. That, and not any of the reasons I reached for first, is why
+  # the scanlines and the vignette never arrived there.
+  #
+  # Checked against the stylesheet as written rather than through a browser, because a
+  # browser that understands the shorthand expands it into the four longhands and then folds
+  # them back again on the way out, and would answer for itself rather than for the handset.
+  test 'no overlay is sized with a property the handset cannot read' do
+    Dir[Rails.root.join('app/assets/stylesheets/components/*.css')].each do |path|
+      source = File.read(path)
+
+      assert_no_match(/^\s*inset\s*:/, source,
+                      "#{File.basename(path)} sizes something with inset, which draws nothing " \
+                      'on the handset. State top, right, bottom and left.')
+    end
+  end
+
   private
 
   def style_block

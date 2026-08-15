@@ -35,52 +35,43 @@ body[data-theme="unstyled"] { }
  * anything pressable at full brightness. A paler link reads as white once the bloom is on
  * it, which is the opposite of how a phosphor screen distinguishes anything. */
 
-/* No text-shadow on these three here, only in the @supports block further down.
+/* The glow, in the form that reaches the handset: every layer opaque, and none of them
+ * offset from the glyph.
  *
- * A shadow that cannot be delivered is not simply dropped on the way to the handset. The
- * engine rendering for it computes one and then has to write the result into a format with
- * no shadow in it, and what arrives is an artefact: a trace of the tightest layer, landing
- * on the first glyph of each word and reading as though that letter alone were bold.
- * Nothing about the radius or the number of layers changes it, so the shadow is withheld
- * and the handset gets clean type instead.
- */
-
-/* The raster, as a tiled image rather than as the gradient the ::after further down uses.
+ * Both of those come from what the screen has already shown. A three layer shadow of one
+ * opaque 1px ring and two wide rings at 0.5 and 0.2 alpha arrived as the opaque ring alone
+ * and nothing else, which is the same way the scanline overlay at 0.38 alpha and the
+ * vignette at 0.6 arrived as nothing at all: OBML is pre-rendered output made of positioned
+ * lines and rectangles, and a partly transparent layer is not something it can write down.
+ * A ring of nine copies offset by a pixel each way arrived as a mark on the first glyph of
+ * every word, an offset copy being a displaced run of text rather than a halo around one.
  *
- * A background is the one texture that can reach the handset. OBML is pre-rendered output
- * built from pixel-positioned lines and rectangles, which is why a border arrives and a
- * blur does not, and Opera's guidance states plainly that background colours and images are
- * both supported. So the lines are drawn behind the text instead of over it.
- *
- * Behind, and lighter rather than darker, because those are the same decision. The scanline
- * over a bloom reads by interrupting light; there is no light here to interrupt and no way
- * to composite over a glyph, so the raster is in the ground and shows in the space around
- * the text, which on these pages is most of the screen.
- *
- * Four pixels to a band and two colours to a tile, coarse enough to survive the
- * recompression every image goes through on the way to the phone. Taken off again in the
- * @supports block, where the ::after draws a finer one over everything.
+ * So the halo is stacked opaque rings at no offset, and the radii are small because the
+ * screen is: two and four pixels around text of twelve or so is the same proportion as the
+ * eight and twenty in the @supports block are around text on a desktop.
  */
 /* ---------------------------------------------------------------- 01 green ---- */
 body[data-theme="crt-green"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  background-image: url("/screens/crt-green.png");
-  background-repeat: repeat;
+  text-shadow: 0 0 2px #52FF8F, 0 0 4px #52FF8F;
 }
 
 /* ---------------------------------------------------------------- 02 amber ---- */
 body[data-theme="crt-amber"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  background-image: url("/screens/crt-amber.png");
-  background-repeat: repeat;
+  text-shadow: 0 0 2px #FFB43C, 0 0 4px #FFB43C;
 }
 
 /* --------------------------------------------------------------- 03 plasma ---- */
 body[data-theme="plasma"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   letter-spacing: 0.02em;
-  background-image: url("/screens/plasma.png");
-  background-repeat: repeat;
+  text-shadow: 0 0 2px #FF6B18, 0 0 4px #FF6B18;
+}
+
+/* The bleed on an LCD, opaque for the same reason. */
+body[data-theme="stn"] {
+  text-shadow: 0 0 1px #BFE9FF;
 }
 
 /* The glow, and the one thing these styles were using it for besides looking like a glow.
@@ -118,15 +109,6 @@ body[data-theme="plasma"] {
     text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
   }
 
-  /* The tiled raster comes off: the ::after below draws a finer one over the whole page,
-   * text included, which is where a scanline belongs when there is anything to draw it
-   * with. Two of them at once would only make the screen dirty. */
-  body[data-theme="crt-green"],
-  body[data-theme="crt-amber"],
-  body[data-theme="plasma"] {
-    background-image: none;
-  }
-
   /* Workbench's bevel as an inset shadow, which leaves the border free to be the black
    * outline around it. The border version above is the same four colours in the only place
    * the handset can take them. */
@@ -143,35 +125,73 @@ body[data-theme="plasma"] {
   }
 }
 
-/* The tube: scanlines over everything, and the corners pulled in. Fixed rather than
- * absolute so it covers a page of any length without stretching. */
+/* The tube: scanlines over everything, and the corners pulled in.
+ *
+ * Absolute and with each offset named. inset was the whole reason none of this reached the
+ * handset: it is a property from 2018 and the engine rendering for that phone predates it,
+ * so the overlay had auto offsets on all four sides, no size, and nothing to draw. The
+ * vignette below went with it, being on the same element. position: fixed went the same way
+ * — a viewport-anchored layer means nothing in a page reflowed to one column.
+ *
+ * The departure board proves the rest: its hinge is an absolutely positioned pseudo-element
+ * with a solid border, and it cuts across the text on the handset. A line over a glyph is a
+ * positioned rectangle, which is exactly what OBML is made of.
+ *
+ * The lines are opaque here for the reason the glow above is: a partly transparent layer is
+ * not something that format can write down. The softer alpha version is restored in the
+ * @supports block, where there is a compositor to soften it with.
+ */
+body[data-theme="crt-green"],
+body[data-theme="crt-amber"],
+body[data-theme="plasma"] {
+  position: relative;
+}
+
 body[data-theme="crt-green"]::after,
 body[data-theme="crt-amber"]::after {
   content: "";
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.38) 0 1px, transparent 1px 3px);
-  box-shadow: inset 0 0 60px 22px rgba(0, 0, 0, 0.6);
-  animation: crt-roll 9s linear infinite;
-}
-
-body[data-theme="crt-amber"]::after {
-  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.32) 0 1px, transparent 1px 3px);
-  animation-duration: 13s;
-}
-
-/* Plasma addresses each cell directly, so it has no scanning beam and no lines — just the
- * glow pooling where the panel is brightest. */
-body[data-theme="plasma"]::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(120% 60% at 50% 0%, rgba(255, 107, 24, 0.10), transparent 62%);
+  background: repeating-linear-gradient(0deg, #000000 0 1px, transparent 1px 4px);
 }
 
 @keyframes crt-roll { to { background-position: 0 3px; } }
+
+/* The softer tube, for a compositor that can draw one: the lines go back to a fraction of
+ * black rather than all of it, the corners are pulled in, and the whole raster drifts.
+ *
+ * Plasma's is here in full and has no ungated half. It addresses each cell directly, so it
+ * has no scanning beam and no lines — what it has is a pool of glow, which is a soft
+ * gradient and nothing else, and there is no version of that the handset can be given. */
+@supports (color: var(--ink)) {
+  body[data-theme="crt-green"]::after,
+  body[data-theme="crt-amber"]::after {
+    position: fixed;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.38) 0 1px, transparent 1px 3px);
+    box-shadow: inset 0 0 60px 22px rgba(0, 0, 0, 0.6);
+    animation: crt-roll 9s linear infinite;
+  }
+
+  body[data-theme="crt-amber"]::after {
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.32) 0 1px, transparent 1px 3px);
+    animation-duration: 13s;
+  }
+
+  body[data-theme="plasma"]::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 60% at 50% 0%, rgba(255, 107, 24, 0.10), transparent 62%);
+  }
+}
 
 /* ------------------------------------------------------------- 04 teletext ---- */
 body[data-theme="teletext"] {
@@ -255,7 +275,10 @@ body[data-theme="dmg"] {
 body[data-theme="dmg"]::after {
   content: "";
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   pointer-events: none;
   background: radial-gradient(rgba(15, 56, 15, 0.16) 0.5px, transparent 0.6px) 0 0 / 3px 3px;
 }
@@ -280,7 +303,10 @@ body[data-theme="stn"] {
 body[data-theme="stn"]::after {
   content: "";
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   pointer-events: none;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 38%);
 }
@@ -293,7 +319,10 @@ body[data-theme="nokia"] {
 body[data-theme="nokia"]::after {
   content: "";
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   pointer-events: none;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 30%),
@@ -412,7 +441,10 @@ body[data-theme="barbie-dark"] h2 {
 body[data-theme="barbie-dark"]::after {
   content: "";
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   pointer-events: none;
   background: radial-gradient(90% 60% at 50% 0%, rgba(255, 46, 154, 0.16), transparent 65%);
 }
@@ -521,8 +553,8 @@ body[data-theme="eink"] form.inline-action button {
  * The plain style keeps its underline because that is the default look.
  *
  * The phosphor styles are here too, which they were not while their only mark was a
- * brightness that depends on a shadow. A lit block and a cursor down the left carry it on a
- * browser that draws no shadow, and the bloom carries it on one that does.
+ * brightness that depends on a shadow. Both halves of that now reach the handset: a tight
+ * opaque halo on the text, and the scanlines over it.
  */
 body[data-theme="crt-green"] a,
 body[data-theme="crt-amber"] a,
