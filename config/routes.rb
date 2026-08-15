@@ -30,6 +30,15 @@ Rails.application.routes.draw do
   # handset inside an image. Reads nothing and calls nothing external.
   get 'phosphor' => 'phosphor#text'
 
+  # Everything under one prefix, deliberately: the cookie holding the secrets is scoped to
+  # /totp, and the browser only sends it to paths beneath that.
+  get 'totp' => 'totp#index'
+  get 'totp/code' => 'totp#code'
+  get 'totp/add' => 'totp#add'
+  get 'totp/backup' => 'totp#backup'
+  post 'totp/save' => 'totp#save'
+  delete 'totp/forget' => 'totp#forget'
+
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'
   get 'news_search' => 'news#search'

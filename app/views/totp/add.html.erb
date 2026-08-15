@@ -1,0 +1,21 @@
+<div class='route'>
+<h2><%= phosphor_text t('totp.add_title') %></h2>
+<% if @error %>
+<span class='error'><%= t("totp.error.#{@error}") %></span><br /><br />
+<% end %>
+<%# What to type: the "can't scan the code?" key the site shows beside its QR — letters
+    and the digits two to seven. Spaces, dashes and case do not matter; save tidies them. %>
+<%= phosphor_text t('totp.setup_hint') %><br /><br />
+<%= form_with url: totp_save_path, method: :post, local: true do |f| %>
+    <%= f.label(t('totp.account_name')) { phosphor_text t('totp.account_name') } %>
+    <%= f.text_field :name, class: "big_text_field", required: true %>
+    <br /><br />
+    <%= f.label(t('totp.setup_key')) { phosphor_text t('totp.setup_key') } %>
+    <%= f.text_field :secret, class: "big_text_field", required: true %>
+    <br /><br />
+    <%= f.submit t('common.save') %>
+<% end %>
+<br />
+<%= link_to "9 #{t('totp.back_to_codes')}", totp_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

@@ -1,0 +1,20 @@
+<div class='route'>
+<h2><%= phosphor_text t('totp.title') %></h2>
+<% if @accounts.empty? %>
+<%= phosphor_text t('totp.none_saved') %><br /><br />
+<% else %>
+<%# Numbered like every other list here, so an account is one keypress on a browser that
+    honours access keys and a short scroll on one that does not. %>
+<% @accounts.each_with_index do |account, index| %>
+<%= link_to "#{index + 1} #{account['name']}", totp_code_path(name: account['name']),
+            accesskey: index < 7 ? (index + 1).to_s : nil %><br />
+<% end %>
+<br />
+<% end %>
+<%= link_to "8 #{t('totp.add_account')}", totp_add_path, accesskey: "8" %><br />
+<% if @accounts.any? %>
+<%= link_to "9 #{t('totp.backup_all')}", totp_backup_path, accesskey: "9" %><br />
+<% end %>
+<br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

@@ -11,7 +11,11 @@ class LocalesTest < ActiveSupport::TestCase
   def dynamic_keys
     %w[language_name places.kind.unnamed] +
       %w[origin destination].map { |field| "directions.field_#{field}" } +
-      place_keys + transport_keys + direction_keys + news_keys + theme_keys
+      place_keys + transport_keys + direction_keys + news_keys + theme_keys + totp_keys
+  end
+
+  def totp_keys
+    TotpController::ERRORS.map { |error| "totp.error.#{error}" }
   end
 
   def theme_keys

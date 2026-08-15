@@ -1,0 +1,14 @@
+<div class='route'>
+<h2><%= phosphor_text t('totp.backup_all') %></h2>
+<% if @accounts.empty? %>
+<%= phosphor_text t('totp.none_saved') %><br /><br />
+<% else %>
+<%= phosphor_text t('totp.backup_hint') %><br /><br />
+<% @accounts.each do |account| %>
+<%= phosphor_text account['name'] %><br />
+<b><%= phosphor_text account['secret'] %></b><br /><br />
+<% end %>
+<% end %>
+<%= link_to "9 #{t('totp.back_to_codes')}", totp_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

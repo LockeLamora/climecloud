@@ -6,7 +6,7 @@ It is primarily tested through everyday use on my Nokia 2660.
 
 All user information is stored client-side, meaning that there is no user data stored on climecloud servers.
 
-Current functionality includes bus and train departures, turn by turn walking and driving directions, places nearby, weather forecasting, Wikipedia and news feeds.
+Current functionality includes bus and train departures, turn by turn walking and driving directions, places nearby, weather forecasting, two-factor authentication codes, Wikipedia and news feeds.
 
 This is all in a lightweight text-based format which is  sized to suit screens of 240x320px with minimal user interaction required due to the lack of touchscreen controls or a qwerty keyboard. There is no JavaScript on any page: every screen is plain HTML with a short numbered list of options on it. Browsers that support access keys can jump straight to one by its number.
 
@@ -56,6 +56,15 @@ Search Wikipedia and read the summary of an article, or the whole thing, as plai
 ![The Wikipedia search screen in the Barbiephone theme](images/wikipedia-barbiephone.png)
 
 *The search screen. Results come back as a numbered list. Theme: Barbiephone.*
+
+
+**Two-factor codes**
+
+The phone can be the authenticator. When a site offers 2FA it shows a setup key next to its QR code — type that in once with a name, and from then on the account sits on the 2FA screen with its current six digit code and how long the code has left. Saved keys can be shown again at any time for writing down.
+
+![A saved account's current 2FA code in the Workbench theme](images/2fa-code-workbench.png)
+
+*A saved account's code, good for another 22 seconds. Theme: Workbench.*
 
 
 **Themes**

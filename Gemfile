@@ -25,6 +25,11 @@ gem 'wombat', '~> 3.0.0'
 # name lookup is used; there is no country dropdown, because the postcode answers that.
 gem 'countries', '~> 5.7'
 
+# TOTP codes for the 2FA page. The arithmetic is thirty lines of RFC 6238, but this is the
+# library the ecosystem has audited for a decade, and one-time-password code is the wrong
+# place to be the first reader of one's own bugs. No runtime dependencies.
+gem 'rotp', '~> 6.3'
+
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 
