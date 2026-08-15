@@ -360,19 +360,6 @@ class ThemeTest < ApplicationSystemTestCase
     }
   end
 
-  # Headless Chrome will not make a window narrower than about 500px, so the real viewport
-  # is emulated. Cleared in teardown: a devtools override outlives the session reset.
-  def narrow_viewport
-    page.driver.browser.execute_cdp('Emulation.setDeviceMetricsOverride',
-                                    width: 240, height: 320, deviceScaleFactor: 1, mobile: true)
-  end
-
-  def clear_viewport
-    page.driver.browser.execute_cdp('Emulation.clearDeviceMetricsOverride')
-  rescue StandardError
-    nil
-  end
-
   def visit_with_theme(name)
     page.driver.browser.manage.add_cookie(name: 'theme', value: name)
     visit departures_url

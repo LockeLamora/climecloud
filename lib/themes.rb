@@ -92,21 +92,21 @@ module Themes
     'unstyled' => {},
 
     # The three emissive styles carry one hue at two intensities: body text dim, anything
-    # pressable at full brightness. ink is set part of the way towards link, far enough to
-    # hold up without the bloom and short enough that the link is still the brighter of the
-    # two — which is the only thing marking a link on these styles, since they drop the
-    # underline.
-    'crt-green' => { paper: '#060D07', ink: '#41DF7A', glow_ink: '#35C96C', link: '#52FF8F',
+    # pressable at full brightness. glow_ink is the dim one. ink is most of the way to
+    # link, because a screen with no bloom on it has to get its brightness from the colour
+    # alone; components/themes.css puts the underline back on the same browsers, so the
+    # two no longer have to be far enough apart to tell a link by.
+    'crt-green' => { paper: '#060D07', ink: '#48EC83', glow_ink: '#35C96C', link: '#52FF8F',
                      press_bg: '#52FF8F', press_ink: '#041006', quiet: '#1E7A42',
                      rule: '#14411F', emphasis: '#52FF8F', head_bg: '#52FF8F',
                      head_ink: '#041006' },
 
-    'crt-amber' => { paper: '#0C0803', ink: '#E09B2B', glow_ink: '#CC8A20', link: '#FFB43C',
+    'crt-amber' => { paper: '#0C0803', ink: '#EDA532', glow_ink: '#CC8A20', link: '#FFB43C',
                      press_bg: '#FFB43C', press_ink: '#140C02', quiet: '#8A5E18',
                      rule: '#3D2A0C', emphasis: '#FFB43C', head_bg: '#FFB43C',
                      head_ink: '#140C02' },
 
-    'plasma' => { paper: '#0A0402', ink: '#E55E13', glow_ink: '#D4550F', link: '#FF6B18',
+    'plasma' => { paper: '#0A0402', ink: '#F06315', glow_ink: '#D4550F', link: '#FF6B18',
                   press_bg: '#FF6B18', press_ink: '#0A0402', quiet: '#7E3309',
                   rule: '#3A1607', emphasis: '#FF6B18', head_bg: '#FF6B18',
                   head_ink: '#0A0402' },

@@ -36,9 +36,11 @@ class ThemePaletteTest < ActionDispatch::IntegrationTest
   # The two properties that decide whether a theme is recognisable at all, checked against
   # the body rule rather than against the block as a whole.
   test 'the paper and the ink are resolved on the body itself' do
+    palette = Themes.palette('crt-amber')
+
     get settings_url, headers: { 'HTTP_COOKIE' => 'theme=crt-amber' }
 
-    assert_match(/body\{[^}]*;background:#0C0803;color:#E09B2B\}/, style_block)
+    assert_match(/body\{[^}]*;background:#{palette[:paper]};color:#{palette[:ink]}\}/, style_block)
   end
 
   test 'every offered theme states a full palette' do

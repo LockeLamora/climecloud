@@ -8,19 +8,19 @@ All user information is stored client-side, meaning that there is no user data s
 
 Current functionality includes bus and train departures, turn by turn walking and driving directions, places nearby, weather forecasting, Wikipedia and news feeds.
 
-This is all in a lightweight text-based format which is  sized to suit screens of 240x320px with minimal user interaction required due to the lack of touchscreen controls or a qwerty keyboard. There is no JavaScript on any page: every screen is plain HTML, and every choice on it is numbered so it can be reached with one keypress.
+This is all in a lightweight text-based format which is  sized to suit screens of 240x320px with minimal user interaction required due to the lack of touchscreen controls or a qwerty keyboard. There is no JavaScript on any page: every screen is plain HTML with a short numbered list of options on it. Browsers that support access keys can jump straight to one by its number.
 
 
 **The dashboard**
 
 ![Main menu in the Commodore callback theme](images/menu-commodore-callback.png)
 
-*The main menu. Everything is a numbered option, so the keypad is the whole interface — press 3 for places nearby, 6 for departures. Theme: Commodore callback.*
+*The main menu. Each option keeps its own number wherever it lands in the list, so places nearby is always 3 and departures is always 6. Theme: Commodore callback.*
 
 
 **Bus and train times, without typing anything**
 
-Typing a stop name on a keypad is miserable, so you never have to. The app takes the postcode saved in settings and lists the stops and stations around it in order of distance. Press the number next to one and it is saved; from then on it is on the departures screen and its times are two keypresses away.
+Typing a stop name on a keypad is miserable, so you never have to. The app takes the postcode saved in settings and lists the stops and stations around it in order of distance. Choose one and it is saved. It then shows up on the departures screen, two selections from the main menu.
 
 ![Nearby stops list in the Nokia LCD theme](images/nearby-stops-nokia-lcd.png)
 
@@ -33,7 +33,7 @@ Typing a stop name on a keypad is miserable, so you never have to. The app takes
 
 **Turn by turn navigation**
 
-A route is broken into one turn per screen, each with its own map image, the distance and time for that leg, and the compass heading to set off on. 1 moves to the next turn and 2 goes back, so the phone can stay in a pocket between junctions.
+A route is broken into one turn per screen, each with its own map image, the distance and time for that leg, and the compass heading to set off on. Every turn ends with the same two options in the same order, 1 for the next turn and 2 for the last one, so the phone can stay in a pocket between junctions.
 
 ![A single turn with its map in the Amber phosphor theme](images/turn-by-turn-amber-phosphor.png)
 
@@ -55,12 +55,12 @@ Search Wikipedia and read the summary of an article, or the whole thing, as plai
 
 ![The Wikipedia search screen in the Barbiephone theme](images/wikipedia-barbiephone.png)
 
-*The search screen. Results come back numbered, so an article is one keypress away. Theme: Barbiephone.*
+*The search screen. Results come back as a numbered list. Theme: Barbiephone.*
 
 
 **Themes**
 
-The look is chosen in settings and remembered. Most of the styles borrow from a screen with a character of its own — a phosphor terminal, a departure board, a Game Boy — and they work on the handset as well as on a modern phone.
+The look is chosen in settings and remembered. The styles copy old screens: phosphor terminals, LCDs, Teletext, a departure board, a Game Boy. All of them work on the handset, though the ones built on a glow or on scanlines come out plainer there than on a modern phone.
 
 * (No theme) — black on white, the default
 * Amber phosphor

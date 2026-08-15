@@ -15,13 +15,17 @@
   <tbody>
   <% (@times.length).times do |i| %>
     <tr>
-    <td> <%= @times[i] %></td>
-    <td> <%= "#{@temps_min[i].round}#{@units[:temp]} - #{@temps_max[i].round}#{@units[:temp]}"%></td>
-    <td> <%= "#{@wind_min[i].round}#{@units[:wind]} - #{@wind_max[i].round}#{@units[:wind]}" %></td>
+    <%# The year off the front: this is seven days out, and the column is 54px wide. %>
+    <td> <%= @times[i].split('-', 2).last %></td>
+    <%# The unit once at the end of the range rather than on both ends of it. The spaces
+        around the dash stay, or a below-zero minimum reads as two dashes running together. %>
+    <td> <%= "#{@temps_min[i].round} - #{@temps_max[i].round}#{@units[:temp]}"%></td>
+    <td> <%= "#{@wind_min[i].round} - #{@wind_max[i].round}#{@units[:wind]}" %></td>
     <% if @snow[i] > 0 %>
       <td> <%= "<b>#{t('forecast.snow')}</b>: #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
     <% else %>
-      <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
+      <%# No unit: the column header carries it. %>
+      <td> <%= "#{@rain[i]} (#{@rain_prob[i]}%)"%></td>
     <% end %>
     </tr>
     <% end %>

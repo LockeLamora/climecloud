@@ -44,10 +44,10 @@ module ApplicationHelper
 
   private
 
-  # Hands the dimmer body text back to any browser that will draw the bloom behind it, the
-  # brightness of the two being shared between the colour and the shadow. Gated on
-  # @supports, which the handset's browser does not implement: an unknown at-rule takes its
-  # whole block with it, so the ink above stands there.
+  # Restores the dimmer body text for a browser that will draw a shadow behind it, where
+  # the colour and the shadow share the brightness between them. Gated on @supports, which
+  # the handset's browser does not implement: an unknown at-rule is skipped along with its
+  # block, leaving the brighter ink from the rules above in force.
   def glow_ink_rule(palette)
     glow = palette[:glow_ink]
     return '' if glow.blank?

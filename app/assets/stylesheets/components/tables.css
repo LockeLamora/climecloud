@@ -1,5 +1,22 @@
+/* width alone is a suggestion. Left to itself a table is laid out from its contents, and a
+   browser widens it past any width given here rather than break a cell, which on a 240px
+   screen puts the forecast off the side of the page and costs the handset its single
+   column reflow.
+
+   Fixed layout takes the width as given and apportions it across the columns in the first
+   row, so four columns are 215px wide whatever is in them. The cells wrap to suit, and the
+   page grows downwards, which is the direction a phone can scroll. */
 table {
-    width:215px;
+    width: 215px;
+    table-layout: fixed;
+}
+
+/* Fixed columns are narrow enough that a value with no space in it can still be wider than
+   the column holding it, and that overflows in exactly the way the layout above prevents.
+   Both spellings: the older one is what browsers of the handset's vintage know. */
+th, td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* The column header is a filled block with contrasting text, so it follows the chosen

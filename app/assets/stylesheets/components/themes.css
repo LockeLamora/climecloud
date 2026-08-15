@@ -26,20 +26,51 @@ body[data-theme="unstyled"] { }
 /* ---------------------------------------------------------------- 01 green ---- */
 body[data-theme="crt-green"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-weight: bold;
   text-shadow: 0 0 1px #52FF8F, 0 0 7px rgba(82, 255, 143, 0.55), 0 0 18px rgba(82, 255, 143, 0.25);
 }
 
 /* ---------------------------------------------------------------- 02 amber ---- */
 body[data-theme="crt-amber"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-weight: bold;
   text-shadow: 0 0 1px #FFB43C, 0 0 8px rgba(255, 180, 60, 0.5), 0 0 20px rgba(255, 140, 20, 0.2);
 }
 
 /* --------------------------------------------------------------- 03 plasma ---- */
 body[data-theme="plasma"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-weight: bold;
   letter-spacing: 0.02em;
   text-shadow: 0 0 2px #FF6B18, 0 0 12px rgba(255, 107, 24, 0.55);
+}
+
+/* These three depend on their text-shadow for two things: it thickens the strokes, and its
+ * brightness is what separates a link from body text. A browser that draws no shadow gets
+ * thin type in a single colour, with nothing marking a link.
+ *
+ * Bold replaces the thickening, and the underline replaces the brightness, both declared
+ * unconditionally above and in the default rules. The block here removes them again
+ * wherever a shadow will be drawn.
+ *
+ * @supports is the test: the handset's browser does not implement it and skips the block
+ * whole, and that is the same set of browsers that cannot draw the shadow.
+ */
+@supports (text-shadow: 0 0 1px #000) {
+  body[data-theme="crt-green"],
+  body[data-theme="crt-amber"],
+  body[data-theme="plasma"] {
+    font-weight: normal;
+  }
+
+  body[data-theme="crt-green"] a,
+  body[data-theme="crt-amber"] a,
+  body[data-theme="plasma"] a,
+  body[data-theme="crt-green"] form.inline-action button,
+  body[data-theme="crt-amber"] form.inline-action button,
+  body[data-theme="plasma"] form.inline-action button {
+    text-decoration: none;
+  }
 }
 
 /* The tube: scanlines over everything, and the corners pulled in. Fixed rather than
@@ -350,26 +381,24 @@ body:not([data-theme="unstyled"]) a:has(+ br) + br + br {
   display: none;
 }
 
-/* No underline wherever the style has another way of saying "you can press this":
- * brightness on the phosphor screens, a distinct hue on teletext, STN, OLED, the C64 and
- * Barbiephone, a card on the board, a bevel on Workbench.
+/* No underline wherever the style has another way of saying "you can press this": a
+ * distinct hue on teletext, STN, OLED, the C64 and Barbiephone, a card on the board, a
+ * bevel on Workbench.
  *
  * Game Boy, Nokia and e-ink keep theirs, and must: each has one ink and one paper, so the
- * link colour and the body colour are the same value and the underline is the only lever
- * left. The plain style keeps its underline because that is the app as it was.
+ * link colour and the body colour are the same value and nothing else is left to mark it.
+ * The plain style keeps its underline because that is the default look.
+ *
+ * The phosphor styles are not listed here. A link is marked by brightness on those, which
+ * depends on a shadow not every browser draws, so they drop their underline in the
+ * @supports block above instead.
  */
-body[data-theme="crt-green"] a,
-body[data-theme="crt-amber"] a,
-body[data-theme="plasma"] a,
 body[data-theme="teletext"] a,
 body[data-theme="stn"] a,
 body[data-theme="oled"] a,
 body[data-theme="c64"] a,
 body[data-theme="barbie"] a,
 body[data-theme="barbie-dark"] a,
-body[data-theme="crt-green"] form.inline-action button,
-body[data-theme="crt-amber"] form.inline-action button,
-body[data-theme="plasma"] form.inline-action button,
 body[data-theme="teletext"] form.inline-action button,
 body[data-theme="stn"] form.inline-action button,
 body[data-theme="oled"] form.inline-action button,
