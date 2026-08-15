@@ -118,38 +118,36 @@ class ThemeTest < ApplicationSystemTestCase
                  'the sweep layers were replaced by the card, so the row goes black')
   end
 
-  # The glow is one ungated declaration serving both paths: the tight opaque ring is the
-  # halo the handset shows, and the wide layers behind it are alpha, which Opera's servers
-  # drop, so a compositor draws the whole bloom off the same rule. Gating it costs the
-  # handset the one part it can have, which is what this test refuses.
-  test 'a phosphor style glows on both paths from one declaration' do
-    %w[crt-green crt-amber].each do |name|
+  # OBML has no shadow primitive, so the server approximates a text-shadow as a filled band
+  # in the shadow's colour behind each text run: every string on the handset gets a bright
+  # cell painted under it. Opaque, alpha, tight or wide, the approximation is the same band,
+  # so no style may declare a shadow the handset's path can see — and the bloom still has to
+  # be drawn where a compositor exists to draw it.
+  test 'no style hands the handset a shadow, and the bloom is drawn where it can be' do
+    Themes::NAMES.each do |name|
       visit_with_theme(name)
 
-      assert_not_equal 'none',
-                       page.evaluate_script("getComputedStyle(document.body, '::before').backgroundImage"),
-                       "#{name}: no page-wide raster where one can be drawn"
-
-      shadow, ink, paper, underline = page.evaluate_script(<<~JS)
+      shadow = page.evaluate_script(<<~JS)
         (() => {
           for (const sheet of document.styleSheets) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
               if (sheet.cssRules[i].conditionText) sheet.deleteRule(i);
             }
           }
-          const body = getComputedStyle(document.body);
-          return [body.textShadow, body.color, body.backgroundColor,
-                  getComputedStyle(document.querySelector('a')).textDecorationLine];
+          return getComputedStyle(document.body).textShadow;
         })()
       JS
 
-      assert_not_equal 'none', shadow, "#{name}: the ring the handset can show is gated away"
-      assert_match(/\) 0px 0px 1px/, shadow,
-                   "#{name}: the first layer is the ring, opaque and tight, or nothing arrives")
-      assert_not_equal ink, paper, "#{name}: the hue has to carry the style on its own"
-      # The ink and the link are one colour, so the underline marks a link here as it does
-      # on Game Boy and Nokia.
-      assert_equal 'underline', underline, "#{name}: nothing marks a link"
+      assert_equal 'none', shadow,
+                   "#{name}: this shadow reaches the handset as a filled band behind every string"
+    end
+
+    %w[crt-green crt-amber plasma].each do |name|
+      visit_with_theme(name)
+
+      assert_not_equal 'none', style('body', 'textShadow'), "#{name}: no bloom where one can be drawn"
+      # The ink and the link are one colour, so the underline marks a link, as on Game Boy.
+      assert_equal 'underline', style('a', 'textDecorationLine'), "#{name}: nothing marks a link"
     end
   end
 
