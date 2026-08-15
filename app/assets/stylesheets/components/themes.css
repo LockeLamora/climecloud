@@ -45,56 +45,42 @@ body[data-theme="unstyled"] { }
  * and the handset gets clean type instead.
  */
 
+/* The raster, as a tiled image rather than as the gradient the ::after further down uses.
+ *
+ * A background is the one texture that can reach the handset. OBML is pre-rendered output
+ * built from pixel-positioned lines and rectangles, which is why a border arrives and a
+ * blur does not, and Opera's guidance states plainly that background colours and images are
+ * both supported. So the lines are drawn behind the text instead of over it.
+ *
+ * Behind, and lighter rather than darker, because those are the same decision. The scanline
+ * over a bloom reads by interrupting light; there is no light here to interrupt and no way
+ * to composite over a glyph, so the raster is in the ground and shows in the space around
+ * the text, which on these pages is most of the screen.
+ *
+ * Four pixels to a band and two colours to a tile, coarse enough to survive the
+ * recompression every image goes through on the way to the phone. Taken off again in the
+ * @supports block, where the ::after draws a finer one over everything.
+ */
 /* ---------------------------------------------------------------- 01 green ---- */
 body[data-theme="crt-green"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  background-image: url("/screens/crt-green.png");
+  background-repeat: repeat;
 }
 
 /* ---------------------------------------------------------------- 02 amber ---- */
 body[data-theme="crt-amber"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  background-image: url("/screens/crt-amber.png");
+  background-repeat: repeat;
 }
 
 /* --------------------------------------------------------------- 03 plasma ---- */
 body[data-theme="plasma"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   letter-spacing: 0.02em;
-}
-
-/* What a lit line looks like when the light itself cannot be drawn.
- *
- * A bloom is the phosphor still glowing around the strokes, and the only part of that a
- * handset can be given is the ground it falls on: a block of the hue, dark enough to read
- * as spill rather than as a button, behind the text it would have surrounded. Opera's own
- * guidance is explicit that background colours and per-side borders both survive the
- * crossing, which makes these the two properties left to build a screen out of.
- *
- * The bar down the left is a cursor. A terminal marks the line it is on rather than
- * underlining it, an underline being a printer's mark and not a screen's, and an inline
- * element draws a left border once at the start of its first line. So each option gets a
- * lit block and a bright edge in front of it, and that is what says it can be pressed.
- *
- * Undone in the @supports block below, where there is a real bloom to do the same job.
- */
-body[data-theme="crt-green"] a,
-body[data-theme="crt-green"] form.inline-action button {
-  background-color: #0F2313;
-  border-left: 2px solid #52FF8F;
-  padding: 0 0.3em;
-}
-
-body[data-theme="crt-amber"] a,
-body[data-theme="crt-amber"] form.inline-action button {
-  background-color: #21160A;
-  border-left: 2px solid #FFB43C;
-  padding: 0 0.3em;
-}
-
-body[data-theme="plasma"] a,
-body[data-theme="plasma"] form.inline-action button {
-  background-color: #21100A;
-  border-left: 2px solid #FF6B18;
-  padding: 0 0.3em;
+  background-image: url("/screens/plasma.png");
+  background-repeat: repeat;
 }
 
 /* The glow, and the one thing these styles were using it for besides looking like a glow.
@@ -132,16 +118,13 @@ body[data-theme="plasma"] form.inline-action button {
     text-shadow: 0 0 1px rgba(191, 233, 255, 0.5);
   }
 
-  /* The bloom does the marking here, so the block and the cursor come back off. */
-  body[data-theme="crt-green"] a,
-  body[data-theme="crt-amber"] a,
-  body[data-theme="plasma"] a,
-  body[data-theme="crt-green"] form.inline-action button,
-  body[data-theme="crt-amber"] form.inline-action button,
-  body[data-theme="plasma"] form.inline-action button {
-    background-color: transparent;
-    border-left: 0;
-    padding: 0;
+  /* The tiled raster comes off: the ::after below draws a finer one over the whole page,
+   * text included, which is where a scanline belongs when there is anything to draw it
+   * with. Two of them at once would only make the screen dirty. */
+  body[data-theme="crt-green"],
+  body[data-theme="crt-amber"],
+  body[data-theme="plasma"] {
+    background-image: none;
   }
 
   /* Workbench's bevel as an inset shadow, which leaves the border free to be the black

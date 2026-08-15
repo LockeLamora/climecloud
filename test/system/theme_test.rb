@@ -118,34 +118,37 @@ class ThemeTest < ApplicationSystemTestCase
                  'the sweep layers were replaced by the card, so the row goes black')
   end
 
-  # The phosphor styles put their whole character into a text-shadow, which is the one thing
-  # that reaches the handset as an artefact rather than as itself. Everything they show there
-  # has to be built from what Opera says survives the crossing: background colours and
-  # per-side borders. Each option gets a block of its own hue behind it and a bright cursor
-  # down its left, which is both the bloom and the mark that says it can be pressed.
-  test 'a phosphor style is more than coloured text where no bloom can be drawn' do
+  # A phosphor style is a lit tube, and everything that says so on a browser drawing its own
+  # page — the bloom, the scanlines over the text, the vignette — is a compositing effect
+  # that cannot reach the handset. What is left there has to be the ground: a tint of the
+  # style's own hue rather than black, since a tube at rest is never quite off, and a raster
+  # tiled into the background rather than drawn over the glyphs.
+  test 'a phosphor style is a lit screen where no bloom can be drawn' do
     %w[crt-green crt-amber plasma].each do |name|
       visit_with_theme(name)
 
-      lit = page.evaluate_script(<<~JS)
+      paper, raster, shadow = page.evaluate_script(<<~JS)
         (() => {
           for (const sheet of document.styleSheets) {
             for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
               if (sheet.cssRules[i].conditionText) sheet.deleteRule(i);
             }
           }
-          const style = getComputedStyle(document.querySelector('a'));
-          return [style.backgroundColor, style.borderLeftWidth, style.textShadow];
+          const style = getComputedStyle(document.body);
+          return [style.backgroundColor, style.backgroundImage, style.textShadow];
         })()
       JS
 
-      background, cursor, shadow = lit
-
       assert_equal 'none', shadow, 'the shadow is meant to be the gated half of this'
-      assert_not_equal 'rgba(0, 0, 0, 0)', background,
-                       "#{name}: an option has no lit block behind it, so the screen is plain text"
-      assert_operator cursor.to_f, :>, 0,
-                      "#{name}: an option has no cursor in front of it"
+      assert_includes raster, name,
+                      "#{name}: the ground carries no raster, so the screen is flat colour"
+
+      # A tint of the hue and not black: two of the three channels have to differ, or the
+      # ground is a neutral dark and the style reads as a dark page rather than a screen.
+      channels = paper.scan(/\d+/).first(3).map(&:to_i)
+
+      assert_operator channels.max - channels.min, :>, 4,
+                      "#{name}: the ground is neutral, so nothing but the text carries the hue"
     end
   end
 

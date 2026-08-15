@@ -62,15 +62,22 @@ module Themes
   #   head_ink   text on that block
   #   error      a line that says something went wrong
   #
-  # One optional colour goes with them:
+  # Two optional colours go with them:
   #
-  #   glow_ink   body text where the bloom behind it will be drawn
+  #   glow_ink     body text where the bloom behind it will be drawn
+  #   glow_paper   the ground under that bloom
   #
   # The phosphor styles set their body text dim and let a text-shadow carry the brightness,
   # which reads as an emitting screen. Opera Mini draws no shadow, so the dim value arrives
   # on its own and the screen looks washed out. Where a style declares glow_ink, ink is the
   # brightness the text needs unaided and glow_ink is the dimmer value a browser that will
   # draw the bloom uses instead.
+  #
+  # glow_paper is the same trade made on the ground. A tube with a bloom on it wants to sit
+  # on black, and that is what glow_paper is. With no bloom, black is just black and the
+  # screen reads as a dark page with coloured text on it rather than as a lit tube, so paper
+  # carries a visible tint of the phosphor's own hue instead. A screen at rest is never
+  # quite off.
   BASE_PALETTE = {
     paper: '#ffffff',
     ink: '#111111',
@@ -96,17 +103,20 @@ module Themes
     # link, because a screen with no bloom on it has to get its brightness from the colour
     # alone; components/themes.css puts the underline back on the same browsers, so the
     # two no longer have to be far enough apart to tell a link by.
-    'crt-green' => { paper: '#060D07', ink: '#48EC83', glow_ink: '#35C96C', link: '#52FF8F',
+    'crt-green' => { paper: '#0A1710', glow_paper: '#060D07',
+                     ink: '#48EC83', glow_ink: '#35C96C', link: '#52FF8F',
                      press_bg: '#52FF8F', press_ink: '#041006', quiet: '#1E7A42',
                      rule: '#14411F', emphasis: '#52FF8F', head_bg: '#52FF8F',
                      head_ink: '#041006' },
 
-    'crt-amber' => { paper: '#0C0803', ink: '#EDA532', glow_ink: '#CC8A20', link: '#FFB43C',
+    'crt-amber' => { paper: '#150E05', glow_paper: '#0C0803',
+                     ink: '#EDA532', glow_ink: '#CC8A20', link: '#FFB43C',
                      press_bg: '#FFB43C', press_ink: '#140C02', quiet: '#8A5E18',
                      rule: '#3D2A0C', emphasis: '#FFB43C', head_bg: '#FFB43C',
                      head_ink: '#140C02' },
 
-    'plasma' => { paper: '#0A0402', ink: '#F06315', glow_ink: '#D4550F', link: '#FF6B18',
+    'plasma' => { paper: '#170A04', glow_paper: '#0A0402',
+                  ink: '#F06315', glow_ink: '#D4550F', link: '#FF6B18',
                   press_bg: '#FF6B18', press_ink: '#0A0402', quiet: '#7E3309',
                   rule: '#3A1607', emphasis: '#FF6B18', head_bg: '#FF6B18',
                   head_ink: '#0A0402' },

@@ -14,7 +14,9 @@ module ApplicationHelper
   # than a colour: the sweep in components/press.css composes two of them into gradients.
   def theme_style_tag(theme)
     palette = Themes.palette(theme)
-    tokens = palette.except(:glow_ink)
+    # The glow pair are not tokens. Each is the alternative to one that is, and is written
+    # over it in the @supports block rather than alongside it.
+    tokens = palette.except(:glow_ink, :glow_paper)
                     .map { |token, value| "--#{token.to_s.tr('_', '-')}:#{value}" }.join(';')
 
     css = <<~CSS
@@ -44,19 +46,33 @@ module ApplicationHelper
 
   private
 
-  # Restores the dimmer body text for a browser that will draw a shadow behind it, where
-  # the colour and the shadow share the brightness between them.
+  # Hands back the dimmer text and the darker ground to a browser that will draw a bloom
+  # over them, where the colour and the shadow share the brightness between them. Without a
+  # bloom each has to carry it alone, which is what the palette states outright.
   #
   # The condition asks about custom properties rather than about the shadow, for the reason
   # set out over the matching block in components/themes.css: the engine rendering for the
   # handset supports a text-shadow and cannot deliver one, so it answers yes to the wrong
   # question. Custom properties are what actually separates the two paths.
   def glow_ink_rule(palette)
-    glow = palette[:glow_ink]
-    return '' if glow.blank?
+    ink = palette[:glow_ink]
+    paper = palette[:glow_paper]
+    return '' if ink.blank? && paper.blank?
 
-    "@supports (color: var(--ink)){" \
-      "body{--ink:#{glow};color:#{glow}}" \
-      "input[type=\"text\"],input[type=\"submit\"],select{color:#{glow}}}\n"
+    "@supports (color: var(--ink)){body{#{dim_body(ink, paper)}}#{dim_controls(ink, paper)}}\n"
+  end
+
+  def dim_body(ink, paper)
+    [ink.present? ? "--ink:#{ink};color:#{ink}" : nil,
+     paper.present? ? "--paper:#{paper};background:#{paper}" : nil].compact.join(';')
+  end
+
+  # The settings page is mostly controls, so they follow the ground and the ink.
+  def dim_controls(ink, paper)
+    declarations = [ink.present? ? "color:#{ink}" : nil,
+                    paper.present? ? "background:#{paper}" : nil].compact
+    return '' if declarations.empty?
+
+    "input[type=\"text\"],input[type=\"submit\"],select{#{declarations.join(';')}}"
   end
 end
