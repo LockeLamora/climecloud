@@ -53,10 +53,19 @@ body[data-theme="plasma"] {
  * unconditionally above and in the default rules. The block here removes them again
  * wherever a shadow will be drawn.
  *
- * @supports is the test: the handset's browser does not implement it and skips the block
- * whole, and that is the same set of browsers that cannot draw the shadow.
+ * The condition is custom properties, and it has to be something like that rather than the
+ * shadow itself. Opera Mini renders on Opera's servers with an engine that is not the 4.4
+ * on the handset, and that engine both implements @supports and computes a text-shadow
+ * happily; what it cannot do is carry the shadow through OBML to the phone, where a trace
+ * of the tightest layer arrives and none of the bloom. Asking whether a shadow is supported
+ * therefore answers for the renderer and not for the screen, and answers yes.
+ *
+ * Custom properties are the one thing that separates the two paths, being the reason the
+ * palette is resolved server-side at all: no engine that ever rendered OBML has them, and
+ * every browser that draws its own page does. A browser with no @supports at all skips the
+ * block and lands on the handset styling too, which is the right side to fail towards.
  */
-@supports (text-shadow: 0 0 1px #000) {
+@supports (color: var(--ink)) {
   body[data-theme="crt-green"],
   body[data-theme="crt-amber"],
   body[data-theme="plasma"] {

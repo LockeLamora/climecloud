@@ -142,6 +142,42 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
+  # Anything held back from the handset has to be gated on custom properties, not on the
+  # effect being held back.
+  #
+  # Opera Mini renders on Opera's servers with an engine that implements @supports and can
+  # compute a text-shadow, a gradient and a fixed overlay; what it cannot do is carry any of
+  # them through OBML to the phone. So a condition naming one of those answers for the
+  # renderer rather than for the screen, answers yes, and switches off the plain styling the
+  # handset was going to get. Custom properties are the one capability the two paths differ
+  # on, which is why the palette is resolved server-side in the first place.
+  #
+  # press.css is exempt: its condition gates an effect for browsers that draw their own
+  # pages, and the handset cannot show a press at all whichever way that one resolves.
+  test 'the fallbacks are gated on custom properties rather than on what they replace' do
+    conditions = page.evaluate_script(<<~JS)
+      (() => {
+        const out = [];
+        const walk = rules => {
+          for (const rule of rules) {
+            if (rule.conditionText && rule.cssRules && !rule.media) out.push(rule.conditionText);
+            if (rule.cssRules) walk(rule.cssRules);
+          }
+        };
+        for (const sheet of document.styleSheets) walk(sheet.cssRules);
+        return out;
+      })()
+    JS
+
+    conditions.reject! { |c| c.include?('background-clip') }
+
+    assert_not_empty conditions, 'no @supports block was found at all'
+    conditions.each do |condition|
+      assert_includes condition, 'var(',
+                      "this asks what the renderer can compute, not what reaches the phone: #{condition}"
+    end
+  end
+
   # Turning a link into a row and suppressing the break that used to separate it are one
   # change, not two: a browser that applies the second without the first runs the whole menu
   # into a single paragraph. :has() is what the handset's browser does not support, so it

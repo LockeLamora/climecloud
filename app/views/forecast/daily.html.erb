@@ -24,8 +24,7 @@
     <% if @snow[i] > 0 %>
       <td> <%= "<b>#{t('forecast.snow')}</b>: #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
     <% else %>
-      <%# No unit: the column header carries it. %>
-      <td> <%= "#{@rain[i]} (#{@rain_prob[i]}%)"%></td>
+      <td> <%= "#{@rain[i]}#{@units[:rain]} (#{@rain_prob[i]}%)"%></td>
     <% end %>
     </tr>
     <% end %>

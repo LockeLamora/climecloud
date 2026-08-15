@@ -45,14 +45,17 @@ module ApplicationHelper
   private
 
   # Restores the dimmer body text for a browser that will draw a shadow behind it, where
-  # the colour and the shadow share the brightness between them. Gated on @supports, which
-  # the handset's browser does not implement: an unknown at-rule is skipped along with its
-  # block, leaving the brighter ink from the rules above in force.
+  # the colour and the shadow share the brightness between them.
+  #
+  # The condition asks about custom properties rather than about the shadow, for the reason
+  # set out over the matching block in components/themes.css: the engine rendering for the
+  # handset supports a text-shadow and cannot deliver one, so it answers yes to the wrong
+  # question. Custom properties are what actually separates the two paths.
   def glow_ink_rule(palette)
     glow = palette[:glow_ink]
     return '' if glow.blank?
 
-    "@supports (text-shadow:0 0 1px #000){" \
+    "@supports (color: var(--ink)){" \
       "body{--ink:#{glow};color:#{glow}}" \
       "input[type=\"text\"],input[type=\"submit\"],select{color:#{glow}}}\n"
   end
