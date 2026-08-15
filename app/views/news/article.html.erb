@@ -3,10 +3,10 @@
 <%# want a subscription, or lay the story out in a way nothing can find. The headline came %>
 <%# from the feed, so it can still say what the story was, and the source link still works. %>
 <% if @error.present? %>
-<% if @title.present? %><b><%= @title %></b><br /><br /><% end %>
+<% if @title.present? %><b><%= phosphor_text @title %></b><br /><br /><% end %>
 <span class='error'><%= @error %></span><br /><br />
 <% end %>
-<%= @article %>
+<%= phosphor_theme ? phosphor_prose(@article) : @article %>
 <%# Links after the story, so finishing a long article leaves them to hand rather than a %>
 <%# scroll back to the top. The accesskeys work wherever the page is scrolled to. %>
 <br /><br />

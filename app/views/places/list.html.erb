@@ -1,5 +1,5 @@
 <div class='route'>
-<b><%= t("places.category.#{params[:kind]}") %></b><%= " #{t('places.near').downcase} #{@place}" if @place.present? %><br />
+<b><%= phosphor_text t("places.category.#{params[:kind]}") %></b><%= " #{t('places.near').downcase} #{@place}" if @place.present? %><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <%# Toilets returns supermarkets and cafes as well as public conveniences, so say why %>
 <%# before the list rather than leave a cafe looking like a mistake. %>

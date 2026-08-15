@@ -1,5 +1,5 @@
 <div class='route'>
-<b><%= @stop['name'] %></b><br />
+<b><%= phosphor_text @stop['name'] %></b><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <%# A stop with no service at any hour is not the same as a quiet couple of hours, and %>
 <%# calling the first one "nothing due" reads as the dashboard being broken. %>

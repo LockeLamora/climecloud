@@ -1,7 +1,7 @@
 
 <div class='news_topics'>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
-<%= @title %><br /><br />
+<%= phosphor_text @title.to_s %><br /><br />
 <%# Nine sections, nine digits, in the reader's own language, so none of them needs %>
 <%# scrolling past on a keypad. Zero stays free for the menu, as everywhere else. %>
 <% Gnews::SECTIONS.each_with_index do |section, index| %>
@@ -21,7 +21,7 @@
 <br /><br />
 <div class="news">
     <% @news_items.each do |item| %>
-            <b><%= item[:item_title] %></b><br />
+            <b><%= phosphor_text item[:item_title] %></b><br />
             <ul>
             <% item[:articles].each do |article| %>
                 <%# The section travels with the link so the way back lands on the list %>

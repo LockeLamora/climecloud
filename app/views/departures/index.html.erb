@@ -1,5 +1,5 @@
 <div class='route'>
-<h2><%= t('departures.title') %></h2>
+<h2><%= phosphor_text t('departures.title') %></h2>
 <% if @stops.present? %>
 <% @stops.each_with_index do |stop, index| %>
 <%= link_to "#{index + 1} #{stop['name']}", departures_stop_path(id: stop['id']), accesskey: (index + 1).to_s %><br />

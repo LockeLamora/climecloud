@@ -1,4 +1,4 @@
-<h1><%= t('directions.title') %></h1>
+<h1><%= phosphor_text t('directions.title') %></h1>
 <%= @error ? "<span class='error'>#{@error}</span>".html_safe : nil %>
 <%= form_with url:"directions_plan", method: :get, local: true do |f| %>
     <%= f.label t('directions.from') %>

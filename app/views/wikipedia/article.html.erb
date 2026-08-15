@@ -1,9 +1,9 @@
 <div class='news'>
-<b><%= @article ? @article[:title] : @title %></b><br />
+<b><%= phosphor_text(@article ? @article[:title] : @title.to_s) %></b><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @article %>
 <br />
-<%= simple_format(@article[:extract]) %>
+<%= phosphor_theme ? phosphor_prose(@article[:extract]) : simple_format(@article[:extract]) %>
 <% unless @full %>
 <%= link_to "1 #{t('wikipedia.read_full')}", wikipedia_article_path(title: @article[:title], full: '1'), accesskey: "1" %><br />
 <% end %>

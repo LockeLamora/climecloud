@@ -13,9 +13,14 @@ class PhosphorController < ApplicationController
   # The raster: one line in three, at the depth the page-wide treatment uses.
   SCAN_OPACITY = 0.32
 
+  # The theme comes in the URL rather than off the cookie, and has to: the response is
+  # cached for a year, and a cache key that does not name the hue serves a reader who
+  # changes style the old style's pixels until the cache expires. The cookie stands in for
+  # a link written before the parameter existed.
   def text
-    theme = Themes.resolve(cookies[:theme])
-    lines = PhosphorGlyph.lines(params[:t])
+    theme = Themes.resolve(params[:s].presence || cookies[:theme])
+    # c=1 keeps the label's own case, for prose; anything else is set in capitals.
+    lines = PhosphorGlyph.lines(params[:t], keep_case: params[:c] == '1')
 
     expires_in 1.year, public: true
     render plain: svg(lines, Themes.palette(theme)), content_type: 'image/svg+xml'

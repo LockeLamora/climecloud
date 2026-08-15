@@ -1,4 +1,4 @@
-<h1><%= t('forecast.hourly_title') %></h1>
+<h1><%= phosphor_text t('forecast.hourly_title') %></h1>
 <%= "#{cookies["city"]}, #{cookies["state"]}"%><br />
 <%=link_to "1 #{t('forecast.switch_to_daily')}", "/forecast/daily", accesskey: "1" %>
 <table>

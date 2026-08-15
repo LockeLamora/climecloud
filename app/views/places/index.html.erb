@@ -1,5 +1,5 @@
 <div class='route'>
-<h2><%= t('places.title') %></h2>
+<h2><%= phosphor_text t('places.title') %></h2>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @place.present? %>
 <%= t('places.near') %> <%= @place %><br />

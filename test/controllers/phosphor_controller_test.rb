@@ -48,6 +48,36 @@ class PhosphorControllerTest < ActionDispatch::IntegrationTest
     assert_match 'public', @response.headers['Cache-Control']
   end
 
+  # The URL names the hue so a cache holding last month's image can never hand a reader who
+  # changed style the old style's pixels: a different hue is a different URL.
+  test 'the hue in the URL outranks the cookie' do
+    get phosphor_url, params: { t: 'anything', s: 'crt-green' },
+                      headers: { 'HTTP_COOKIE' => 'theme=crt-amber' }
+
+    assert_match 'fill="#52FF8F"', @response.body
+    assert_no_match(/FFB43C/, @response.body)
+  end
+
+  test 'headings and one-button forms are glyphed alongside the links' do
+    get root_url, headers: { 'HTTP_COOKIE' => 'theme=crt-green;lat=51.5;city=Testville' }
+
+    assert_match %r{<h2><img src="/phosphor\?s=crt-green&amp;t=Climecloud"}, @response.body
+    assert_match %r{<b><img src="/phosphor\?s=crt-green&amp;t=Dumbphone\+utilities\+dashboard"},
+                 @response.body
+  end
+
+  # Prose keeps its case — a whole article in capitals is a wall — while labels and
+  # headings stay in the capitals the terminals these styles borrow from set theirs in.
+  test 'prose keeps its case where a label is set in capitals' do
+    get phosphor_url, params: { t: 'The cat is a small carnivore.', c: '1', s: 'crt-amber' }
+
+    assert_match 'The cat is a small', @response.body
+
+    get phosphor_url, params: { t: 'The cat is a small carnivore.', s: 'crt-amber' }
+
+    assert_match 'THE CAT IS A SMALL', @response.body
+  end
+
   test 'an unrecognised theme falls back to the plain palette rather than erroring' do
     get phosphor_url, params: { t: 'anything' }, headers: { 'HTTP_COOKIE' => 'theme=bogus' }
 
@@ -58,8 +88,11 @@ class PhosphorControllerTest < ActionDispatch::IntegrationTest
   test 'the menu links carry the glyphs on a phosphor style and plain text elsewhere' do
     get root_url, headers: { 'HTTP_COOKIE' => 'theme=crt-amber;lat=51.5;city=Testville' }
 
-    assert_match %r{<a accesskey="1"[^>]*><img src="/phosphor\?t=1\+Weather\+forecast" [^>]*alt="1 Weather forecast"},
+    # The theme rides in the URL: the image is cached for a year, and a key that does not
+    # name the hue serves a reader who changes style the old style's pixels.
+    assert_match %r{<a accesskey="1"[^>]*><img src="/phosphor\?s=crt-amber&amp;t=1\+Weather\+forecast"},
                  @response.body
+    assert_match(/alt="1 Weather forecast"/, @response.body)
 
     get root_url, headers: { 'HTTP_COOKIE' => 'theme=nokia;lat=51.5;city=Testville' }
 

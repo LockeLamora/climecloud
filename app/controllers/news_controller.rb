@@ -129,7 +129,13 @@ class NewsController < ApplicationController
       # style the reader chose.
       #
       # Nothing here is ours, so none of it is marked safe to render as markup either.
-      { article_title: strip_tags(article).squish, article_url: url }
+      #
+      # The entities go after the tags: the feed double-escapes, so a headline arrives
+      # carrying literal "&nbsp;" as text, and CGI.unescapeHTML knows only the basic five
+      # entities, so the non-breaking spaces are folded by name. The view escapes whatever
+      # needs escaping on the way back out.
+      title = CGI.unescapeHTML(strip_tags(article).gsub(/&nbsp;/i, ' ')).squish
+      { article_title: title, article_url: url }
     end
   end
 

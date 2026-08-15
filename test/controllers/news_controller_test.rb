@@ -53,6 +53,18 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
                     'more links than the sections, the stories and the furniture around them'
   end
 
+  # The feed double-escapes its entities, so a headline arrives carrying literal "&nbsp;"
+  # as text — which then travels into hrefs and, on the phosphor styles, into the glyph
+  # images, shouted as "&NBSP;". Unescaped once after the tags are stripped.
+  test 'a headline carries no leftover entities as text' do
+    stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_no_match(/&amp;nbsp;|nbsp/i, @response.body)
+  end
+
   # One source for each story rather than every outlet that ran it. Eight versions of the
   # same story is not a choice worth scrolling past on a 240px screen, and it was most of
   # the weight of the page.

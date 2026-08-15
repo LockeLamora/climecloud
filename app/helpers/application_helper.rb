@@ -10,18 +10,61 @@ module ApplicationHelper
   # plain link_to and every other style keeps plain text. Block and non-string forms pass
   # through untouched: those wrap markup of their own.
   def link_to(name = nil, options = nil, html_options = nil, &)
-    return super if block_given? || !name.is_a?(String)
-    return super unless PHOSPHOR_THEMES.include?(Themes.resolve(cookies[:theme]))
+    return super if block_given? || !name.is_a?(String) || phosphor_theme.nil?
 
     super(options, html_options) { phosphor_glyph(name) }
   end
 
-  # The alt is the label, so a failed image degrades to the plain text link it replaced.
-  def phosphor_glyph(text)
-    lines = PhosphorGlyph.lines(text)
+  # The one-button forms take the same treatment, or saving a stop and forgetting one sit
+  # unlit between glowing links.
+  def button_to(name = nil, options = nil, html_options = nil, &)
+    return super if block_given? || !name.is_a?(String) || phosphor_theme.nil?
 
-    tag.img(src: phosphor_path(t: text), alt: text,
-            width: PhosphorGlyph.width(lines), height: PhosphorGlyph.height(lines))
+    super(options, html_options) { phosphor_glyph(name) }
+  end
+
+  # For text that is not a link: headings and titles, glyphed in place by the views.
+  # Anything else, or any other theme, comes back as it went in.
+  def phosphor_text(text)
+    phosphor_theme ? phosphor_glyph(text) : text
+  end
+
+  # Body text — an article, a summary — glyphed a paragraph at a time, in its own case.
+  # Each chunk stays under the glyph's text cap so nothing is cut, and a browser on any
+  # other theme gets the original back untouched.
+  def phosphor_prose(html)
+    return html unless phosphor_theme
+
+    chunks = html.to_s.split(%r{</p>|<br\s*/?>|\n+}i)
+                 .filter_map { |part| strip_tags(part).squish.presence }
+                 .flat_map { |text| prose_chunks(text) }
+
+    safe_join(chunks.map { |chunk| tag.p(phosphor_glyph(chunk, keep_case: true)) })
+  end
+
+  # The alt is the label, so a failed image degrades to the plain text link it replaced.
+  # The theme rides in the URL because the response is cached long and per-hue.
+  def phosphor_glyph(text, keep_case: false)
+    lines = PhosphorGlyph.lines(text, keep_case: keep_case)
+
+    tag.img(src: phosphor_path(t: text, s: phosphor_theme, c: keep_case ? '1' : nil),
+            alt: text, width: PhosphorGlyph.width(lines), height: PhosphorGlyph.height(lines))
+  end
+
+  def phosphor_theme
+    theme = Themes.resolve(cookies[:theme])
+    PHOSPHOR_THEMES.include?(theme) ? theme : nil
+  end
+
+  # A paragraph split at word boundaries into pieces the glyph can take whole.
+  def prose_chunks(text)
+    text.split.each_with_object([]) do |word, chunks|
+      if chunks.any? && "#{chunks.last} #{word}".length <= PhosphorGlyph::MAX_TEXT
+        chunks[-1] = "#{chunks.last} #{word}"
+      else
+        chunks << word
+      end
+    end
   end
   # The chosen palette, as a style block for the document head. See Themes::BASE_PALETTE
   # for why the palette is resolved here rather than left to var() in the stylesheet.

@@ -1,5 +1,5 @@
-<h2>Climecloud</h1><br />
-<b><%= t('menu.subtitle') %></b><br />
+<h2><%= phosphor_text 'Climecloud' %></h2><br />
+<b><%= phosphor_text t('menu.subtitle') %></b><br />
 <% if cookies[:city].present? %>
 <%= [cookies[:city], cookies[:state].presence].compact.join(', ') %><br />
 <% end %>

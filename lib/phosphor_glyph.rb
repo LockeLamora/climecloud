@@ -25,8 +25,12 @@ module PhosphorGlyph
   # Words wrapped to the column, the way the browser would wrap the text this replaces.
   # A word longer than a line is split rather than overflowing: an image wider than the
   # screen costs the handset its single-column reflow.
-  def self.lines(text)
-    words = text.to_s[0, MAX_TEXT].upcase.split
+  #
+  # Labels and headings are set in capitals, the way the terminals these styles borrow from
+  # set theirs; prose keeps its case, because a whole article in capitals is a wall.
+  def self.lines(text, keep_case: false)
+    text = text.to_s[0, MAX_TEXT]
+    words = (keep_case ? text : text.upcase).split
     words = [''] if words.empty?
 
     words.each_with_object([]) do |word, lines|
