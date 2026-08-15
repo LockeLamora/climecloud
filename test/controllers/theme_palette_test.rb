@@ -38,16 +38,40 @@ class ThemePaletteTest < ActionDispatch::IntegrationTest
   test 'the paper and the ink are resolved on the body itself' do
     get settings_url, headers: { 'HTTP_COOKIE' => 'theme=crt-amber' }
 
-    assert_match(/body\{[^}]*;background:#0C0803;color:#CC8A20\}/, style_block)
+    assert_match(/body\{[^}]*;background:#0C0803;color:#E09B2B\}/, style_block)
   end
 
   test 'every offered theme states a full palette' do
     Themes::NAMES.each do |name|
       palette = Themes.palette(name)
 
-      assert_equal Themes::BASE_PALETTE.keys.sort, palette.keys.sort,
-                   "#{name} is missing a colour"
+      assert_empty Themes::BASE_PALETTE.keys - palette.keys, "#{name} is missing a colour"
       assert_empty palette.select { |_, value| value.blank? }, "#{name} leaves a colour blank"
+    end
+  end
+
+  # A style whose brightness is shared between its ink and a text-shadow has to hand the
+  # handset a colour that stands on its own, since no shadow will be drawn behind it. The
+  # dimmer value goes out only inside @supports, which the handset skips whole.
+  test 'a style with a glow gives the brighter ink to a browser that cannot draw one' do
+    Themes::NAMES.each do |name|
+      palette = Themes.palette(name)
+      glow = palette[:glow_ink]
+
+      get settings_url, headers: { 'HTTP_COOKIE' => "theme=#{name}" }
+
+      supports = style_block[/@supports[^{]*\{(.*)\}\s*\z/m, 1]
+
+      if glow.blank?
+        assert_nil supports, "#{name} has no glow, so it needs no @supports block"
+        next
+      end
+
+      assert_includes supports.to_s, "color:#{glow}", "#{name} does not hand back its dim ink"
+      # The link is the only thing marking a link on these styles, so the two must differ
+      # whichever ink is in force.
+      assert_not_equal palette[:link], palette[:ink], "#{name}: the ink matches the link"
+      assert_not_equal palette[:link], glow, "#{name}: the dim ink matches the link"
     end
   end
 

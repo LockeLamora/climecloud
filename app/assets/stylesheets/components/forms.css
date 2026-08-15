@@ -6,6 +6,18 @@
     width: 200px;
 }
 
+/* A select left to size itself takes the width of its longest option, and the longest here
+   is "Plain (black on white)" at 22 characters, which is wider than a 240px screen. A page
+   that overflows costs the handset its single-column reflow and drops it into a cursor,
+   which is the one interaction this app has no keys for. Held to the column instead, and
+   the option text truncates.
+
+   Fixed rather than a percentage: the form has no sized container to be a percentage of,
+   and 200px is what .big_text_field above already sets. */
+select {
+    width: 200px;
+}
+
 /* Saving and forgetting are POSTs, so they arrive as one-button forms. The button is
    stripped back to look like the text links around it: on a 220px column a styled button
    costs a line of its own. It stays a button element, so the keypad reaches it in turn. */

@@ -142,6 +142,30 @@ class ThemeTest < ApplicationSystemTestCase
     end
   end
 
+  # Turning a link into a row and suppressing the break that used to separate it are one
+  # change, not two: a browser that applies the second without the first runs the whole menu
+  # into a single paragraph. :has() is what the handset's browser does not support, so it
+  # has to appear in the selector of both or neither.
+  test 'the rows and the breaks they replace are keyed off the same selector' do
+    rules = page.evaluate_script(<<~JS)
+      (() => {
+        const out = [];
+        for (const sheet of document.styleSheets) {
+          for (const rule of sheet.cssRules) {
+            if (rule.selectorText && /\\bbr\\b/.test(rule.selectorText)) out.push(rule.cssText);
+          }
+        }
+        return out;
+      })()
+    JS
+
+    assert_not_empty rules, 'no rule targets a break at all'
+    rules.each do |rule|
+      assert_includes rule, ':has(',
+                      "this hides a break in browsers that cannot make the link a row: #{rule}"
+    end
+  end
+
   # The views put a line break after any link meant to sit on its own line — one after a
   # stop, two on the main menu — so inline links have a thumb's worth of room. Every style
   # but the plain one turns those links into rows, and a row plus its old break would stack

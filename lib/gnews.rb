@@ -44,17 +44,13 @@ class Gnews
   end
 
   def get_articles_from_api(search_query = nil)
-    uri = build_news_uri(search_query)
-    @res = Net::HTTP.get_response(uri)
-    @res = Net::HTTP.get_response(URI.parse(@res['location'])) if @res.code.start_with?('3')
-    body = @res.body if @res.is_a?(Net::HTTPSuccess)
-    return nil, nil if body.nil?
+    feed = fetch_feed(build_news_uri(search_query))
+    return nil, nil if feed.nil?
 
-    body = JSON.parse(Hash.from_xml(body).to_json)
     # nil is reserved for a feed we could not fetch, so an empty feed returns a list.
-    articles = body.dig('rss', 'channel', 'item') || []
+    articles = feed.dig('rss', 'channel', 'item') || []
     title = if !@section.nil? && @section.upcase != 'HEADLINES'
-              body.dig('rss', 'channel', 'title')
+              feed.dig('rss', 'channel', 'title')
             else
               'Headlines - Latest - Google News'
             end
@@ -62,6 +58,37 @@ class Gnews
   end
 
   private
+
+  # Google counts its allowance against the calling IP, which every reader on this host
+  # shares, so a 429 here is nothing the reader in front of it did. A relay fetches the
+  # feed once more from a different address.
+  #
+  # Only the feed. Opening an article takes a scrape of Google's own page for two data
+  # attributes and then a POST to resolve the link, and none of the relays carry a POST.
+  def fetch_feed(uri)
+    res = Net::HTTP.get_response(uri)
+    res = Net::HTTP.get_response(URI.parse(res['location'])) if res.code.start_with?('3')
+    return feed_in(res.body) if res.is_a?(Net::HTTPSuccess)
+
+    Rails.logger.warn("News feed refused by google - #{res.code}")
+    return nil unless res.code == Relay::RATE_LIMITED
+
+    Relay.fetch(uri, subject: 'News feed') { |body| feed_in(body) }
+  end
+
+  # A relay reports its own success rather than Google's, and the first of them rewrites
+  # what it fetches into prose, so a 200 proves nothing on its own: the body has to parse
+  # as the feed before it is worth anything.
+  def feed_in(body)
+    feed = JSON.parse(Hash.from_xml(body).to_json)
+    return nil unless feed.is_a?(Hash) && feed.dig('rss', 'channel').present?
+
+    feed
+  rescue StandardError
+    # Hash.from_xml raises out of REXML for anything that is not XML at all, which is
+    # exactly what a relay serving its own error page returns.
+    nil
+  end
 
   def resolve_location(country_code = 'us')
     supported = %w[gb us in fr au ru]

@@ -321,10 +321,12 @@ body:not([data-theme="unstyled"]) img {
  * Which links? The ones the views already put on their own line, which is what a following
  * <br> means. Those breaks exist so inline links have a thumb's worth of room between them
  * — one after a stop, two on the main menu — and a block link occupies its own line
- * already, so they are suppressed here or they stack into a blank line between every row.
+ * already, so they are suppressed below or they stack into a blank line between every row.
  *
- * :has() is unsupported on the handset's browser, which drops this rule and leaves the
- * inline links and their breaks exactly as the plain style has them.
+ * Both halves are keyed off :has(), which the handset's browser does not support: it drops
+ * every rule whose selector names it, so the rows and the suppressed breaks stand or fall
+ * together. Suppressing a break in a browser that cannot make the link a row would run the
+ * whole menu into one paragraph.
  */
 body:not([data-theme="unstyled"]) a:has(+ br) {
   display: block;
@@ -343,8 +345,8 @@ body:not([data-theme="unstyled"]) form.inline-action button {
   margin-bottom: 3px;
 }
 
-body:not([data-theme="unstyled"]) a + br,
-body:not([data-theme="unstyled"]) a + br + br {
+body:not([data-theme="unstyled"]) a:has(+ br) + br,
+body:not([data-theme="unstyled"]) a:has(+ br) + br + br {
   display: none;
 }
 

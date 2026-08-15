@@ -14,9 +14,10 @@ module ApplicationHelper
   # than a colour: the sweep in components/press.css composes two of them into gradients.
   def theme_style_tag(theme)
     palette = Themes.palette(theme)
-    tokens = palette.map { |token, value| "--#{token.to_s.tr('_', '-')}:#{value}" }.join(';')
+    tokens = palette.except(:glow_ink)
+                    .map { |token, value| "--#{token.to_s.tr('_', '-')}:#{value}" }.join(';')
 
-    content_tag :style, <<~CSS.html_safe
+    css = <<~CSS
       body{#{tokens};background:#{palette[:paper]};color:#{palette[:ink]}}
       a,a:visited,a.change-settings,form.inline-action button{color:#{palette[:link]}}
       .error{color:#{palette[:error]}}
@@ -25,6 +26,10 @@ module ApplicationHelper
       th{background-color:#{palette[:head_bg]};color:#{palette[:head_ink]}}
       th,td{border-bottom:1px solid #{palette[:rule]}}
     CSS
+
+    # Marked safe once the block is whole. Appending to an html_safe string escapes what is
+    # appended, which turns the quotes in an attribute selector into entities.
+    content_tag :style, (css + glow_ink_rule(palette)).html_safe
   end
 
   # The gem's own short name is the long official form for some countries ("United
@@ -35,5 +40,20 @@ module ApplicationHelper
     return code.to_s.upcase if country.nil?
 
     country.translations[I18n.locale.to_s].presence || country.iso_short_name
+  end
+
+  private
+
+  # Hands the dimmer body text back to any browser that will draw the bloom behind it, the
+  # brightness of the two being shared between the colour and the shadow. Gated on
+  # @supports, which the handset's browser does not implement: an unknown at-rule takes its
+  # whole block with it, so the ink above stands there.
+  def glow_ink_rule(palette)
+    glow = palette[:glow_ink]
+    return '' if glow.blank?
+
+    "@supports (text-shadow:0 0 1px #000){" \
+      "body{--ink:#{glow};color:#{glow}}" \
+      "input[type=\"text\"],input[type=\"submit\"],select{color:#{glow}}}\n"
   end
 end

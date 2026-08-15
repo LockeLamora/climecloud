@@ -62,7 +62,7 @@ Search Wikipedia and read the summary of an article, or the whole thing, as plai
 
 The look is chosen in settings and remembered. Most of the styles borrow from a screen with a character of its own — a phosphor terminal, a departure board, a Game Boy — and they work on the handset as well as on a modern phone.
 
-* Plain (black on white) — the default
+* (No theme) — black on white, the default
 * Amber phosphor
 * Barbiephone
 * Barbiephone dark

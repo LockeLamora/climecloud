@@ -61,6 +61,16 @@ module Themes
   #   head_bg    the filled block behind a table column header
   #   head_ink   text on that block
   #   error      a line that says something went wrong
+  #
+  # One optional colour goes with them:
+  #
+  #   glow_ink   body text where the bloom behind it will be drawn
+  #
+  # The phosphor styles set their body text dim and let a text-shadow carry the brightness,
+  # which reads as an emitting screen. Opera Mini draws no shadow, so the dim value arrives
+  # on its own and the screen looks washed out. Where a style declares glow_ink, ink is the
+  # brightness the text needs unaided and glow_ink is the dimmer value a browser that will
+  # draw the bloom uses instead.
   BASE_PALETTE = {
     paper: '#ffffff',
     ink: '#111111',
@@ -81,17 +91,25 @@ module Themes
   PALETTES = {
     'unstyled' => {},
 
-    'crt-green' => { paper: '#060D07', ink: '#35C96C', link: '#52FF8F', press_bg: '#52FF8F',
-                     press_ink: '#041006', quiet: '#1E7A42', rule: '#14411F',
-                     emphasis: '#52FF8F', head_bg: '#52FF8F', head_ink: '#041006' },
+    # The three emissive styles carry one hue at two intensities: body text dim, anything
+    # pressable at full brightness. ink is set part of the way towards link, far enough to
+    # hold up without the bloom and short enough that the link is still the brighter of the
+    # two — which is the only thing marking a link on these styles, since they drop the
+    # underline.
+    'crt-green' => { paper: '#060D07', ink: '#41DF7A', glow_ink: '#35C96C', link: '#52FF8F',
+                     press_bg: '#52FF8F', press_ink: '#041006', quiet: '#1E7A42',
+                     rule: '#14411F', emphasis: '#52FF8F', head_bg: '#52FF8F',
+                     head_ink: '#041006' },
 
-    'crt-amber' => { paper: '#0C0803', ink: '#CC8A20', link: '#FFB43C', press_bg: '#FFB43C',
-                     press_ink: '#140C02', quiet: '#8A5E18', rule: '#3D2A0C',
-                     emphasis: '#FFB43C', head_bg: '#FFB43C', head_ink: '#140C02' },
+    'crt-amber' => { paper: '#0C0803', ink: '#E09B2B', glow_ink: '#CC8A20', link: '#FFB43C',
+                     press_bg: '#FFB43C', press_ink: '#140C02', quiet: '#8A5E18',
+                     rule: '#3D2A0C', emphasis: '#FFB43C', head_bg: '#FFB43C',
+                     head_ink: '#140C02' },
 
-    'plasma' => { paper: '#0A0402', ink: '#D4550F', link: '#FF6B18', press_bg: '#FF6B18',
-                  press_ink: '#0A0402', quiet: '#7E3309', rule: '#3A1607',
-                  emphasis: '#FF6B18', head_bg: '#FF6B18', head_ink: '#0A0402' },
+    'plasma' => { paper: '#0A0402', ink: '#E55E13', glow_ink: '#D4550F', link: '#FF6B18',
+                  press_bg: '#FF6B18', press_ink: '#0A0402', quiet: '#7E3309',
+                  rule: '#3A1607', emphasis: '#FF6B18', head_bg: '#FF6B18',
+                  head_ink: '#0A0402' },
 
     'teletext' => { paper: '#000000', ink: '#FFFFFF', link: '#00FFFF', press_bg: '#00FFFF',
                     press_ink: '#000000', quiet: '#FF00FF', rule: '#0000AA',

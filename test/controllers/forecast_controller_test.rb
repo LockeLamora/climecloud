@@ -164,7 +164,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'weather service is busy', @response.body
-    assert_operator elapsed, :<, Weather::PROXY_BUDGET_SECONDS + Weather::PROXY_TIMEOUT_SECONDS
+    assert_operator elapsed, :<, Relay::BUDGET_SECONDS + Relay::TIMEOUT_SECONDS
   end
 
   test 'sends a visitor with no saved location back to settings' do

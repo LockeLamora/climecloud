@@ -88,7 +88,7 @@ fr:
     display: "Display"
     theme: "Screen style"
     themes:
-      unstyled: "Plain (black on white)"
+      unstyled: "(No theme)"
       crt_green: "Green phosphor"
       crt_amber: "Amber phosphor"
       plasma: "Orange plasma"

@@ -14,14 +14,23 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   # Google's rate limit is shared by everyone on this host's outbound address, so a
   # crawler that has never been through settings must not be able to spend it. The
   # settings page is where a reader without a location is sent instead.
+  #
+  # The redirect has to come before the request, not after it: a crawler following a link
+  # to an article costs the allowance whether or not it is shown the article. That is why
+  # the check is a before_action rather than a guard inside each one.
   test 'sends anyone without a saved location to settings rather than to Google' do
     %w[/news /news_search /news_article].each do |path|
-      get path, headers: { 'COOKIE' => 'country_code=gb' }
+      get path, headers: { 'COOKIE' => 'country_code=gb' },
+                params: { article: 'https://news.google.com/rss/articles/CBMinQFodHRwcw?oc=5' }
 
       assert_redirected_to '/settings', "#{path} served a reader with no saved location"
     end
 
     assert_not_requested :get, /news\.google\.com/
+    # Resolving an article link is a POST to Google's batchexecute endpoint, so the GET
+    # above does not cover it on its own.
+    assert_not_requested :post, /news\.google\.com/
+    assert_not_requested :get, /r\.jina\.ai/
   end
 
   # Anchors as direct children of a <ul> are invalid, and left every headline in one
@@ -48,6 +57,69 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     get news_url, headers: { 'COOKIE' => COOKIES }
     assert_response :success
     assert_match 'Could not fetch the news feed', @response.body
+  end
+
+  # Google counts its allowance against this host's outbound address, so a 429 is nothing
+  # the reader did and the feed is worth one more try from somewhere else.
+  test 'falls back to a relay when google refuses the feed on a rate limit' do
+    stub_request(:get, /news\.google\.com/).to_return(status: 429, body: '')
+    stub_request(:get, /r\.jina\.ai/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Headlines - Latest', @response.body
+    assert_no_match(/Could not fetch the news feed/, @response.body)
+    assert_requested :get, %r{r\.jina\.ai/https://news\.google\.com},
+                     headers: { 'x-return-format' => 'text' }
+  end
+
+  # A relay answers for itself, not for Google. The first of them rewrites what it fetches
+  # into prose for a language model, which comes back 200 and is not a feed at all.
+  test 'moves to the next relay when one returns something that is not the feed' do
+    stub_request(:get, /news\.google\.com/).to_return(status: 429, body: '')
+    stub_request(:get, /r\.jina\.ai/).to_return(body: 'Here is a summary of the top stories.')
+    stub_request(:get, /allorigins\.win/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Headlines - Latest', @response.body
+  end
+
+  test 'does not relay a refusal that is not a rate limit' do
+    stub_request(:get, /news\.google\.com/).to_return(status: 500, body: '')
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Could not fetch the news feed', @response.body
+    assert_not_requested :get, /r\.jina\.ai/
+    assert_not_requested :get, /allorigins\.win/
+    assert_not_requested :get, /codetabs\.com/
+  end
+
+  test 'says the feed is unavailable when every relay fails too' do
+    stub_request(:get, /news\.google\.com/).to_return(status: 429, body: '')
+    stub_request(:get, /r\.jina\.ai/).to_return(status: 503, body: '')
+    stub_request(:get, /allorigins\.win/).to_return(status: 503, body: '')
+    stub_request(:get, /codetabs\.com/).to_return(status: 503, body: '')
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Could not fetch the news feed', @response.body
+  end
+
+  # A search reaches the same feed by a different path, so it gets the same second chance.
+  test 'relays a search that google refuses on a rate limit' do
+    stub_request(:get, /news\.google\.com/).to_return(status: 429, body: '')
+    stub_request(:get, /r\.jina\.ai/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_search_url, params: { search_query: 'budget' }, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_requested :get, %r{r\.jina\.ai/https://news\.google\.com/rss/search}
   end
 
   test 'should render a news article successfully' do
