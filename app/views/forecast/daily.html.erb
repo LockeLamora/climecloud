@@ -1,14 +1,17 @@
 <h1><%= phosphor_text t('forecast.daily_title') %></h1>
-<%= "#{cookies["city"]}, #{cookies["state"]}"%><br />
+<%= phosphor_text "#{cookies["city"]}, #{cookies["state"]}" %><br />
 <%=link_to "1 #{t('forecast.switch_to_hourly')}", "/forecast/hourly", accesskey: "1" %>
 
 <%# On the phosphor styles the table travels as one glyph image, each row a monospace
     line; see the hourly view. %>
 <% if phosphor_theme %>
-<% rows = ["DATE #{@units[:temp]} WIND RAIN"] + @times.each_index.map do |i|
+<%# The wind unit lives in the header, as on the hourly view: repeated on every row it
+    pushed the rain past the 23 characters a glyph line holds and wrapped it onto a line
+    of its own. %>
+<% rows = ["DATE #{@units[:temp]} #{@units[:wind].upcase} RAIN"] + @times.each_index.map do |i|
      row = "#{@times[i].split('-', 2).last} #{@temps_min[i].round}-#{@temps_max[i].round}° " \
-           "#{@wind_min[i].round}-#{@wind_max[i].round}#{@units[:wind]} #{@rain_prob[i]}%"
-     row += " SNOW #{@snow[i]}#{@units[:snowfall]}" if @snow[i].positive?
+           "#{@wind_min[i].round}-#{@wind_max[i].round} #{forecast_rain(@rain[i], @rain_prob[i])}"
+     row += " SNOW #{@snow[i].round}#{@units[:snowfall]}" if @snow[i].positive?
      row
    end %>
 <%= phosphor_screen(rows) %>

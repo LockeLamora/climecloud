@@ -1,14 +1,18 @@
 <h1><%= phosphor_text t('forecast.hourly_title') %></h1>
-<%= "#{cookies["city"]}, #{cookies["state"]}"%><br />
+<%= phosphor_text "#{cookies["city"]}, #{cookies["state"]}" %><br />
 <%=link_to "1 #{t('forecast.switch_to_daily')}", "/forecast/daily", accesskey: "1" %>
 <%# On the phosphor styles the table travels as a few glyph images, each row one monospace
     line — a table of cells is both unlit and, at four columns on a 240px screen, wraps its
     own brackets onto lines of their own. %>
 <% if phosphor_theme %>
-<% rows = ["TIME #{@units[:temp]}(FEEL) WIND RAIN"] + @times.each_index.map do |i|
+<%# The wind unit lives in the header — repeating it on every row pushed the rain past the
+    23 characters a glyph line holds and wrapped it onto a line of its own. Rain shows the
+    chance while it is dry and the amount once rain is coming, each being the number that
+    matters in that case. %>
+<% rows = ["TIME #{@units[:temp]}(FEEL) #{@units[:wind].upcase} RAIN"] + @times.each_index.map do |i|
      row = "#{@times[i].split('T')[1]} #{@temps[i].round}°(#{@feels_like[i].round}) " \
-           "#{@wind[i].round}#{@units[:wind]} #{@rain_prob[i]}%"
-     row += " SNOW #{@snow[i]}#{@units[:snowfall]}" if @snow[i].positive?
+           "#{@wind[i].round} #{forecast_rain(@rain[i], @rain_prob[i])}"
+     row += " SNOW #{@snow[i].round}#{@units[:snowfall]}" if @snow[i].positive?
      row
    end %>
 <%= phosphor_screen(rows) %>

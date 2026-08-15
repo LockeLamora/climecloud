@@ -101,6 +101,28 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Stop 1', @response.body
   end
 
+  # On the phosphor styles the timetable travels as glyph images, each departure one
+  # monospace line, and the attribution goes as the quiet glyph — the dim tone at the small
+  # size — so nothing on the page sits unlit beside the glowing rows.
+  test 'a phosphor timetable is drawn as glyph rows with a quiet credit' do
+    stub_departures('stops' => [{
+                      'stop_name' => 'Northgate',
+                      'departures' => [departure('14:09:00', route: '22', pattern: 41,
+                                                             route_id: 'r-test-22', trip_id: 900,
+                                                             trip_headsign: 'City Centre')]
+                    }])
+
+    get '/departures_stop?id=s-test-northgate',
+        headers: { 'HTTP_COOKIE' => "#{COOKIES};theme=crt-amber;departures_saved=#{SAVED}" }
+
+    assert_response :success
+    rows = CGI.unescape(@response.body[%r{/phosphor\?[^"]*14%3A09[^"]*}].to_s.gsub('&amp;', '&'))
+
+    assert_match(/14:09.*22.*City Centre/m, rows, 'the departure is not in a glyph row')
+    assert_match(%r{/phosphor\?q=1[^"]*t=[^"]*[Tt]ransitland}, @response.body,
+                 'the credit is not the quiet glyph')
+  end
+
   test 'names the destination from the end of the trip when the feed gives no headsign' do
     stub_departures('stops' => [{
                       'stop_name' => 'Northgate',

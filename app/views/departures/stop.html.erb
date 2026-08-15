@@ -4,22 +4,33 @@
 <%# A stop with no service at any hour is not the same as a quiet couple of hours, and %>
 <%# calling the first one "nothing due" reads as the dashboard being broken. %>
 <% if @departures.empty? && @error.nil? %>
-<%= @untimetabled ? t('departures.no_timetable') : t('departures.nothing_due') %><br />
+<%= phosphor_text(@untimetabled ? t('departures.no_timetable') : t('departures.nothing_due')) %><br />
 <% end %>
 <%# Time, service, destination, on one line. A stop named after a railway station is %>
 <%# often a bus stop outside one, so the kind of vehicle is worth the words. It shares %>
 <%# the brackets with the live marker to keep each departure to a single line. %>
-<% @departures.each do |departure| %>
-<% tags = [departure[:mode] ? t("departures.mode.#{departure[:mode]}") : nil,
-           departure[:live] ? t('departures.live') : nil].compact %>
+<% rows = @departures.map do |departure|
+     tags = [departure[:mode] ? t("departures.mode.#{departure[:mode]}") : nil,
+             departure[:live] ? t('departures.live') : nil].compact
+     row = [departure[:time], departure[:route].presence,
+            departure[:towards].presence || t('departures.unknown_destination')].compact.join(' ')
+     tags.any? ? "#{row} (#{tags.join(', ')})" : row
+   end %>
+<% if phosphor_theme %>
+<%= phosphor_screen(rows) %>
+<% else %>
+<% @departures.each_with_index do |departure, i| %>
 <%= departure[:time] %>
 <% if departure[:route].present? %><b><%= departure[:route] %></b><% end %>
 <%= departure[:towards].presence || t('departures.unknown_destination') %>
+<% tags = [departure[:mode] ? t("departures.mode.#{departure[:mode]}") : nil,
+           departure[:live] ? t('departures.live') : nil].compact %>
 <% if tags.any? %>(<%= tags.join(', ') %>)<% end %>
 <br />
 <% end %>
+<% end %>
 <% if @departures.any? %>
-<br /><%= t('departures.times_note') %><br />
+<br /><%= phosphor_text t('departures.times_note') %><br />
 <% end %>
 <br />
 <%= link_to "1 #{t('departures.refresh')}", departures_stop_path(id: @stop["id"]), accesskey: "1" %><br />

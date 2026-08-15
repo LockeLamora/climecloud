@@ -1,6 +1,6 @@
 <div class='route'>
-<%= t('settings.other_places') %><br />
-<b><%= params[:postcode] %></b>
+<%= phosphor_text t('settings.other_places') %><br />
+<b><%= phosphor_text params[:postcode].to_s %></b>
 <br /><br />
 <ol>
 <% @candidates.each do |candidate| %>

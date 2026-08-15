@@ -1,5 +1,5 @@
 <div class='news'>
-<h2><%= t('wikipedia.title') %></h2>
+<h2><%= phosphor_text t('wikipedia.title') %></h2>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <%= form_with url: "wikipedia", method: :get, local: true do |f| %>
     <%= f.label t('wikipedia.search_label') %>
@@ -14,12 +14,12 @@
     <li><%= link_to "#{index + 1} #{result[:title]}",
                     wikipedia_article_path(title: result[:title]),
                     accesskey: (index + 1).to_s %><br />
-    <%= result[:snippet] %></li>
+    <%= phosphor_theme ? phosphor_glyph(result[:snippet].to_s, keep_case: true) : result[:snippet] %></li>
 <% end %>
 </ol>
 <% elsif @query.present? && @error.nil? %>
 <br />
-<%= t('wikipedia.nothing_found', query: @query) %><br />
+<%= phosphor_text t('wikipedia.nothing_found', query: @query) %><br />
 <% end %>
 <br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

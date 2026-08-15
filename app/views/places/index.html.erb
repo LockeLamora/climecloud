@@ -2,7 +2,7 @@
 <h2><%= phosphor_text t('places.title') %></h2>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @place.present? %>
-<%= t('places.near') %> <%= @place %><br />
+<%= phosphor_text "#{t('places.near')} #{@place}" %><br />
 <% end %>
 <br />
 <% @kinds.each_with_index do |kind, index| %>

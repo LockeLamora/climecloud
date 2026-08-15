@@ -19,18 +19,23 @@ class PhosphorController < ApplicationController
   # a link written before the parameter existed.
   def text
     theme = Themes.resolve(params[:s].presence || cookies[:theme])
-    # c=1 keeps the label's own case, for prose; anything else is set in capitals.
-    lines = PhosphorGlyph.lines(params[:t], keep_case: params[:c] == '1')
+    # c=1 keeps the label's own case, for prose; q=1 is the quiet size and dim tone, for
+    # the attribution lines; anything else is a label, set in capitals.
+    quiet = params[:q] == '1'
+    lines = PhosphorGlyph.lines(params[:t], keep_case: params[:c] == '1', quiet: quiet)
 
     expires_in 1.year, public: true
-    render plain: svg(lines, Themes.palette(theme)), content_type: 'image/svg+xml'
+    render plain: svg(lines, Themes.palette(theme), quiet: quiet), content_type: 'image/svg+xml'
   end
 
   private
 
-  def svg(lines, palette)
-    width = PhosphorGlyph.width(lines)
-    height = PhosphorGlyph.height(lines)
+  def svg(lines, palette, quiet: false)
+    width = PhosphorGlyph.width(lines, quiet: quiet)
+    height = PhosphorGlyph.height(lines, quiet: quiet)
+    ink = quiet ? palette[:quiet] : palette[:ink]
+    font = quiet ? PhosphorGlyph::QUIET_FONT_SIZE : PhosphorGlyph::FONT_SIZE
+    line_height = quiet ? PhosphorGlyph::QUIET_LINE_HEIGHT : PhosphorGlyph::LINE_HEIGHT
 
     <<~SVG
       <svg xmlns="http://www.w3.org/2000/svg" width="#{width}" height="#{height}" viewBox="0 0 #{width} #{height}">
@@ -44,8 +49,8 @@ class PhosphorController < ApplicationController
       </pattern>
       </defs>
       <rect width="100%" height="100%" fill="#{palette[:paper]}"/>
-      <g font-family="monospace" font-size="#{PhosphorGlyph::FONT_SIZE}" fill="#{palette[:ink]}" filter="url(#g)">
-      #{text_lines(lines)}
+      <g font-family="monospace" font-size="#{font}" fill="#{ink}" filter="url(#g)">
+      #{text_lines(lines, line_height)}
       </g>
       <rect width="100%" height="100%" fill="url(#s)"/>
       </svg>
@@ -53,9 +58,9 @@ class PhosphorController < ApplicationController
   end
 
   # The text is whatever the page put in a link, so it is escaped, not trusted.
-  def text_lines(lines)
+  def text_lines(lines, line_height)
     lines.map.with_index do |line, index|
-      y = PhosphorGlyph::PADDING + ((index + 1) * PhosphorGlyph::LINE_HEIGHT) - 5
+      y = PhosphorGlyph::PADDING + ((index + 1) * line_height) - 5
       %(<text x="#{PhosphorGlyph::PADDING}" y="#{y}">#{ERB::Util.html_escape(line)}</text>)
     end.join("\n")
   end

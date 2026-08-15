@@ -31,10 +31,11 @@ module ApplicationHelper
 
   # Every glyph on a page is a request Opera's proxy makes and an SVG it rasterises before
   # anything ships, and a page that takes too long to assemble is reported to the reader as
-  # one that could not be opened. The main menu's seven arrive comfortably; an unbounded
-  # article's fifty do not, so past this many the rest of the story runs as plain text —
-  # still readable, still the right colours — rather than costing the whole page.
-  PROSE_GLYPHS = 12
+  # one that could not be opened. At nine hundred characters a chunk, sixteen
+  # of them cover an article of fourteen kilobytes — longer than almost anything the
+  # scraper returns — so the plain-text tail past the budget is a backstop for the
+  # pathological case, not something a reader meets.
+  PROSE_GLYPHS = 16
 
   # Body text — an article, a summary — glyphed a paragraph at a time, in its own case.
   # Each chunk stays under the glyph's text cap so nothing is cut, and a browser on any
@@ -54,11 +55,23 @@ module ApplicationHelper
 
   # The alt is the label, so a failed image degrades to the plain text link it replaced.
   # The theme rides in the URL because the response is cached long and per-hue.
-  def phosphor_glyph(text, keep_case: false)
-    lines = PhosphorGlyph.lines(text, keep_case: keep_case)
+  def phosphor_glyph(text, keep_case: false, quiet: false)
+    lines = PhosphorGlyph.lines(text, keep_case: keep_case, quiet: quiet)
 
-    tag.img(src: phosphor_path(t: text, s: phosphor_theme, c: keep_case ? '1' : nil),
-            alt: text, width: PhosphorGlyph.width(lines), height: PhosphorGlyph.height(lines))
+    tag.img(src: phosphor_path(t: text, s: phosphor_theme,
+                               c: keep_case ? '1' : nil, q: quiet ? '1' : nil),
+            alt: text,
+            width: PhosphorGlyph.width(lines, quiet: quiet),
+            height: PhosphorGlyph.height(lines, quiet: quiet))
+  end
+
+  # An attribution line, lit like everything else but at the quiet size and in the dim
+  # tone, as .credit keeps it elsewhere. The block form of link_to passes through the
+  # phosphor override untouched, which is what lets this choose its own glyph.
+  def credit_link(text, url)
+    return link_to(text, url, target: '_blank') unless phosphor_theme
+
+    link_to(url, target: '_blank') { phosphor_glyph(text, quiet: true) }
   end
 
   # A table drawn as a terminal would draw it: each row one line, columns aligned by the

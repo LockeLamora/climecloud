@@ -4,10 +4,10 @@
 <%# Toilets returns supermarkets and cafes as well as public conveniences, so say why %>
 <%# before the list rather than leave a cafe looking like a mistake. %>
 <% if params[:kind] == 'toilets' && @places.any? %>
-<%= t('places.toilets_hint') %><br />
+<%= phosphor_text t('places.toilets_hint') %><br />
 <% end %>
 <% if @places.empty? && @error.nil? %>
-<%= t('places.nothing_found', radius: @radius / 1000) %><br />
+<%= phosphor_text t('places.nothing_found', radius: @radius / 1000) %><br />
 <% end %>
 <ol>
 <% @places.each_with_index do |place, index| %>
@@ -17,9 +17,15 @@
                     accesskey: index < 8 ? (index + 1).to_s : nil %><br />
     <%# Type and charge for a car park, so the choice is made here rather than after %>
     <%# walking to it. Anything the data does not say is left unsaid. %>
-    <%= (([place[:kind], place_distance(place[:distance])].compact) + place[:notes].to_a).join(', ') %>
+    <% detail = (([place[:kind], place_distance(place[:distance])].compact) + place[:notes].to_a).join(', ') %>
+    <% if phosphor_theme %>
+    <% detail += " #{t('places.hours')}: #{place[:hours]}" if place[:hours].present? %>
+    <%= phosphor_glyph(detail, keep_case: true) %>
+    <% else %>
+    <%= detail %>
     <% if place[:hours].present? %>
     <br /><%= t('places.hours') %>: <%= opening_hours(place[:hours]) %>
+    <% end %>
     <% end %></li>
 <% end %>
 </ol>
