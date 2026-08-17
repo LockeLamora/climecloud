@@ -55,40 +55,44 @@ class NewsController < ApplicationController
   private
 
   # Sources whose pages cannot be shown here: they refuse the request, want a
-  # subscription, or rate limit us. Matched against the source name as Google prints it in
-  # the feed, so each name has to be distinctive enough not to catch a headline by
-  # accident — "People.com" rather than "People" for that reason.
+  # subscription, or rate limit us. Matched against the entry as the feed prints it, and
+  # the only place the outlet appears there is its display name — every link is a
+  # Google-encoded URL, so a publisher's own domain never matches unless the feed happens
+  # to use it as the name. Each name has to be distinctive enough not to catch a headline
+  # by accident — "People.com" rather than "People" — and a name that headlines do quote
+  # is pinned with the "</font>" that closes the source's own tag.
   #
   # Grouped by the status the publisher returns. Blocking one costs a headline; leaving it
   # in costs a reader the trip to a page that will not open.
   BLOCKED_SOURCES = [
-    'Financial Times', 'Bloomberg', 'Times of Israel', 'Times of India', 'Reuters',
-    'Daily Record', 'Live updates', 'Wall Street Journal', 'Fox News', 'USA TODAY',
-    'Axios', 'SFGATE', 'Ynetnews', 'KABC-TV',
+    'Financial Times', 'Bloomberg', 'bloomberg.com', 'Times of Israel', 'Times of India',
+    'Reuters', 'Daily Record', 'Live updates', 'Wall Street Journal', 'Fox News',
+    'USA TODAY', 'Axios', 'SFGATE', 'Ynetnews', 'KABC-TV',
     # 403, refuse the request outright
     'The New York Times', 'POLITICO', 'Sky News', 'The Telegraph', 'The Hill',
     'Fast Company', 'PhoneArena', 'MedPage Today', 'GamesHub', 'KGW', 'Vogue Adria',
     'Medical Xpress', 'Institute for the Study of War', 'GameSpot', 'Benzinga',
     'Firstpost', 'Investing.com', 'MMORPG.com', 'SpaceDaily', 'Space War',
     'Belfast Telegraph', 'F4W/WON', 'KTLA', 'Phys.org', 'This Is Anfield',
-    'TweakTown', 'economist.com', 'merseyside.police.uk',
+    'TweakTown', 'economist.com', 'merseyside.police.uk', 'Dezeen', 'Estate Agent Today',
+    'Greater Manchester Police', 'Olive Press News Spain', 'PCMag</font>', 'Pulse Today',
+    'ScreenHub Australia', 'Sunday World', 'TheBusinessDesk.com', 'en.softonic.com',
+    'extremetech.com', 'grandepremio.com', 'qz.com',
     # 401 or 402, want a subscription
-    'Barron\'s', 'MarketWatch', 'People.com', 'WSJ', 'ew.com', 'instyle.com',
-    # By URL: the feed names this outlet "The Times", which sits inside too many headlines
-    # to match on.
-    'thetimes.com',
+    'Barron\'s', 'MarketWatch', 'People.com', 'WSJ</font>', 'ew.com', 'instyle.com',
+    'The Times</font>', 'autonews.com', 'marketscreener.com', 'Finimize',
     # 429, rate limiting us
     'RACER', 'The Tribune-Democrat',
-    # Answer 200 with a JavaScript challenge or an empty client-rendered shell, so there
-    # is nothing in the page to read. The Reach titles (Belfast Live through Daily Star)
-    # all sit behind the same AWS WAF challenge. Domains rather than names where the name
-    # sits inside too many headlines to match on.
+    # Answer 200 with a JavaScript challenge, a teaser, or an empty client-rendered
+    # shell, so there is nothing in the page to read. The Reach titles (Belfast Live
+    # through Wales Online) all sit behind the same AWS WAF challenge.
     'Belfast Live', 'Liverpool Echo', 'Manchester Evening News', 'Football London',
-    'Daily Express', 'Daily Star', 'mirror.co.uk',
-    'espn.com', 'ign.com', 'The Japan News', 'euronews.com', 'manutd.com', 'whufc.com',
-    'infrastructure-now.co.uk',
+    'Daily Express', 'Daily Star', 'Daily Mirror', 'mirror.co.uk', 'Chronicle Live',
+    'Derbyshire Live', 'Wales Online',
+    'ESPN</font>', 'IGN</font>', 'IGN India', 'The Japan News', 'Euronews',
+    'Manchester United Website', 'West Ham United</font>', 'Trending Now Infrastructure',
+    'IMDb</font>', 'TradingView', 'XTB.com', '富途牛牛',
     # 400, not an article page at all
-    # As the URL rather than the outlet name, since the feed prints whichever page posted.
     'facebook.com'
   ].freeze
 

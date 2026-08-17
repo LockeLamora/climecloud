@@ -1,0 +1,14 @@
+<div class='route'>
+<b><%= glyph_text @account['name'], heading: true %></b><br /><br />
+<%= form_with url: totp_save_note_path, method: :post, local: true do |f| %>
+    <%= f.hidden_field :name, value: @account['name'] %>
+    <%= f.label(t('totp.note')) { glyph_text t('totp.note') } %>
+    <%= f.text_field :note, class: "big_text_field", value: @account['note'],
+                            maxlength: TotpController::NOTE_LENGTH %>
+    <br /><br />
+    <%= f.submit t('common.save') %>
+<% end %>
+<br />
+<%= link_to "9 #{t('totp.back_to_codes')}", totp_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

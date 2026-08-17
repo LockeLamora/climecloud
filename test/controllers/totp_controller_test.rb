@@ -80,6 +80,80 @@ class TotpControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, JSON.parse(CGI.unescape(cookies[:totp])).length
   end
 
+  # The note is one line kept beside the account, and editing it must never touch the
+  # entry it sits beside: the secret is the account's second factor.
+  test 'saving a note keeps the account exactly as it was' do
+    post totp_save_note_url, params: { name: 'GitHub', note: 'work login' },
+                             headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(SAVED)}" }
+
+    assert_redirected_to totp_code_path(name: 'GitHub')
+    entry = JSON.parse(CGI.unescape(cookies[:totp])).first
+
+    assert_equal 'work login', entry['note']
+    assert_equal SECRET, entry['secret'], 'the secret must survive a note edit untouched'
+    assert_equal 'GitHub', entry['name']
+  end
+
+  test 'the note shows on the code page and the edit form carries it' do
+    saved = [{ 'name' => 'GitHub', 'secret' => SECRET, 'note' => 'work login' }].to_json
+
+    get totp_code_url, params: { name: 'GitHub' },
+                       headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(saved)}" }
+
+    assert_match 'work login', @response.body
+
+    get totp_note_url, params: { name: 'GitHub' },
+                       headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(saved)}" }
+
+    assert_match(/value="work login"/, @response.body, 'editing starts from the saved note')
+  end
+
+  # The note stays text with its own case on every style: a glyph would set it in capitals
+  # and carry it in an image URL through the rendering proxy's long-lived cache.
+  test 'the note keeps its case and stays out of the glyph images' do
+    saved = [{ 'name' => 'GitHub', 'secret' => SECRET, 'note' => 'CaseMatters7' }].to_json
+
+    get totp_code_url, params: { name: 'GitHub' },
+                       headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(saved)};theme=crt-amber" }
+
+    assert_match 'CaseMatters7', @response.body
+    assert_no_match(/glyph\?[^"]*CaseMatters7/i, @response.body,
+                    'the note must never travel in a glyph URL')
+  end
+
+  test 'a blank note clears the saved one, and an unknown name goes back to the list' do
+    saved = [{ 'name' => 'GitHub', 'secret' => SECRET, 'note' => 'work login' }].to_json
+
+    post totp_save_note_url, params: { name: 'GitHub', note: '' },
+                             headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(saved)}" }
+
+    assert_equal '', JSON.parse(CGI.unescape(cookies[:totp])).first['note']
+
+    post totp_save_note_url, params: { name: 'Nowhere', note: 'anything' },
+                             headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(saved)}" }
+
+    assert_redirected_to totp_path
+  end
+
+  test 'a note is trimmed to one short line however much arrives' do
+    post totp_save_note_url, params: { name: 'GitHub', note: "a\n" * 200 },
+                             headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(SAVED)}" }
+
+    note = JSON.parse(CGI.unescape(cookies[:totp])).first['note']
+
+    assert_operator note.length, :<=, TotpController::NOTE_LENGTH
+    assert_no_match(/\n/, note)
+  end
+
+  test 'keying an account in again keeps the note it already had' do
+    saved = [{ 'name' => 'GitHub', 'secret' => SECRET, 'note' => 'work login' }].to_json
+
+    post totp_save_url, params: { name: 'GitHub', secret: 'jbsw y3dp ehpk 3pxp' },
+                        headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(saved)}" }
+
+    assert_equal 'work login', JSON.parse(CGI.unescape(cookies[:totp])).first['note']
+  end
+
   # A mistyped key is one wrong character, so the attempt comes back in the form to be
   # edited rather than retyped from scratch — and stays out of any logged URL by being
   # rendered from the post, not carried through a redirect.

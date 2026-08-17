@@ -232,6 +232,8 @@ vi:
     seconds_left: "Còn hiệu lực %{seconds} giây"
     refresh: "Mã mới"
     show_secret: "Hiện khóa"
+    note: "Ghi chú"
+    edit_note: "Sửa ghi chú"
     secret_is: "Khóa đã lưu - ghi lại phòng khi điện thoại bị xóa:"
     forget_account: "Quên tài khoản này"
     back_to_codes: "Về danh sách mã 2FA"

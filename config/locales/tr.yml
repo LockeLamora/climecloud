@@ -232,6 +232,8 @@ tr:
     seconds_left: "%{seconds} saniye daha geçerli"
     refresh: "Yeni kod"
     show_secret: "Anahtarı göster"
+    note: "Not"
+    edit_note: "Notu düzenle"
     secret_is: "Kayıtlı anahtar - telefon silinirse diye not edin:"
     forget_account: "Bu hesabı unut"
     back_to_codes: "2FA kodlarına dön"

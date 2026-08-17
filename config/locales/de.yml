@@ -232,6 +232,8 @@ de:
     seconds_left: "Noch %{seconds} Sekunden gültig"
     refresh: "Neuer Code"
     show_secret: "Schlüssel anzeigen"
+    note: "Notiz"
+    edit_note: "Notiz bearbeiten"
     secret_is: "Gespeicherter Schlüssel, zum Notieren falls dieses Telefon gelöscht wird:"
     forget_account: "Dieses Konto vergessen"
     back_to_codes: "Zurück zu den 2FA-Codes"

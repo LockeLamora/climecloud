@@ -232,6 +232,8 @@ hi:
     seconds_left: "%{seconds} सेकंड और मान्य"
     refresh: "नया कोड"
     show_secret: "कुंजी दिखाएँ"
+    note: "नोट"
+    edit_note: "नोट संपादित करें"
     secret_is: "सहेजी गई कुंजी - फ़ोन मिटने की स्थिति के लिए नोट करें:"
     forget_account: "यह खाता भूल जाएँ"
     back_to_codes: "2FA कोड पर वापस"

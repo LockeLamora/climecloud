@@ -232,6 +232,8 @@ sw:
     seconds_left: "Unafaa kwa sekunde %{seconds} zaidi"
     refresh: "Msimbo mpya"
     show_secret: "Onyesha ufunguo"
+    note: "Kidokezo"
+    edit_note: "Hariri kidokezo"
     secret_is: "Ufunguo uliohifadhiwa - uandike endapo simu hii itafutwa:"
     forget_account: "Sahau akaunti hii"
     back_to_codes: "Rudi kwenye misimbo ya 2FA"

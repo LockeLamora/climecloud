@@ -232,6 +232,8 @@ bn:
     seconds_left: "আরও %{seconds} সেকেন্ড বৈধ"
     refresh: "নতুন কোড"
     show_secret: "কী দেখান"
+    note: "নোট"
+    edit_note: "নোট সম্পাদনা"
     secret_is: "সংরক্ষিত কী - ফোন মুছে গেলে কাজে লাগবে, লিখে রাখুন:"
     forget_account: "এই অ্যাকাউন্ট ভুলে যান"
     back_to_codes: "2FA কোডে ফিরুন"

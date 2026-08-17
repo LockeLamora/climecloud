@@ -232,6 +232,8 @@ ur:
     seconds_left: "%{seconds} سیکنڈ مزید کارآمد"
     refresh: "نیا کوڈ"
     show_secret: "کلید دکھائیں"
+    note: "نوٹ"
+    edit_note: "نوٹ میں ترمیم کریں"
     secret_is: "محفوظ کلید - فون مٹ جانے کی صورت کے لیے نوٹ کریں:"
     forget_account: "یہ اکاؤنٹ بھول جائیں"
     back_to_codes: "2FA کوڈز پر واپس"

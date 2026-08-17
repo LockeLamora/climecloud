@@ -232,6 +232,8 @@ ru:
     seconds_left: "Действует ещё %{seconds} секунд"
     refresh: "Новый код"
     show_secret: "Показать ключ"
+    note: "Заметка"
+    edit_note: "Изменить заметку"
     secret_is: "Сохранённый ключ - запишите на случай очистки телефона:"
     forget_account: "Забыть этот аккаунт"
     back_to_codes: "Назад к кодам 2FA"

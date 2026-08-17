@@ -232,6 +232,8 @@ pl:
     seconds_left: "Ważny jeszcze %{seconds} sekund"
     refresh: "Nowy kod"
     show_secret: "Pokaż klucz"
+    note: "Notatka"
+    edit_note: "Edytuj notatkę"
     secret_is: "Zapisany klucz - zanotuj na wypadek wyczyszczenia telefonu:"
     forget_account: "Zapomnij to konto"
     back_to_codes: "Powrót do kodów 2FA"

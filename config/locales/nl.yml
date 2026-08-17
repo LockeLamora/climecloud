@@ -232,6 +232,8 @@ nl:
     seconds_left: "Nog %{seconds} seconden geldig"
     refresh: "Nieuwe code"
     show_secret: "Sleutel tonen"
+    note: "Notitie"
+    edit_note: "Notitie bewerken"
     secret_is: "Opgeslagen sleutel, noteer hem voor het geval deze telefoon wordt gewist:"
     forget_account: "Dit account vergeten"
     back_to_codes: "Terug naar 2FA-codes"

@@ -232,6 +232,8 @@ it:
     seconds_left: "Valido ancora %{seconds} secondi"
     refresh: "Nuovo codice"
     show_secret: "Mostra la chiave"
+    note: "Nota"
+    edit_note: "Modifica nota"
     secret_is: "Chiave salvata, da annotare nel caso il telefono venga cancellato:"
     forget_account: "Dimentica questo account"
     back_to_codes: "Torna ai codici 2FA"

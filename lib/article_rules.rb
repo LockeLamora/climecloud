@@ -53,7 +53,18 @@ module ArticleRules
     # WordPress with Elementor: the story is the post-content widget, and the bare widget
     # class alone also matches the footer.
     'railadvent.co.uk' => '.elementor-widget-theme-post-content p',
-    'todaysconveyancer.co.uk' => '.elementor-widget-theme-post-content p'
+    'todaysconveyancer.co.uk' => '.elementor-widget-theme-post-content p',
+    '411mania.com' => '.content p',
+    'chemanalyst.com' => '.blog-list-data p',
+    'dlcompare.com' => '.news-body p',
+    'doctors.net.uk' => '.news-story__body p',
+    'thegrocer.co.uk' => '.storytext p',
+    'helsinki.fi' => 'hy-paragraph-text p',
+    'gpfans.com' => '.articlecontent_txt p',
+    'insideci.co.uk' => '#Content p',
+    'samsung.com' => '.text_cont p',
+    # The post body is one div of text with no paragraph tags inside it.
+    'techpowerup.com' => 'div.text'
   }.freeze
 
   def self.for(url)

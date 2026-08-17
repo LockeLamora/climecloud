@@ -232,6 +232,8 @@ pt:
     seconds_left: "Válido por mais %{seconds} segundos"
     refresh: "Novo código"
     show_secret: "Mostrar a chave"
+    note: "Nota"
+    edit_note: "Editar nota"
     secret_is: "Chave guardada, para anotar caso este telemóvel seja apagado:"
     forget_account: "Esquecer esta conta"
     back_to_codes: "Voltar aos códigos 2FA"

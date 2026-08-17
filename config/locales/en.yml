@@ -231,6 +231,8 @@ en:
     seconds_left: "Good for %{seconds} more seconds"
     refresh: "New code"
     show_secret: "Show setup key"
+    note: "Note"
+    edit_note: "Edit note"
     secret_is: "The saved setup key, in case this phone is ever wiped:"
     forget_account: "Forget this account"
     back_to_codes: "Back to 2FA codes"

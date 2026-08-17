@@ -232,6 +232,8 @@ ar:
     seconds_left: "صالح لمدة %{seconds} ثانية أخرى"
     refresh: "رمز جديد"
     show_secret: "إظهار المفتاح"
+    note: "ملاحظة"
+    edit_note: "تعديل الملاحظة"
     secret_is: "المفتاح المحفوظ - دوّنه تحسباً لمسح هذا الهاتف:"
     forget_account: "نسيان هذا الحساب"
     back_to_codes: "العودة إلى رموز 2FA"

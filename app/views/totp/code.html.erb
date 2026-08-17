@@ -3,7 +3,13 @@
 <%# Grouped in threes, the way anyone reads a code back to a login form. %>
 <h1><%= glyph_text "#{@code[0, 3]} #{@code[3, 3]}", heading: true %></h1>
 <%= glyph_text t('totp.seconds_left', seconds: @seconds) %><br /><br />
-<%= link_to "1 #{t('totp.refresh')}", totp_code_path(name: @account['name']), accesskey: "1" %><br /><br />
+<% if @account['note'].present? %>
+<%# As plain text on every style: a glyph would carry the note in an image URL through
+    the rendering proxy's long-lived cache, and would set it in capitals besides. %>
+<%= @account['note'] %><br /><br />
+<% end %>
+<%= link_to "1 #{t('totp.refresh')}", totp_code_path(name: @account['name']), accesskey: "1" %><br />
+<%= link_to "2 #{t('totp.edit_note')}", totp_note_path(name: @account['name']), accesskey: "2" %><br /><br />
 <% if @reveal %>
 <%# The key as the site issued it, for writing down or enrolling elsewhere: this cookie is
     the only copy, and losing it is being locked out. %>

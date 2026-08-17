@@ -232,6 +232,8 @@ id:
     seconds_left: "Berlaku %{seconds} detik lagi"
     refresh: "Kode baru"
     show_secret: "Tampilkan kunci"
+    note: "Catatan"
+    edit_note: "Ubah catatan"
     secret_is: "Kunci tersimpan - catat kalau-kalau ponsel ini terhapus:"
     forget_account: "Lupakan akun ini"
     back_to_codes: "Kembali ke kode 2FA"

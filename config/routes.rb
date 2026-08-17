@@ -38,7 +38,9 @@ Rails.application.routes.draw do
   get 'totp/add' => 'totp#add'
   get 'totp/backup' => 'totp#backup'
   get 'totp/confirm' => 'totp#confirm'
+  get 'totp/note' => 'totp#note'
   post 'totp/save' => 'totp#save'
+  post 'totp/save_note' => 'totp#save_note'
   delete 'totp/forget' => 'totp#forget'
   delete 'totp/forget_all' => 'totp#forget_all'
 

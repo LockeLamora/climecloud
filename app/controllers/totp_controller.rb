@@ -17,6 +17,9 @@ class TotpController < ApplicationController
   # The digits 1 to 6 select an account; 7 turns the page and 8, 9 and 0 are the fixed
   # actions, so six is what one screen can offer a keypad.
   PER_PAGE = 6
+  # A note is one line beside the account, and thirty of them share the cookie with the
+  # secrets, so it stays short.
+  NOTE_LENGTH = 100
   # What save can refuse, named so the locale check can enumerate totp.error.* keys.
   ERRORS = %w[name secret full].freeze
 
@@ -51,6 +54,26 @@ class TotpController < ApplicationController
     @error = params[:error]
   end
 
+  def note
+    @account = accounts.find { |account| account['name'] == params[:name] }
+    redirect_to totp_path if @account.nil?
+  end
+
+  # Only the note changes: the entry keeps its place, its name and its secret, so editing
+  # a note can never cost the account it sits beside.
+  def save_note
+    entries = accounts
+    entry = entries.find { |account| account['name'] == params[:name] }
+    if entry.nil?
+      redirect_to totp_path
+      return
+    end
+
+    entry['note'] = params[:note].to_s.squish[0, NOTE_LENGTH]
+    write_accounts(entries)
+    redirect_to totp_code_path(name: entry['name'])
+  end
+
   # Every name and key on one page, for writing down: the cookie is the only copy of these
   # secrets, and a backup that takes ten separate presses is one that never happens.
   def backup
@@ -74,6 +97,9 @@ class TotpController < ApplicationController
     end
 
     entry = { 'name' => name, 'secret' => secret }
+    # An account keyed in again keeps the note it already had.
+    existing = accounts.find { |account| account['name'] == name }
+    entry['note'] = existing['note'] if existing&.key?('note')
     write_accounts([entry] + accounts.reject { |account| account['name'] == name })
     redirect_to totp_code_path(name: name)
   end
