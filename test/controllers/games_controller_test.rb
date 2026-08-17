@@ -64,7 +64,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     assert_match 'two tall yew hedges', @response.body
     assert_match '/games/treasure-hunt/5', @response.body
     assert_match '/games/treasure-hunt/7', @response.body
-    assert_match '/gamebooks/treasure-hunt/p1.png', @response.body
+    assert_match '/gamebooks/treasure-hunt/p1.jpg', @response.body
   end
 
   test 'a consequence without a destination is text rather than a link' do

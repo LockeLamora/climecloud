@@ -6,12 +6,9 @@ year: c. 1940
 about: 'An A-MAZE-ing picture-maze storybook: John and Jennifer are hunting for a chest of gold
   hidden in an old castle, and you choose which turnings they take. Every page has a picture, and
   in every picture something is hidden.'
-credit:
-  text: Public domain. Scans from Bookwise
-  url: https://bookwise.io/alan-george/treasure-hunt
 cover:
-  src: /gamebooks/treasure-hunt/cover.png
-  width: 220
+  src: /gamebooks/treasure-hunt/cover.jpg
+  width: 219
   height: 293
   alt: Treasure Hunt cover
 start: '0'
@@ -50,8 +47,8 @@ sections:
 
       * (To make your search for hidden treasure still more interesting, a number of different objects are also "hidden" in each picture throughout the book. For instance, in the opposite page, the old shepherd has lost one of his SHEEP. Can you find it?)
     image:
-      src: /gamebooks/treasure-hunt/p1.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p1.jpg
+      width: 219
       height: 293
       alt: The picture for page 1
     choices:
@@ -84,8 +81,8 @@ sections:
 
       * (The old man can't find his PIPE. Can you find it for him?)
     image:
-      src: /gamebooks/treasure-hunt/p2.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p2.jpg
+      width: 219
       height: 293
       alt: The picture for page 2
     choices:
@@ -115,8 +112,8 @@ sections:
 
       * (To whom do the ducks belong? Somewhere in the picture, you MAY be able to find THE OWNER.)
     image:
-      src: /gamebooks/treasure-hunt/p3.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p3.jpg
+      width: 219
       height: 293
       alt: The picture for page 3
     choices:
@@ -147,8 +144,8 @@ sections:
 
       * (The ice-cream man has a puncture. Where is his PUMP? Can YOU see it?)
     image:
-      src: /gamebooks/treasure-hunt/p4.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p4.jpg
+      width: 219
       height: 293
       alt: The picture for page 4
     choices:
@@ -179,8 +176,8 @@ sections:
 
       * (You can see one pig in the picture on the opposite page; but can you find a SECOND PIG?)
     image:
-      src: /gamebooks/treasure-hunt/p5.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p5.jpg
+      width: 219
       height: 293
       alt: The picture for page 5
     choices:
@@ -203,8 +200,8 @@ sections:
 
       * (There should be some DUCKS and a GOOSE somewhere near this stream; how many can you find?)
     image:
-      src: /gamebooks/treasure-hunt/p6.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p6.jpg
+      width: 219
       height: 293
       alt: The picture for page 6
     choices:
@@ -231,8 +228,8 @@ sections:
 
       * (The butcher has lost his CLEAVER—and a BULL. See if you can find them.)
     image:
-      src: /gamebooks/treasure-hunt/p7.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p7.jpg
+      width: 219
       height: 293
       alt: The picture for page 7
     choices:
@@ -259,8 +256,8 @@ sections:
 
       * (OWLS who hunt the castle grounds hid at the children's approach. Where are they hiding?)
     image:
-      src: /gamebooks/treasure-hunt/p8.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p8.jpg
+      width: 219
       height: 293
       alt: The picture for page 8
     choices:
@@ -291,8 +288,8 @@ sections:
 
       * (How many FISH has the fisherman caught? You'll find out if you look for them.)
     image:
-      src: /gamebooks/treasure-hunt/p9.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p9.jpg
+      width: 219
       height: 293
       alt: The picture for page 9
     choices:
@@ -319,8 +316,8 @@ sections:
 
       * (Can you find the shepherd's SON and DAUGHTER anywhere in the picture?)
     image:
-      src: /gamebooks/treasure-hunt/p10.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p10.jpg
+      width: 219
       height: 293
       alt: The picture for page 10
     choices:
@@ -353,8 +350,8 @@ sections:
 
       * (A pair of WATER-VOLES live by the stream; where are they now?)
     image:
-      src: /gamebooks/treasure-hunt/p11.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p11.jpg
+      width: 219
       height: 293
       alt: The picture for page 11
     choices:
@@ -381,8 +378,8 @@ sections:
 
       * (The dog has lost TWO PUPPIES, and a puppy has lost its BONE. Can you find them?)
     image:
-      src: /gamebooks/treasure-hunt/p12.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p12.jpg
+      width: 219
       height: 293
       alt: The picture for page 12
     choices:
@@ -413,8 +410,8 @@ sections:
 
       * (Only one RABBIT is crossing the road; but there's another somewhere.... Where?)
     image:
-      src: /gamebooks/treasure-hunt/p13.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p13.jpg
+      width: 219
       height: 293
       alt: The picture for page 13
     choices:
@@ -439,8 +436,8 @@ sections:
 
       * (Could the CATERPILLAR hidden in the picture possibly turn into a butterfly? Find it and then answer the question.)
     image:
-      src: /gamebooks/treasure-hunt/p14.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p14.jpg
+      width: 219
       height: 293
       alt: The picture for page 14
     choices:
@@ -467,8 +464,8 @@ sections:
 
       * (The cow in the picture is looking for the COWMAN—or is it he who is looking for her? Anyway, see if you can find him).
     image:
-      src: /gamebooks/treasure-hunt/p15.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p15.jpg
+      width: 219
       height: 293
       alt: The picture for page 15
     choices:
@@ -509,8 +506,8 @@ sections:
 
       * (The children have found the Tea Rooms. You should find it just as easy to find a TEAPOT and a TEASPOON.)
     image:
-      src: /gamebooks/treasure-hunt/p16.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p16.jpg
+      width: 219
       height: 293
       alt: The picture for page 16
     choices:
@@ -537,8 +534,8 @@ sections:
 
       * (A pair of THRUSHES sang to the children just here. Where are the birds hiding?)
     image:
-      src: /gamebooks/treasure-hunt/p17.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p17.jpg
+      width: 219
       height: 293
       alt: The picture for page 17
     choices:
@@ -565,8 +562,8 @@ sections:
 
       * (The children found the chest unlocked. Can you find the KEY that opened it?)
     image:
-      src: /gamebooks/treasure-hunt/p18.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p18.jpg
+      width: 219
       height: 293
       alt: The picture for page 18
     choices:
@@ -589,8 +586,8 @@ sections:
 
       * (The policeman always has an egg for his tea. Can you find the HEN that lays it?)
     image:
-      src: /gamebooks/treasure-hunt/p19.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p19.jpg
+      width: 219
       height: 293
       alt: The picture for page 19
     choices:
@@ -617,8 +614,8 @@ sections:
 
       * (A SQUIRREL lives in this copse. Can you spot him?)
     image:
-      src: /gamebooks/treasure-hunt/p20.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p20.jpg
+      width: 219
       height: 293
       alt: The picture for page 20
     choices:
@@ -647,8 +644,8 @@ sections:
 
       * (Grazing in one of the meadows is a... Well, that's what YOU will be if you can't find him!)
     image:
-      src: /gamebooks/treasure-hunt/p21.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p21.jpg
+      width: 219
       height: 293
       alt: The picture for page 21
     choices:
@@ -673,8 +670,8 @@ sections:
 
       * (The OLD WOMAN who keeps the inn isn't in the inn; she's out. Where is she?)
     image:
-      src: /gamebooks/treasure-hunt/p22.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p22.jpg
+      width: 219
       height: 293
       alt: The picture for page 22
     choices:
@@ -699,8 +696,8 @@ sections:
 
       (How easily can you find your way back to Peacock Corner —even with the aid of the map?)
     image:
-      src: /gamebooks/treasure-hunt/p23.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p23.jpg
+      width: 219
       height: 293
       alt: The picture for page 23
     choices:
@@ -721,8 +718,8 @@ sections:
 
       "Never mind," said Jennifer, "it was great fun hunting for it—and seeing the film will be almost as exciting as finding the real treasure ourselves."
     image:
-      src: /gamebooks/treasure-hunt/p24.png
-      width: 220
+      src: /gamebooks/treasure-hunt/p24.jpg
+      width: 219
       height: 293
       alt: The picture for page 24
     choices:
