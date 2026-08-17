@@ -15,7 +15,16 @@ This is all in a lightweight text-based format which is  sized to suit screens o
 
 ![Main menu in the Commodore callback theme](images/menu-commodore-callback.png)
 
-*The main menu. Each option keeps its own number wherever it lands in the list, so places nearby is always 3 and departures is always 6. Theme: Commodore callback.*
+*The main menu. Each option keeps its own number wherever it lands in the list, so places nearby is always 3 and departures is always 6. Theme: Commodore callback, drawn in the C64's own character set.*
+
+
+**Weather**
+
+Hourly and daily forecasts for the saved location, one line each: the temperature with how it feels in brackets, the wind, and the chance of rain until rain is coming, when it becomes the amount.
+
+![The hourly forecast in the Teletext theme](images/forecast-hourly-teletext.png)
+
+*The hourly forecast. Theme: Teletext, drawn in the character set of the chip that drew Ceefax.*
 
 
 **Bus and train times, without typing anything**
