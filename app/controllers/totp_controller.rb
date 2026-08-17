@@ -62,7 +62,14 @@ class TotpController < ApplicationController
     name = params[:name].to_s.squish
     error = save_error(name, secret)
     if error
-      redirect_to totp_add_path(error: error)
+      # The form again with the attempt still in it: a mistyped key is one wrong character,
+      # and retyping thirty-one right ones to fix it is keypad punishment. Rendered rather
+      # than redirected, so the typed secret stays in the filtered POST body and never
+      # lands in a logged URL.
+      @error = error
+      @name = params[:name]
+      @secret = params[:secret]
+      render :add
       return
     end
 

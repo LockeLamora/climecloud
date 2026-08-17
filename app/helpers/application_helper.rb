@@ -31,11 +31,11 @@ module ApplicationHelper
 
   # Every glyph on a page is a request Opera's proxy makes and an SVG it rasterises before
   # anything ships, and a page that takes too long to assemble is reported to the reader as
-  # one that could not be opened. At nine hundred characters a chunk, sixteen
-  # of them cover an article of fourteen kilobytes — longer than almost anything the
-  # scraper returns — so the plain-text tail past the budget is a backstop for the
-  # pathological case, not something a reader meets.
-  PROSE_GLYPHS = 16
+  # one that could not be opened. At fourteen hundred characters a chunk, twenty
+  # of them cover twenty-eight kilobytes of article — several times anything the scraper
+  # returns — so the plain-text tail past the budget is a backstop for the pathological
+  # case, not something a reader meets.
+  PROSE_GLYPHS = 20
 
   # Body text — an article, a summary — glyphed a paragraph at a time, in its own case.
   # Each chunk stays under the glyph's text cap so nothing is cut, and a browser on any

@@ -21,13 +21,30 @@
 <br /><br />
 <div class="news">
     <% @news_items.each do |item| %>
-            <b><%= phosphor_text item[:item_title] %></b><br />
+            <%# On the phosphor styles the story heading is dropped: the lead link below
+                carries the same headline as a glyph already, and every glyph is a request
+                Opera's proxy makes before the page ships — this page failed to open on the
+                weight of drawing each headline twice. %>
+            <% unless phosphor_theme %>
+            <b><%= item[:item_title] %></b><br />
+            <% end %>
+            <%# The lead source in full, the alternates by outlet name alone: eight
+                headlines per story is the page that would not open, and an outlet name is
+                short in bytes and, being the same on story after story, the same glyph
+                URL on the phosphor styles — fetched once, cached everywhere after. %>
             <ul>
-            <% item[:articles].each do |article| %>
+            <% item[:articles].each_with_index do |article, position| %>
                 <%# The section travels with the link so the way back lands on the list %>
                 <%# being read, and the headline so an article that will not open can still %>
                 <%# say what it was about. %>
-                <li><%= link_to article[:article_title],
+                <%# The outlet in brackets after the lead headline, or it reads as the last
+                    words of the sentence; the alternates are the outlet name alone. %>
+                <% label = if position.zero?
+                     article[:article_source].present? ? "#{article[:article_title]} (#{article[:article_source]})" : article[:article_title]
+                   else
+                     article[:article_source].presence || article[:article_title]
+                   end %>
+                <li><%= link_to label,
                                 news_article_path(article: article[:article_url],
                                                   section: @section,
                                                   title: article[:article_title]) %></li>

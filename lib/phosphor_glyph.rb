@@ -31,7 +31,7 @@ module PhosphorGlyph
   # Opera's proxy makes and an SVG it rasterises before the page ships, and a page that
   # takes too long to assemble is reported as one that could not be opened. Bigger chunks
   # mean fewer of them.
-  MAX_TEXT = 900
+  MAX_TEXT = 1400
 
   # Words wrapped to the column, the way the browser would wrap the text this replaces,
   # with a newline in the text starting a fresh line — which is how a table travels as one

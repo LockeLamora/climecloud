@@ -49,7 +49,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_operator @response.body.bytesize, :<, 25_000,
                     'this is heavy enough that the handset may be told it cannot be opened'
     assert_operator @response.body.scan(/<a /).size, :<=,
-                    Gnews::SECTIONS.length + NewsController::STORIES + 4,
+                    Gnews::SECTIONS.length + (NewsController::STORIES * NewsController::SOURCES_PER_STORY) + 4,
                     'more links than the sections, the stories and the furniture around them'
   end
 
@@ -63,6 +63,24 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_no_match(/&amp;nbsp;|nbsp/i, @response.body)
+  end
+
+  # The phosphor list drew every headline twice — once as the story heading, once inside
+  # the link — and the doubled request count is a page Opera's proxy sometimes gives up
+  # assembling. The heading glyph is dropped there; the link already carries the headline.
+  test 'the phosphor news list stays under the glyph budget' do
+    stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => "#{COOKIES};theme=crt-amber" }
+
+    assert_response :success
+    srcs = @response.body.scan(/<img src="([^"]+)"/).flatten
+
+    # The proxy fetches by URL, and the alternates are outlet names repeated story after
+    # story — the same URLs — so unique images are what a page costs to assemble.
+    assert_operator srcs.uniq.length, :<=, 9 + NewsController::STORIES + 14 + 2,
+                    'a headline drawn twice is a page the handset gives up on'
+    assert_no_match(/<b><img/, @response.body, 'the story heading duplicates the link glyph')
   end
 
   # Every glyph on an article is a request Opera's proxy makes and an SVG it rasterises
@@ -94,10 +112,9 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
                  'the story past the budget should run as plain text, not be dropped')
   end
 
-  # One source for each story rather than every outlet that ran it. Eight versions of the
-  # same story is not a choice worth scrolling past on a 240px screen, and it was most of
-  # the weight of the page.
-  test 'a story is offered once rather than once per outlet' do
+  # A story leads with one full headline and offers the next outlets by name alone: eight
+  # full headlines per story is the page that would not open, and one is no choice at all.
+  test 'a story leads with a headline and offers alternates by outlet name' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => COOKIES }
@@ -106,8 +123,19 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
     assert_not_empty stories
     stories.each do |story|
-      assert_equal 1, story.scan('<li>').size, "a story offers more than one way in: #{story[0, 80]}"
+      assert_operator story.scan('<li>').size, :<=, NewsController::SOURCES_PER_STORY,
+                      "a story offers more ways in than the cap: #{story[0, 80]}"
     end
+
+    # The fixture's lead story runs in several outlets: the first carries the headline
+    # with its outlet in brackets, the rest only their names.
+    budget = @response.body[%r{<b>Budget 2024.*?</ul>}m]
+
+    assert_operator budget.scan('<li>').size, :>, 1, 'the alternates are gone again'
+    assert_match %r{Budget \(BBC\.com\)</a>}, budget
+    assert_match %r{<li><a[^>]*>GOV\.UK</a></li>}, budget
+    assert_no_match(/<li><a[^>]*>[^<]*Martin Lewis/, budget,
+                    'an alternate repeats its whole headline')
   end
 
   test 'each article is a list item rather than a loose link in a list' do

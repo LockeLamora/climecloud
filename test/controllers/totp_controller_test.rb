@@ -80,20 +80,25 @@ class TotpControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, JSON.parse(CGI.unescape(cookies[:totp])).length
   end
 
-  test 'rejects a key that cannot be one, and stores nothing' do
-    post totp_save_url, params: { name: 'GitHub', secret: 'password123' }
+  # A mistyped key is one wrong character, so the attempt comes back in the form to be
+  # edited rather than retyped from scratch — and stays out of any logged URL by being
+  # rendered from the post, not carried through a redirect.
+  test 'rejects a key that cannot be one, keeping the attempt in the form' do
+    post totp_save_url, params: { name: 'GitHub', secret: 'jbsw y3dp ehpk 3px0' }
 
-    assert_redirected_to totp_add_path(error: 'secret')
-    follow_redirect!
-
+    assert_response :success
     assert_match 'does not look like a setup key', @response.body
+    assert_match(/<input[^>]*value="GitHub"[^>]*name="name"/, @response.body)
+    assert_match(/<input[^>]*value="jbsw y3dp ehpk 3px0"[^>]*name="secret"/, @response.body)
     assert_not cookies[:totp].present?
   end
 
-  test 'rejects a nameless account' do
+  test 'rejects a nameless account, keeping the key already typed' do
     post totp_save_url, params: { name: '  ', secret: SECRET }
 
-    assert_redirected_to totp_add_path(error: 'name')
+    assert_response :success
+    assert_match 'needs a name', @response.body
+    assert_match(/<input[^>]*value="#{SECRET}"[^>]*name="secret"/, @response.body)
   end
 
   test 'holds thirty accounts and refuses a thirty-first, saying so with the number' do
@@ -102,9 +107,7 @@ class TotpControllerTest < ActionDispatch::IntegrationTest
     post totp_save_url, params: { name: 'One more', secret: SECRET },
                         headers: { 'HTTP_COOKIE' => "totp=#{CGI.escape(full)}" }
 
-    assert_redirected_to totp_add_path(error: 'full')
-    follow_redirect!
-
+    assert_response :success
     assert_match "#{TotpController::MAX_ACCOUNTS} accounts is the most", @response.body
   end
 

@@ -57,7 +57,11 @@ Rails.application.configure do
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  # In memory rather than the default file store: the one thing cached is the phosphor
+  # glyphs, which are small, fast to rebuild, and asked for in bursts by Opera's proxy
+  # assembling a page — a memory hit beats a disk read on every one of them. 32MB holds
+  # tens of thousands of glyphs; the fixed labels never leave, headlines age out.
+  config.cache_store = :memory_store, { size: 32.megabytes }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

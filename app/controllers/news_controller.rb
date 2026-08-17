@@ -79,7 +79,7 @@ class NewsController < ApplicationController
     'Facebook'
   ].freeze
 
-  # One source per story, and a ceiling on the stories.
+  # A lead source per story with short alternates, and a ceiling on the stories.
   #
   # Opera Mini gives up on a page that takes too long to fetch and the handset is told the
   # page could not be opened, so weight here is not a matter of scrolling: past a point the
@@ -87,14 +87,15 @@ class NewsController < ApplicationController
   # link carries an encoded Google URL in its href, so the full feed runs to hundreds of
   # links and tens of kilobytes, against four for every other page in the app.
   #
-  # The first readable source rather than a choice between them: eight versions of one story
-  # is not a choice worth scrolling past on a 240px screen, and the ones that will not open
-  # are already dropped by BLOCKED_SOURCES above.
-  SOURCES_PER_STORY = 1
+  # A story leads with its first readable source in full and offers the next two by outlet
+  # name alone. Eight full headlines per story is the page that would not open; one is no
+  # choice at all; a lead and two short alternates is the choice without the weight, and the
+  # ones that will not open are already dropped by BLOCKED_SOURCES above.
+  SOURCES_PER_STORY = 3
   # Enough to be worth reading and few enough to arrive. Nine sections sit one keypress
   # apart at the top of the page, so a reader who wants different stories has somewhere else
   # to go rather than further down.
-  STORIES = 15
+  STORIES = 12
 
   def prepare_articles
     @news_items = @articles.first(STORIES).filter_map do |item|
@@ -135,7 +136,12 @@ class NewsController < ApplicationController
       # entities, so the non-breaking spaces are folded by name. The view escapes whatever
       # needs escaping on the way back out.
       title = CGI.unescapeHTML(strip_tags(article).gsub(/&nbsp;/i, ' ')).squish
-      { article_title: title, article_url: url }
+      # The outlet, from the font tag the feed wraps its name in — and off the end of the
+      # headline, where flattening the entry left it reading as part of the sentence. The
+      # view puts it back in brackets; the article page gets the headline clean.
+      source = CGI.unescapeHTML(article[%r{<font[^>]*>\s*([^<]+)</font>}, 1].to_s).squish
+      { article_title: title.delete_suffix(source).strip, article_url: url,
+        article_source: source }
     end
   end
 

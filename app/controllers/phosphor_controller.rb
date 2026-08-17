@@ -22,13 +22,26 @@ class PhosphorController < ApplicationController
     # c=1 keeps the label's own case, for prose; q=1 is the quiet size and dim tone, for
     # the attribution lines; anything else is a label, set in capitals.
     quiet = params[:q] == '1'
-    lines = PhosphorGlyph.lines(params[:t], keep_case: params[:c] == '1', quiet: quiet)
+    keep_case = params[:c] == '1'
+
+    # Cached on our side as well as at the proxy: the fixed labels — menu entries, section
+    # names, headings — are the same picture on every page that carries them, so they are
+    # built once and served from memory of it after. Keyed by a digest, since the text runs
+    # to a fat paragraph.
+    body = Rails.cache.fetch(glyph_cache_key(theme, quiet, keep_case), expires_in: 1.week) do
+      lines = PhosphorGlyph.lines(params[:t], keep_case: keep_case, quiet: quiet)
+      svg(lines, Themes.palette(theme), quiet: quiet)
+    end
 
     expires_in 1.year, public: true
-    render plain: svg(lines, Themes.palette(theme), quiet: quiet), content_type: 'image/svg+xml'
+    render plain: body, content_type: 'image/svg+xml'
   end
 
   private
+
+  def glyph_cache_key(theme, quiet, keep_case)
+    ['phosphor', theme, quiet, keep_case, Digest::SHA256.hexdigest(params[:t].to_s)]
+  end
 
   def svg(lines, palette, quiet: false)
     width = PhosphorGlyph.width(lines, quiet: quiet)
