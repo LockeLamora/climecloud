@@ -81,22 +81,25 @@ class ThemeTest < ApplicationSystemTestCase
     assert_equal Themes::NAMES.length, palettes.length
   end
 
-  # A table column header is a filled block, so it follows the style like everything else
-  # rather than keeping its own green.
-  test 'the forecast column headers follow the chosen style' do
+  # The forecast is lines of text on every style — glyph images on the phosphor styles,
+  # plain lines elsewhere — and its bold header line takes whatever the style gives bold
+  # text, rather than a table header's own green.
+  test 'the forecast header line follows the chosen style' do
     stub_request(:get, /api\.open-meteo\.com/).to_return(
       status: 200, body: file_fixture('hourly_forecast.json').read,
       headers: { 'Content-Type' => 'application/json' }
     )
 
-    # Teletext rather than a phosphor style: those draw the forecast as glyph images and
-    # render no table at all.
+    # Teletext rather than a phosphor style, so the lines are readable text rather than
+    # glyph images.
     page.driver.browser.manage.add_cookie(name: 'theme', value: 'teletext')
     visit '/forecast/hourly'
 
-    assert_selector 'th'
-    assert_equal 'rgb(0, 0, 170)', style('th', 'backgroundColor'), 'the header kept its own green'
-    assert_equal 'rgb(255, 255, 0)', style('th', 'color')
+    assert_no_selector 'table'
+    assert_selector 'b', text: /Time/
+    assert_equal 'rgb(0, 0, 170)', style('b', 'backgroundColor'), 'bold is a filled block here'
+    assert_equal 'rgb(255, 255, 0)', style('b', 'color')
+    assert_text '18:00'
   end
 
   # A departure board has no underlines: the card is what says a row can be pressed. The

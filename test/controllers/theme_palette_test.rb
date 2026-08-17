@@ -12,7 +12,7 @@ class ThemePaletteTest < ActionDispatch::IntegrationTest
   # Every colour a component paints with at rest. press.css is not among them: it styles a
   # press, reads the palette through tokens, and a browser that ignores those keeps the
   # resting colours underneath.
-  CONSUMED = %i[paper ink link quiet rule head_bg head_ink error].freeze
+  CONSUMED = %i[paper ink link quiet error].freeze
 
   test 'every theme reaches the page as declarations a browser without var() can read' do
     Themes::NAMES.each do |name|

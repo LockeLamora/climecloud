@@ -29,30 +29,6 @@ module ApplicationHelper
     phosphor_theme ? phosphor_glyph(text) : text
   end
 
-  # Every glyph on a page is a request Opera's proxy makes and an SVG it rasterises before
-  # anything ships, and a page that takes too long to assemble is reported to the reader as
-  # one that could not be opened. At fourteen hundred characters a chunk, twenty
-  # of them cover twenty-eight kilobytes of article — several times anything the scraper
-  # returns — so the plain-text tail past the budget is a backstop for the pathological
-  # case, not something a reader meets.
-  PROSE_GLYPHS = 20
-
-  # Body text — an article, a summary — glyphed a paragraph at a time, in its own case.
-  # Each chunk stays under the glyph's text cap so nothing is cut, and a browser on any
-  # other theme gets the original back untouched.
-  def phosphor_prose(html)
-    return html unless phosphor_theme
-
-    chunks = html.to_s.split(%r{</p>|<br\s*/?>|\n+}i)
-                 .filter_map { |part| strip_tags(part).squish.presence }
-                 .flat_map { |text| prose_chunks(text) }
-
-    glyphed = chunks.first(PROSE_GLYPHS).map { |chunk| tag.p(phosphor_glyph(chunk, keep_case: true)) }
-    plain = chunks.drop(PROSE_GLYPHS).map { |chunk| tag.p(chunk) }
-
-    safe_join(glyphed + plain)
-  end
-
   # The alt is the label, so a failed image degrades to the plain text link it replaced.
   # The theme rides in the URL because the response is cached long and per-hue.
   def phosphor_glyph(text, keep_case: false, quiet: false)
@@ -88,16 +64,6 @@ module ApplicationHelper
     PHOSPHOR_THEMES.include?(theme) ? theme : nil
   end
 
-  # A paragraph split at word boundaries into pieces the glyph can take whole.
-  def prose_chunks(text)
-    text.split.each_with_object([]) do |word, chunks|
-      if chunks.any? && "#{chunks.last} #{word}".length <= PhosphorGlyph::MAX_TEXT
-        chunks[-1] = "#{chunks.last} #{word}"
-      else
-        chunks << word
-      end
-    end
-  end
   # The chosen palette, as a style block for the document head. See Themes::BASE_PALETTE
   # for why the palette is resolved here rather than left to var() in the stylesheet.
   #
@@ -124,8 +90,6 @@ module ApplicationHelper
       .error{color:#{palette[:error]}}
       .credit,.credit a,.credit a:visited{color:#{palette[:quiet]}}
       input[type="text"],input[type="submit"],select{background:#{palette[:paper]};color:#{palette[:ink]};border:1px solid #{palette[:quiet]}}
-      th{background-color:#{palette[:head_bg]};color:#{palette[:head_ink]}}
-      th,td{border-bottom:1px solid #{palette[:rule]}}
     CSS
 
     # Marked safe once the block is whole. Appending to an html_safe string escapes what is

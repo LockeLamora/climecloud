@@ -2,51 +2,23 @@
 <%= phosphor_text "#{cookies["city"]}, #{cookies["state"]}" %><br />
 <%=link_to "1 #{t('forecast.switch_to_hourly')}", "/forecast/hourly", accesskey: "1" %>
 
-<%# On the phosphor styles the table travels as one glyph image, each row a monospace
-    line; see the hourly view. %>
-<% if phosphor_theme %>
-<%# The wind unit lives in the header, as on the hourly view: repeated on every row it
-    pushed the rain past the 23 characters a glyph line holds and wrapped it onto a line
-    of its own. %>
-<% rows = ["DATE #{@units[:temp]} #{@units[:wind].upcase} RAIN"] + @times.each_index.map do |i|
+<%# One line per day on every style; see the hourly view. The year is off the front of the
+    date, this being seven days out, and the ranges carry their unit once. %>
+<% header = "#{t('forecast.date')} #{@units[:temp]} #{@units[:wind].upcase} #{t('forecast.precip')}" %>
+<% rows = @times.each_index.map do |i|
      row = "#{@times[i].split('-', 2).last} #{@temps_min[i].round}-#{@temps_max[i].round}° " \
            "#{@wind_min[i].round}-#{@wind_max[i].round} #{forecast_rain(@rain[i], @rain_prob[i])}"
-     row += " SNOW #{@snow[i].round}#{@units[:snowfall]}" if @snow[i].positive?
+     row += " #{t('forecast.snow').upcase} #{@snow[i].round}#{@units[:snowfall]}" if @snow[i].positive?
      row
    end %>
-<%= phosphor_screen(rows) %>
+<% if phosphor_theme %>
+<%= phosphor_screen([header.upcase] + rows) %>
 <% else %>
-<table>
-<colgroup>
-  <col style="width:22%"><col style="width:30%"><col style="width:26%"><col style="width:22%">
-</colgroup>
-<thead>
-    <tr>
-      <th><%= t('forecast.date') %></th>
-      <th><%= t('forecast.temp') %></th>
-      <th><%= t('forecast.wind') %></th>
-      <th><%= t('forecast.precip') %> <%= @units[:rain]%></th>
-    </tr>
-  </thead>
-
-  <tbody>
-  <% (@times.length).times do |i| %>
-    <tr>
-    <%# The year off the front: this is seven days out, and the column is 54px wide. %>
-    <td> <%= @times[i].split('-', 2).last %></td>
-    <%# The unit once at the end of the range rather than on both ends of it. The spaces
-        around the dash stay, or a below-zero minimum reads as two dashes running together. %>
-    <td> <%= "#{@temps_min[i].round} - #{@temps_max[i].round}#{@units[:temp]}"%></td>
-    <td> <%= "#{@wind_min[i].round} - #{@wind_max[i].round}#{@units[:wind]}" %></td>
-    <% if @snow[i] > 0 %>
-      <td> <%= "<b>#{t('forecast.snow')}</b>: #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
-    <% else %>
-      <td> <%= "#{@rain[i]}#{@units[:rain]}(#{@rain_prob[i]}%)"%></td>
-    <% end %>
-    </tr>
-    <% end %>
-  </tbody>
-  </table>
+<br />
+<b><%= header %></b><br />
+<% rows.each do |row| %>
+<%= row %><br />
+<% end %>
 <% end %>
   <br /><br />
   <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

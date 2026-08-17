@@ -76,18 +76,17 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     srcs = @response.body.scan(/<img src="([^"]+)"/).flatten
 
-    # The proxy fetches by URL, and the alternates are outlet names repeated story after
-    # story — the same URLs — so unique images are what a page costs to assemble.
-    assert_operator srcs.uniq.length, :<=, 9 + NewsController::STORIES + 14 + 2,
-                    'a headline drawn twice is a page the handset gives up on'
-    assert_no_match(/<b><img/, @response.body, 'the story heading duplicates the link glyph')
+    # The proxy fetches by URL, and the sources are outlet names repeated story after
+    # story — the same URLs — so unique images are what a page costs to assemble: at most
+    # one heading per story, one lead or outlet set beneath it, and the shared furniture.
+    assert_operator srcs.uniq.length, :<=, 9 + (NewsController::STORIES * 2) + 14 + 4,
+                    'repeating each headline per source is a page the handset gives up on'
   end
 
-  # Every glyph on an article is a request Opera's proxy makes and an SVG it rasterises
-  # before the page ships, and a page that takes too long to assemble is reported as one
-  # that could not be opened. So a long story glows for its first stretch and runs as plain
-  # text after, rather than costing the whole page.
-  test 'a long article stays under the glyph budget rather than failing to open' do
+  # Article bodies carry no glyphs on any style: prose is where reading comfort beats
+  # theming, and a long story as images is the page that would not open. The chrome around
+  # it — title, nav links — keeps the treatment.
+  test 'an article body is plain text on a phosphor style' do
     stub_article_lookup
     stub_request(:get, /theguardian\.com/).to_return(
       status: 200,
@@ -103,39 +102,44 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
         headers: { 'COOKIE' => "#{COOKIES};theme=crt-amber" }
 
     assert_response :success
-    glyphs = @response.body.scan(%r{<img src="/phosphor\?c=1}).length
-
-    assert_operator glyphs, :<=, ApplicationHelper::PROSE_GLYPHS,
-                    'this many images is a page the handset gives up assembling'
-    assert_operator glyphs, :>, 0, 'the story lost its glow entirely'
-    assert_match(/<p>Paragraph 30:/, @response.body,
-                 'the story past the budget should run as plain text, not be dropped')
+    assert_no_match(%r{<img src="/phosphor\?c=1}, @response.body,
+                    'article prose drawn as images is the page that would not open')
+    assert_match(/Paragraph 1:/, @response.body)
+    assert_match(/Paragraph 30:/, @response.body, 'the story arrives whole, as text')
+    # The chrome keeps the treatment: the nav links are still glyphs.
+    assert_match(%r{<img src="/phosphor\?s=crt-amber&amp;t=0\+Back\+to\+menu}, @response.body)
   end
 
-  # A story leads with one full headline and offers the next outlets by name alone: eight
-  # full headlines per story is the page that would not open, and one is no choice at all.
-  test 'a story leads with a headline and offers alternates by outlet name' do
+  # The heading is the grouping: a story with several sources keeps it, with the sources
+  # indented beneath as outlet names alone — repeating the headline per source is the page
+  # that would not open, and a bare outlet name with no heading above it reads as a
+  # headline that lost its text. A story with one source drops the heading and lets its
+  # lead carry the headline, or the same sentence stacks twice.
+  test 'a multi-source story groups outlet links under its heading' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => COOKIES }
 
-    stories = @response.body.scan(%r{<b>.*?</ul>}m)
-
-    assert_not_empty stories
-    stories.each do |story|
-      assert_operator story.scan('<li>').size, :<=, NewsController::SOURCES_PER_STORY,
-                      "a story offers more ways in than the cap: #{story[0, 80]}"
-    end
-
-    # The fixture's lead story runs in several outlets: the first carries the headline
-    # with its outlet in brackets, the rest only their names.
     budget = @response.body[%r{<b>Budget 2024.*?</ul>}m]
 
-    assert_operator budget.scan('<li>').size, :>, 1, 'the alternates are gone again'
-    assert_match %r{Budget \(BBC\.com\)</a>}, budget
+    assert budget, 'a story with several sources lost its heading'
+    assert_operator budget.scan('<li>').size, :>, 1, 'the alternate sources are gone again'
+    assert_operator budget.scan('<li>').size, :<=, NewsController::SOURCES_PER_STORY
+    assert_match %r{<li><a[^>]*>BBC\.com</a></li>}, budget
     assert_match %r{<li><a[^>]*>GOV\.UK</a></li>}, budget
-    assert_no_match(/<li><a[^>]*>[^<]*Martin Lewis/, budget,
-                    'an alternate repeats its whole headline')
+    assert_no_match(/<li><a[^>]*>[^<]*Jeremy Hunt announces/, budget,
+                    'a source under a heading repeats the whole headline')
+  end
+
+  test 'a single-source story is its lead alone, headline and outlet in one line' do
+    stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_no_match(/<b>[^<]*Jealous/, @response.body,
+                    'a lone source under a matching heading stacks the same sentence twice')
+    assert_match %r{<li><a[^>]*>[^<]*fiancé stabbed waitress[^<]*\(Daily Mail\)</a></li>},
+                 @response.body
   end
 
   test 'each article is a list item rather than a loose link in a list' do
@@ -460,9 +464,57 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
-    assert_match 'A story anyone can read', @response.body
+    # The readable story survives as its lead link; single-sourced, it carries no heading.
+    assert_match 'Open story', @response.body
     # No heading is left standing with nothing under it, which would read as a fault.
     assert_no_match(/A story only the blocked cover/, @response.body)
+  end
+
+  # A resolve with no ceiling sits for minutes when Google throttles this host or walks it
+  # through a consent chain, and a page that takes minutes is one the reader is told could
+  # not be opened — on any browser. Every failure mode below has to answer fast with the
+  # titled unavailable page instead.
+  test 'a redirect chain is walked a few steps and then given up on, not followed forever' do
+    stub_request(:get, %r{news\.google\.com/rss/articles/})
+      .to_return(status: 302, headers: { 'Location' => 'https://news.google.com/rss/articles/CBMi?oc=5' })
+
+    get news_article_url, params: { article: 'https://news.google.com/rss/articles/CBMi?oc=5' },
+                          headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'article', @response.body
+    # The cap, the original request, and one retry of the whole resolve.
+    assert_requested :get, %r{news\.google\.com/rss/articles/}, times: (Gnews::MAX_REDIRECTS + 1) * 2
+  end
+
+  test 'a resolve that times out answers as unavailable rather than hanging' do
+    stub_request(:get, %r{news\.google\.com/rss/articles/}).to_raise(Net::OpenTimeout)
+
+    get news_article_url, params: { article: 'https://news.google.com/rss/articles/CBMi?oc=5',
+                                    title: 'Cambridge vigil' },
+                          headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    # The page still says what the story was, and the source link still works.
+    assert_match 'Cambridge vigil', @response.body
+  end
+
+  # Google throttles in flurries: a resolve that fails cold often lands warm a moment
+  # later, and the reader was pressing the link again by hand to the same effect.
+  test 'a resolve that fails once is tried once more before giving up' do
+    stub_request(:get, %r{news\.google\.com/rss/articles/})
+      .to_return({ status: 429, body: '' },
+                 { status: 200, body: '<html data-n-a-ts="1709600000" data-n-a-sg="sig"></html>' })
+    stub_request(:post, %r{news\.google\.com/_/DotsSplashUi})
+      .to_return(status: 200, body: '[["wrb.fr",null,"[\"https://www.theguardian.com/x\"]"]]')
+    stub_request(:get, /theguardian\.com/)
+      .to_return(status: 200, body: '<html><body><article><p>Second try read it.</p></article></body></html>')
+
+    get news_article_url, params: { article: 'https://news.google.com/rss/articles/CBMi?oc=5' },
+                          headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Second try read it.', @response.body
   end
 
   test 'still says what the story was when the publisher refuses the page' do

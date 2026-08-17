@@ -26,11 +26,17 @@ class Gnews
     @useragent
   end
 
+  # Everything here answers inside a few seconds or answers nil, never hangs. A resolve
+  # with no timeout and no redirect cap sits for minutes when Google throttles this host's
+  # address or walks it through a consent chain, and a page that takes minutes is one the
+  # reader is told could not be opened. nil renders in an instant as the titled
+  # unavailable page instead, which every browser can open.
+  TIMEOUT_SECONDS = 5
+  MAX_REDIRECTS = 5
+
   def get_article(url)
-    res = Net::HTTP.get_response(URI(url), { 'user-agent' => @useragent })
-    while res.code.start_with?('3')
-      res = Net::HTTP.get_response(URI(res.to_hash['location'][0]), { 'user-agent' => @useragent })
-    end
+    res = follow_redirects(get_with_timeout(URI(url)))
+    return nil unless res.is_a?(Net::HTTPSuccess)
 
     timestamp = get_timestamp(res.body)
     signature = get_signature(res.body)
@@ -38,9 +44,10 @@ class Gnews
     # neither value in it. Better to say we cannot open it than to die on a nil.
     return nil if timestamp.nil? || signature.nil?
 
-    url.gsub!('https://news.google.com/rss/articles/', '')
-    url.gsub!('?oc=5', '')
-    rss_to_url(url, timestamp, signature)
+    # A copy, not a mutation: the caller retries with the same URL when a resolve fails,
+    # and a half-stripped string must not be what the second attempt fetches.
+    rss_to_url(url.sub('https://news.google.com/rss/articles/', '').sub('?oc=5', ''),
+               timestamp, signature)
   end
 
   def get_articles_from_api(search_query = nil)
@@ -137,10 +144,39 @@ class Gnews
   end
 
   def rss_to_url(url, timestamp, signature)
-    uri = 'https://news.google.com/_/DotsSplashUi/data/batchexecute' # ?rpcids=Fbv4je"
+    uri = URI('https://news.google.com/_/DotsSplashUi/data/batchexecute') # ?rpcids=Fbv4je"
     req = '[[["Fbv4je","[\"garturlreq\",[[\"en-GB\",\"GB\",[\"FINANCE_TOP_INDICES\",\"WEB_TEST_1_0_0\"],null,null,1,1,\"GB:en\",null,0,null,null,null,null,null,0,5],\"en-GB\",\"GB\",1,[2,4,8],1,1,\"691331303\",0,0,null,0],\"' + url + '\",' + timestamp + ',\"' + signature + '\"]",null,"generic"]]]'
-    res = Net::HTTP.post_form URI(uri), { 'f.req' => req }
+    res = Net::HTTP.start(uri.host, uri.port, use_ssl: true,
+                                              open_timeout: TIMEOUT_SECONDS, read_timeout: TIMEOUT_SECONDS) do |http|
+      http.request(Net::HTTP::Post.new(uri).tap { |post| post.set_form_data('f.req' => req) })
+    end
     resolved_url(res.body)
+  rescue StandardError => e
+    Rails.logger.warn("News article resolve refused - #{e.class}")
+    nil
+  end
+
+  # A few steps and no further: an uncapped chain is how a consent loop holds a page open
+  # for minutes.
+  def follow_redirects(res)
+    MAX_REDIRECTS.times do
+      break unless res&.code&.start_with?('3')
+
+      res = get_with_timeout(URI(res.to_hash['location'][0]))
+    end
+    res
+  end
+
+  # One request that answers inside the timeout or answers nil; the rescue covers DNS,
+  # connection and read failures alike, all of which mean the same thing to the reader.
+  def get_with_timeout(uri)
+    Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https',
+                                        open_timeout: TIMEOUT_SECONDS, read_timeout: TIMEOUT_SECONDS) do |http|
+      http.request(Net::HTTP::Get.new(uri, { 'user-agent' => @useragent }))
+    end
+  rescue StandardError => e
+    Rails.logger.warn("News article fetch failed - #{e.class}")
+    nil
   end
 
   # The URL arrives inside a JSON string inside a JSON array, behind a few characters of

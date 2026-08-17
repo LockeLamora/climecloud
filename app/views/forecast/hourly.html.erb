@@ -1,52 +1,29 @@
 <h1><%= phosphor_text t('forecast.hourly_title') %></h1>
 <%= phosphor_text "#{cookies["city"]}, #{cookies["state"]}" %><br />
 <%=link_to "1 #{t('forecast.switch_to_daily')}", "/forecast/daily", accesskey: "1" %>
-<%# On the phosphor styles the table travels as a few glyph images, each row one monospace
-    line — a table of cells is both unlit and, at four columns on a 240px screen, wraps its
-    own brackets onto lines of their own. %>
-<% if phosphor_theme %>
-<%# The wind unit lives in the header — repeating it on every row pushed the rain past the
-    23 characters a glyph line holds and wrapped it onto a line of its own. Rain shows the
-    chance while it is dry and the amount once rain is coming, each being the number that
-    matters in that case. %>
-<% rows = ["TIME #{@units[:temp]}(FEEL) #{@units[:wind].upcase} RAIN"] + @times.each_index.map do |i|
+<%# One line per hour on every style, the columns aligned by the monospace where the theme
+    has one. A table of cells at four columns on a 240px screen wraps its own brackets onto
+    lines of their own and clips glyphs mid-character; a line only ever grows downwards,
+    which is the direction a phone can scroll.
+
+    The wind unit lives in the header — repeated on every row it pushes the rain off the
+    end of the line. Rain shows the chance while it is dry and the amount once rain is
+    coming, each being the number that matters in that case. %>
+<% header = "#{t('forecast.time')} #{@units[:temp]} #{@units[:wind].upcase} #{t('forecast.precip')}" %>
+<% rows = @times.each_index.map do |i|
      row = "#{@times[i].split('T')[1]} #{@temps[i].round}°(#{@feels_like[i].round}) " \
            "#{@wind[i].round} #{forecast_rain(@rain[i], @rain_prob[i])}"
-     row += " SNOW #{@snow[i].round}#{@units[:snowfall]}" if @snow[i].positive?
+     row += " #{t('forecast.snow').upcase} #{@snow[i].round}#{@units[:snowfall]}" if @snow[i].positive?
      row
    end %>
-<%= phosphor_screen(rows) %>
+<% if phosphor_theme %>
+<%= phosphor_screen([header.upcase] + rows) %>
 <% else %>
-<table>
-<%# The proportions, or fixed layout splits 215px four equal ways and the temperature
-    column wraps its brackets onto lines of their own. %>
-<colgroup>
-  <col style="width:22%"><col style="width:32%"><col style="width:22%"><col style="width:24%">
-</colgroup>
-<thead>
-    <tr>
-      <th><%= t('forecast.time') %></th>
-      <th><%= t('forecast.temp_feels') %></th>
-      <th><%= t('forecast.wind') %></th>
-      <th><%= t('forecast.precip') %> <%= @units[:rain]%></th>
-    </tr>
-  </thead>
-
-  <tbody>
-  <% (@times.length).times do |i| %>
-    <tr>
-    <td> <%= @times[i].split('T')[1] %></td>
-    <td> <%= "#{@temps[i].round}#{@units[:temp]}(#{@feels_like[i].round})"%></td>
-    <td> <%= "#{@wind[i].round}#{@units[:wind]}" %></td>
-    <% if @snow[i] > 0 %>
-    <td> <%= "<b>#{t('forecast.snow')}:</b> #{@snow[i]}#{@units[:snowfall]} (#{@rain_prob[i]}%)".html_safe%></td>
-      <% else %>
-    <td> <%= "#{@rain[i]}#{@units[:rain]}(#{@rain_prob[i]}%)"%></td>
-    <% end %>
-    </tr>
-  <% end %>
-  </tbody>
-  </table>
+<br />
+<b><%= header %></b><br />
+<% rows.each do |row| %>
+<%= row %><br />
+<% end %>
 <% end %>
   <br /><br />
   <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

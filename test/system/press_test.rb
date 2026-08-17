@@ -71,10 +71,11 @@ class PressTest < ApplicationSystemTestCase
     page.driver.browser.manage.add_cookie(name: 'country_code', value: 'gb')
 
     visit news_url
-    link = first('.news a')
+    # A single-source story's lead: the multi-source stories offer their links as short
+    # outlet names, and only a full headline is long enough to wrap.
+    link = all('.news a').find { |candidate| candidate.text.length > 40 }
 
-    assert_operator page.evaluate_script('arguments[0].textContent.length', link), :>, 40,
-                    'this test is only meaningful on a headline long enough to wrap'
+    assert link, 'this test is only meaningful on a headline long enough to wrap'
 
     page.execute_script('arguments[0].focus()', link)
 

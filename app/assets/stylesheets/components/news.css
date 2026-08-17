@@ -1,0 +1,14 @@
+/* The news list. A browser indents a <ul> by about 40px, which is most of a narrow column,
+   and the marker costs another few — neither buys anything when every item is one headline.
+   The feed's own markup arrives wrapped in <font> tags, so the wrapping rules go on the
+   item rather than on a selector that only matches this week's HTML. */
+.news ul {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+  }
+
+.news li {
+    margin-bottom: 0.25em;
+    overflow-wrap: break-word;
+  }

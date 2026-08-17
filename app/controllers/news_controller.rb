@@ -135,10 +135,13 @@ class NewsController < ApplicationController
       # carrying literal "&nbsp;" as text, and CGI.unescapeHTML knows only the basic five
       # entities, so the non-breaking spaces are folded by name. The view escapes whatever
       # needs escaping on the way back out.
-      title = CGI.unescapeHTML(strip_tags(article).gsub(/&nbsp;/i, ' ')).squish
-      # The outlet, from the font tag the feed wraps its name in — and off the end of the
-      # headline, where flattening the entry left it reading as part of the sentence. The
-      # view puts it back in brackets; the article page gets the headline clean.
+      # The headline is the first anchor's own text, taken structurally: flattening the
+      # whole entry welds whatever else it carries onto the end — the outlet name, and on
+      # live feeds a trailing "See more headlines on Google News" link. The outlet is the
+      # font tag's text. Both unescaped once, the feed being double-escaped, and never
+      # marked safe: none of this is ours.
+      headline = article[%r{<a\b[^>]*>(.*?)</a>}m, 1]
+      title = CGI.unescapeHTML(strip_tags(headline.presence || article).gsub(/&nbsp;/i, ' ')).squish
       source = CGI.unescapeHTML(article[%r{<font[^>]*>\s*([^<]+)</font>}, 1].to_s).squish
       { article_title: title.delete_suffix(source).strip, article_url: url,
         article_source: source }
@@ -146,7 +149,15 @@ class NewsController < ApplicationController
   end
 
   def scrape_article(url)
-    resolved = gnews.get_article(url)
+    # Twice before giving up: Google throttles this host's address in flurries, and a
+    # resolve that fails cold often lands warm a moment later — the reader was pressing the
+    # link again by hand to the same effect. Both attempts are inside tight timeouts, so
+    # the worst case is still an answer in seconds, not a page that never opens.
+    resolved = nil
+    2.times do
+      resolved = gnews.get_article(url)
+      break if resolved
+    end
     return { error: I18n.t('news.article_unavailable') } if resolved.nil?
 
     @article_url = resolved

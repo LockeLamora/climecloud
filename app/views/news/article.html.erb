@@ -6,7 +6,7 @@
 <% if @title.present? %><b><%= phosphor_text @title %></b><br /><br /><% end %>
 <span class='error'><%= @error %></span><br /><br />
 <% end %>
-<%= phosphor_theme ? phosphor_prose(@article) : @article %>
+<%= @article %>
 <%# Links after the story, so finishing a long article leaves them to hand rather than a %>
 <%# scroll back to the top. The accesskeys work wherever the page is scrolled to. %>
 <br /><br />

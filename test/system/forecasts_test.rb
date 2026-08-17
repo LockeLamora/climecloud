@@ -12,13 +12,12 @@ class ForecastsTest < ApplicationSystemTestCase
     clear_viewport
   end
 
-  # A table is laid out from its contents unless it is told otherwise, so the four columns
-  # here were wider than the screen and the page scrolled sideways. On the handset that
-  # costs the single column reflow and drops the browser into a cursor, which this app has
-  # no keys for. Measured at the real screen size, and at three text sizes, because the
-  # handset picks its own and 16px is only what this desktop browser happens to use.
+  # A forecast wider than the screen scrolls sideways, which on the handset costs the
+  # single column reflow and drops the browser into a cursor this app has no keys for.
+  # The rows are wrapping text lines, so nothing here should ever be wider than the page.
+  # Measured at the real screen size, and at three text sizes, because the handset picks
+  # its own and 16px is only what this desktop browser happens to use.
   test 'neither forecast is wider than the screen at any text size' do
-    stub_request(:get, /api\.open-meteo\.com/).to_return(body: file_fixture('hourly_forecast.json').read)
     narrow_viewport
 
     %w[/forecast/hourly /forecast/daily].each do |path|
@@ -27,22 +26,20 @@ class ForecastsTest < ApplicationSystemTestCase
       )
       visit path
 
-      assert_selector 'th'
+      assert_text ':00' if path.include?('hourly')
 
       ['', '12px', '24px'].each do |size|
-        client, scroll, table = page.evaluate_script(<<~JS)
+        client, scroll = page.evaluate_script(<<~JS)
           (() => {
             document.documentElement.style.fontSize = '#{size}';
             return [document.documentElement.clientWidth,
-                    document.documentElement.scrollWidth,
-                    document.querySelector('table').getBoundingClientRect().width];
+                    document.documentElement.scrollWidth];
           })()
         JS
 
         at = size.presence || 'the default size'
 
         assert_equal client, scroll, "#{path} scrolls sideways at #{at}"
-        assert_operator table, :<=, client, "#{path} draws its table wider than the screen at #{at}"
       end
     end
   end
@@ -50,21 +47,23 @@ class ForecastsTest < ApplicationSystemTestCase
   test 'visiting the hourly forecast' do
     stub_request(:get, /api.open-meteo.com/).to_return(body: file_fixture('hourly_forecast.json').read)
     visit '/forecast/hourly'
-    assert_text 'feels like'
+    # The units live in the header line; each row carries the temperature with the feel
+    # in brackets, and snow carries its own unit.
+    assert_text 'Time °C'
     assert_text '18:00'
-    assert_text '6°C(3)'
-    assert_text 'snow: 53.45cm'
+    assert_text '6°(3)'
+    assert_text 'SNOW 53cm'
   end
 
   test 'visiting the hourly forecast and clicking on daily' do
     stub_request(:get, /api.open-meteo.com/).to_return(body: file_fixture('daily_forecast.json').read)
     visit 'forecast/daily'
-    assert_text 'Temp'
-    # The year is dropped: seven days out, in a 54px column.
+    assert_text 'Date °C'
+    # The year is dropped: this is seven days out on a 240px line.
     assert_text '03-06'
     assert_no_text '2024-03-06'
-    # The unit once, at the end of the range.
-    assert_text '2 - 11mph'
-    assert_text 'snow: 53.45cm'
+    # A range with no unit of its own: the header carries it once.
+    assert_text '2-11'
+    assert_text 'SNOW 53cm'
   end
 end
