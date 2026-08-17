@@ -1,10 +1,10 @@
 <div class='route'>
-<b><%= phosphor_text @stop['name'] %></b><br />
+<b><%= glyph_text @stop['name'], heading: true %></b><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <%# A stop with no service at any hour is not the same as a quiet couple of hours, and %>
 <%# calling the first one "nothing due" reads as the dashboard being broken. %>
 <% if @departures.empty? && @error.nil? %>
-<%= phosphor_text(@untimetabled ? t('departures.no_timetable') : t('departures.nothing_due')) %><br />
+<%= glyph_text(@untimetabled ? t('departures.no_timetable') : t('departures.nothing_due')) %><br />
 <% end %>
 <%# Time, service, destination, on one line. A stop named after a railway station is %>
 <%# often a bus stop outside one, so the kind of vehicle is worth the words. It shares %>
@@ -16,8 +16,8 @@
             departure[:towards].presence || t('departures.unknown_destination')].compact.join(' ')
      tags.any? ? "#{row} (#{tags.join(', ')})" : row
    end %>
-<% if phosphor_theme %>
-<%= phosphor_screen(rows) %>
+<% if glyph_theme %>
+<%= glyph_screen(rows) %>
 <% else %>
 <% @departures.each_with_index do |departure, i| %>
 <%= departure[:time] %>
@@ -30,7 +30,7 @@
 <% end %>
 <% end %>
 <% if @departures.any? %>
-<br /><%= phosphor_text t('departures.times_note') %><br />
+<br /><%= glyph_text t('departures.times_note') %><br />
 <% end %>
 <br />
 <%= link_to "1 #{t('departures.refresh')}", departures_stop_path(id: @stop["id"]), accesskey: "1" %><br />

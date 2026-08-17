@@ -1,13 +1,13 @@
 <div class='route'>
-<b><%= phosphor_text @account['name'] %></b><br /><br />
+<b><%= glyph_text @account['name'], heading: true %></b><br /><br />
 <%# Grouped in threes, the way anyone reads a code back to a login form. %>
-<h1><%= phosphor_text "#{@code[0, 3]} #{@code[3, 3]}" %></h1>
-<%= phosphor_text t('totp.seconds_left', seconds: @seconds) %><br /><br />
+<h1><%= glyph_text "#{@code[0, 3]} #{@code[3, 3]}", heading: true %></h1>
+<%= glyph_text t('totp.seconds_left', seconds: @seconds) %><br /><br />
 <%= link_to "1 #{t('totp.refresh')}", totp_code_path(name: @account['name']), accesskey: "1" %><br /><br />
 <% if @reveal %>
 <%# The key as the site issued it, for writing down or enrolling elsewhere: this cookie is
     the only copy, and losing it is being locked out. %>
-<%= phosphor_text t('totp.secret_is') %><br />
+<%= glyph_text t('totp.secret_is') %><br />
 <b><%= setup_key @account['secret'] %></b><br /><br />
 <% else %>
 <%= link_to "8 #{t('totp.show_secret')}", totp_code_path(name: @account['name'], reveal: '1'),

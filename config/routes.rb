@@ -26,9 +26,10 @@ Rails.application.routes.draw do
   delete 'places_forget' => 'places#forget'
   get 'wikipedia' => 'wikipedia#search'
   get 'wikipedia_article' => 'wikipedia#article'
-  # Text rendered as a phosphor screen, for the styles whose glow can only reach the
-  # handset inside an image. Reads nothing and calls nothing external.
-  get 'phosphor' => 'phosphor#text'
+  # Text rendered as an image — a phosphor screen, or a machine's own character set — for
+  # the styles whose look can only reach the handset that way. Reads nothing and calls
+  # nothing external.
+  get 'glyph' => 'glyph#text'
 
   # Everything under one prefix, deliberately: the cookie holding the secrets is scoped to
   # /totp, and the browser only sends it to paths beneath that.

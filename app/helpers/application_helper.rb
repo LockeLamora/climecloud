@@ -1,67 +1,76 @@
 module ApplicationHelper
-  # The styles whose glow can only reach the handset as an image. See PhosphorGlyph.
+  # The styles whose text can only reach the handset as an image: the phosphor styles for
+  # their glow, the C64 and teletext for their character sets. See PhosphorGlyph and
+  # CellGlyph.
   PHOSPHOR_THEMES = %w[crt-green crt-amber plasma].freeze
+  GLYPH_THEMES = (PHOSPHOR_THEMES + GlyphController::CHARSETS.keys).freeze
 
-  # On the phosphor styles every text link is drawn as a phosphor screen: the label goes to
-  # the SVG endpoint and comes back as an image with the bloom and the raster baked in,
-  # inside the same anchor, so the keypad and the access keys reach it exactly as before.
+  # On the glyph styles every text link is drawn as an image: the label goes to the SVG
+  # endpoint and comes back with the style baked in — the bloom and the raster, or the
+  # machine's pixels — inside the same anchor, so the keypad and the access keys reach it
+  # exactly as before.
   #
   # Overridden here rather than changed at each call site, so every view keeps writing
   # plain link_to and every other style keeps plain text. Block and non-string forms pass
   # through untouched: those wrap markup of their own.
   def link_to(name = nil, options = nil, html_options = nil, &)
-    return super if block_given? || !name.is_a?(String) || phosphor_theme.nil?
+    return super if block_given? || !name.is_a?(String) || glyph_theme.nil?
 
-    super(options, html_options) { phosphor_glyph(name) }
+    super(options, html_options) { glyph_image(name, link: true) }
   end
 
   # The one-button forms take the same treatment, or saving a stop and forgetting one sit
-  # unlit between glowing links.
+  # untreated between drawn links.
   def button_to(name = nil, options = nil, html_options = nil, &)
-    return super if block_given? || !name.is_a?(String) || phosphor_theme.nil?
+    return super if block_given? || !name.is_a?(String) || glyph_theme.nil?
 
-    super(options, html_options) { phosphor_glyph(name) }
+    super(options, html_options) { glyph_image(name, link: true) }
   end
 
-  # For text that is not a link: headings and titles, glyphed in place by the views.
-  # Anything else, or any other theme, comes back as it went in.
-  def phosphor_text(text)
-    phosphor_theme ? phosphor_glyph(text) : text
+  # For text that is not a link: headings and titles, drawn in place by the views. A
+  # heading is marked as one, for the styles that write their headings in a colour of
+  # their own. Anything else, or any other theme, comes back as it went in.
+  def glyph_text(text, heading: false)
+    glyph_theme ? glyph_image(text, heading: heading) : text
   end
 
   # The alt is the label, so a failed image degrades to the plain text link it replaced.
-  # The theme rides in the URL because the response is cached long and per-hue.
-  def phosphor_glyph(text, keep_case: false, quiet: false)
-    lines = PhosphorGlyph.lines(text, keep_case: keep_case, quiet: quiet)
+  # The theme rides in the URL because the response is cached long and per-hue, and the
+  # link and heading flags ride with it: the C64 writes its links and teletext its
+  # headings in colours of their own, baked into the image.
+  def glyph_image(text, keep_case: false, quiet: false, link: false, heading: false)
+    renderer = glyph_renderer
+    lines = renderer.lines(text, keep_case: keep_case, quiet: quiet)
 
-    tag.img(src: phosphor_path(t: text, s: phosphor_theme,
-                               c: keep_case ? '1' : nil, q: quiet ? '1' : nil),
+    tag.img(src: glyph_path(t: text, s: glyph_theme, c: keep_case ? '1' : nil,
+                            q: quiet ? '1' : nil, l: link ? '1' : nil,
+                            e: heading ? '1' : nil),
             alt: text,
-            width: PhosphorGlyph.width(lines, quiet: quiet),
-            height: PhosphorGlyph.height(lines, quiet: quiet))
+            width: renderer.width(lines, quiet: quiet),
+            height: renderer.height(lines, quiet: quiet))
   end
 
-  # An attribution line, lit like everything else but at the quiet size and in the dim
+  # An attribution line, drawn like everything else but at the quiet size and in the dim
   # tone, as .credit keeps it elsewhere. The block form of link_to passes through the
-  # phosphor override untouched, which is what lets this choose its own glyph.
+  # glyph override untouched, which is what lets this choose its own image.
   def credit_link(text, url)
-    return link_to(text, url, target: '_blank') unless phosphor_theme
+    return link_to(text, url, target: '_blank') unless glyph_theme
 
-    link_to(url, target: '_blank') { phosphor_glyph(text, quiet: true) }
+    link_to(url, target: '_blank') { glyph_image(text, quiet: true) }
   end
 
   # A table drawn as a terminal would draw it: each row one line, columns aligned by the
-  # monospace itself, the whole thing a handful of glyphs instead of a hundred cells. Eight
-  # rows to a glyph keeps every URL short and the request count low.
-  def phosphor_screen(rows)
+  # fixed-width cells themselves, the whole thing a handful of glyphs instead of a hundred
+  # table cells. Eight rows to a glyph keeps every URL short and the request count low.
+  def glyph_screen(rows)
     safe_join(rows.each_slice(8).map do |slice|
-      tag.p(phosphor_glyph(slice.join("\n")))
+      tag.p(glyph_image(slice.join("\n")))
     end)
   end
 
-  def phosphor_theme
+  def glyph_theme
     theme = Themes.resolve(cookies[:theme])
-    PHOSPHOR_THEMES.include?(theme) ? theme : nil
+    GLYPH_THEMES.include?(theme) ? theme : nil
   end
 
   # The chosen palette, as a style block for the document head. See Themes::BASE_PALETTE
@@ -108,6 +117,10 @@ module ApplicationHelper
   end
 
   private
+
+  def glyph_renderer
+    GlyphController::CHARSETS.fetch(glyph_theme, PhosphorGlyph)
+  end
 
   # Hands back the dimmer body text to a browser that will draw a wide soft bloom over it,
   # where the colour and the shadow share the brightness between them. The handset gets a

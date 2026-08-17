@@ -42,7 +42,7 @@ body[data-theme="unstyled"] { }
  * wide, the approximation is the same band.
  *
  * The glow reaches the handset another way entirely: every text link on these styles is
- * drawn as an SVG by PhosphorController, with the bloom and the raster baked into the
+ * drawn as an SVG by GlyphController, with the bloom and the raster baked into the
  * image, which Opera's servers rasterise and deliver as pixels. The rules here only lay
  * those images out; the @supports block draws the same treatment as live effects over the
  * page for a browser that composites.
@@ -224,6 +224,15 @@ body[data-theme="teletext"] b {
   background: #0000AA;
   color: #FFFF00;
   padding: 0.0625em 0.25em;
+}
+
+/* The block behind a bold heading has to cover the glyph image inside it, and an inline
+ * box paints its background from the text's own line metrics — behind a taller image the
+ * blue lands as one text-height strip at the baseline, the last line of a wrapped
+ * heading. As a block of its contents it covers the whole image. The h1 and h2 are
+ * blocks already. */
+body[data-theme="teletext"] b {
+  display: inline-block;
 }
 
 /* ----------------------------------------------------------------- 05 flap ---- */
@@ -417,11 +426,12 @@ body[data-theme="workbench"] h2 {
 /* VIC-II colours. The light blue border is the icon and the cost: 6px each side takes 12px
  * off the width, which body absorbs by shrinking its content box, and the column inside
  * takes what is left rather than holding a width of its own. Capitals because the default
- * character set had no lower case. */
+ * character set had no lower case, and bold because its 8x8 characters were heavy strokes
+ * that filled their cells — a thin face reads as the wrong machine. */
 body[data-theme="c64"] {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-weight: bold;
   border: 6px solid #6C5EB5;
   /* The frame is the edge of the screen on the machine this borrows from, so the margin the
    * browser gives body moves inside the border as padding instead, or the frame sits 8px in

@@ -1,11 +1,11 @@
 <div class='route'>
-<%= phosphor_text [t('directions.turn_of', number: @step_index + 1, total: @steps.length),
+<%= glyph_text [t('directions.turn_of', number: @step_index + 1, total: @steps.length),
                    (" (#{t('directions.part_of', number: @segment + 1, total: @segments)})" if @segments > 1)].compact.join %><br />
 <%= link_to "3 #{t('directions.switch_whole_route')}", directions_plan_path(@route_params), accesskey: "3" %>
 <br /><br />
-<%= phosphor_theme ? phosphor_glyph(strip_tags(@step["html_instructions"]), keep_case: true) : @step["html_instructions"].html_safe %><br />
-<%= phosphor_text "#{@step["distance"]["text"]} (#{@step["duration"]["text"]})" %>
-<% if @heading %><br /><%= phosphor_text "#{t('directions.heading')} #{@heading} #{t('directions.map_north_up')}" %><% end %>
+<%= glyph_theme ? glyph_image(strip_tags(@step["html_instructions"]), keep_case: true) : @step["html_instructions"].html_safe %><br />
+<%= glyph_text "#{@step["distance"]["text"]} (#{@step["duration"]["text"]})" %>
+<% if @heading %><br /><%= glyph_text "#{t('directions.heading')} #{@heading} #{t('directions.map_north_up')}" %><% end %>
 <br />
 <img src="data:image/png;base64,<%= @image %>" />
 <br /><br />
@@ -14,7 +14,7 @@
 <% elsif @step_index + 1 < @steps.length %>
 <%= link_to "1 #{t('directions.next_turn')}", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index + 1)), accesskey: "1" %><br />
 <% else %>
-<%= phosphor_theme ? phosphor_glyph("#{t('directions.arrive')} #{@end}") : "<b>#{t('directions.arrive')}</b> #{@end}".html_safe %><br />
+<%= glyph_theme ? glyph_image("#{t('directions.arrive')} #{@end}") : "<b>#{t('directions.arrive')}</b> #{@end}".html_safe %><br />
 <% end %>
 <% if @segment > 0 %>
 <%= link_to "2 #{t('directions.back_along')}", directions_plan_path(@route_params.merge(view: 'turn', step: @step_index, segment: @segment - 1)), accesskey: "2" %><br />

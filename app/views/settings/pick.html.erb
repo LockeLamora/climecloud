@@ -1,6 +1,6 @@
 <div class='route'>
-<%= phosphor_text t('settings.other_places') %><br />
-<b><%= phosphor_text params[:postcode].to_s %></b>
+<%= glyph_text t('settings.other_places') %><br />
+<b><%= glyph_text params[:postcode].to_s, heading: true %></b>
 <br /><br />
 <ol>
 <% @candidates.each do |candidate| %>

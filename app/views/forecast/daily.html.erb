@@ -1,5 +1,5 @@
-<h1><%= phosphor_text t('forecast.daily_title') %></h1>
-<%= phosphor_text "#{cookies["city"]}, #{cookies["state"]}" %><br />
+<h1><%= glyph_text t('forecast.daily_title'), heading: true %></h1>
+<%= glyph_text "#{cookies["city"]}, #{cookies["state"]}" %><br />
 <%=link_to "1 #{t('forecast.switch_to_hourly')}", "/forecast/hourly", accesskey: "1" %>
 
 <%# One line per day on every style; see the hourly view. The year is off the front of the
@@ -11,14 +11,16 @@
      row += " #{t('forecast.snow').upcase} #{@snow[i].round}#{@units[:snowfall]}" if @snow[i].positive?
      row
    end %>
-<% if phosphor_theme %>
-<%= phosphor_screen([header.upcase] + rows) %>
+<% if glyph_theme %>
+<%= glyph_screen([header.upcase] + rows) %>
 <% else %>
 <br />
+<div class="forecast">
 <b><%= header %></b><br />
 <% rows.each do |row| %>
 <%= row %><br />
 <% end %>
+</div>
 <% end %>
   <br /><br />
   <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

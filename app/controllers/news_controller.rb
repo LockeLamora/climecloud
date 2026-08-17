@@ -70,13 +70,26 @@ class NewsController < ApplicationController
     'Fast Company', 'PhoneArena', 'MedPage Today', 'GamesHub', 'KGW', 'Vogue Adria',
     'Medical Xpress', 'Institute for the Study of War', 'GameSpot', 'Benzinga',
     'Firstpost', 'Investing.com', 'MMORPG.com', 'SpaceDaily', 'Space War',
-    'Belfast Telegraph',
+    'Belfast Telegraph', 'F4W/WON', 'KTLA', 'Phys.org', 'This Is Anfield',
+    'TweakTown', 'economist.com', 'merseyside.police.uk',
     # 401 or 402, want a subscription
-    'Barron\'s', 'MarketWatch', 'People.com',
+    'Barron\'s', 'MarketWatch', 'People.com', 'WSJ', 'ew.com', 'instyle.com',
+    # By URL: the feed names this outlet "The Times", which sits inside too many headlines
+    # to match on.
+    'thetimes.com',
     # 429, rate limiting us
     'RACER', 'The Tribune-Democrat',
+    # Answer 200 with a JavaScript challenge or an empty client-rendered shell, so there
+    # is nothing in the page to read. The Reach titles (Belfast Live through Daily Star)
+    # all sit behind the same AWS WAF challenge. Domains rather than names where the name
+    # sits inside too many headlines to match on.
+    'Belfast Live', 'Liverpool Echo', 'Manchester Evening News', 'Football London',
+    'Daily Express', 'Daily Star', 'mirror.co.uk',
+    'espn.com', 'ign.com', 'The Japan News', 'euronews.com', 'manutd.com', 'whufc.com',
+    'infrastructure-now.co.uk',
     # 400, not an article page at all
-    'Facebook'
+    # As the URL rather than the outlet name, since the feed prints whichever page posted.
+    'facebook.com'
   ].freeze
 
   # A lead source per story with short alternates, and a ceiling on the stories.
@@ -99,7 +112,12 @@ class NewsController < ApplicationController
 
   def prepare_articles
     @news_items = @articles.first(STORIES).filter_map do |item|
+      # One link per outlet: Google lists an outlet's follow-up pieces as separate entries,
+      # and a multi-source story offers its links as outlet names alone, so two entries
+      # from one outlet would read as the same link twice. Outlets without a name stay
+      # apart, keyed by their address instead.
       articles = readable_articles(item)
+                 .uniq { |article| article[:article_source].presence || article[:article_url] }
       # A story covered only by blocked sources is dropped whole. Leaving its heading with
       # an empty list underneath reads as a fault, and with nearly forty sources blocked it
       # happens often enough to matter.

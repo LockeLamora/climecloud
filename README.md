@@ -69,7 +69,7 @@ The phone can be the authenticator. When a site offers 2FA it shows a setup key 
 
 **Themes**
 
-The look is chosen in settings and remembered. The styles copy old screens: phosphor terminals, LCDs, Teletext, a departure board, a Game Boy. All of them work on the handset, though the ones built on a glow or on scanlines come out plainer there than on a modern phone.
+The look is chosen in settings and remembered. The styles copy old screens: phosphor terminals, LCDs, Teletext, a departure board, a Game Boy. All of them work on the handset too — the phosphor glow and scanlines travel as rendered images, and Commodore callback draws its text in the C64's own character set, taken from the machine's character ROM.
 
 * (No theme) — black on white, the default
 * Amber phosphor

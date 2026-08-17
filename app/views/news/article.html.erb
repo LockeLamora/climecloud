@@ -3,7 +3,7 @@
 <%# want a subscription, or lay the story out in a way nothing can find. The headline came %>
 <%# from the feed, so it can still say what the story was, and the source link still works. %>
 <% if @error.present? %>
-<% if @title.present? %><b><%= phosphor_text @title %></b><br /><br /><% end %>
+<% if @title.present? %><b><%= glyph_text @title, heading: true %></b><br /><br /><% end %>
 <span class='error'><%= @error %></span><br /><br />
 <% end %>
 <%= @article %>

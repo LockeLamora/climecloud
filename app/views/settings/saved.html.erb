@@ -1,10 +1,10 @@
 <div class='route'>
-<%= phosphor_text t('settings.saved_as') %><br />
-<b><%= phosphor_text(cookies['city'].presence || @place.to_s) %></b>
+<%= glyph_text t('settings.saved_as') %><br />
+<b><%= glyph_text(cookies['city'].presence || @place.to_s, heading: true) %></b>
 <br /><br />
 <%# Always shown, even when there is only one choice: it is the only way back to a %>
 <%# language you can read after moving to a country that speaks another. %>
-<%= phosphor_text t('settings.language') %><br />
+<%= glyph_text t('settings.language') %><br />
 <% @languages.each_with_index do |locale, index| %>
 <%= button_to "#{index + 1} #{Languages.name_for(locale)}", settings_language_path,
               params: { locale: locale },

@@ -1,11 +1,11 @@
 <div class='route'>
-<h2><%= phosphor_text t('totp.backup_all') %></h2>
+<h2><%= glyph_text t('totp.backup_all'), heading: true %></h2>
 <% if @accounts.empty? %>
-<%= phosphor_text t('totp.none_saved') %><br /><br />
+<%= glyph_text t('totp.none_saved') %><br /><br />
 <% else %>
-<%= phosphor_text t('totp.backup_hint') %><br /><br />
+<%= glyph_text t('totp.backup_hint') %><br /><br />
 <% @accounts.each do |account| %>
-<%= phosphor_text account['name'] %><br />
+<%= glyph_text account['name'] %><br />
 <b><%= setup_key account['secret'] %></b><br /><br />
 <% end %>
 <% end %>

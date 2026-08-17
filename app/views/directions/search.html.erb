@@ -1,14 +1,14 @@
-<h1><%= phosphor_text t('directions.title') %></h1>
+<h1><%= glyph_text t('directions.title'), heading: true %></h1>
 <%= @error ? "<span class='error'>#{@error}</span>".html_safe : nil %>
 <%= form_with url:"directions_plan", method: :get, local: true do |f| %>
-    <%= f.label(t('directions.from')) { phosphor_text t('directions.from') } %>
+    <%= f.label(t('directions.from')) { glyph_text t('directions.from') } %>
     <%= f.text_field :origin, class: "big_text_field", required: true %>
     <br /><br />
-    <%= f.label(t('directions.to')) { phosphor_text t('directions.to') } %>
+    <%= f.label(t('directions.to')) { glyph_text t('directions.to') } %>
     <%= f.text_field :destination, class: "big_text_field", required: true %>
     <br /><br />
 
-    <%= f.label(t('directions.mode')) { phosphor_text t('directions.mode') } %><br />
+    <%= f.label(t('directions.mode')) { glyph_text t('directions.mode') } %><br />
     <%= f.select :mode, options_for_select([[t('directions.on_foot'), 'walking'],
                                             [t('directions.driving'), 'driving'],
                                             [t('directions.transit'), 'transit']]) %><br />

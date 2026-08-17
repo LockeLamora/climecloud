@@ -1,8 +1,8 @@
 <div class='route'>
-<h2><%= phosphor_text t('places.title') %></h2>
+<h2><%= glyph_text t('places.title'), heading: true %></h2>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @place.present? %>
-<%= phosphor_text "#{t('places.near')} #{@place}" %><br />
+<%= glyph_text "#{t('places.near')} #{@place}" %><br />
 <% end %>
 <br />
 <% @kinds.each_with_index do |kind, index| %>
@@ -28,7 +28,7 @@
 <br /><br />
 <% end %>
 <%= form_with url: "places_search", method: :get, local: true do |f| %>
-    <%= f.label(t('places.somewhere_else')) { phosphor_text t('places.somewhere_else') } %>
+    <%= f.label(t('places.somewhere_else')) { glyph_text t('places.somewhere_else') } %>
     <%= f.text_field :query, class: "big_text_field" %>
     <br /><br />
     <%= f.submit t('common.search') %>

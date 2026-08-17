@@ -1,6 +1,6 @@
 <div class='route'>
-<%= phosphor_text t('common.which_did_you_mean') %><br />
-<b><%= phosphor_text params[:query].to_s %></b>
+<%= glyph_text t('common.which_did_you_mean') %><br />
+<b><%= glyph_text params[:query].to_s, heading: true %></b>
 <br /><br />
 <ol>
 <% @candidates.each do |candidate| %>

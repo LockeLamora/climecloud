@@ -1,7 +1,7 @@
 <div class='route'>
-<h2><%= phosphor_text t('totp.title') %></h2>
+<h2><%= glyph_text t('totp.title'), heading: true %></h2>
 <% if !@any %>
-<%= phosphor_text t('totp.none_saved') %><br /><br />
+<%= glyph_text t('totp.none_saved') %><br /><br />
 <% else %>
 <%# Six to a page, numbered like every other list here: the digits 1 to 6 select an
     account, 7 turns the page, and 8, 9 and 0 keep their fixed jobs whichever page this

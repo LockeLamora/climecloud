@@ -114,8 +114,11 @@ module Themes
     'workbench' => { paper: '#A8A8A8', ink: '#000000', link: '#000000', press_bg: '#0055AA',
                      press_ink: '#FFFFFF', quiet: '#4A4A4A', emphasis: '#000000' },
 
+    # Links take VIC-II white — one keystroke away on the machine, and the only thing
+    # marking a link here — while headings keep the text's own light blue, as the boot
+    # screen kept everything.
     'c64' => { paper: '#352879', ink: '#8578CF', link: '#FFFFFF', press_bg: '#FFFFFF',
-               press_ink: '#352879', quiet: '#6C5EB5', emphasis: '#FFFFFF' },
+               press_ink: '#352879', quiet: '#6C5EB5', emphasis: '#8578CF' },
 
     # Red sits too close to this theme's paper to read as an error, so error takes the
     # darkest value in the palette instead.

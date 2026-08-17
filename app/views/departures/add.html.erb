@@ -1,8 +1,8 @@
 <div class='route'>
-<%= phosphor_text t('departures.near', place: cookies['city'].presence || t('departures.your_location')) %><br />
+<%= glyph_text t('departures.near', place: cookies['city'].presence || t('departures.your_location')) %><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @nearby.empty? && @error.nil? %>
-<%= phosphor_text t('departures.no_stops', radius: Departures::NEARBY_RADIUS_METRES) %><br />
+<%= glyph_text t('departures.no_stops', radius: Departures::NEARBY_RADIUS_METRES) %><br />
 <% end %>
 <ol start="<%= (@page * Departures::PAGE_SIZE) + 1 %>">
 <% @nearby.each do |stop| %>

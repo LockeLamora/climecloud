@@ -1,5 +1,5 @@
 <div class='news'>
-<b><%= phosphor_text(@article ? @article[:title] : @title.to_s) %></b><br />
+<b><%= glyph_text(@article ? @article[:title] : @title.to_s, heading: true) %></b><br />
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <% if @article %>
 <br />

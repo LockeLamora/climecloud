@@ -81,7 +81,7 @@ class ThemeTest < ApplicationSystemTestCase
     assert_equal Themes::NAMES.length, palettes.length
   end
 
-  # The forecast is lines of text on every style — glyph images on the phosphor styles,
+  # The forecast is lines of text on every style — glyph images on the glyph styles,
   # plain lines elsewhere — and its bold header line takes whatever the style gives bold
   # text, rather than a table header's own green.
   test 'the forecast header line follows the chosen style' do
@@ -90,16 +90,80 @@ class ThemeTest < ApplicationSystemTestCase
       headers: { 'Content-Type' => 'application/json' }
     )
 
-    # Teletext rather than a phosphor style, so the lines are readable text rather than
-    # glyph images.
+    # The departure board rather than a glyph style, so the lines are readable text
+    # rather than images.
+    page.driver.browser.manage.add_cookie(name: 'theme', value: 'flap')
+    visit '/forecast/hourly'
+
+    assert_no_selector 'table'
+    assert_selector 'b', text: /Time/i
+    assert_equal 'rgb(255, 197, 51)', style('b', 'backgroundColor'), 'bold is a filled block here'
+    assert_equal 'rgb(11, 11, 12)', style('b', 'color')
+    assert_text '18:00'
+  end
+
+  # On teletext the text travels as the SAA5050's own character set, drawn by the glyph
+  # endpoint. The images carry no background of their own, so the blue block a heading
+  # gets from the stylesheet shows through the glyph's unlit pixels.
+  test 'teletext draws its text in the SAA5050 character set' do
+    stub_request(:get, /api\.open-meteo\.com/).to_return(
+      status: 200, body: file_fixture('hourly_forecast.json').read,
+      headers: { 'Content-Type' => 'application/json' }
+    )
+
     page.driver.browser.manage.add_cookie(name: 'theme', value: 'teletext')
     visit '/forecast/hourly'
 
     assert_no_selector 'table'
-    assert_selector 'b', text: /Time/
-    assert_equal 'rgb(0, 0, 170)', style('b', 'backgroundColor'), 'bold is a filled block here'
-    assert_equal 'rgb(255, 255, 0)', style('b', 'color')
-    assert_text '18:00'
+    assert_selector 'img[src^="/glyph?"][src*="s=teletext"]'
+    assert_equal 'rgb(0, 0, 170)', style('h1', 'backgroundColor'),
+                 'the heading block has to survive under the glyph image'
+  end
+
+  # A story heading is a <b> around a glyph image, and a headline wraps to several lines
+  # inside that one image. An inline box paints its background from the text's line
+  # metrics, which put the blue behind only the image's last line; the block has to cover
+  # the whole image.
+  test 'a teletext heading block covers every line of a wrapped heading' do
+    stub_request(:get, /news\.google\.com/).to_return(body: file_fixture('news_response.xml').read)
+    page.driver.browser.manage.add_cookie(name: 'country_code', value: 'gb')
+    page.driver.browser.manage.add_cookie(name: 'theme', value: 'teletext')
+
+    visit '/news'
+
+    box, image = page.evaluate_script(<<~JS)
+      (() => {
+        const heading = [...document.querySelectorAll('b')].find(b => {
+          const img = b.querySelector('img');
+          return img && img.getBoundingClientRect().height > 30;
+        });
+        const img = heading && heading.querySelector('img');
+        return heading ? [heading.getBoundingClientRect().height,
+                          img.getBoundingClientRect().height] : [null, null];
+      })()
+    JS
+
+    assert image, 'this test is only meaningful on a heading that wraps inside its image'
+    assert_operator box, :>=, image, 'the blue block stops short of the wrapped lines'
+  end
+
+  # On C64 the text travels as the machine's own character set, drawn by the glyph
+  # endpoint, so the forecast is a handful of images; whatever stays as device text — the
+  # form fields, an article's prose — keeps the bold weight the heavy 8x8 strokes had, at
+  # their natural pitch.
+  test 'c64 draws the forecast in its own character set' do
+    stub_request(:get, /api\.open-meteo\.com/).to_return(
+      status: 200, body: file_fixture('hourly_forecast.json').read,
+      headers: { 'Content-Type' => 'application/json' }
+    )
+
+    page.driver.browser.manage.add_cookie(name: 'theme', value: 'c64')
+    visit '/forecast/hourly'
+
+    assert_no_selector 'table'
+    assert_selector 'img[src^="/glyph?"][src*="s=c64"]'
+    assert_equal '700', style('body', 'fontWeight'), 'the strokes filled their cells'
+    assert_equal 'normal', style('body', 'letterSpacing'), 'the grid had no gaps to widen'
   end
 
   # A departure board has no underlines: the card is what says a row can be pressed. The
@@ -151,8 +215,8 @@ class ThemeTest < ApplicationSystemTestCase
       visit_with_theme(name)
 
       assert_not_equal 'none', style('body', 'textShadow'), "#{name}: no bloom where one can be drawn"
-      # A link is marked by being a lit glyph image, drawn by PhosphorController.
-      assert_selector 'a img[src^="/phosphor"]', minimum: 1
+      # A link is marked by being a lit glyph image, drawn by GlyphController.
+      assert_selector 'a img[src^="/glyph"]', minimum: 1
     end
   end
 
@@ -184,7 +248,7 @@ class ThemeTest < ApplicationSystemTestCase
 
       if style('a', 'color') == style('body', 'color')
         boxed = style('a', 'borderBottomStyle') != 'none' || style('a', 'boxShadow') != 'none'
-        glyph = page.has_selector?('a img[src^="/phosphor"]', wait: 0)
+        glyph = page.has_selector?('a img[src^="/glyph"]', wait: 0)
 
         assert underlined || boxed || glyph,
                "#{name}: the link is the same colour as the body text and nothing else marks it"

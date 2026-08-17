@@ -1,7 +1,7 @@
 <div class='route'>
 <%= @error ? "<span class='error'>#{@error}</span><br /><br />".html_safe : nil %>
-<%= phosphor_text t('directions.which_field', field: field_label(@field)) %><br />
-<b><%= phosphor_text @route_params[@field].to_s %></b>
+<%= glyph_text t('directions.which_field', field: field_label(@field)) %><br />
+<b><%= glyph_text @route_params[@field].to_s, heading: true %></b>
 <br /><br />
 <ol>
 <% @candidates.each do |candidate| %>

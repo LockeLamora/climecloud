@@ -20,7 +20,7 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     body = @response.body[%r{<body.*</body>}m]
     unlit = body.gsub(/<[^>]+>/, ' ').split.reject { |w| w.length < 3 }
 
-    assert_operator body.scan(%r{<img src="/phosphor}).length, :>=, 10,
+    assert_operator body.scan(%r{<img src="/glyph}).length, :>=, 10,
                     'the labels and headers are not glyphed'
     unlit.each do |word|
       assert_match(/<option[^>]*>[^<]*#{Regexp.escape(word)}/, body,

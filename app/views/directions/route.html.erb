@@ -1,19 +1,19 @@
 <div class='route'>
-<%= phosphor_text "#{@start} to #{@end}" %><br />
+<%= glyph_text "#{@start} to #{@end}" %><br />
 <% Array(@ambiguous).each do |field| %>
 <%= link_to "(#{t('directions.wrong_endpoint', field: field_label(field))})",
             directions_pick_path(@route_params.merge('field' => field).merge(bias_params_for(field))) %><br />
 <% end %>
-<%= phosphor_text @overall_time.to_s %><br />
+<%= glyph_text @overall_time.to_s %><br />
 <%= link_to "(#{t('directions.switch_turn_by_turn')})", directions_plan_path(@route_params.merge(view: 'turn', step: 0)) %>
 <br />
 <img src="data:image/png;base64,<%= @image %>" />
 <br /><br />
-<% if phosphor_theme %>
+<% if glyph_theme %>
 <% rows = @steps.each_with_index.map do |step, i|
      "#{i}- #{step["distance"]["text"]}(#{step["duration"]["text"]}) #{strip_tags(step["html_instructions"])}"
    end %>
-<%= phosphor_screen(rows) %>
+<%= glyph_screen(rows) %>
 <% else %>
 <% @steps.each_with_index do |step, i| %>
     <ol>

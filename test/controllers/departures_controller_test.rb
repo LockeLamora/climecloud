@@ -116,10 +116,10 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
         headers: { 'HTTP_COOKIE' => "#{COOKIES};theme=crt-amber;departures_saved=#{SAVED}" }
 
     assert_response :success
-    rows = CGI.unescape(@response.body[%r{/phosphor\?[^"]*14%3A09[^"]*}].to_s.gsub('&amp;', '&'))
+    rows = CGI.unescape(@response.body[%r{/glyph\?[^"]*14%3A09[^"]*}].to_s.gsub('&amp;', '&'))
 
     assert_match(/14:09.*22.*City Centre/m, rows, 'the departure is not in a glyph row')
-    assert_match(%r{/phosphor\?q=1[^"]*t=[^"]*[Tt]ransitland}, @response.body,
+    assert_match(%r{/glyph\?q=1[^"]*t=[^"]*[Tt]ransitland}, @response.body,
                  'the credit is not the quiet glyph')
   end
 

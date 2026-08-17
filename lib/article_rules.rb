@@ -17,7 +17,10 @@ module ArticleRules
     'cnn.com' => '.article__content p',
     'politicshome.com' => '.newsview p',
     'gov.uk' => '.news-article p',
-    'itv.com' => '#main-content p',
+    # ITV writes its newsletter and podcast plugs inside the article body as paragraphs
+    # wholly in <strong>, which no length or class filter catches; the story's own
+    # paragraphs use none.
+    'itv.com' => '#main-content p:not(:has(strong))',
     'newscientist.com' => '.ArticleContent p',
     'dailymail.co.uk' => "[itemprop='articleBody'] p",
     'indiatimes.com' => '.clearfix *',
@@ -33,7 +36,24 @@ module ArticleRules
     'ynetnews.com' => '.public-DraftEditor-content',
     'pbs.org' => '.body-text p',
     'telegraph.co.uk' => '.articleBodyText',
-    'time.com' => '#article-body p'
+    'time.com' => '#article-body p',
+    'chinadaily.com.cn' => '#Content p',
+    'gamesradar.com' => '#article-body p',
+    'thenews.com.pk' => '.story-detail p',
+    'videogameschronicle.com' => '#content_body p',
+    'whatsonstage.com' => '.news-content p',
+    'oceanographicmagazine.com' => '.user-content p',
+    'marvel.com' => '.ContentBlock__Text p',
+    'shropshire.gov.uk' => '.post .body p',
+    'specificationonline.co.uk' => '.article--content p',
+    'distilledpost.com' => '.w-richtext p',
+    # The body class carries a build hash that changes on deploys; matched by its stem.
+    'pistonheads.com' => '[class*="NewsArticleBody"] p',
+    'timeout.com' => '#content p',
+    # WordPress with Elementor: the story is the post-content widget, and the bare widget
+    # class alone also matches the footer.
+    'railadvent.co.uk' => '.elementor-widget-theme-post-content p',
+    'todaysconveyancer.co.uk' => '.elementor-widget-theme-post-content p'
   }.freeze
 
   def self.for(url)

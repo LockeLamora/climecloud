@@ -5,7 +5,7 @@ module TotpHelper
   # on the phosphor styles, and as text broken across lines everywhere else.
   def setup_key(secret)
     rows = Totp.rows(secret)
-    return phosphor_glyph(rows.join("\n")) if phosphor_theme
+    return glyph_image(rows.join("\n")) if glyph_theme
 
     safe_join(rows, tag.br)
   end

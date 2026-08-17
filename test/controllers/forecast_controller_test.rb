@@ -88,7 +88,7 @@ class ForecastControllerTest < ActionDispatch::IntegrationTest
     get '/forecast/hourly', headers: { 'COOKIE' => "#{LOCATION_COOKIES};theme=crt-amber" }
 
     assert_response :success
-    glyphs = @response.body.scan(%r{<img src="/phosphor}).length
+    glyphs = @response.body.scan(%r{<img src="/glyph}).length
 
     assert_operator glyphs, :>, 1, 'the forecast lost its screen entirely'
     assert_operator glyphs, :<=, 10, 'this many images is a page the handset gives up on'

@@ -102,12 +102,42 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
         headers: { 'COOKIE' => "#{COOKIES};theme=crt-amber" }
 
     assert_response :success
-    assert_no_match(%r{<img src="/phosphor\?c=1}, @response.body,
+    assert_no_match(%r{<img src="/glyph\?c=1}, @response.body,
                     'article prose drawn as images is the page that would not open')
     assert_match(/Paragraph 1:/, @response.body)
     assert_match(/Paragraph 30:/, @response.body, 'the story arrives whole, as text')
     # The chrome keeps the treatment: the nav links are still glyphs.
-    assert_match(%r{<img src="/phosphor\?s=crt-amber&amp;t=0\+Back\+to\+menu}, @response.body)
+    assert_match(%r{<img src="/glyph\?l=1&amp;s=crt-amber&amp;t=0\+Back\+to\+menu}, @response.body)
+  end
+
+  # ITV's edge refuses a request that carries a browser's user-agent without the rest of a
+  # browser's headers — it kills the connection rather than answering — so the scraper
+  # sends the full set. The page itself embeds an empty structured articleBody, putting
+  # the markup rule in charge, and writes its newsletter and podcast plugs into the body
+  # as all-<strong> paragraphs, which the itv.com rule drops.
+  test 'an ITV article arrives with its story and without its plugs' do
+    stub_request(:get, %r{news\.google\.com/rss/articles/})
+      .to_return(status: 200,
+                 body: '<html data-n-a-ts="1709600000" data-n-a-sg="test-signature"></html>')
+    stub_request(:post, %r{news\.google\.com/_/DotsSplashUi/data/batchexecute})
+      .to_return(status: 200,
+                 body: '[["wrb.fr",null,"[\"https://www.itv.com/news/2026-08-16/rain-and-cooler\"]"]]')
+    stub_request(:get, %r{itv\.com/news/2026-08-16})
+      .to_return(status: 200, body: file_fixture('itv_article.html').read,
+                 headers: { 'Content-Type' => 'text/html' })
+
+    get news_article_url,
+        params: { article: 'https://news.google.com/rss/articles/CBMitv?oc=5' },
+        headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_requested :get, %r{itv\.com/news/2026-08-16},
+                     headers: Scraper::BROWSER_HEADERS.slice('accept-language', 'sec-fetch-mode')
+    assert_match 'The UK can expect fresher conditions', @response.body
+    assert_match 'unprecedented demand', @response.body, 'the story has to arrive whole'
+    assert_no_match(/Subscribe for free/, @response.body, 'the newsletter plug is not the story')
+    assert_no_match(/Listen to our latest podcasts/, @response.body, 'nor is the podcast plug')
+    assert_no_match(/ITV Consumer Limited/, @response.body, 'nor the footer')
   end
 
   # The heading is the grouping: a story with several sources keeps it, with the sources
@@ -129,6 +159,34 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_match %r{<li><a[^>]*>GOV\.UK</a></li>}, budget
     assert_no_match(/<li><a[^>]*>[^<]*Jeremy Hunt announces/, budget,
                     'a source under a heading repeats the whole headline')
+  end
+
+  # Google lists an outlet's follow-up pieces as separate entries under the same story, and
+  # the links under a heading are outlet names alone, so both entries would render as the
+  # same link twice.
+  test 'an outlet covering a story twice gets one link, not two identical ones' do
+    stub_request(:get, /news.google.com/).to_return(body: <<~XML)
+      <?xml version="1.0"?>
+      <rss version="2.0"><channel><title>Headlines - Latest - Google News</title>
+        <item>
+          <title>A story one outlet keeps returning to - Wireline</title>
+          <description>&lt;ol&gt;&lt;li&gt;&lt;a href="https://news.google.com/rss/articles/first"&gt;
+            The story as it broke&lt;/a&gt;&amp;nbsp;&amp;nbsp;&lt;font color="#6f6f6f"&gt;Wireline&lt;/font&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="https://news.google.com/rss/articles/second"&gt;
+            The follow-up a day later&lt;/a&gt;&amp;nbsp;&amp;nbsp;&lt;font color="#6f6f6f"&gt;Wireline&lt;/font&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="https://news.google.com/rss/articles/third"&gt;
+            Another angle&lt;/a&gt;&amp;nbsp;&amp;nbsp;&lt;font color="#6f6f6f"&gt;Testwire&lt;/font&gt;&lt;/li&gt;&lt;/ol&gt;</description>
+        </item>
+      </channel></rss>
+    XML
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_equal 1, @response.body.scan(%r{<li><a[^>]*>Wireline</a></li>}).size,
+                 'the same outlet name twice reads as the same link twice'
+    assert_match %r{<li><a[^>]*>Testwire</a></li>}, @response.body,
+                 'the other outlet has to survive the dedupe'
   end
 
   test 'a single-source story is its lead alone, headline and outlet in one line' do

@@ -2,12 +2,12 @@
 <%# One name or the whole lot, and the question says which in so many words: what is about
     to go is a second factor, and the only copy of it is the cookie being edited. %>
 <% if @name %>
-<%= phosphor_text t('totp.sure_one', name: @name) %><br /><br />
+<%= glyph_text t('totp.sure_one', name: @name) %><br /><br />
 <%= button_to "1 #{t('totp.yes')}", totp_forget_path(name: @name),
               method: :delete, accesskey: "1", form_class: "inline-action" %><br />
 <%= link_to "9 #{t('totp.no')}", totp_code_path(name: @name), accesskey: "9" %>
 <% else %>
-<%= phosphor_text t('totp.sure_all') %><br /><br />
+<%= glyph_text t('totp.sure_all') %><br /><br />
 <%= button_to "1 #{t('totp.yes')}", totp_forget_all_path,
               method: :delete, accesskey: "1", form_class: "inline-action" %><br />
 <%= link_to "9 #{t('totp.no')}", totp_path, accesskey: "9" %>

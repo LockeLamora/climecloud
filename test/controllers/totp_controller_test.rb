@@ -130,7 +130,7 @@ class TotpControllerTest < ActionDispatch::IntegrationTest
 
     get root_url, headers: { 'HTTP_COOKIE' => 'theme=crt-amber;lat=51.5;city=Testville' }
 
-    assert_match %r{<a accesskey="7"[^>]*><img src="/phosphor\?s=crt-amber&amp;t=7\+2FA\+codes"},
+    assert_match %r{<a accesskey="7"[^>]*><img src="/glyph\?l=1&amp;s=crt-amber&amp;t=7\+2FA\+codes"},
                  @response.body
   end
 

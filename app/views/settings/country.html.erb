@@ -1,6 +1,6 @@
 <div class='route'>
-<%= phosphor_text t('settings.which_country') %><br />
-<b><%= phosphor_text params[:postcode].to_s %></b>
+<%= glyph_text t('settings.which_country') %><br />
+<b><%= glyph_text params[:postcode].to_s, heading: true %></b>
 <br /><br />
 <%# Numbered with accesskeys, so confirming the country is one keypress rather than %>
 <%# scrolling a dropdown of every country there is on a four way pad. %>

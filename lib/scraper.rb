@@ -81,9 +81,22 @@ module Scraper
     response
   end
 
+  # The headers a browser sends when a person follows a link. Some publishers' edges (ITV
+  # among them) refuse a request that carries a browser's user-agent without the rest of a
+  # browser's headers, killing the connection rather than answering it, so the whole set
+  # travels together.
+  BROWSER_HEADERS = {
+    'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'accept-language' => 'en-GB,en;q=0.9',
+    'upgrade-insecure-requests' => '1',
+    'sec-fetch-dest' => 'document',
+    'sec-fetch-mode' => 'navigate',
+    'sec-fetch-site' => 'none'
+  }.freeze
+
   def self.get(url, useragent)
     address = URI(url)
-    request = Net::HTTP::Get.new(address, { 'user-agent' => useragent })
+    request = Net::HTTP::Get.new(address, BROWSER_HEADERS.merge('user-agent' => useragent))
 
     Net::HTTP.start(address.host, address.port,
                     use_ssl: address.scheme == 'https',
@@ -103,7 +116,6 @@ module Scraper
     structured = readable(structured_body(document))
     return structured.join(SEPARATOR) if structured.any?
 
-    document.css(BOILERPLATE).each(&:remove)
     from_markup(document, url).join(SEPARATOR)
   rescue StandardError => e
     Rails.logger.warn("Cannot parse page - #{e.class}: #{e.message} - url #{url}")
@@ -148,14 +160,27 @@ module Scraper
   # names the site, so a rule can be written for it.
   def self.candidates(document, url)
     rule = ArticleRules.for(url)
-    return document.css(rule).map(&:text) unless rule == ArticleRules::DEFAULT
+    return ruled(document, rule) unless rule == ArticleRules::DEFAULT
 
+    document.css(BOILERPLATE).each(&:remove)
     CONTAINERS.each do |container|
       found = document.css("#{container} #{ArticleRules::DEFAULT}").map(&:text)
       return found if tidy(found).any?
     end
 
     []
+  end
+
+  # A domain rule names where the story sits, so it reads from the document as fetched:
+  # the furniture filters match class fragments, and on some sites a fragment sits on an
+  # ancestor of the story itself — a layout wrapper called advert__skin, the whole article
+  # in an <aside> — which would throw the story out with the adverts. The filters still
+  # run inside what the rule selected, where they mean what they say.
+  def self.ruled(document, rule)
+    document.css(rule).map do |node|
+      node.css(BOILERPLATE).each(&:remove)
+      node.text
+    end
   end
 
   def self.readable(paragraphs)
