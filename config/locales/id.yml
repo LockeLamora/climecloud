@@ -10,6 +10,7 @@ id:
     departures: "Jadwal bus & kereta"
     twofa: "Kode 2FA"
     settings: "Ubah pengaturan"
+    games: "Permainan"
   common:
     save: "Simpan"
     back_to_menu: "Kembali ke menu"
@@ -250,3 +251,8 @@ id:
       name: "Akun perlu nama."
       secret: "Ini tidak tampak seperti kunci: huruf A-Z dan angka 2-7, minimal 16."
       full: "Maksimal %{count} akun. Lupakan satu dulu."
+  games:
+    title: "Permainan"
+    begin: "Mulai"
+    restart: "Mulai ulang"
+    the_end: "Tamat"

@@ -44,6 +44,13 @@ Rails.application.routes.draw do
   delete 'totp/forget' => 'totp#forget'
   delete 'totp/forget_all' => 'totp#forget_all'
 
+  # The gamebooks ship with the app and read nothing external. Reading a section notes
+  # the place in the CYOA cookie — client-side state like every other setting, so these
+  # GETs still store nothing on the server.
+  get 'games' => 'games#index'
+  get 'games/:book' => 'games#book', as: :games_book
+  get 'games/:book/:section' => 'games#section', as: :games_section
+
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'
   get 'news_search' => 'news#search'

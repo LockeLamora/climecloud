@@ -10,6 +10,7 @@ vi:
     departures: "Giờ xe buýt và tàu"
     twofa: "Mã 2FA"
     settings: "Đổi cài đặt"
+    games: "Trò chơi"
   common:
     save: "Lưu"
     back_to_menu: "Về menu"
@@ -250,3 +251,8 @@ vi:
       name: "Tài khoản cần có tên."
       secret: "Đây không giống một khóa: chữ A-Z và số 2-7, ít nhất 16 ký tự."
       full: "Tối đa %{count} tài khoản. Hãy quên một cái trước."
+  games:
+    title: "Trò chơi"
+    begin: "Bắt đầu"
+    restart: "Bắt đầu lại"
+    the_end: "Hết"

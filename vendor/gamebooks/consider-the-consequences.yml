@@ -1,0 +1,1233 @@
+id: consider-the-consequences
+order: 1
+title: Consider the Consequences!
+author: Doris Webster & Mary Alden Hopkins
+year: 1930
+about: The first branching-path book ever published. Steer Helen, Jed and Saunders through the crises
+  of their lives, one decision at a time, to any of forty-three endings.
+credit:
+  text: Public domain. Text from Wikisource
+  url: https://en.wikisource.org/wiki/Consider_the_Consequences!
+start: start
+sections:
+  start:
+    title: Consider the Consequences!
+    text: |-
+      Life is not a continuous line from the cradle to the grave. Rather, it is many short lines, each ending in a choice, and branching right and left to other choices, like a bunch of seaweed or a genealogical table. No sooner is one problem solved than you face another growing out of the first.
+
+      You are to decide the course of action of first Helen, then Jed, then Saunders, at each crisis in their lives. Give your first thought, without pausing to ponder.
+
+      This game may be played as solitaire, a courting-game, or a party stunt. When the players disagree, follow the choice of the majority, but make a note of the dissenting opinion, so that you can return later and find out what happens to Helen—or Jed or Saunders—when other advice is followed.
+    choices:
+    - label: Section I — Helen
+      to: Helen
+    - label: Section II — Jed
+      to: Jed
+    - label: Section III — Saunders
+      to: Saunders
+  Helen:
+    title: Section I — Helen
+    text: |-
+      Should a girl marry against the advice of her parents? Helen Rogers faced this problem. The circumstances were as follows: Helen, a slender, vibrant girl of twenty, with soft, sleek, honey-gold hair and honest gray-green eyes, was madly in love with Jed Harringdale, the only son of a very rich widow. The two had grown up together in Franklin, a small New England town. Helen's parents, with middle-aged prudence, opposed her marrying him, in spite of his mother's wealth. They admitted that Jed was a charming young fellow, but, not being in love with him as Helen was, they could see his faults clearly. They pointed out that he had never really settled down to work, although he made a pretense of selling bonds; that his health was poor, and that he took no care of himself, drinking more than was good for him, staying up all night at poker games, and living on coffee and cigarettes. Helen's brother Simeon—who always did exactly as he wanted to, himself, but from the very highest motives—called Jed a light-o'-love and said he should think a sister of his would have more pride than to go around with a man who had already been engaged to two girls.
+
+      But Helen knew the better side of Jed's nature. The eyes of love see virtues more clearly than failings. She knew that Jed loved her with his whole heart, that he was thoroughly dissatisfied with his drifting, wasteful habits, and that he was looking forward toward a very different kind of life after they were married. She shrewdly suspected that some of her parents' opposition rose from the fact that Mrs. Harringdale, his mother, had refused to recognize Helen as a possible daughter-in-law. Helen had heard that Mrs. Harringdale said she would rather see her son dead in his coffin than married to "that Rogers girl." But everybody knew that Mrs. Harringdale was an unreasonable woman, who excused her irrational jealousy by calling it mother-love.
+
+      Helen's family had their own candidate. They wanted her to marry Saunders Mead, holding that it is wiser to marry a man who is capable of earning money than one who may inherit it. The worst that can be said of Saunders is that he was exactly the kind of man parents would pick out for a son-in-law—prudent, unromantic, hard-working, and devoted to Helen. Helen did not love him. Not an atom. While when she thought of giving up Jed it was as if she were trying to tear her heart out by the roots.
+
+      Helen had to admit that there was truth in what her family said against Jed. On the other hand, her whole heart responded to his devotion, and she was sure that after they were married he would stop drinking and settle down to steady work. He had, moreover, a delicious whimsical charm, so foreign to the serious Rogers family that Helen was captivated by it.
+
+      Helen now faced a momentous decision. Should she defy her family and marry Jed, following the dictates of her heart, or should she be as prudent as her parents would like her to be and refuse a marriage which presented difficulties, as well as romance, from the beginning?
+
+      The reader is to make the choice for Helen.
+    choices:
+    - label: If the first course is chosen turn to paragraphs H-1.
+      to: H-1
+    - label: If the second course, turn to paragraphs H-2.
+      to: H-2
+  H-1:
+    title: H-1
+    text: |-
+      When in a painful scene with her parents Helen had refused to break her engagement, she wasted no time in arguing. She telephoned Jed from the corner drug-store and he was there in his racer within five minutes. Helen's heart leapt at the sight of Jed, as it always did. He was as dark as Helen was fair, and as mercurial as she was well-balanced. The sterling qualities of Saunders, her parents' candidate, stood no chance against Jed's charm. There was no pretense about Jed. He did what he felt like doing and didn't see any reason why he shouldn't. He found life pleasant, and went out of his way to make it equally pleasant for other people. If Helen had more than her share of the hardy virtues, he had more than his share of the sunny ones.
+
+      Once in the car with Jed, Helen, in the relief of having made a long deferred and difficult decision, felt as if all her troubles were over. She told Jed what her father, her mother, and her brother had said, the story measured by mile after mile of moonlit road. Jed assured her that her parents were entirely wrong about him, and that it wasn't any of Simeon's business, anyhow. He admitted that he was not worthy of her, but cried in a burst of emotion that no man was worthy of the love of a good woman. He talked about her influence over him and said that she was the only person who had ever understood him. He would have gone on thus forever, but Helen's practical mind was on realities.
+
+      "Your mother will never consent to our marriage," she reminded him.
+
+      "She shall not interfere!" he cried vehemently.
+
+      "Helen, let's steal a march on her. We'll drive straight to New York State and be married by a justice of the peace right now. When it's done, she'll forgive us."
+
+      Helen, who had only just caught her breath after making one decision, now faced a second. She knew that Jed's mother was insanely jealous and that she would selfishly do everything she could to stop the marriage under the pretense that she was acting for Jed's happiness. On the other hand, Helen disliked anything clandestine.
+    choices:
+    - label: The reader who thinks she will be wise to avoid argument and trouble by eloping turns
+        to paragraphs H-3.
+      to: H-3
+    - label: The one who thinks she would better decide to return home, determined to face the music
+        and go through with her marriage in spite of opposition, turns to paragraphs H-4.
+      to: H-4
+  H-2:
+    title: H-2
+    text: |-
+      Helen's head was stronger than her heart. Her intelligence told that her parents were right in their contention that though Jed might be a charming lover he would make an unsatisfactory husband. Nevertheless, after she had definitely broken with him in a painful interview, she was miserable when she caught a glimpse of him—and miserable when she did not see him. Her passionate desire was to get away from Franklin and start a new life full to the brim with work amid new surroundings.
+
+      Marian Cole, a friend of hers who had gone to New York to work, had long been begging her to come to live with her, and had promised to find her some sort of business opening. Helen's parents bitterly opposed the idea of her going away. Her brother Simeon was to be in South America for two years on an engineering project. Her mother, a sweet woman of the dependent type, devoted to her daughter, was grieved at the thought of losing both her children at once, and Mr. Rogers pointed out that now that her school days were over it was Helen's duty to give her mother a few years of her help and companionship. They asked her to stay at home for two years, when Simeon would be back. In the meantime she could take a business course in Franklin.
+    choices:
+    - label: The reader who thinks she should stay turns to paragraphs H-5.
+      to: H-5
+    - label: The one who thinks she should leave home turns to paragraphs H-6.
+      to: H-6
+  H-3:
+    title: H-3
+    text: |-
+      Having telegraphed their respective families of their clandestine marriage, Helen and Jed enjoyed a perfect honeymoon. After their money gave out, they sold the car to pay their fare back to Franklin. When Mrs. Harringdale, a black-eyed, firm-mouthed woman who had all the determination that her son lacked, had been as disagreeable as she could, which is saying a great deal, she invited them to live with her, but refused to help them otherwise.
+
+      Jed was anxious to go to his mother's home, and he explained to Helen that his mother had done everything for him and he felt deeply indebted to her. Helen knew that he really did love Mrs. Harringdale in spite of her peculiarities. She also realized the practical advantages of this course even better than Jed did. His income from bond-selling was precarious and not enough at best to afford them a comfortable home. While she herself was able to face poverty, she hesitated to subject Jed to unaccustomed hardships to which he might not be physically equal.
+    choices:
+    - label: The reader who wishes Helen to accept her mother-in-law's offer turns to paragraphs
+        H-7.
+      to: H-7
+    - label: He who wishes her to face hard work and actual poverty on Jed's precarious and meager
+        salary turns to paragraphs H-8.
+      to: H-8
+  H-4:
+    title: H-4
+    text: |-
+      In the uplifted state of emotion of the moonlight drive, Helen had thought it would be a simple matter to compel her family and Jed's mother to acquiesce in their marriage. So far as Helen was concerned, she could have put it through, but it takes two to make a marriage. After a heartrending scene with his mother, ending in Mrs. Harringdale's collapse, Jed was firmly convinced that she would die if he married Helen. He dared not take the risk of opposing her. All his life he had given in to her and he could not change now. He begged Helen to wait a year.
+
+      At the end of the year he begged her to wait another year. When Helen pointed out that he was sacrificing her to his mother, she realized at last how torn he was. He put his head down on his arm and shook with restrained sobs. When he had regained his self-control he said:
+
+      "Helen, it isn't right to ask you to wait. The doctor has told me that any undue excitement may kill my mother. But there is no reason that your life should be ruined with mine. I release you from your promises."
+
+      Helen foresaw that the situation would remain unchanged indefinitely. She still loved Jed and she knew that she was the love of his life, but it was clear that he would not marry until his mother died.
+    choices:
+    - label: The reader who thinks Helen should stick by Jed until her problem is solved by the
+        death of Mrs. Harringdale turns to paragraphs H-9.
+      to: H-9
+    - label: The one who thinks she should definitely break her engagement to Jed turns to paragraphs
+        H-10.
+      to: H-10
+  H-5:
+    title: H-5
+    text: |-
+      At the end of two years, during which Helen had spent her spare time learning stenography and typing against possible future need, she found that the same problem had to be decided all over again, and circumstances now made it more difficult to solve.
+
+      In the first place, Simeon (still doing the thing that was "right," and, incidentally, to his own advantage), was to be at home for only three months, after which he was to go to Alaska for an indefinite period. In the second place, Mrs. Rogers had become a semi-invalid. She was unable to do much of the housework and she needed cheerful companionship. Helen was anxious to join her friend Marian Cole in New York; she felt that if she was to have a business career at all she must get started on it. On the other hand, she was truly attached to her mother. The fact that her father's earning capacity was lessening made it a serious matter for him to hire some one to take Helen's place, yet at the same time made it important for Helen to earn money.
+
+      Marian telegraphed her of a good opening in the magazine office where she was employed, which Helen could fill because of her business training. Although she would start at only twenty dollars a week, there was the chance of rapid promotion. Marian herself was now earning fifty. But there was also a stenographic position in Franklin open to her at twelve dollars a week with a probable increase to fifteen. If she took this job she could continue to live at home, thus eliminating the expense of board and at the same time affording her mother the companionship of a daughter.
+    choices:
+    - label: The reader who thinks Helen should take the Franklin job turns to paragraphs H-11.
+      to: H-11
+    - label: He who thinks she should take the New York job turns to paragraphs H-12.
+      to: H-12
+  H-6:
+    title: H-6
+    text: |-
+      Helen's lack of business training was a distinct handicap in getting a good position when she joined her friend Marian Cole in New York City. She was obliged to take what was available to an untrained person and work up slowly. The place Marian found for her was that of copy-holder in a struggling new printing-plant, with long hours and low pay. Nevertheless Helen was thrilled by New York and the small apartment she shared with Marian.
+
+      The one great advantage of her printing-plant position was that she was on the spot, and when the switchboard girl in the business office left unexpectedly, Helen was called in to fill the gap. The intelligence with which she did this work attracted the attention of the boss, who was harassed by the problem of securing capable office workers at the low wages he was forced to pay. He had to pay union wages to his printers, he had to support a family of little children, he had to put money back into the plant. There was little left for the office force.
+
+      He advanced Helen rapidly, making up with kindness and business education for the lack of good pay. In two years Helen became a capable business woman and a person of some importance in the office, and though her boss never took her advice, he always asked for it.
+
+      She had gone in this business about as far as she could. Marian came home one night with the good news of an opening in her office for Helen at fifty dollars a week, and probability of still further advancement. When Helen informed her employer of this opportunity, she was surprised to find that the prospect of losing her was a calamity to him. He told her frankly that matters were in a crucial condition and he did not know how the work could go on without her. Helen realized for the first time what a heavy burden he bravely bore and that he actually leaned on her.
+
+      (Note: H-12 is the same situation resulting from one of her other possible decisions, for fate occasionally leads by different routes to the same point.)
+    choices:
+    - label: The reader who thinks Helen should stay in the printing-house turns to paragraphs H-13.
+      to: H-13
+    - label: The reader who thinks she should accept the position in the magazine office turns to
+        paragraphs H-12.
+      to: H-12
+  H-7:
+    title: H-7
+    text: |-
+      After Helen and Jed went to live with Mrs. Harringdale, Helen understood better the influence which had made her husband what he was. Mrs. Harringdale loved her son so much that she had never let him grow up. She was after him incessantly with overshoes, advice, and endearments, all three of which offerings irritated him unduly. He snapped at his mother, and then as if in unconscious apology to her he snapped at his wife. He became a bone of contention between the two women who loved him devotedly, though neither admitted that she was desperately jealous of the other. Jed dropped into the habit of escaping from home to the club, where there was altogether too much smoking, drinking, and gambling to be good for a man so high-strung and physically delicate.
+
+      The birth of a child brought a brief armistice between the two women, followed by even worse conditions. Helen made up her mind that Jed and she must move, but the decision was now not hers to make, for Jed definitely refused to leave his mother's home. This was partly because of his increasing ill-health. His death came suddenly, leaving Helen financially dependent upon her mother-in-law, who would give her a home but refused her separate maintenance.
+    choices:
+    - label: The reader who feels that Helen should stay on in order to spare her frail child the
+        dangerous hardships of poverty and insure his inheritance turns to paragraphs H-14.
+      to: H-14
+    - label: The one who thinks it Helen's duty to leave the mother-in-law's house and the demoralizing
+        influences which Helen believes ruined Jed's life, and attempt to earn a living for herself
+        and her child, turns to paragraphs H-16.
+      to: H-16
+  H-8:
+    title: H-8
+    text: |-
+      Helen found that Jed was unable to stand up to the hard circumstances of their life. His charming play-boy spirit vanished before financial worries, over-hard work, and lack of the physical comfort to which he had always been accustomed. He grew even more harassed when the birth of a delicate child increased their living expenses. His mother refused all aid, hoping to force him to return home, and Helen's parents were unable to spare any money, the mother having become an invalid.
+
+      Jed, who had almost stopped drinking after his marriage, again fled from the harsh realities of life into the splendid fantasies of drink. As a direct result he lost his job and after months of idleness was glad to take one as an automobile salesman. The reéstablished drink habit held, however, and he met with a serious accident while driving under the influence of intoxicants. Although Mrs. Harringdale now came to their aid, it was too late; Jed's weakened constitution hastened his death. Helen was left a widow with a frail child dependent on her. Mrs. Harringdale offered to adopt the little boy and bring him up as her heir, provided Helen would relinquish all legal claim upon him.
+    choices:
+    - label: The reader who advises Helen to sacrifice her mother-love in order to give her delicate
+        child expert medical attention, financial security, and education turns to paragraphs H-15.
+      to: H-15
+    - label: The one who advises her to keep him and attempt to earn a living for the two of them
+        turns to paragraphs H-16.
+      to: H-16
+  H-9:
+    title: H-9
+    text: |-
+      The hardest part of Helen's engagement was that Jed's mother was always taking him off on long trips to warm climes on the plea of his ill health. Yet, dissatisfied with himself and his life, he became a habitual invalid, and Helen's family told her that it was lucky she had not married him.
+
+      Helen was forty-six when Jed's mother died, and Jed almost fifty. His invalid habits were firmly set, and although Helen became his wife she often thought that she might just as well be his mother. The couple continued to follow the schedule of travel which the dominating old lady had worked out, because Jed was accustomed to it.
+
+      But though Jed was an invalid he kept something of the whimsicality that had always charmed Helen. The consequence was that Helen had a delightful old, age. All that she had lost was twenty-five years of life.
+    choices: []
+  H-10:
+    title: H-10
+    text: |-
+      At this moment Marian Cole, a former Franklin girl, telegraphed Helen of a good opening in the magazine office where she was employed in New York. Helen, who had prudently been putting in her time taking a business course, realizing how unsettled was her future, was anxious to go where she would not constantly be meeting Jed Harringdale. But her mother had become a semi-invalid and begged Helen to take a stenographic position which was open to her in Franklin at a much lower salary.
+
+      These are both situations in which she finds herself in other potential lives; for one may occasionally reach the same point by different paths.
+    choices:
+    - label: The reader who thinks that Helen should take the Franklin job turns to paragraphs H-11.
+      to: H-11
+    - label: The one who thinks she should take the New York job turns to paragraphs H-12.
+      to: H-12
+  H-11:
+    title: H-11
+    text: |-
+      Within a year after Helen had taken the Franklin position her salary was raised to eighteen dollars; far more than she had expected. She was saving a little money, but burning her candle at both ends, for although the rough housework at home was done by a woman who came in twice a week, there was plenty for Helen to do before and after business hours. Her office work was heavy and uninteresting.
+
+      Then her father suddenly died, throwing additional care upon her shoulders and precipitating a nervous collapse which used up her savings. It was clearly impossible for her to keep on working. Saunders Mead, who had never ceased to love and worry over Helen, begged her to marry him and let him take care of her. But Helen did not love him. At this time her brother Simeon visited his home on his way from Alaska to Africa. He offered to support his mother and sister if Helen would stay at home and take care of the mother.
+    choices:
+    - label: The reader who thinks she should marry Saunders turns to paragraphs H-17.
+      to: H-17
+    - label: He who thinks she should accept Simeon's offer turns to paragraphs H-18.
+      to: H-18
+  H-12:
+    title: H-12
+    text: |-
+      Helen lived with Marian Cole in a tiny apartment called a studio on the top floor of a Greenwich Village walk-up to which came artists, writers, minor playwrights, actors, musicians, communists, college girls—young people from every nation and every walk in life. They had a casual way of dropping in and eating whatever was on the table, and helping wash the orange-colored dishes and green glasses.
+
+      Helen had not known that life could be so gay. But eventually a time came when she had to decide which to put first, her job at the magazine office or her social life. A telegram came from the editor, Paul Merritt, who was out West addressing a convention, directing her to remove a certain article, found to be libelous, from the issue about to go on the press. It was five o'clock, but the foreman of the printing-plant said that if Helen would stay to proofread the new matter to be substituted, make the readjustments in make-up and O.K. the press proof, he would keep part of the composing staff there until twelve o'clock and the magazine could come out on time. If Helen worked overtime correcting the proofs she would impress Mr. Merritt and really help the business. On the other hand, her hours were from nine to five and she was under no obligation to work longer. Only those higher up had to worry about emergencies. Moreover, there was a party on that night, an important party, and Helen had bought a new dress for the benefit of Phil Burns, a young artist whom she was beginning to find extremely congenial.
+    choices:
+    - label: The reader who would advise Helen to go to the party turns to paragraphs H-19.
+      to: H-19
+    - label: The one who would advise her to do the overtime work turns to paragraphs H-20.
+      to: H-20
+  H-13:
+    title: H-13
+    text: |-
+      Helen found it difficult to keep up with the young intelligentsia whom Marian gathered about her. She could not afford their extravagances, mild as they were—opera seats in the gallery, week-end excursions into the country, tourist-class European trips, and impromptu celebrations when somebody's picture was hung or book was published. She discovered that it is the little extra money that counts.
+
+      There was, for example, the time when she could not buy a Chinese-red evening gown for a party where she knew she would meet a young artist, Phil Burns, who had shown her some attention. She always had a feeling that the long-sleeved georgette in a serviceable shade which she sensibly bought instead failed to show her off to the best advantage. But she said to herself that if it was her clothes he cared for and not herself he was better lost.
+
+      She was not unhappy. Her interest more and more centered around the struggle of the printing business, and her employer's constant appreciation, generously expressed, was a source of great satisfaction. Every year she spent her two-weeks vacation at home with her widowed mother. She could do no less, since Simeon was bearing the expense of their mother's support. The occasional proposals of marriage which she received from men who were allured by her strength of character and her devotion to duty did not interest her any more than had the courtship of the good, sensible Saunders of her Franklin days. The thought of Jed returned to her sometimes and she found his pale and charming memory easier to love than flesh-and-blood men, impatient, demanding and likely to grow stout.
+
+      The consequence of Helen's inability to take chances and be moderately selfish was that she had no failures in her life, nor had she any hard-won triumphs from which to draw strength for further struggles.
+    choices: []
+  H-14:
+    title: H-14
+    text: |-
+      Helen felt that she was more like her child's nursery governess than his mother, in the years that followed Jed's death, when she lived with Mrs. Harringdale and was dependent on the generosity in which that lady was sadly lacking. The grandmother had the power because she had all the money. She dictated the child's life to the slightest details and gave him all his treats. Consequently it was to her that he naturally turned when he wanted anything. Any opposition on Helen's part threw him into a tantrum that was considered bad for his heart. Helen could not see much of the young people of Franklin, because she had no clothes, no pocket money, and no liberty, and her friends were not welcomed in the old lady's home. After a few years of this she was too discouraged to care about good times.
+
+      Mrs. Harringdale exerted her tyranny for twenty years, when she died, leaving all her money in a trust fund for the grandchild. Young Jed had no great affection for his home town, where he had had an unhappy childhood, and after settling an allowance on his mother he went abroad, married, and never again stayed for any length of time in Franklin. Helen picked up what loose ends she could, interested herself in civic matters, and learned to play an excellent bridge game. Her active unhappiness had ceased, but excepting for her honeymoon with Jed she had never known what it was to live joyously.
+
+      The consequence of Helen's choosing the prudent course was that she was safe.
+    choices: []
+  H-15:
+    title: H-15
+    text: |-
+      Helen's desire to have her child back after she had given him up to Mrs. Harringdale became an obsession, She had allowed the grandmother to adopt him because that course had seemed to her for the child's good, but during her visits she saw that the grandmother could deny him nothing and that he was fretful, selfish, and bullying. Helen herself lived at her own home with her widowed mother, who was now an invalid, and the atmosphere of their home was anything but happy because of Helen's constant harping on her grievance.
+
+      When she appealed to the law-courts they decided that she might have the child for brief visits in spite of the agreement that she had signed. But these visits turned out to be extremely disappointing, for Helen undertook to correct at these times the bad habits which the grandmother had encouraged. The indulged child resented correction and flew into tantrums that upset Helen's invalid mother. He missed his pony, the servants at his command, and the motor-car.
+
+      When Helen appealed to the courts a second time for the permanent return of her child, the little boy himself turned the case against her by passionately begging the judge to let him live with his grandmother. When the boy grew up and inherited his grandmother's property he made his mother an allowance but seldom came to see her. The brief visits he made in response to her entreaties were as unsatisfactory as those of his boyhood and Helen drifted into invalidism because she had no reason to exert herself.
+
+      The consequence of Helen's timid attitude toward life was that she lost everything—except tragedy.
+    choices: []
+  H-16:
+    title: H-16
+    text: |-
+      Helen took a short business course and got a job as secretary at twenty dollars a week. Because her mother was a nervous invalid and unable to have a child around, she moved into a boarding-house where the landlady was willing to look after the little boy during Helen's working hours.
+
+      Helen was up against it; she worked all the time and worried so that she could not sleep. The child was unruly under the landlady's good-natured but casual attention. Helen could see no way out until Saunders Mead, her old suitor, again came into her life and once more asked her to marry him.
+
+      Saunders was a man to lean on. He was affectionate, reliable, enterprising, and prosperous, but to Helen uninteresting. He was rather thick-set, with a strong jaw and kind blue eyes. He loved children, animals, and anything he could take care of.
+    choices:
+    - label: The reader who thinks she should marry Saunders turns to paragraphs H-21.
+      to: H-21
+    - label: The one who thinks she should not, turns to paragraphs H-22.
+      to: H-22
+  H-17:
+    title: H-17
+    text: |-
+      Helen went to see her mother every day after she married Saunders, although sometimes the visits had to be brief because there was more and more to take up Helen's time and attention. There was the new house that Saunders had built for her on Western Boulevard, the business of learning to drive the car, an active social life among the young married set, the excitement of the first baby, the second baby, and then more babies and the supervision of an increasing staff of servants
+
+      Helen became very good at bridge, took up golf, and joined the garden club. Several of the papers which she read at the Women's Civic Club were published in the Saturday edition of the "Franklin News." She became interested in Chinese missions through the agency of a Mr. Montgomery who spent some months in Franklin on leave from the field, and became president of the Franklin Missionary Society.
+
+      The consequence of Helen's whole-hearted, sensible attitude toward life was that Saunders, who was becoming a leading citizen, was very proud of his wife.
+    choices: []
+  H-18:
+    title: H-18
+    text: |-
+      For a while it was paradise to Helen just to stay at home and not have to go to the office. Her mother made it easy for her to get out now and then, and urged her to see something of her old friends. But Helen no longer fitted in with them. They had become the young married set, and a woman with no man attached was a problem at their evening parties. She interested herself in girls' club work and other social activities of the church.
+
+      It was a placid but not exciting career. If occasionally the old romantic longings arose, her common sense promptly suppressed them. By the time she was thirty-five it looked as though she had settled down for life as a devoted daughter, making life happy for an invalid mother and enjoying the small pleasures that came her way. When suddenly—romance came again. Some people wouldn't have considered a missionary to China, who was a widower with five children, a romantic object, even though he had a twinkle in his eyes, and beautiful white teeth, but to Helen, Mr. Montgomery opened the door to strange and fascinating lands of temple bells, mandarin coats, peacocks, jade, carved ivory: in brief, with his hand, Mr. Montgomery offered her adventure.
+
+      Helen's mother was aghast at the suggestion that her daughter should leave her, and Simeon cabled his frantic disapproval. The whole city of Franklin rose up and took sides, some saying that Helen had heard "the Lord's call" and others that "duty begins at home."
+    choices:
+    - label: The reader who thinks that Helen should go to China as Mr. Montgomery's wife turns
+        to paragraphs H-23.
+      to: H-23
+    - label: The reader who thinks that she should remain with her invalid mother turns to paragraphs
+        H-24.
+      to: H-24
+  H-19:
+    title: H-19
+    text: |-
+      Helen wore to the party the Chinese-red frock for which she had paid too much, and never had a girl less cause to regret extravagance. The eyes of all the men in the room turned automatically toward the bright red, and they discovered Helen. The young man for whom she had bought the frock, Phil Burns, succumbed quickly, and his wooing, which had been tentative up to that point, became whole-hearted. He was a young artist who was doing commercial drawing until he could get himself known as a portrait-painter. He reminded Helen of Jed, but he had good health, and a practical streak in his artistic temperament.
+
+      There was a wild courtship of at least a week, culminating in their marriage at the Little Church around the Corner, with rice and confetti, and white ribbons on the taxi. Helen kept on with her job, because Phil did not earn enough for two. For the same reason she postponed babies. She gave just enough attention to her business to avoid being fired and the rest to her husband whom she loved devotedly. Their prosperity depended entirely on him and not on her. It took her some time to accustom' herself to being no longer a free agent. But the atmosphere of the home depended upon Helen and Helen was slated to be happy.
+
+      The consequence of Helen’s putting marriage interests ahead of business was that she was a great success as a wife, though not so good as an employee.
+    choices: []
+  H-20:
+    title: H-20
+    text: |-
+      Helen's decision to take her business life seriously made her employer take her more seriously and open further opportunities to her. Within five years, not only was she allowed to have a voice in determining the policy of the magazine but to her was entrusted the delicate task of persuading well-known authors to write for the magazine what the magazine wanted. In this capacity she learned the intricacies of international copyright and made two trips to Europe to confer with English writers of note.
+
+      Paul Merritt, the editor, was small and slight, yet in no degree effeminate. The outline of his head and face was as delicate as if it were etched. His movements were graceful and sure. His mind was quick, imaginative, and logical. It was a constant wonder to Helen that this type of man could be so intensely masculine. She learned what fun it was to work with a man who was not self-conscious about working with a woman. The fact that she was a woman was to Paul Merritt only one phase of her personality along with her keen intelligence, her warm, generous spirit, and the emotional maturity which enabled her to accept and to give criticism without hurt feelings.
+
+      Paul appreciated this the more because his home situation was a difficult one. His wife, whom Helen soon met, wanted him to leave his chosen career to go into real estate and never ceased nagging him about making more money. She was an excellent housekeeper and devoted to her four small children over whom she worried incessantly. She had been a very pretty girl, but from the time of her marriage she had let herself go and had unfortunately not developed intelligence and good temper to take the place of the beauty she had carelessly laid aside.
+
+      It was not until the comradeship between Paul and Helen had, to the surprise of both, developed into passionate and overwhelming love that Paul confessed to Helen his deep domestic unhappiness. He himself felt that since he had conscientiously tried for ten years to make his marriage a success he was justified in getting a divorce and finding happiness, provided he continued to support his family.
+
+      Helen had this time not two but three courses open to her.
+    choices:
+    - label: The reader who thinks she should give up Paul completely turns to paragraphs H-25.
+      to: H-25
+    - label: He who thinks she should encourage him to get a divorce and marry her turns to paragraphs
+        H-26.
+      to: H-26
+    - label: He who thinks she should give herself to Paul while he at the same time remains with
+        his wife and children, so that both Paul and Helen may, without breaking up his home, have
+        the emotional happiness they need, turns to paragraphs H-27.
+      to: H-27
+  H-21:
+    title: H-21
+    text: |-
+      When Helen had been married to Saunders for a year and it was a little over two years since Jed died, she still had the feeling that Jed was not really dead so long as his memory was alive in her heart, and she talked constantly to the child about him. The little boy was healthy and happy and devoted to his stepfather. Helen's marriage to Saunders had given the child a fine home and Helen thought very little about whether or not Saunders was satisfied with the conscientious attentions she carefully remembered to give him.
+
+      Her devotion to the memory of her dead husband and her punctilious attitude toward her living husband did not come into active conflict until one afternoon when Saunders came home early in high spirits with the news that business called him to a near-by city where he would be obliged to spend the night. He planned to make a gay evening of it, taking Helen with him in the car and giving a dinner and theater party for a friend of his and Helen's, Carol Lane, and some other former Franklin people now living in the city.
+
+      Helen had planned to spend the afternoon at her first husband's grave with her little boy, for it was the second anniversary of Jed's death.
+    choices:
+    - label: The reader who thinks she should go off for a good time with Saunders on the anniversary
+        of Jed's death turns to paragraphs H-28.
+      to: H-28
+    - label: He who thinks she should carry flowers to Jed's grave and spend the time in a manner
+        appropriate to the occasion turns to paragraphs H-29.
+      to: H-29
+  H-22:
+    title: H-22
+    text: |-
+      Tired, shabby, and overworked, Helen struggled on bravely in the years following her husband's death and gradually got better positions. Young Jed, who was difficult during his early years, later on developed a protective attitude toward his mother. He refused a college education from his grandmother in order to go to work, and the old lady in her rage left her money to build a church as a memorial to her dead son. As soon as he got his working papers young Jed went into Saunders Mead's department store, and, driven by his passionate desire to make things easy for his mother, he developed actual genius in merchandising.
+
+      By the time he was twenty-one he was making yearly trips to Paris and adding to the prosperity of the already successful store. By the time young Jed was thirty, Saunders Mead, who loved him like a son, retired, giving the management entirely to him. Jed developed a mail-order service which made the store nationally known.
+
+      The consequence of Helen's courageous attitude toward adversity was that in her middle age she had wide interests and active habits as well as the love of her son and his family and the respect of the community.
+    choices: []
+  H-23:
+    title: H-23
+    text: |-
+      Helen's voyage to China with her very pleasant missionary husband was marred by the knowledge of her mother's terrible loneliness at home. Helen had ensconced Mrs. Rogers in two sunny rooms in a boarding-house, with special attendance guaranteed, the new arrangement costing her brother Simeon no more than it had to support the two women. Mrs. Rogers would be physically as comfortable as she had been with her daughter, but Helen knew that her departure had left her mother indeed bereft.
+
+      Helen tried conscientiously to hold this feeling of guilt in her heart, but with five lively stepchildren, two of her own later, the mission work, and a husband to whom she became more and more attached, she really didn't have the time. She sent a diary letter to her mother by every mail steamer and the Franklin missionary society took to meeting in Mrs. Rogers's sitting room once a month to hear the letters read. They voted two thirds of their annual pledges to the Montgomery Mission, and the letters, later published in book form, were widely circulated.
+
+      The consequence was that the very people who had told Helen it was her duty to stay with her mother instead of going to China now said to Mrs. Rogers, "How fortunate you are in your daughter!"
+    choices: []
+  H-24:
+    title: H-24
+    text: |-
+      Helen lived quietly with her mother for the next fifteen years. Her brother Simeon, recalled to the home office, married and lived in New York. His mother and sister sometimes visited him and sometimes made little trips to the seashore and to other places where an elderly invalid could be comfortable.
+
+      When Helen was fifty her mother died, and Helen felt that she had lost everything. Simeon naturally did not feel like keeping up the old home now that his mother was dead; nor indeed did he feel that he could support Helen indefinitely now that she was free to work. Helen faced at fifty the problem of self-support.
+
+      Women of fifty sometimes marry, but usually these are widows. Helen had not acquired the marriage habit any more than she had acquired the business habit. After several conferences with Simeon it was decided that she should take boarders, Simeon generously deeding her his share of the old house and giving her a little money toward putting it in repair.
+
+      The consequence of Helen's life of self-abnegation was that every one spoke highly of her and pitied her.
+    choices: []
+  H-25:
+    title: H-25
+    text: |-
+      Helen found that her decision to give up Paul involved also giving up her job. She was, however, so well known by this time, in the literary world, that Nat Hebling, an author whom she had discovered, found her an excellent position in the publishing house that brought out his novels. Helen's love for Paul, conscientiously repressed, turned to Nat.
+
+      He was a blond, long, lanky, and loose-jointed. Mentally he was the type she liked—sensitive, brilliant, temperamental. When he asked her to marry him she accepted, although she knew that he would not be easy to live with. But she was prepared to accept his black moods. She had the circle of professional and artistic people that she so enjoyed while living with Marian. Gradually she took up short-story writing, and sold some of her work, although it was never her major interest. Her life as wife, mother, and woman of affairs worked out harmoniously.
+
+      The consequence of denying herself an unpractical romance or a broken heart was the discovery that she could love a second time as heartily as the first time.
+    choices: []
+  H-26:
+    title: H-26
+    text: |-
+      The year that Paul spent persuading his wife to give him a divorce was a ghastly one for Helen. She wouldn't have been able to go through with it if she had not thought that Paul's future depended upon her. For months the wife would not even listen to argument, and even after she had been persuaded to agree to a divorce, partly through the promise of excessively large alimony, she couldn't understand what it was all about. She thought she had been a good wife, because she had never been unfaithful to her husband.
+
+      Helen and Paul were desperately poor after their marriage, despite the fact that Helen kept her office position. This made it impossible for Helen to have children, which was more of a grief to her than to Paul, who already had four. His chief regret was that he could not have his children with him for long periods, since there was no one in his new home to look after them. Helen tried not to be jealous, but it was a great strain on her to have him go so often to see his former family. Helen's affection for Paul and his for her continued, in spite of the constant annoyance of not having enough money.
+
+      The consequence was that they accepted poverty as the price they paid for each other and it did not seem too dear to them. Helen always planned to save up enough so that she could take a year off and have a baby.
+    choices: []
+  H-27:
+    title: H-27
+    text: |-
+      Helen left Marian and took a small apartment of her own where she and Paul could be together. She had to move several times, for, though her personal friends accepted the fact that she and Paul were lovers, she had one or two disagreeable experiences with landlords and janitors. She finally found a place where people were more interested in her personality than in the fact that she and Paul were not married, thus solving for the moment the practical problem of their alliance.
+
+      Helen's intellectual attitude toward the step that she had taken remained the same, but she was surprised to find that emotionally she reacted in the old-fashioned way. She was eaten up by jealousy of Paul's wife, and of the children whom she could not even know. He talked about the children constantly and had she been able to share them with him she would have loved them dearly. But as it was they were a menace to her hold on him. She was wild with a desire to have a child of her own, partly because of her maternal instinct and her love for Paul, but partly, she was obliged to admit to herself, because it would give her a stronger hold on him.
+    choices:
+    - label: The reader who decides for the child turns to paragraphs H-30.
+      to: H-30
+    - label: The reader who decides against the child turns to paragraphs H-31.
+      to: H-31
+  H-28:
+    title: H-28
+    text: |-
+      When Helen accepted Saunders's invitation to go to the city, she went upstairs and took off her black dress without dampening her husband's high spirits by mentioning that it was the anniversary of the death of her first husband. The beautiful ride in the crisp air blew away the depression from which she had been suffering all day. She enjoyed meeting Carol, who was handsomer than ever and getting a divorce from her husband.
+
+      The consequence of considering a living husband's happiness more important than a dead husband's memory was that Helen came back from the trip closer to Saunders than she had ever been and convinced that having a good time was part of a wife's duty.
+    choices: []
+  H-29:
+    title: H-29
+    text: |-
+      Helen and her boy enjoyed the sweet sadness of their afternoon by Jed's grave, but the next time Saunders went to the city on business he did not invite Helen to go. His trips grew more frequent. One day a telegram for Saunders was accidentally telephoned to the house instead of to the office. It read: "Telegraph five hundred dollars more at once. C. Lane." After dinner that night Helen asked him about the telegram and he told her without evasion that he had lent Carol money to get her divorce.
+
+      When Helen asked further questions his repressed resentment against her burst forth and he told her that ever since their marriage she had been indifferent to him in spite of everything he had done to please her, and that he had received from Carol the kindness which his own wife refused him. He admitted frankly that he had been unfaithful to Helen, but declared with unexpected vehemence that since she did not love him he was justified in seeking love elsewhere so long as he continued to give her and her boy a good home.
+    choices:
+    - label: The reader who thinks that she should divorce Saunders turns to paragraphs H-32.
+      to: H-32
+    - label: The one who thinks she should not turns to paragraphs H-33.
+      to: H-33
+  H-30:
+    title: H-30
+    text: |-
+      When Helen bore a child out of wedlock her friends stood by her, although some thought she was a fool. The old attitude of shocked and delighted disapproval which Helen might have had to face in Franklin was entirely absent in her circle. But she had reckoned without—the tabloids. Instead of gossips, Helen faced scavengers. A reporter scented a "eugenic baby" story.
+
+      Helen kept Paul's name out of the papers as long as she could, but he was too important a person to be hidden. The camera man photographed him entering her house. The papers despatched men to her mother's home in Franklin and dragged in her brother Simeon, now an important New York engineer. They interviewed Paul's legal wife and printed pictures of his four children. At the same time that they sobbed over the legal wife they presented Helen as a noble soul. Their lush sentimentality was worse than condemnation. They pictured her as a lascivious Madonna.
+
+      The consequence of Helen's defiance of social conventions was not only passing humiliation but the knowledge that the story would be rehashed whenever she or Paul did any notably good work, and even years later if their child attained a position of eminence.
+    choices: []
+  H-31:
+    title: H-31
+    text: |-
+      Helen had had a fear that her love and Paul's, unsanctioned by law, would crash on the disapproval of society or end in a quarrel; but neither of these things happened. United against outside disapproval, they fought the world together. The tenseness of their love never relaxed; and though they avoided monotony, yet they lost the pleasant sense of domesticity. The conflict between the love-affair, with Helen and his domestic responsibilities toward his legal wife and children was eventually too much for Paul, who broke down nervously and was sent to a sanatorium. When he was ready to come back Helen realized that he could not return to the same situation and that she must be the one to break it off. Her obvious course was to get other work so that she would not be constantly in contact with him.
+
+      Through Nat Hebling, an author whom she had discovered and Paul had pushed to fame, she obtained a position in a publishing house. Having become accustomed to centering her affections on a lover, Helen was terribly lonely after they were parted, in spite of her large number of friends. But as the pain of separation from Paul eased in the course of months, she turned more and more to Nat and after about two years married him. Her life with Paul had not only taught her how to get on with a temperamental man but had also given her an appreciation of the ease and comfort of conventional domesticity.
+
+      The final consequence of Helen's experimenting with illicit love was not that she became an outcast from society but that she accepted the dictates of society and settled down in a conventional marriage.
+    choices: []
+  H-32:
+    title: H-32
+    text: |-
+      Saunders's unfaithfulness was an unendurable shock to Helen's ego. When she sued for divorce she longed to refuse alimony, but the welfare of her boy forced her to accept it.
+
+      Now at last Helen was independent. She had her child, her freedom, and an income, but she had lost what she called illusions and some people call ideals. Since life had given her so little happiness, she searched restlessly for distraction. She moved from one social resort to another, substituting a touch-and-go life of gaiety for the home life she had missed. She kept her son always with her, staying near a school in winter and traveling in summer.
+
+      In this shifting life she met and married a tremendously wealthy man, and into the splendid life which opened out before her carried the discontent which had by this time become habitual. Her son's inheritance of his grandmother's estate brought into the family a large amount of money which was no longer needed.
+
+      The consequences of Helen's marrying Saunders for money, giving him no return in gratitude and affection, was that she finally had the material benefits so important to her, and lacked the love and generosity which did not much interest her.
+    choices: []
+  H-33:
+    title: H-33
+    text: |-
+      Though Helen did not get a divorce, her life was not particularly pleasant. She found that the love which she had taken for granted was what had made their life together easy. A marriage is not happy unless at least one of the parties concerned is doing a little loving, and now nobody was on the job.
+
+      Helen now wished that she had appreciated Saunders's devotion. The chance came to go with him on a week-end skiing party, but when young Jed heard of it he was heart-broken at the thought of his mother leaving him with his nurse for three days. He pleaded with her not to go. He became hysterical and sobbed, "Oh, don't go, Mummie! don't go!"
+    choices:
+    - label: The reader who thinks she should stay with her child turns to paragraphs H-34.
+      to: H-34
+    - label: The reader who thinks she should go with her husband turns to paragraphs H-35.
+      to: H-35
+  H-34:
+    title: H-34
+    text: |-
+      Helen's passionate preoccupation with her child was too intense to allow her to be interested in her husband. They continued to live under the same roof, going their separate ways. Saunders's home life was physically comfortable, although otherwise disappointing. He considered himself, however, as fortunate as most of the men whom he knew.
+
+      Helen lived her whole life in her son. Young Jed, uneasy under this supervision, left home young, but even when he was separated from her by thousands of miles he never could get far enough away to forget her warnings and admonitions.
+
+      The consequence of Helen's trying to live her life through another person, instead of developing a full life of her own, was that her son was alternately dependent upon her and antagonistic to her even when he was far away.
+    choices: []
+  H-35:
+    title: H-35
+    text: |-
+      Fate had been kind to Helen in allowing her a chance to correct her mistake. After she began to try honestly to please Saunders, she found to her surprise that she was loving him, differently from Jed, but still loving him. The home was harmonious, for Saunders responded to the new atmosphere of affection. Other children came to add to their contentment, and if her marriage was not the romance toward which she had looked in her girlhood, it was a satisfactory working partnership.
+
+      The consequence of Helen's final decision to cease regretting the lost past was that she was a happy wife and mother.
+    choices: []
+  Jed:
+    title: Section II — Jed
+    text: |-
+      Jed Harringdale was the only son of a widow. If she had been a poor widow he would have been very different—and perhaps a finer character—for he would have been expected to assume responsibility early, but she was so very rich that she took care of him too much and too long for his best good.
+
+      Jed was fundamentally fine, but he did not have drilled into him in early youth the tiresome habits of getting to his appointments on time, knowing how much money he spent, doing things he didn't want to do because somebody else thought he ought to do them, eating what was good for him and not drinking what wasn't. In brief, he was not healthy nor wise, but he was wealthy—and a darling. To know him was to love him, and also to nag at him.
+
+      Jed grew up in Franklin, a small New England town. He went to the high school, because it was the best school there, but took his senior year in prep school. From prep school he went to Harvard, where he had a wonderful time and got through his Freshman year by the skin of his teeth. He came back to the old home town for his summer vacation in the swaggerest clothes ever seen there and driving a racing-car which he called the Scarlet Siren. The first Sunday after his return his mother took him to church to show him off, and in the afternoon, in the consciousness of duty well done, he picked up the first acquaintance whom he met, square-shouldered Saunders Mead, a clerk in the local emporium, and the two lads started off in the Scarlet Siren in search of golden adventure.
+
+      The car took them to Whoopee-Land, where they were just in time to pay the entrance fees for two damsels, one fair as noonday and the other black-eyed, like the dark lady of Shakspere's sonnets. (Jed had had Freshman English.) They exchanged names as they went round and round in the Ferris Wheel, they clung to each other duly in chuting the chutes, they kissed each other conventionally in the dark mill, and by that time they were well enough acquainted for the Scarlet Siren to hurry them to a road-house for food and possibly something to drink.
+
+      Jed was a fairy prince to Gwen Murphy and she was Brunhilde to him. The strength and sureness of this uneducated young woman were restful to Jed, who was too sensitive and nervous to be husky. Jed's sophistication and slim grace were to Gwen a glimpse into another world, which she had always longed to enter. Love at first sight had come to both, and though Saunders sensibly dropped his lady love on her door-step at an early hour and prudently rang the bell before he gave her a passionate goodnight kiss, Jed drove through Arcady with Gwen all night, speeding home in a panic in order that she might get herself safely tucked into bed before her stern father got up. This was the prelude to the most wonderful summer that either of them had ever known; Jed drifted into passionate love, evading disquieting thought; Gwen, deliberately facing the facts, was willing to brave scandal and the gossip which was already arising, in order to have her love.
+
+      Before college opened in the fall Jed had to face the first big decision of his life. Gwen told Jed that they must marry at once because she was going to have a child. Jed found that the matter did not involve simply himself and Gwen, it involved also his mother.
+
+      Mrs. Harringdale was broken-hearted at the news. No girl in the world was good enough for Jed, and instead of the best he had, from her viewpoint, chosen the worst. She made a generous offer of money to Gwen on condition that she release Jed. She felt that Jed had been trapped by an unscrupulous woman, and at a memorable interview with the girl, during which Jed was miserable with late repentance, she accused Gwen of having deliberately schemed to get a rich husband. To which Gwen replied indignantly:
+
+      "I certainly would never have had a love-affair with a man who couldn't marry me. What sort of a girl do you think I am?"
+
+      Mrs. Harringdale told her, and the conversation that followed will not bear repeating.
+
+      Jed was now faced with the choice between mother and sweetheart. When Gwen asked in astonishment, "Don't you love me any more?" he was equally astonished to find that he was unable to answer that question clearly even to himself. Up against a trouble like this, he had no time to consider whether or not he was still in love with Gwen. One cannot ask a man trapped in a burning building whether or not he loves his wife.
+
+      It was a terrible punishment, for an hour of dalliance, to ruin his career and hurt his mother so cruelly. Yet the child was his as much as Gwen's.
+    choices:
+    - label: The reader who decides that Jed is to marry Gwen turns to paragraphs J-1.
+      to: J-1
+    - label: The one who decides that he is not to marry her turns to paragraphs J-2.
+      to: J-2
+  J-1:
+    title: J-1
+    text: |-
+      For the first few weeks after their marriage Jed was very happy with Gwen. He had the approval of a satisfied conscience and he was pretty sure his mother would come around in time. He thought it was rather a lark to live with Mr. Murphy; and Mr. Murphy, who was Mrs. Harringdale's iceman, was pleased with his high-born son-in-law and amused by his unpractical schemes for making a fortune for the Murphy family. But the all-round cordiality had begun to wear a bit thin by the time the baby came.
+
+      The baby, who had her mother's robust health and her father's sunny charm when things went well, saved the situation for a little while, but Jed and Mr. Murphy were not made to dwell in harmony together indefinitely and Jed could not make a home for Gwen and the baby. His visionary plans of ice-making on a big scale finally annoyed his father-in-law and Murphy heartily wished his daughter had married a bricklayer who would bring home his wages on Saturday night.
+
+      Jed, who had always been the center of admiration, wilted under his first experience with criticism. He lost his greatest asset, his sunny disposition and joy in life. The Murphy family began getting on his nerves. He could not enjoy playing poker with Mr. Murphy's hearty friends, because of Mr. Murphy's habit of licking his thumb when he dealt and the awful smell of his pipe.
+
+      Gwen was amazed that a man with all of Jed's education couldn't hold a job, and she soon came to care more for the child's sunny activity than for Jed's woebegone lolling about the house. She declared that if Jed would only make an effort he could get a job as well as anybody; but there was nothing of the go-getter in Jed's nature. He spent more and more time with his sympathetic mother, who continually pointed out to him that now that he had saved Gwen's honor, he was justified in getting a divorce.
+
+      He was not forced to make a decision here, because the two women took matters out of his hands. Gwen bargained shrewdly with Mrs. Harringdale and obtained enough alimony to bring up the child and educate her well. She was able to move into a small house of her own with the baby, and though she bitterly regretted that Jed was not there, yet she was sensible enough to see that she wouldn't have had the house if he had been.
+
+      Jed brooded over his failure as a husband and bread-winner until the doctors advised a long trip abroad. He went alone, for Mrs. Harringdale no longer looked upon him as a child. His marriage had shown her that he was capable of breaking with her completely, even though it involved giving up all that she could offer him.
+
+      Jed took up sketching in Switzerland in a dilettante fashion and became so interested that he went to Paris to enter an art school, where he was looked upon as a student of decided promise but still undeveloped. He dropped easily into the life of the Latin Quarter and found there the congenial companionship he had never found in Franklin. He was becoming absorbed in his work and was receiving commendation from the masters when his mother wrote him that the family lawyer who had managed her money was dead. She concluded:
+
+      You have been away long enough. It is now time for you to come home and relieve me of the care of the estate. My head gets quite muddled over taxes and rents. I shall turn the entire responsibility over to you. You are young, but you can learn. You can have the attic made into a studio and you can paint afternoons, but I am too old to live without you.
+    choices:
+    - label: The reader who thinks he should return to Franklin turns to paragraphs J-3.
+      to: J-3
+    - label: The reader who thinks he should stay in Paris turns to paragraphs J-4.
+      to: J-4
+  J-2:
+    title: J-2
+    text: |-
+      Jed went back to college. For the first time in his life he felt dissatisfied with himself, although he had obeyed his mother and affairs had been arranged as well as possible for Gwen. She went to New York, where the child was later born in a hospital and immediately adopted by a wealthy couple, .mw-parser-output .nowrap,.mw-parser-output .nowrap a:before,.mw-parser-output .nowrap .selflink:before{white-space:nowrap}Mr. and Mrs. Edward Joralemon.
+
+      To escape the reproaches of his conscience Jed took to drinking with the fast set, and as a result failed to pass his examinations at mid-years. His ranks were so poor that he was dropped from college. He felt himself a complete failure, but he was relieved that his mother did not take his dismissal from college seriously. Indeed, she was glad to have him under her wing again.
+
+      Mrs. Harringdale, who now saw that her son was bound to fall in love with somebody, decided to provide him with the right girl. She arranged an Easter house-party, including Carol Lane, a New York girl who spent most of her summers in Franklin. Carol was a gay, affectionate little thing, who mistook the intensity of her shifting emotions for deep intellectuality. She was extraordinarily pretty, except in her photographs, which overlooked her enchanting blond coloring and quick changes of expression and made her look insipid. When there was a party she was on the tips of her toes. Although she had been to proms and ball games, week-end parties and yachting parties, had gone in for swimming, riding, skiing and tennis, and had migrated with the social set on their seasonal circuits even before she was a sub-deb, she had never lost her youthful enthusiasm for any kind of a good time. She brought Jed out of his blue mood in a jiffy. He felt old and mature beside her young innocence, but he realized that a man's life is different from a woman's,
+
+      It was never hard for Jed to fall in love, and it was never hard for any man to fall in love with Carol. Their engagement was announced when the house-party ended. Jed felt it was only fair to Carol to tell her of his past, and before she left they had a heart-to-heart talk. Although he had expected that in the end she would forgive him because she must know that such things do happen in the lives of men, he was overwhelmed with gratitude at the warmth and generosity with which she assured him that she understood and did not hold his disastrous love-affair against him.
+
+      "I'm glad that you talked so frankly to me," she said. "It makes it easier for me to tell you something I know I ought to tell you, too." Then, to Jed's horror, she told him with simple directness that she too had known the intimacies of love. It had happened the summer before, in a mad infatuation, under the combined influence of moonlight, roses, and a last cocktail.
+
+      In agony Jed gasped: "How could you? You have ruined our love!"
+
+      In genuine surprise Carol replied: "But you did the same thing, yourself!"
+
+      "It's different with a man," protested Jed.
+
+      Carol indignantly stood up for the single standard. If she forgave him, he should forgive her.
+    choices:
+    - label: The reader who wishes Jed to go on with the marriage turns to paragraphs J-5.
+      to: J-5
+    - label: The one who wishes him to break with Carol turns to paragraphs J-6.
+      to: J-6
+  J-3:
+    title: J-3
+    text: |-
+      Jed dropped easily into the life of Franklin and for the first few weeks was very happy. He was glad to be again with his mother, who revived under his gay attentions, and was relieved to find that Gwen and the baby were getting on well without him. For a time he was too busy seeing his old friends to do any painting, but when the first rush of home-coming was over he had a grand time putting a north skylight in the attic and furnishing a studio that was the wonder of all Franklin. It cost more than he had expected, but now that his mother had put the control of her affairs wholly into his hands he felt that he could soon make up the difference.
+
+      Mrs. Harringdale was an old-fashioned woman who, though she dominated in family life, was content to leave business to men. Her husband had built up their fortune, the lawyer who had just died had handled it satisfactorily, and though she had qualms about putting so much money into such inexperienced hands, yet the thought that her son would be with her outweighed her doubts. Jed took up his new duties with zest. As mortgages fell due and bonds matured he put the money into undeveloped real estate around Franklin which every one agreed would some day be valuable.
+
+      But neither he nor his mother were willing to live on the decreased income which resulted from paying taxes on non-income-paying investments. Mrs. Harringdale complained about her lack of money, not forgetting to mention that part of the stringency was due to the heavy alimony she was paying to Jed's former wife. So Jed, who could not bear his mother's disapproval, sold some bonds and mortgages and reinvested in conservative stocks.
+
+      Unfortunately the directors proved so very conservative that they passed their dividends, and though this course would ultimately help the stock, Jed needed money. So he sold at a loss and when Mrs. Harringdale complained, "We can't afford these conservative stocks, because we've lost so much money," he tried his hand at speculation and lost so much more that he was frightened out of the market. If the speculation had gone right Jed would have been his mother's darling son, but since it had gone wrong Mrs. Harringdale wailed loud and long and said she had never intended him to speculate.
+
+      Jed saw that something had to be done, and since he had lost on both conservative and speculative investments, he was easily persuaded by some ambitious young men of Franklin, who needed capital, to put money into a local manufacturing enterprise which he could watch. Jed was made vice-president. His unconquerable optimism assured him that business rather than art was his line. When more capital was needed he supplied it willingly, for the concern was doing unexepectedly well and big orders were coming in. In the rosy glow of what looked like a prosperous future, Jed rebuilt the family home, whose Victorian ugliness had offended his artistic eye ever since his return from Europe. The remodeling, the new garage, and the landscape-gardening ran into more than he had expected, but the result was lovely.
+
+      But it now developed that the spectacular increase in the business had been due to temporary conditions, and orders fell off as fast as they had increased. The expanded plant was largely idle and overhead ate up the profits—and more. Insurance premiums were disproportionately large, partly because the plant was of wooden construction and partly because Jed had insured it extravagantly. He had called this prudence, but it had really been an accommodation to a friend who was starting as an insurance agent.
+
+      As bills for the new machinery and buildings began to come in Jed was obliged to mortgage his undeveloped real estate. A mood of black depression settled on him. He could see no way out except to put into the business every cent he could raise, hoping for another period of prosperity. A suit for patent-infringement which went against them was the last straw. Not only would they be obliged in the future to change the model of their product or pay a huge royalty, but back royalties must be paid on what they had already sold.
+
+      Jed grew desperate. There was nothing to do but keep on, though his mother said it was only sending good money after bad. She nagged him incessantly, and the fair-weather atmosphere of love and admiration in which he had grown up changed to one of discord.
+
+      One afternoon a creditor threatened to throw the business into bankruptcy if he were not paid the next day. That evening Jed went back to the factory to go over all his papers and make the final reckoning of the financial condition of the company and of the rest of the Harringdale estate, a duty which he had characteristically evaded, assuring himself that everything would come out all right. The final figures were much worse than he had feared. He was hopelessly insolvent.
+
+      Jed could face bankruptcy but not his mother's reproaches. Death by his own hand seemed his only way out. He sat a long time at his desk, then pulled himself together, stood up as if he had come to a decision, put on his hat, and with shaking fingers lighted a cigarette. With a gesture of hopelessness he flung the match into the waste-paper basket, snapped out the light, and started for the door. The waste-paper flamed up unexpectedly, and Jed, startled, turned back to extinguish the flame. Half-way to the basket he stopped, struck by a thought. Insurance! One hundred thousand dollars! Enough to pull him out of the hole he was in.
+
+      The flames leaped high as Jed walked out of the door and down the stairs, completely unaware that the night-watchman in a neighboring building had been attracted to the window by the flaming basket. In the light he had clearly seen Jed turn from the fire and walk out of the room. The watchman expected to hear an alarm as he hurried to help his neighbor and was astonished to find the door of the factory locked and to see Mr. Harringdale far down the street. By the time he himself had turned in an alarm and the fire-engine had arrived, the plant was doomed.
+
+      The watchman, a man of unquestioned honesty, told his strange story, and the insurance company took prompt action. Jed faced arrest. He foresaw certain conviction, a long term of imprisonment and lifelong disgrace. Suicide again seemed to him the only alternative. He had a revolver in his room, and as the police rang the bell he picked it up.
+    choices:
+    - label: The reader who decides that Jed is to commit suicide turns to paragraphs J-7.
+      to: J-7
+    - label: The reader who decides that he is to live on, disgraced, turns to paragraphs J-8.
+      to: J-8
+  J-4:
+    title: J-4
+    text: |-
+      Jeb felt it was up to him to make good in his painting, for thus only could he justify himself in having refused his mother's request to return home from Paris. He had never before settled down to any kind of work, but painting did not seem to him like work. He concentrated so well that in a few years he had gained some recognition. His first triumph came when he had an Alpine landscape hung in the Salon. Its reception inspired Jed to attempt a series of European glaciers. But he was impelled to go back to America to visit his mother before he started on this life-work. For, though she had arranged her financial affairs satisfactorily by putting them in the hands of a trust company, she had never ceased to beg him to come home.
+
+      Jed landed in New York and stayed there a few days, to visit the art galleries before going on to Franklin. He took this occasion to renew his acquaintance with Marian Cole, a former Franklin girl whom he had liked in high-school days. Marian was in fine spirits because she had just left a good position in the business office of a magazine for a far better one in the office of a railroad president.
+
+      She told Jed that the new opening fulfilled her wildest dreams, for though she was nominally secretary, she foresaw that she would eventually be given as much responsibility as she was capable of carrying. She had known one or two women in large corporations who, though they were called secretaries, were virtually vice-presidents. Marian was not, however, too preoccupied with her own interests to have dinner with Jed every night at restaurants so smart that they were not yet widely known. She showed an intelligent appreciation of the few paintings he had brought with him and enjoyed as much as he did the art exhibitions they attended together.
+
+      Jed remained in New York longer than he had intended. He was deeply in love with Marian and he asked her to marry him and return to Paris with him after they had visited his mother. To his bewilderment, Marian declared that though she loved him she would not give up her career for him. She could not marry him unless he would make New York his headquarters.
+
+      Jed thought that he could easily cajole her out of these strong-minded notions, but she pointed out some three or four of her intimate friends who had both successful careers and happy home lives. She told him that though she loved him she knew that she could not be happy with a man too crystallized to adapt himself to a wife with a career.
+    choices:
+    - label: The reader who thinks Jed should give up Europe and marry Marian Cole turns to paragraphs
+        J-9.
+      to: J-9
+    - label: He who thinks he should give up Marian turns to paragraphs J-10.
+      to: J-10
+  J-5:
+    title: J-5
+    text: |-
+      Mrs. Harrindale, delighted at Jed's marriage to Carol, offered to build them an adorable doll's house in a birch-and-cedar grove on her estate; but Carol, after thinking it over, said that she wanted two years abroad with Jed before settling down. Jed fell in with her plans and thoroughly enjoyed being the husband of so attractive a young matron. Although it was his mother who had chosen Carol for him, it was easy for Jed to love the woman he was with. Traveling with Carol delighted him.
+
+      They made a great many acquaintances, and were soon in full swing, migrating from Deauville to Cannes with the smart Europeans and Americans. Carol had a fortune in her own right, and Mrs. Harringdale, not to be outdone by Carol's indulgent father, made Jed a generous allowance. After two years of this gay life they found it impossible to settle down in Franklin, and though they returned now and then for a few months, they soon flitted away to the Lido, Biarritz, or some other playground.
+
+      It was during a yachting cruise on the Mediterranean that tragedy overtook them. Guests of Price Bullen and his young wife, they left the princely Bullen yacht to spend a few days at a hotel at Antibes, where the millionaire took a half-floor of connecting rooms for his party.
+
+      For the first time in his life Jed was genuinely, deeply, and maturely in love—with Vauncey Bullen, the convent-bred, French-English wife of his host. It was not in Jed's nature to fight against his sudden passion. His wife faded into insignificance in his life, in the glory of his new love. But Vauncey was of a different caliber. She was the strong type of woman toward whom Jed instinctively turned when left to himself and on whose strength he leaned. She refused to yield to a love-affair, although her marriage had been merely a bargain made by her father when she was too young to assert herself.
+
+      The first evening at Antibes, Bullen asked Jed to take the two women to a concert, as he himself would have to attend to the mail he had found awaiting him. At the last moment Carol decided not to go, and Jed and Vauncey, instead of going to the concert, took the opportunity to have a long talk. On the rocks above the pounding sea, beneath a streaming summer moon, Jed pleaded for her love, but Vauncey, although she admitted that she loved Jed and that she was terribly unhappy with her domineering husband, had the notion, quaint in their set, that she was married for better or for worse. This made her sweeter and dearer than ever to Jed. From the height of love, he dropped into the depths of melancholy. He could not feel as Vauncey did the winged solace of renunciation.
+
+      They went back to the hotel early, Vauncey going directly to her room. Jed went into the café to drink. Brooding over his drink, he seemed to see Bullen's self-satisfied, sneering face, set on a thick bullish neck, his heavy shoulders and his gross figure. Jed arose with flaming determination. It seemed to him that the gentlemanly (and dramatic) course to follow was to go like an honest man to Bullen and force him to give his wife a divorce. Had Jed been sober he would have been more sensible.
+
+      Bullen was not in the suite sitting-room and Jed went on to his host's bedroom, which was somewhat separated from the other rooms at the farthermost end of the suite. The door was closed, and assuming that Bullen had gone to bed, Jed gave up the idea of seeing him that night and was about to go to his own room when he heard Carol's high laugh. It came from the bedroom!
+
+      He had forgotten all about Carol. Suddenly he was poignantly aware of himself as a husband—and a wronged husband at that. Uncontrolled thoughts skidded dangerously in his drunken brain. Carol was untrue to him! That was what came of marrying a woman with a past! Although he had never really loved her, he had been true to her. He told himself that that very evening he had given up the passion of his life and this was how she repaid him! He was desperately sorry for himself. He somehow felt that it was through his nobility that he had lost both his wife and his love.
+
+      From self-pity he passed swiftly to indignation. Untrue to him with Bullen—Bullen who stood between him and Vauncey. Light burst upon him. Bullen had tricked him! Instead of being a guileless fool who had trusted his wife to Jed, he had connived to be alone with Jed's wife! And while Jed had acted honorably, Bullen .mw-parser-output .nowrap,.mw-parser-output .nowrap a:before,.mw-parser-output .nowrap .selflink:before{white-space:nowrap}. . .
+
+      At this unfortunate moment the door of the bedroom swung open and Carol stood on the threshold, laughing back over her shoulder at Bullen, whose amorous face changed to surprise, quickly followed by a defensive sneer as his eyes fell on Jed. Jed lunged forward, pushing Carol aside. He hardly knew what happened next. He was dimly conscious of a brief tussle from which he wrenched himself away, of Carol's quickly stifled scream, of himself standing with the neck of a broken bottle in his hand, of Bullen on the floor, his face covered with blood, of Carol grabbing the bottle-neck from him and inexplicably wiping it with a towel before she threw it on the ground and finally of being hurried silently to his room. Carol had kept her head.
+
+      Jed had drifted into tragedy, as he had drifted into marriage and drifted into love. Bullen died two hours later without regaining consciousness. While Jed was still in a drunken stupor Carol managed things. When he came to, the search for the murderer was in full swing, but Carol's story of having been with her husband all the time had kept suspicion from falling on Jed. There was no one to contradict her statement, since Bullen had taken the precaution of sending away his personal servants and Vauncey had shut herself up in her own room when she returned.
+
+      The decision Jed now faced was, characteristically, how to get out of trouble, not how to avoid getting into it.
+    choices:
+    - label: The reader who thinks he should give himself up turns to paragraphs J-11.
+      to: J-11
+    - label: The reader who thinks he should be silent turns to paragraphs J-12.
+      to: J-12
+  J-6:
+    title: J-6
+    text: |-
+      Jed's natural tendency was toward women of force of character, and his next love-affair, a year after he had decided not to marry Carol, was with Helen Rogers, a handsome blond girl whose grave beauty was more restful to him than Carol's vivacious prettiness. Mrs. Harringdale opposed this marriage because although Helen came of a respected family, she had neither the money nor social prominence of Carol, and Mrs. Harringdale still hoped Jed would renew his inexplicably broken engagement. At one time Jed wanted Helen to elope with him, but she insisted that their marriage must be open and aboveboard.
+
+      The two years that followed were distressing to everybody. Mrs. Harringdale would not recognize her son's engagement to Helen, except by fulminating against it. She developed high blood-pressure under the strain, and the doctors warned Jed that any undue excitement would bring on a stroke and possibly be fatal to his mother. At the end of two years Helen insisted that they must separate or marry. If he was to hold her, Jed had to choose between his mother's health and marriage with Helen. He felt deeply the truth of the old saying that a man may have many sweethearts but he has only one mother.
+    choices:
+    - label: The reader who decides that he is to marry Helen turns to paragraphs J-13.
+      to: J-13
+    - label: The reader who decides that he is to stand by his mother turns to paragraphs J-14.
+      to: J-14
+  J-7:
+    title: J-7
+    text: |-
+      Jed's insolvency and death affected not only his mother but also his former wife and his daughter. Gwen and the child went home to live with Mr. Murphy and Gwen got a job in Saunders Mead's department-store. The sale of Mrs. Harringdale's personal property brought in enough for her to skimp along on, and she spent the rest of her life in cheap boarding-houses in Franklin.
+
+      Always a hard person to live with, Mrs. Harringdale was more difficult than ever, now that she had lost the only person she loved, and was thwarted by unaccustomed poverty. She was asked to leave one boarding-house after another, until she finally found refuge in one kept by Helen Rogers, a Franklin woman, grown patient and understanding through her devotion to her own mother who had recently died.
+
+      The consequence of Jed's amiable method of letting other people decide his problems as suited them was that he not only came to grief himself but dragged others down with him.
+    choices: []
+  J-8:
+    title: J-8
+    text: |-
+      Jed's trial was short. The evidence against him was so plain that he pleaded guilty. He was convicted of arson and given a long prison sentence, of which he served only a few years. Confinement and worry broke down his health.
+
+      But before his death in the prison hospital his mother came to him frequently and they renewed the tender relations of his early years when they had been all in all to each other. The obvious comfort which these hours gave his unhappy mother made him glad that he had resisted the temptation to commit suicide.
+
+      The consequence of Jed's resisting the temptation to make away with himself was that he spared his mother one last pang—the grief of feeling herself responsible for her son's death.
+    choices: []
+  J-9:
+    title: J-9
+    text: |-
+      Having chosen marriage to Marian in preference to life without her in Paris, Jed did not hold it up against her. With his usual adaptability he proceeded to find what he wanted in America. During a wonderful honeymoon in Canada, along the magnificent Columbia River, he discovered—that there are glaciers in America. He came back with a portfolio of striking studies of the Columbia Ice Field, from which he painted his first tremendously successful picture, the beginning of his famous series of Canadian glaciers.
+
+      Jed's success at painting kept him from being overshadowed by his beautiful and vital young wife, but he never ceased to marvel at her cleverness. It amused him to watch the skilful way in which she arranged people's lives to their own advantage without their knowing it. Not only did she make a name for herself in the business world, but she also ran a charming home and found time to sandwich in three babies, whom she adored.
+
+      As if this were not enough, she made friends with Jed's mother and actually persuaded his first wife Gwen, who had not remarried, to allow little Madeleine to make long visits to her father. Jed had an amused perception that his two wives were of a similar type, though Marian had the advantage of a cultural background and perhaps a more sensitive temperament. He could not quite understand why it was that she seemed to look up to him, but this was an added incentive to work at the painting which he so much enjoyed and to take the long explorative trips into Canada from which he brought back his pictures of mountain ranges, jagged against the sky, emerald lakes, and erosive cataracts dropping into dusky gorges.
+
+      Jed was the type of a man who is ruined or saved by his wife, and the consequence of his securing a wife with an unusual combination of masculine independence and feminine tenderness was that he was cleverly guided to make the most of himself.
+    choices: []
+  J-10:
+    title: J-10
+    text: |-
+      Jed, refusing to give up his artistic career in Paris for the sake of marrying Marian, settled permanently in Paris, grew a goatee, and looked so Parisian that American tourists asking directions on the street addressed him in broken French. He married into a French Huguenot family because he liked the Frenchwoman's deferential attitude toward her husband better than the independence of the American woman, and became a part of French family life. If at times its formality irked him, he could escape to discreet love-affairs without the condemnation of society.
+
+      Occasionally he brought his wife and two children to Franklin for the summer, but he was always glad to go back to France and escape the conscientious aggressiveness of Americans, their absorption in money-making, and the nervous strain of the noisy streets. His work was good. He carried out his plan to do a series of European glaciers.
+
+      The consequence of Jed's giving up Marian for his work was that he had his work and not Marian, though by being a little more adaptable he might have had both.
+    choices: []
+  J-11:
+    title: J-11
+    text: Having given himself up to the police, with the confession that he had unintentionally
+      killed Bullen in a drunken row, Jed sent for a good lawyer. He told his lawyer the whole story
+      and the lawyer assured him that no French jury would be hard on a man who had killed his wife's
+      lover under such circumstances. He was surprised that Jed hesitated to sacrifice his wife's
+      reputation to clear himself and said that unless he pleaded the unwritten law he faced the
+      certainty of a long jail sentence. Jed consulted Carol, who begged him not to tell, for she
+      was sure he would get off.
+    choices:
+    - label: The reader who thinks Jed should tell that it was finding his wife in Bullen's room
+        that incited him to murder, turns to paragraphs J-15.
+      to: J-15
+    - label: The one who thinks he should protect his wife's reputation by silence turns to paragraphs
+        J-16.
+      to: J-16
+  J-12:
+    title: J-12
+    text: |-
+      The police investigations concerning the murder of Bullen came to nothing, partly because they could find no motive for the crime. Although there was some suspicion of Jed, the final assumption was that Mr. Bullen had surprised a thief who had entered from the balcony. At least, that was the story given out, but Jed had an uneasy feeling that he was being watched after he left Antibes.
+
+      Jed and Carol made a pretense of a united life, but they were in reality completely alienated. They dared not divorce each other lest the scandal be revealed. Vauncey dropped out of the picture. Carol and Jed got out of Europe as fast as they could, returning to Franklin, U.S.A., which they profoundly wished they had never left. The two made their home with Mrs. Harringdale, and after a few years each went off alone on long trips as often as seemed safe. They made a point of being especially loving when in public together.
+
+      The consequence of the cloud hanging over them was not so bad as might have been expected. The family life when all three were together was not unhappy, because the two young people appreciated the refuge which Mrs. Harringdale's unconscious protection afforded them, while she, quickly sensing that they were not all in all to each other, felt no jealousy of her son's wife.
+    choices: []
+  J-13:
+    title: J-13
+    text: |-
+      Jed was two hours late to his wedding because his mother was in a state! Even while the minister was making Jed and Helen man and wife his mother had a stroke which deprived her of the power of speech and motion. The wedding trip was postponed; in fact, was not taken until six years later. During those years Jed and Helen lived at Mrs. Harringdale's house, where the invalid was under the care of two nurses, but demanded constant attention from her son. She regained some powers of speech and movement, but continued bedridden. Her animosity toward Helen became spasmodic and she was devoted to her three grandchildren. Jed knew that her last years were not unhappy.
+
+      After her death the family traveled and spent some years in France, where Jed took up sketching in an amateurish way. Upon their return they made over the house and replanted the grounds. Helen soon realized that her husband was not a business man, and on the plea of leaving him free to devote his time to painting, for which he showed unusual talent, she persuaded him to place all the business of the estate in the hands of capable lawyers.
+
+      The consequence of Jed's disobeying his irrationally jealous mother was that everybody except the mother was moderately happy.
+    choices: []
+  J-14:
+    title: J-14
+    text: |-
+      Jed's decision to give up Helen and stand by his mother was from one viewpoint admirable, while from another it was simply the result of his inability to make a decision. While he was saying to himself, "I'll wait and see what breaks," hoping against hope that in some miraculous way his mother would be reconciled to his marriage, Helen was up and off to take a job in the city.
+
+      Jed was both broken-hearted and relieved, for the break with Helen certainly did improve his mother's disposition. His three love-affairs had gone wrong, but this did not discourage him from trying others, each briefer than the last. The older generation spoke disparagingly of him as a Don Juan, looking upon him with disapproval, while the younger generation were bored by him. No one understood the tragedy of his eternal quest for a perfect woman who would satisfy both his mother and himself.
+
+      Jed never asked himself if there existed a perfect woman—and if so, why he deserved her. The consequence of his being a docile slave to a dominating, selfish old woman, was that he was a perfect son but no good at all as a husband.
+    choices: []
+  J-15:
+    title: J-15
+    text: |-
+      Carol was a practical woman and when she saw that it was necessary for her husband to tell what had happened in order to save himself from paying the death penalty for Bullen's murder, she went on the stand and represented the dead man as a friend who had taken advantage of her innocence. The trial was much enjoyed by the press of two countries and Jed was acquitted on "the unwritten law."
+
+      Though Carol was willing to stand by him through the trial, she followed the conventions of the tribe and sued for a divorce soon afterward. The divorce caused them some inconvenience, for it necessitated Carol's going to Reno for three months though she hated Western life.
+
+      Vauncey, although she had not loved her husband, was so shocked and humiliated by the whole affair, that she withdrew from Jed's life entirely. Jed returned to Franklin, but the cloud on his reputation cut him off from his old friends, even though they tried to be kind. He lived on as a recluse, becoming more and more absorbed in solitary interests. He took up painting for his own satisfaction and after a number of years his work was recognized in a small way in the art world.
+
+      His mother, broken by her son's tragedy, clung to him pathetically. On one of his trips abroad with her they met on the steamer .mw-parser-output .nowrap,.mw-parser-output .nowrap a:before,.mw-parser-output .nowrap .selflink:before{white-space:nowrap}Mr. and Mrs. Edward Joralemon with their lovely daughter Anne. Jed knew it was these people who had adopted Gwen's child. Anne was his own daughter! He got acquainted with her and they found themselves extraordinarily congenial, probably because Jed exerted himself as never before in order to interest his daughter.
+
+      One evening Anne confided to Jed that she was an adopted child and that she longed to know about her own parents but had been discouraged from inquiring about them. Jed faced the question whether or not to tell her that he was her father. In his loneliness, he longed to claim this lovely and congenial girl as his daughter, yet he hesitated to disturb her peace of mind.
+    choices:
+    - label: The reader who decides that he is to tell turns to paragraphs J-17.
+      to: J-17
+    - label: The reader who decides that he is not to tell turns to paragraphs J-18.
+      to: J-18
+  J-16:
+    title: J-16
+    text: |-
+      Jed had not foreseen that if he refused to give a motive for the murder the public would think one up for him. The first thing that came out was that he had spent the hours preceding the murder on the rocks with Vauncey. It was obvious to newspaper readers that Jed had murdered Bullen because he was in love with Bullen's wife and wanted to get him out of the way. They assumed that Vauncey had connived at the murder.
+
+      Jed's lawyer explained to him that while a jury would doubtless acquit a man for murdering his wife's lover, they would not be lenient toward one who murdered his mistress's husband. Jed, in the dilemma of implicating the innocent Vauncey by his silence or of admitting that he had found Carol in Bullen's room, saw that he must clear Vauncey at Carol's expense.
+
+      Carol, who would have been willing to have Jed implicate her in order to save himself, was furiously jealous at having her reputation sacrificed to save Vauncey's. She had not the slightest doubt that there had been an illicit love-affair between Jed and Vauncey and she made the trial a sensational international front-page affair. The story was later turned into a movie which featured the popular young American society man, his beautiful gay young wife who had been seduced by the multimillionaire Bullen, cast as the villain, and the villain's convent-bred wife, who was frankly compared to a repentant Magdalen; all this against the background of the palatial yacht and a wild life lived in a shower of gold.
+
+      For a time it looked black for Jed, but he was finally acquitted. He was very willing to coöperate with Carol in getting the divorce which she immediately demanded. Later she married an English officer in a crack regiment.
+
+      Vauncey was horrified at Carol's desertion. Under the circumstances she herself would not abandon Jed, but felt that her life was bound up with his in a common expiation. She believed herself equally guilty with the others, although technically innocent. She knew she had gone alone with Jed to the rocks on the evening of the tragedy against her better judgment because she had so passionately longed for the kiss of renunciation which she had allowed him.
+
+      Although her religion forbade her marrying Jed, she found consolation in having him near her. She returned to her parents' château in southern France and devoted herself to making the two old people happy as long as they lived. Jed settled down in a villa three miles away and once a week was received at dinner at the château. In the evening he and Vauncey played backgammon. This routine became a set habit which continued after the death of Vauncey's parents, and was broken only by Jed's yearly visits to the United States as long as his mother lived. A long and placid life was measured by these evenings as cathedral days are measured by the melody of chimes. Jed was not unhappy. He had found the perfect woman—in other words, the woman whom he could not have.
+
+      The consequence of Jed's bearing himself with dignity in the catastrophe brought on by a foolish misspent youth was that he gathered up a few fragments after the crash and pieced together a not unendurable middle age. The consequences of earlier repentance might have been even better.
+    choices: []
+  J-17:
+    title: J-17
+    text: |-
+      Since Jed's attention had been wholly on his own feelings, he was unprepared for the tumult of emotion which his disclosure that he was Anne's father roused in the unsophisticated girl. Too late he realized that though she had always known herself adopted, she had dreamed of a father overwhelmed by undeserved misfortune; not of one who had been involved in a notorious murder.
+
+      She learned for the first time that he had deserted her mother in time of need and allowed his child to be born with the stigma of illegitimacy. Brought up in wealth, it meant little to her that Jed had provided for Gwen, financially. Nor could she understand that a woman might be stronger than a man and responsible for a disastrous situation. She saw her mother seduced and herself made an outcast through the pusillanimity of this man who now expected her to love him.
+
+      The disclosure that her mother had later married an ambitious young plumber who had become a contractor and now was extremely well-to-do brought her no comfort. At the same moment she lost both her dream father and her dream mother. Anne took her story straight to her foster-parents, never so dear to her as now. Enraged with Jed for having told her the harsh truth, from which they had always protected her, Mr. Joralemon told him in plain English what he thought of this act, and Jed, who up to this time had been thinking only of his own loneliness, was aghast at what he had done.
+
+      He looked back over his life and saw how futile it had been, though he had always had good intentions. He had never wanted to hurt any one, yet he had brought nothing but suffering to those whom he loved. In his self-abasement, life was more than he could bear. Next morning he was not to be found. His cabin had not been slept in. At the end of a few hours everybody on board knew that the charming Mr. Harringdale had thrown himself from the ship during the night. He left a broken mother to spend the rest of her life alone and a daughter who would never forget that she had sent an unloved father to his death.
+
+      The consequence of this action was that for the last time Jed had done the wrong thing.
+    choices: []
+  J-18:
+    title: J-18
+    text: |-
+      Jed's decision not to tell Anne that he was her father shows that for the first time in his life he knew a love which made another person's happiness more important to him than his own. This lovely girl, on whom he had a claim which he had refused to press, was dearer to him than his mother, Gwen, Carol or even Vauncey had ever been.
+
+      The sense of fatherhood, awakened so late, gave him strength to put aside his selfish desire to claim her. When she confided to-him her day-dreams about her unknown parents, the realization that he was saving her from the knowledge of her illegitimacy and of the worthlessness of her father gave him a new self-respect. Now indeed he felt that he was Anne's father, protecting her from shock and disillusionment, even though at the expense of his own satisfaction.:
+
+      The consequence of this act was that some of his depression left him and his released energy focused itself on his painting. He had work now, and through it he found congenial friends.
+    choices: []
+  Saunders:
+    title: Section III — Saunders
+    text: |-
+      Saunders Mead was brought up in a pleasant frame house, painted white, in Franklin, a small New England town. His father who was the postmaster, had only a small income, but the Mead children never thought of themselves as poor because there were always cookies in the pantry. Saunders, the eldest of the family, early developed a sense of responsibility and began delivering papers when he was thirteen years old. What he earned he could keep for himself, with the proviso that he save a certain amount of it, and this ready money made him rather an important person with the other children. In later years he appreciated his early experience in saving, spending, and using his money.
+
+      Among his schoolmates were Jed Harringdale and Helen Rogers. Carol Lane, who lived in New York, spent her summers in Franklin with her grandmother. The four children were close friends and never lost sight of one another after they were grown. As soon as Saunders was graduated from high school he got a steady job in the Franklin Dry Goods Store, where he had already worked during his summer vacations and Christmas holidays. Soon afterward, through his father's death, he became the head of the family.
+
+      Old Mr. Braley, proprietor of the store in which Saunders worked, took a great interest in the reliable and enterprising boy, and raised his salary by infinitesimal gradations, as was the custom in Franklin. By the time Saunders was twenty-two he had five hundred dollars saved up; and Mr. Braley, learning this, offered him a chance to invest the money in the store, with the idea of gradually but regularly buying a controlling interest. Braley planned to retire fairly soon, and there was no one to whom he would rather turn over the store in which he had worked for fifty years than young Mead.
+
+      Saunders was tremendously interested in the store and had spent a large part of his time reading business literature and developing merchandising projects.
+
+      Mr. Braley's offer would not be repeated, because if Saunders did not take it, another clerk, who was Mr. Braley's second choice, would get the chance. But Saunders's younger brother Alfred wanted to go to Massachusetts Tech to study architecture and had saved up a hundred dollars toward this purpose. If he could borrow Saunders's five hundred, he could manage, with the utmost economy, to scrape through his first year. The following years would be easier, because if he made a good record he could count on a scholarship and upon work found for him by the students' employment bureau. The lad was more brilliant than his elder brother and very lovable. He was extremely dear to Saunders.
+    choices:
+    - label: The reader who thinks Saunders should lend the money to Alfred turns to paragraphs
+        S-1.
+      to: S-1
+    - label: The reader who thinks he should invest it in the store turns to paragraphs S-2.
+      to: S-2
+  S-1:
+    title: S-1
+    text: |-
+      Saunders gave his five hundred to his brother Alfred without complaining of its being a sacrifice. He had reward in Alfred's brilliant work which secured a tuition scholarship in the boy's second year, with offer of work in the students' lunch-room. In view of Alfred's attainments it was a pity for him to divert a part of his attention to drudgery, and Saunders decided to give him another five hundred each of the four years he spent at the institute of technology. During Alfred's senior year Alfred chose for his thesis a design for a grammar-school for Franklin, because for several years there had been talk of building a new school on the large lot where the Mead house stood. It was centrally located and in every way desirable for a school.
+
+      The aldermen took definite steps toward the actual accomplishment of this much talked of scheme when Alfred had graduated with high honor, and his plans, exhibited in the City Hall, were exciting favorable comment. When Donovan, president of the board, called one evening to discuss matters with Saunders, now the head of the family, Saunders knew that Alfred, Marge, and Jimmie were in the kitchen dancing silent jigs, with their hands over their mouths to hold in their yelps of joy.
+
+      At first it was all plain sailing. The interview began pleasantly with the statement that the Board of Aldermen had virtually decided to utilize Alfred's plans for the new school. Thereafter Donavan conveyed to Saunders an offer of ten thousand dollars for the Mead property, which, though a generous sum, was not excessive. But presently Saunders began to hear something beneath the words. The alderman was explaining to him that since no real-estate agent was concerned in the deal, Saunders would pay what would otherwise have been the agent's commission directly to the Board of Aldermen—indeed, to the president himself.
+
+      It developed further that the commission was an unusually large one—two thousand dollars, in fact. When Saunders protested in honest bewilderment, he was told curtly that the owner of a certain lot on the other side of the railroad tracks was ready to agree to this proposition. Saunders was very stupid where dishonesty was concerned, but his eyes were completely opened when he learned that he must make the two-thousand-dollar payment in bills and not by check.
+
+      Saunders suddenly found himself faced with the problem of whether or not to close his eyes to this small piece of graft. If he did, his brother's excellent design would be accepted, and the fact would give Alfred a fine start in his profession, the Mead family would be able to move into a house with modern conveniences where the housework would be easier for Mrs. Mead, and a couple of thousand dollars could be put aside toward a rainy day. Moreover, the school would be built in a good location instead of an unsuitable one across the railroad tracks. If, on the other hand, he refused the offer, Alfred's chance would be lost and he himself might be forced to denounce Donovan in an effort, probably futile, to block the scheme of putting the school-house in a dangerous location.
+    choices:
+    - label: The reader who thinks he should accept the offer turns to paragraphs S-3.
+      to: S-3
+    - label: The one who thinks he should refuse turns to paragraphs S-4.
+      to: S-4
+  S-2:
+    title: S-2
+    text: |-
+      Saunders hated to disappoint his brother Alfred, who took disappointment hard; however, he was determined to buy an interest in the store. But while the business outlook was cheerful, things were not so pleasant at home. Alfred's brilliant intellect was combined with emotional instability, and he was now down in the depths. The other members of the family reproached Saunders for his selfishness.
+
+      As soon as there was an opening in the store, Saunders, with Mr. Braley's consent, offered the job to Alfred as a chance to earn money toward getting an education, and Alfred's spirits rose as quickly as they had sunk. He made a wretched clerk and Saunders had to exert himself to cover up his sins and keep him from being fired, but the lad did save his money toward going to Tech.
+
+      At this moment Luck stepped in. A great-uncle who had paid no attention to them for years died unexpectedly, leaving five hundred dollars to each member of the Mead family. Alfred threw up his job and went radiantly off to Massachusetts Tech, and Saunders thankfully got a competent clerk to take his place. Saunders himself was not quite sure what to do with his five hundred dollars. Out of his two-thousand-dollar salary he was buying one thousand dollars' worth of stock yearly, in two instalments. After deducting necessary expenses, including a moderate board paid to his mother, he had virtually nothing left for recreation. He was dropping out of his crowd and the girl he most admired, Helen Rogers, was constantly going off with Jed Harringdale, in Jed's racer.
+
+      Saunders reflected that one is young only once, and that if he spent his windfall on a second-hand car he could have the time of his life. But he would be risking his standing with Mr. Braley by doing this, for Mr. Braley had never bought a motor-car when he was a lad; his father's horse and buggy had been good enough for him. Moreover, Saunders wanted to be a millionaire and he knew there was truth in the old axiom that the first ten thousand is the hardest.
+    choices:
+    - label: The reader who wishes him to buy the car turns to paragraphs S-5.
+      to: S-5
+    - label: The one who wishes him to invest his windfall in the store turns to paragraphs S-6.
+      to: S-6
+  S-3:
+    title: S-3
+    text: |-
+      For some months after Saunders accepted the plan proposed by Donovan, selling the lot to the city and paying part of the money back to the president of the Board of Aldermen, he was nervous lest some one discover the deal and misunderstand his motives. But Donovan was too adept at this sort of thing to run into any danger whatever, and Saunders became reconciled to his own slight deviation from rectitude because of his mother's satisfaction in the convenient new home and Alfred's enthusiasm and delight in having his plans accepted.
+
+      About the time the excavation was finished and the foundation begun Saunders was disturbed by a sudden drop in Alfred's spirits. The boy became glum and uncommunicative, replying to Saunders's questions simply by saying curtly that everything was going well. Certainly he was attending to business, for he had numerous lengthy conferences with the aldermen, each of whom, by a curious coincidence, was furnishing part of the supplies for the building; one owned a brick-yard, a second ran a lumber-yard, and so on.
+
+      Saunders realized what he had put his younger brother up against, seeing what temptation there was to connive in dishonesty in the furnishing of materials. Disturbed, he asked Alfred frankly if there was graft in the proposition. Alfred, who had always looked up to Saunders, turned on him with sulky resentment.
+
+      "You're a great one to pry into my affairs," he retorted, "after you split profits with Donovan, yourself!"
+
+      Then the whole thing came out. The aldermen pretending they doubted, after all, that the plans were practicable, had put off signing the contract, until Alfred was beside himself with anxiety. Then Donovan had come into the open and explained that the school for which a hundred thousand had been appropriated, was actually to cost only sixty thousand. If Alfred wanted to be the architect, it would he necessary for him secretly to substitute for the plans publicly displayed, after being accepted as his thesis, a new set of plans calling for inferior materials and construction. The forty thousand dollars thus saved was to be split up among those who were in the ring. Alfred had at first refused, with young indignation, but when Donovan had told him how Saunders had come round, Alfred, disillusioned, had finally capitulated.
+
+      Saunders, bitterly regretting his own false step, urged Alfred to give up the whole business, but Alfred, with unexpected stubbornness, said that Saunders's day of authority over him was past. He assured his brother that although the material was scamped and the construction altered to a cheaper form, the building was still fireproof and better than a good many buildings about which nobody made any fuss.
+    choices:
+    - label: The reader who thinks Saunders should expose the ring turns to paragraphs S-7.
+      to: S-7
+    - label: The one who thinks he should keep quiet turns to paragraphs S-8.
+      to: S-8
+  S-4:
+    title: S-4
+    text: |-
+      Thoroughly outraged by his glimpse into the corruption of the city government, Saunders thought he had only to tell of the dishonest offer made him, to rouse the community and cause the citizens to insist that the grammar-school be built on his lot, which was obviously the right place. To his astonishment, the respectable element did nothing, each man excusing himself on the ground that no one else took any interest in the corrupt conditions.
+
+      Donovan, as a counter-blast, set up the cry that the immigrant children across the railroad tracks were just as important as the silk-stockinged children of the plutocrats, neglecting to mention that the children on the town side of the tracks outnumbered those on the other side ten to one. The school-house was built across the tracks on the lot of the man who would give graft, and the public growled but did nothing about it.
+
+      Alfred grouched a little at his brother's stiff-necked refusal to compromise with the powers that were, but Saunders knew that in his heart the lad respected his honesty. Alfred's bitter disappointment was counteracted by an offer of a small position in a famous New York architectural firm, which made a practice of securing the honor students from the technological institutes.
+
+      Public interest in the school controversy had almost died down when a little girl was killed crossing the tracks on her way to the new building. So long as the issue had been a theoretical one, nobody had taken it seriously, but in indignation over the child's unnecessary death the town rose in wrath and voted in a complete reform ticket, with Saunders as one of the aldermen. It was too late to remove the school building, but the town in coöperation with the railroads lowered the tracks at the school crossing. Donovan's crowd used the consequent increase in taxes as a weapon against the reform administration, and were put in the saddle again at the next election.
+
+      Alfred was now off Saunders's hands and already had had an increase in salary. His future was assured. But Marge now needed money. A well-known singing teacher who spent his summers in Franklin was so impressed by the possibilities of her voice that he had given her free lessons and now urged that she continue her studies under his instruction in Boston. When this famous teacher was willing to give Marge his valuable time without payment, it seemed as if her family should be glad to make sacrifices in order to pay for her board in the city. Marge had a part of her uncle's gift left, and Mrs. Mead offered to turn over to Marge what Saunders was paying her for board. Saunders would be able by rigid self-denial to supply the rest.
+
+      At this moment Barton Brothers, who had recently opened a branch store in Franklin, approached Saunders with an offer of a position in their Cleveland store, where he would receive a thorough training in modern merchandising methods. The manager of the local branch told him frankly that they had watched his work at Braley's and recognized him as a man with a future. The Cleveland position offered him an opportunity he would never get at Braley's, since the man who had bought into the firm when Saunders had failed to do so was not interested in advancing him. The cost of moving the family to Cleveland or of supporting them apart from him in Franklin had to be taken into account. He would have no money left to give to Marge.
+    choices:
+    - label: The reader who thinks that he should stay at Braley's and finance Marge in Boston turns
+        to paragraphs S-9.
+      to: S-9
+    - label: The reader who thinks he should accept the Cleveland offer turns to paragraphs S-10.
+      to: S-10
+  S-5:
+    title: S-5
+    text: |-
+      Saunders got his car with the money his uncle had unexpectedly left him, but he didn't get his girl. He found it wasn't a car she was interested in but the man in it—and the man was Jed Harringdale. But although Helen would not go with Saunders, he was not one to give up easily and he turned up at all the parties where Helen was. He was not a young Lochinvar out of the West but a steady and persistent wooer who believed that the best man wins in the end. In order to go about with the crowd without looking like an oh-so-wan-and-pale young lover it was necessary for him to take another girl with him. When some one teased him about Carol Lane he suddenly realized that the necessary girl whom he took about with him was always Carol.
+
+      Carol, whose home was in New York, had for many years spent part of her summers in Franklin with her grandmother. She had at one time been engaged to Jed Harringdale, and they continued friends after the brief engagement was broken. Franklin had always seemed more like home to Carol than her father's Park Avenue apartment or his newly acquired place on Long Island, where a young stepmother ruled supreme. Although the Lanes' fortune was new, their names were in the Social Register, and Carol's piquant beauty was snapped by newspaper photographers at Palm Beach and Long Island race-tracks. She was an exuberant young woman, for whom the moment was sufficient. She didn't deal in futures. With Carol, action followed stimulus, with no pause for consideration between. Life to her was an exciting drama.
+
+      At just about the time when Saunders discovered how much he was enjoying Carol's company in spite of being in love with Helen, Helen eloped with Jed. In his loneliness Saunders turned more and more to the mercurial Carol. Though Helen was the love of his life, he was not the type to cry over spilt milk. Carol was not only beautiful and vivacious but so wealthy that marriage with her would be an extraordinary achievement for a young clerk in a small-town store. It seemed to him very strange that this glamorous young creature should be interested in him, yet he could not help seeing that she was. He had been her childhood hero since the day he got her out of one of her frequent scrapes and sent her home with a good scolding, which she hadn't listened to.
+
+      Saunders faced the problem of whether or not to ask Carol to marry him. He was still in love with Helen—whom he could not have. But he enjoyed Carol and he had good reason to believe that her father would advance the career of his daughter's husband.
+    choices:
+    - label: The reader who thinks he should ask Carol to marry him turns to paragraphs S-11.
+      to: S-11
+    - label: The reader who thinks he should not turns to paragraphs S-12.
+      to: S-12
+  S-6:
+    title: S-6
+    text: |-
+      Mr. Braley found in Saunders a young man after his own heart and raised his salary because he saw that the money would come right back into the business. Although there was little of the play-boy in Saunders, yet those early years, when he turned a nickel over twice before spending it, were bitterly hard for him. He kept away from the young people, since he was not willing to go with them unless he paid his share, and there were times when he longed to exchange Mr. Braley's commendation for the cordial approval of his own generation.
+
+      Saunders's next opportunity to advance himself in business came when Barton Brothers, a New York store which had been in the habit of showing goods at the hotel twice a year, opened a permanent branch in Franklin. They offered Saunders the managership of this branch, with limitless possibilities of advancement if he made good.
+
+      As Saunders knew that he would make good, a big prospect opened before him. Although he now owned some stock in Braley's store, it was not yet enough to be a major factor in his decision; but it was clear to him that the prosperity of Mr. Braley's store depended on him, and in his new position he would be in direct competition with Braley. Moreover, his departure to a rival store would be a serious blow to the old man, who had been like a father to him.
+    choices:
+    - label: The reader who thinks he should accept the new offer turns to paragraphs S-13.
+      to: S-13
+    - label: The one who thinks he should stay with Braley turns to paragraphs S-14.
+      to: S-14
+  S-7:
+    title: S-7
+    text: |-
+      Saunders's first act, after he discovered how Alfred was being bullied into acquiescing in graft, was to go to Donovan, the president of the Board of Aldermen, and threaten him with exposure if he did not build the school-house according to the original plans. When Donovan pointed out that he had something on Saunders which he would not hesitate to use, Saunders carried his story to the editor of the paper of the opposition party. That paper doubled its circulation in the weeks following. Franklin rang with the scandal and the conservative group who did not want the taxes raised took advantage of the hysteria to get the school building postponed indefinitely.
+
+      Saunders himself was quickly involved, because the man whose lot had not been purchased had been propitiated with the contract to haul dirt and in retaliation for losing this job he exposed the deal between Saunders and Donovan. The outraged citizens lumped Saunders with the aldermen in their general condemnation. Mrs. Mead could not hold up her head before her neighbors, and Alfred ran away.
+
+      Saunders set his jaw. He accepted the punishment for his misstep as right, and determined to live down his disgrace. Later when Alfred, who was living a hobo life, wrote home for money, Saunders supplied it, although it meant that he had to deprive himself of everything but bare necessities.
+
+      Mr. Braley was the only one who understood Saunders's position and respected his desperate attempt to return to the path of complete honesty. When he died, some years later, he left Saunders an interest in the store and commended him in his will for the stanchness with which he had fought down disgrace. Saunders's fellow-citizens, who had not realized that winning back lost esteem is far more difficult than leading a life of continuous integrity, were so impressed by Mr. Braley's action that they felt more kindly toward Saunders. The man who had bought into the store at the time when Saunders, instead of taking advantage of Mr. Braley's offer, gave his money to Alfred, liked and trusted Saunders and the two carried on the business harmoniously for many years.
+
+      Alfred was not a complete disappointment, because, curiously enough, he developed a talent for verse-making in his wandering life. He was "discovered" by the Greenwich Village Poetry Association, and a slim volume of his verse, with a picture on the jacket of a man walking the railroad ties, was published and acclaimed. Saunders continued to support the poet as he had the tramp and his mother was prouder of her poet son than of any other of her children.
+
+      The consequence of Saunders's having acted dishonestly when he was essentially an honest man is a proof to any thoughtful person that to make a success in crime one must put one's whole soul into it as one must into any profession. People raised to be honest would better resign themselves to remaining honest.
+    choices: []
+  S-8:
+    title: S-8
+    text: |-
+      After the school-house was built Mrs. Mead, Marge, and Jimmie were bursting with pride, but neither Saunders nor Alfred could look at it without a sinking of the heart. It represented to Saunders the loss of honesty, and to Alfred the loss of artistic integrity.
+
+      Donovan, who never felt quite sure about those Meads, obtained for Alfred a position with a New York contracting firm which was in need of an architect who could be influenced. Saunders, thinking that here was a chance for his younger brother to start anew, was glad to have him go.
+
+      Mr. Braley, the head of the department-store where Saunders worked, died a couple of years later, and Saunders was thrown out of this job by the young man who had bought in when Saunders refused the opportunity. Fortunately, Alfred was able to get him a position in the business office of his New York firm, and the whole Mead family moved to the city. They were all surprised at the change in Alfred. He earned what seemed to them a stupendous amount of money and spent it ostentatiously.
+
+      Saunders soon found that his own work in the business office included shutting his eyes to shady practices. Dishonesty at the head seeped down through the whole office. By the time he was advanced to the position of office manager he was adept at keeping the private books of the partners, which were different from those from which the income tax was computed.
+
+      Alfred married the daughter of one of the members of the firm. People knowing the girl said unkindly that he married her to get the partnership, which he obtained soon afterward.
+
+      Saunders never married. He lived on Park Avenue with his mother, who talked continually of the old Franklin days, although she was very proud of her two sons who made so much money.
+
+      Margery, to Saunders's great distress, became an out-and-out social climber, and after many years of trying unsuccessfully to marry into some established New York family, married a man who had made a tremendous fortune in silk underwear.
+
+      Jimmie was the main interest of Saunders's life, and the boy looked up to him just as Alfred had done in his early years. Saunders kept him away from the rest of the family most of the time, first at a good prep school, later at a technical institute and on engineering expeditions during his vacations, for the boy early showed marked engineering talent. After Jimmie's graduation Saunders encouraged him to go into electrical workshops as a common laborer in order to obtain practical experience, not only in doing the actual work but later, when he became a foreman, in handling men. Alfred and Margery tried to combat these plans, finally crossing Jimmie off the slate as a failure; but Jimmie, who had Saunders's slow, sure brain, rather than Alfred's brilliancy, plodded along until quite suddenly, after years of hard work, his firm recognized his ability and reliability. He finally designed a new type of electrical engine and became richest of them all. Margery and Alfred began to appreciate him then, but to Saunders and to Jimmie himself his achievement was not the making of a fortune; it was the recognition he obtained in his profession.
+
+      The consequence of Saunders's going in for crooked practices was that the whole family had plenty of money and Jimmie, who was too young to know about it, kept his integrity of character and integrity of work. Only three fourths of the brothers and sisters went bad.
+    choices: []
+  S-9:
+    title: S-9
+    text: |-
+      The first time Marge's name was in the New York papers as an also-sang at a concert was a great occasion for the Meads. Mrs. Mead showed the paper to all the neighbors and then cut out the item and put it in the box where she kept one of Saunders's baby curls, Alfred's first drawing, Marge's best baby cap, and Jimmie's first Reward of Merit. But this did not mean that Marge was self-supporting; in fact, it meant additional expense for proper concert gowns. It was six years before Marge could pay her own way by singing in a church choir and in a minor rôle at the Metropolitan.
+
+      Saunders drew a long breath of relief. He was glad he had given Marge her chance, although it had been a hard pull. He had not had the increases in salary he had expected, because the competition of the Barton store had seriously threatened Braley's. It had been necessary to make over the whole store system in order to keep going, but at last, thank Heaven, they were all on their feet. With Marge off his hands, Alfred doing well and happily married and the store safe, Saunders could now think a little about his own future. The Meads had recently sold the house and lot to advantage, Jimmie was almost through school and would soon be able to support himself, Mrs. Mead's health was still fairly good, and Saunders was free to carry out his long-cherished dream of a year at Harvard University, studying business management. Jimmie chose this moment to make the highest grade in the history of the Franklin high school.
+
+      The principal of the high school had a serious talk with Saunders. Smiling bravely, though with a sinking heart, Saunders learned that little Jimmie, whom he had always thought of as an ordinary person like himself, had it in him to become a great engineer. The principal was frank with him.
+
+      "Saunders," he said, "you must send this boy to college and not allow his brilliant future to be sacrificed as yours has been. When you graduated I longed to see you go to college, but of course your father's death made that impossible. But you have now a chance to realize your own ambitions through your brother."
+    choices:
+    - label: The reader who decides that Saunders is to give up his year of study in order to send
+        Jimmie to college turns to paragraphs S-15.
+      to: S-15
+    - label: The reader who decides that he is to set Jimmie to work and take the course at Harvard
+        himself, turns to paragraphs S-16.
+      to: S-16
+  S-10:
+    title: S-10
+    text: |-
+      Saunders was able after two years to send for his family to come to Cleveland to live with him. He was by that time earning a very good salary, and although he was away much of the time, inspecting Barton stores in other places, yet Cleveland was and would be his headquarters. After the first lonesomeness was over, the Meads were all delighted with the city. Marge fitted herself to be a teacher of singing, and obtained a good position in the Cleveland school system. Jimmie, who was practical as well as brilliant, went to Antioch College, where he could be self-supporting.
+
+      The first tragedy of the Mead family occurred as an indirect result of the move. Alfred piled his whole family into a car and came out to visit them in his somewhat happy-go-lucky way. In a collision on the outskirts of Cleveland, Alfred was killed and his wife seriously injured.
+
+      As soon as Alfred's wife could be moved from the hospital she came to the Mead house, where she remained with her children during a slow convalescence. When she was well enough to go home the Meads all begged her to remain with them permanently. Not only were they devoted to her and the children but they needed her because Marge was about to be married, Jimmie was away at college, and Saunders was at home only part of the time, leaving Mrs. Mead without a companion. Since Alfred had left no life insurance and Saunders had assumed the responsibility of supporting his brother's family, Alfred's widow saw that she could make that duty easier for him by staying in Cleveland.
+
+      The consequence was that Saunders later on married his brother's widow and kept in the family circle one whom they had always dearly loved and the Mead family lived a happy and fairly prosperous life, all of them considering Saunders the most wonderful man in the world.
+    choices: []
+  S-11:
+    title: S-11
+    text: |-
+      Saunders Mead could hardly believe that Carol was going to marry him until they were actually in Franklin's Episcopal Church, with pretty bridesmaids, ushers imported from New York, Alfred as best man, in Saunders's pocket a staggering check from the bride's father, and newspaper reporters scribbling in the back pews.
+
+      Saunders had always looked upon marriage as the preliminary to settling down to a quiet and domestic life, but the settling down was postponed until after a honeymoon in Europe, finding an apartment in New York (for the couple moved. there), a whole winter of entertaining and being entertained, a terrible to-do attendant upon the arrival of a baby, a moving of the entire household to a suburban home in Greenbriar, a winter in Palm Beach to rest Carol's nerves, a summer in Newport to recover from Palm Beach, another baby, a larger house in Greenbriar with a beach for the babies, a terrifying illness for one of the babies, and finally a motor accident, ushering in a nervous breakdown for Carol which necessitated three months in a sanatorium and an increased staff of servants when she came home.
+
+      With all this going on, poor Saunders was under the obligation to send regular sums to his mother and to make good in his father-in-law's brokerage office. If he did not, everything would crash, for Mr. Lane, who was putting up what seemed to Saunders a stupendous amount of money for their household expenses, made it clear that he was not going to do this forever. Saunders did the only thing he could do. He turned his single-track mind off from Carol and her impediments and upon his work, and persisted in his determination not to let his social or even his domestic life interfere with the business of making money.
+
+      Carol, who naturally expected to be the center of the life she had created, was surprised, hurt, and indignant. When she found that the husband whom she had expected to manage had a will of his own, she felt fully justified in taking on as a constant escort a young poet who agreed with her that the higher things of life must not be sacrificed to material: gains, and that the American husband does not understand the finer sensibilities of his wife.
+
+      Saunders was not jealous of his wife's tame cat, but his old-fashioned notions of respectability were outraged by the situation. A little later, however, he wished the poet back, for the successor was a titled European who after being photographed with Carol at the races was arrested for raising to five hundred dollars a five-dollar check she had given him at the track.
+
+      Carol's father had a serious talk with his son-in-law, in which he told Saunders frankly that a man who could not govern his own wife was looked upon as a weakling. Mr. Lane declared that Carol had behaved herself as long as she was under his own supervision, and that it was a husband's duty to protect an inexperienced young wife against her unconsidered impulses. Soon afterward Carol, who had been nervously upset by the humiliating scandal, told Saunders that she was going to Bermuda with the Elwells to get away from all the talk.
+
+      Elwell, a neighbor of the Mead's, had recently made a fortune in speculation which had enabled him to retire his former wife with a big alimony and substitute for her the latest thing in wives, with whom Carol had struck up sudden intimacy. Saunders, though slow, had had five years in which to learn to size up people like the Elwells. He did not trust either of them and he thought they had a bad influence on Carol. Unable to leave his business and go with the party, Saunders foresaw that Carol would get into trouble again.
+    choices:
+    - label: The reader who thinks that he should forbid Carol's going turns to paragraphs S-17.
+      to: S-17
+    - label: The one who thinks he should not interfere turns to paragraphs S-18.
+      to: S-18
+  S-12:
+    title: S-12
+    text: |-
+      Since Saunders could not accept Carol, who loved him, as a substitute for Helen, whom he loved, he plunged into work to obtain the forgetfulness which Jed, under similar circumstances, would have sought in drink. By shrewd bargaining he sold his car for almost as much as he had paid for it and put the money into the store. From that time on, Mr. Braley had no reason to complain that his assistant's attention was wandering from his work. Saunders very soon became a junior partner and when Mr. Braley died was able to borrow money from the bank in order to buy in the rest of the stock. The store was growing more and more prosperous under his direction, and he now had an income of about ten thousand a year.
+
+      Five years after Helen had eloped with Jed she again came into Saunders's life. Jed had died, leaving Helen struggling to support her child, whom she would not turn over to Jed's wealthy mother—the price the old lady demanded for any help. Saunders loved Helen more than ever. Although she always looked tired and drawn, to Saunders she still seemed the most beautiful woman in the world. He admired her gallantry and her devotion to her child. He asked her to marry him and she told him honestly that she would be glad to marry him for the child's sake but that she wanted him to understand clearly that what she felt for him was gratitude, not love.
+    choices:
+    - label: The reader who thinks he should marry Helen under these circumstances turns to paragraphs
+        S-19.
+      to: S-19
+    - label: The one who thinks he should not marry her turns to paragraphs S-20.
+      to: S-20
+  S-13:
+    title: S-13
+    text: |-
+      Sauunders might not have had the courage to leave Mr. Braley if he had foreseen the effect on the old man. While Saunders was making a brilliant start with the new store of which Barton Brothers had made him manager, Mr. Braley, whose store he had left, was getting into difficulties. In his desire to compete with the rival store and his former clerk he accepted all the new ideas that were offered to him. He plunged into a poorly planned advertising campaign and stocked up with ill-chosen novelties.
+
+      Saunders tried to reason with Braley, but the latter no longer trusted Saunders. He went into bankruptcy a year later, and Saunders's new firm bought his store and his stock, Saunders saving what he could from the wreck for his former employer by insisting that he be paid a high price. But the old man's spirit was broken. He could not forget that he was a bankrupt.
+
+      Saunders's work was so fine that he was soon given a position in the main New York office of the department-store. He was rapidly advanced, until some years later he became a stockholder and director of the company, and finally vice-president.
+
+      He made his mother a good allowance, Alfred was designing a garden city, Marge, after a good musical education, had married a violinist, and Jimmie, who was a mining engineer, had already made a fortune through speculation in oil lands. Saunders at forty-nine was free at last to take up social life and he decided that it was time for him to marry.
+
+      Florence Lamont had for some time been associated in his mind with this step. She belonged to the old Lamont family of Westchester, and was so charming in her kindliness and culture that people were always saying, "Why hasn't Florence Lamont ever married?" Saunders had met her first through welfare work in connection with working girls' summer camps, and later, drawn together by a common interest in Chinese porcelain, the two became firm friends.
+
+      With middle-aged deliberation, Saunders was preparing to make a proposal of marriage when Miss Lamont's orphan niece, Mahalia Lamont, shot like a comet across his horizon. She represented to Saunders all that he had given up in his youth—freedom, gaiety, irresponsibility—and the repressed longings of years burst out in a wild, mad love for this beautiful girl. Shocked as he was to see himself trailing after a woman thirty years his junior, he was as helpless as a moth circling a candle. One part of him said, "There's no fool like an old fool," and another part said, "You have only one life to live." He was reasonably sure that Mahalia would marry him, for she had said, with the young frankness that appalled and enchanted him, that she was tired of being a poor relation and could love any man who released her from financial dependence. He knew that she was a lavish spender—but for what had he made ten million dollars?
+
+      Saunders was faced with the problem of whether to marry the congenial, suitable woman who loved him and whom he liked or the vivid girl with whom he was infatuated.
+    choices:
+    - label: The reader who decides that he is to marry Florence, the aunt, turns to paragraphs
+        S-21.
+      to: S-21
+    - label: The reader who decides that he is to marry Mahalia, the niece, turns to paragraphs
+        S-22.
+      to: S-22
+  S-14:
+    title: S-14
+    text: |-
+      Things looked black for Mr. Braley's store after the new store opened. Every one went to Barton's, first out of curiosity and later because the prices were lower. Saunders saw that Braley's must adopt anew merchandising policy, and though Mr. Braley fought him at every step of the way he carried through his scheme of lower prices, cheaper goods, quick turnover, cash payment, sales, and well-directed advertising; in short he made the old conservative store into an up-to-date paying concern.
+
+      Mr. Braley didn't like the changes and didn't hesitate to say so, but Saunders forced his chief into prosperity against the old man's will. Saunders was built to make money and nothing could stop him. As Mr. Braley became reconciled to the new ideas, he gradually came to feel that he had thought of them himself. When he died he left his interest in the store to Saunders.
+
+      Saunders, now a prosperous young business man, began to consider marriage. Helen, who had been his only love, was a widow now, struggling to support her child, but when Saunders asked her to marry him she refused and he definitely put aside all hope of ever winning her. This left an empty place in his life, and since he no longer dreamed of Helen he became more interested in other girls. Suddenly he became aware of Ada Winters.
+
+      His sister Marge had brought Ada home to supper one night, and as Saunders saw her wistful little face across the table she seemed to him like a child looking through a window at a party she could not share. When he walked home with her that night she poured out her soul to him in response to his kindly interest. He had always known the outside of her life, now he knew the inside. She told him that she had never known that such happy family life existed in the world, and she would have been a different girl if she could have had brothers and sisters like his and a mother like Mrs. Mead. Not that she was saying anything against her own family, she hastily added, with a little sigh.
+
+      Saunders drew her out with sympathetic questions. She had had a sad life. She supposed she was too sensitive, but she couldn't help things hurting her. She felt things too much. Her whole day could be spoiled if some one spoke unkindly to her. She didn't know what made her tell Saunders these things. Her parents loved her, but they didn't understand her. She was handicapped by the feeling that people did not like her. She had never been to a party but what she had come home and cried because she wasn't a popular girl. She was so shy that she had to wait for advances from other people. She had often thought that if she could only get away from Franklin and make a new start somewhere else—but she was afraid her parents couldn't spare her.
+
+      With sudden, unexpected fierceness Ada declared that if she could only get her chance she would show people what there was in her. Then, getting control of herself, she ended with a gay little laugh, more pathetic to Saunders than her wistfulness, saying that she was sure it would all come out right in the end.
+
+      The little girl brought out all of Saunders's tenderness, and in the weeks that followed he went out of his way to see that poor Ada was included in the Mead family good times. She was so grateful that it was touching. Before he knew it, she was leaning on him and he was startled to realize how much he meant to her. One night with a shy impulsive gesture, she kissed him good night and then fled like a frightened child.
+
+      This incident brought Saunders face to face with the problem of whether or not he should ask Ada to marry him. His feeling toward her was different from what he had felt for Helen. Looking back, he could see that Helen had had something of the masculine in her, but Ada was all feminine. She made him feel strong and competent. He longed to create for her an environment in which she could bloom into happiness and success, for he had come to realize that she was a highly talented girl. Did he love her? Yes, he was sure he did.
+    choices:
+    - label: The reader who decides that Saunders is to marry Ada turns to paragraphs S-23.
+      to: S-23
+    - label: The one who decides that he is not to marry her turns to paragraphs S-24.
+      to: S-24
+  S-15:
+    title: S-15
+    text: |-
+      Jimmie did so well at college that Saunders did not regret having sacrificed his own belated chance of study. By the time Jimmie was graduated, Saunders decided that it was not too late to carry out his own secret plan to supplement his practical knowledge of merchandising with a course in business management.
+
+      Before he spoke of this to his mother, however, there came an excited letter from Marge, telling him that she had at last made money enough for the winter in Paris which a singer must have, and that she wanted to take her mother with her. The idea seemed ridiculous to Saunders until he learned that Marge and Mrs. Mead had planned this trip to Paris from the time Marge was a little girl.
+
+      The plan had been an open secret among Alfred, Marge, and their mother, who were of the same temperament, but they had never mentioned it to Saunders, because they realized that he was carrying all the burden he could. Now that the heavy family expenses were over, Marge and Alfred were determined that their mother, who had been so courageous and so uncomplaining, should have a good time for once in her life. Alfred and his wife had contributed a hundred dollars in spite of the financial burden of their growing family, and when Jimmie heard of the plan, the darling had instantly handed over the twenty-five dollars with which he was about to buy himself a new suit. Could Saunders make up the rest?
+
+      Saunders was ashamed of the way he had taken his mother for granted all these years. He reproached himself for having been so selfish that he hadn't realized that she had any desires at all beyond seeing her children well placed. Looking back, he saw that it was his mother's books of European post-cards which had given Alfred his interest in architecture, and his mother's passionate love for music that had started Marge on her career. It was true that he had furnished the money, but it was his mother's high ambitions that had inspired these two children and her belief in them that had given them the courage to persevere.
+
+      Saunders did not have to make a decision, for it made itself. He could not, with his nature, deny his mother the pleasure that she did not ask, and over her protests he sent her abroad with Marge.
+
+      Upon their return from Europe, it was arranged that Mrs. Mead should stay with Marge in New York, where she had the pictures and music and gaiety for which she had so long starved. She said there was no city in the world like New York. Since there was now nothing to hold Saunders in Franklin, he went to New York to live with them as soon as he could obtain a fairly good position in a department-store. He eventually became head of one of the minor departments, but did not rise to any position of power. His ambition seemed to have left him and he reproached himself that now that he had his chance he did not take advantage of it. He felt sadly that he was not the equal of his brothers and sister. Saunders never married. The thought of bringing up another family was too much for him.
+
+      The consequence of Saunders's years of hard work for others was that Alfred, Marge, and Jimmie all had brilliant careers and his mother had her heart's desire.
+    choices: []
+  S-16:
+    title: S-16
+    text: |-
+      When Saunders left Braley's store to go to Harvard for a year's study everybody was moved up one peg in accordance with the system of seniority which still obtained in the store, and Jimmie was taken in at the bottom. Jimmie hated it as much as Alfred had; but, being a more reliable lad, he settled down to work there until he could get out.
+
+      Saunders, with a good record at the Harvard business school and years of practical experience behind him, was offered a position in Marshall Field's in Chicago. He sent for his mother and Jimmie as soon as he was established, and after the first lonesomeness was over they were all delighted with the city. Mrs. Mead had the pictures and music for which she had so long starved, and said there was no city in the world like Chicago. Later on she had a trip to Europe with Marge, and afterward remained in New York with her.
+
+      Jimmie, who lived at home and studied railroad engineering at the University of Chicago, became self-supporting immediately after he graduated. When he left to work on a railroad in Central America, Saunders was for the first time in his life without family responsibilities. He married a college girl, a good many years younger than himself, whom he had met through Jimmie. He had always been accustomed to having younger people about, and he enjoyed the gaiety with which she and her friends surrounded him.
+
+      The consequence of Saunders's early sacrifices for his family and his belated recognition that something was due himself, was that the others got a better start than he did but he did not entirely lose out. He married later than most men, but maybe he married more wisely.
+    choices: []
+  S-17:
+    title: S-17
+    text: |-
+      Saunders put his foot down. Like a good old-fashioned husband he sternly forbade Carol's accompanying the Elwells to Bermuda, and when Carol went in hysterics to her father, Mr. Lane backed up her husband's fiat. Excitement was the breath of Carol's life. Though she loved her babies, it was not in her nature to settle down to the domestic life which her husband wanted.
+
+      Having once adopted the stern-husband rôle, Saunders found that he must keep it up indefinitely, because Carol fell so dramatically into the complementary rôle of obedient wife. She ran to Saunders with all her minor problems. When his decision turned out to be the right one, all was well, but when it turned out wrong she bitterly blamed him and said she had known all along that he was mistaken but that there was no use arguing with him.
+
+      She developed marvelous ability in putting her husband in the wrong, and Saunders had a continual sense of guilt for his ill treatment of her, though he couldn't see where he had made his mistakes. He was always finding out that Carol had given up innocent activities with a plaintive, "My husband wouldn't like me to." Her helpless docility appealed to all that was fatherly in Saunders, yet he was bewildered to discover that she had sometimes put through important schemes without consulting him at all, in a manner that was contrary to what he would have advised.
+
+      The consequence was that Saunders never looked at any other woman, because what attention he could spare from earning large amounts of money to support his family was continuously occupied at home with one upheaval after another. There was a general feeling among their friends that Mead did not understand his wife, and in later years she was often spoken of as "poor Mrs. Mead."
+    choices: []
+  S-18:
+    title: S-18
+    text: |-
+      Before Carol left for Bermuda, Saunders had a long talk with her. He told her that he did not agree with her father's attitude toward women; that it was all right for her father to have exacted obedience from her when she was a child but that now that she was a wife and mother she must decide things for herself. Carol was deeply touched. She said that if he would only let her go on this Bermuda trip he would see that she was worthy of his trust. At the pier she clung to him and said she would not go, because she couldn't bear to leave him. When the whistle blew she said anyhow she never would leave him again.
+
+      Carol returned unexpectedly a week before the Elwells, and Saunders listening to a voluble account of how badly Mrs. Elwell had treated her, foresaw with satisfaction that their intimacy was ended. When the Elwells returned, however, there was trouble. Mrs. Elwell insulted Carol by ostentatiously leaving a party when Carol entered, and Carol had hysterics. The next morning Carol's father reported indignantly to Saunders that Mrs. Elwell was threatening to name Carol as co-respondent in a divorce suit.
+
+      Saunders, going directly to Elwell to silence these outrageous rumors, learned that Mrs. Elwell had indeed started suit for divorce, had named Carol, and had ample evidence to support her accusation. Saunders was stunned. He faced Carol, who after a terrific scene, tearfully admitted her guilt, putting all the blame on Elwell. She declared with complete sincerity that she never would have gone on the trip if she had suspected for one moment that anything like this could happen. She begged Saunders to stand by her.
+    choices:
+    - label: The reader who thinks Saunders should insist on a divorce turns to paragraphs S-25.
+      to: S-25
+    - label: He who thinks Carol should not be divorced turns to paragraphs S-26.
+      to: S-26
+  S-19:
+    title: S-19
+    text: |-
+      When Saunders married Helen he believed that if he were good and kind and patient enough Helen would learn to love him, but though the child soon adored his stepfather, Helen's heart was buried in Jed's grave. She was meticulous about Saunders's comfort and always tactful in her relations with him, yet the very punctiliousness with which she treated him was a barrier instead of a bond. It would have been a relief to Saunders if she had sometimes flared out at him, for then he would have known that her emotions were not dead.
+
+      His final effort to break down the artificially harmonious relations between them occurred when he was unexpectedly summoned to New' York on a piece of business which would take only a few hours, leaving him more time than usual for recreation. He hurried home from the store in high spirits to tell Helen to pack her best dress and be off with him in the car for a week-end in the city, where he planned to give a dinner and theater party for Carol Lane, now Mrs. Leroy, and some other former Franklin people.
+
+      To his amazement, Helen, who usually fell in with his plans, begged off, saying simply that she would rather stay at home. Saunders knew that she was fond of Carol and that the child could be safely left with his trustworthy nurse. He was utterly discouraged. He had planned the party simply to please Helen and again he had failed. Helen packed his bag cheerfully, and solicitously mended a small rip in his glove. The little boy cried when he left, but Helen seemed relieved to have her husband go, although she gave him a dutiful wifely kiss and sent affectionate messages to Carol.
+
+      Saunders decided to give his party anyway if he could get the people together. He telephoned around after reaching New York, but found only Carol free to play with him that evening. Carol, who knew the very latest in restaurants, guided him to a small place in the fifties where, in a temple-like stillness broken only by subdued conversation, connoisseurs in food were served culinary masterpieces by waiters who had a respect for their profession.
+
+      Saunders, who had thought that a blaring jazz palace represented the height of New York life, relaxed in the congenial atmosphere. Just as in early days he had turned to Carol when Helen was cold, so now he found consolation in her joy at seeing him again. She poured out her troubles to him. Her marriage had been a disappointment and she was even then getting a divorce with her husband's cooperation, though much against her father's wishes. She said she was desperately hard up, though Saunders would never have guessed it from the gown she wore.
+
+      Saunders was always at his best when people were in trouble. He became so absorbed in Carol's story that they did not go to the theater but to Carol's apartment near by, on Park Avenue. Before he left they agreed to spend the following day, Sunday, motoring.
+
+      The Sunday ride was a huge success. The weather was warm and sunny; there was a yellowish tinge in the bare willows and a glow of red in the branches of the swamp maples. They had luncheon in a darling Connecticut inn, and, as always, Carol's spirits rose and she squeezed each drop of joy from every moment. Saunders went back to Franklin happier than he had been since he married Helen. When business called him to New York again, two weeks later, he did not even suggest that Helen accompany him.
+
+      It was not very long before he realized that Carol was willing to make up to him for his wife's coldness. They were drawn together because both had found marriage disappointing. While he felt no desire to repudiate his financial obligations to Helen, he wondered whether he was not justified in following the example of many men in situations similar to his own and seeking an ephemeral love more spontaneous than his wife's dutiful acquiescence.
+    choices:
+    - label: The reader who thinks that he should have a love-affair with Carol turns to paragraphs
+        S-27.
+      to: S-27
+    - label: The one who thinks he should not do so turns to paragraphs S-28.
+      to: S-28
+  S-20:
+    title: S-20
+    text: |-
+      Saunders was too intelligent to marry Helen, who did not love him, just as he had been too intelligent to marry Carol, whom he did not love; but since Helen was still the guiding star in his life, he would not marry any other woman.
+
+      Later on he came to feel that no woman could be expected to adapt herself to his old-bachelor ways. He settled down into being disappointed in love, and found the condition not without its compensations. His brothers and sisters, and later his nieces and nephews were devoted to him, and he took a deep interest in educating them and furthering their careers. Helen's boy, who called him "Uncle," was very dear to him. He eventually took him into the store and made him junior partner, even as he himself had been given his start by Mr. Braley.
+
+      The consequence of Saunders's having been so particular as to whom he married was that he had the joys of unclehood without the disappointments and responsibilities of fatherhood. He raised uncleing to a fine art.
+    choices: []
+  S-21:
+    title: S-21
+    text: |-
+      As Mahalia's uncle—for such Saunders became by marrying her Aunt Florence—Saunders found the girl less entrancing; indeed, he grew indignant with her when he saw how greatly her irresponsibility worried her aunt. His last illusion vanished when she married a man of fifty for his money—and the man hadn't any.
+
+      Saunders soon retired from active business and took a trip with his wife to China, where they bought some rare porcelains. As Mrs. Mead, Florence Lamont developed a latent spirit of adventure and surprised her husband by the breadth of her interests. Their house in Westchester became a center for collectors and explorers, and Saunders and his wife financed an expedition into Thibet for the study of early Asiatic pottery.
+
+      The consequence of Saunders's having made a fortune and married a suitable wife was a few years of delightful companionship, a pleasant sense of security, and a marvelous collection of porcelains which husband and wife-agreed to will to a museum, although Mahalia argued vehemently against this waste of money.
+    choices: []
+  S-22:
+    title: S-22
+    text: |-
+      It was not until he was married to Mahalia that Saunders realized how heavy and inelastic he had become during his sedentary years of moneymaking. Although he had at first, in early years, gone regularly to a gymnasium for a swim or a game of squash, pressing business had interfered so frequently with these hours of exercise that he had finally cut them out altogether. With Turkish baths and salt treatment he fought his increasing stoutness, but even those exercise substitutes he was unable to carry on systematically.
+
+      Since he could not keep up with his young wife and the crew of youngsters who were always around her, Saunders looked forward with hope to her quieting down when the children came. But Mahalia said decisively that two children were enough, and she hired a governess for those two.
+
+      Mahalia usually sent for her Aunt Florence to keep her husband company when she herself was going off on a chain of parties. Saunders could not really regret that he had married Mahalia, for he was devoted to the children of his old age, but he did prefer Florence to talk to. She fed his ego, while Mahalia made him feel like an old fogy.
+
+      Florence encouraged him to go on with his porcelain collection. He was glad that he had not stopped at one million dollars but had accumulated ten, because his fortune made it possible for him to indulge this hobby without depriving his wife and children of anything they wanted.
+
+      Prudently Saunders left the bulk of his estate in trust for his infant children, but gave his porcelain collection to his wife as part of the house furnishings, with the understanding that it was to go to a museum when she was through with it.
+
+      The consequence of this act was that after Saunders's death, Mahalia, though she intended to carry out his wishes, being pressed for money to pay for a string of pearls that had belonged to the Empress of Russia, was obliged to sell the porcelains for a fraction of their value.
+    choices: []
+  S-23:
+    title: S-23
+    text: |-
+      For the first few weeks after her marriage to Saunders, Ada was radiant with happiness and Saunders blessed the stars that had brought him such a lovely wife. But the old habit of being hurt when things went wrong was too strong to be easily broken. She felt injured when the servant gave them cold meat at lunch on wash-day, and she went to bed for two days in her distress at not being invited to a party given for Carol Lane by old Mrs. Harringdale. Saunders developed a hollow mirth in his efforts to combat his wife's depression. He was sure that if he were gentle and patient and kind enough, he could overcome her habit of unhappines.
+
+      During her fits of depression she clung to him pathetically and could not bear to have him out of her sight. He consulted the best doctor in Franklin about her health, and when he was told that there was nothing the matter with poor Ada he felt the limitations of medical science, because there clearly was something the matter with a woman who cried all the time.
+
+      Her one longing was to make her escape from Franklin, and Saunders realized that if she had not married him she would have been able to get away. He finally came to the conclusion that it was his duty to take her to a place where under new conditions she could form new habits of thought. Saunders being Saunders, he made the opportunity. He sold out his business on fairly good terms to the rival store, after signing an agreement not to start another store in Franklin within ten years, and bought out a small, unsuccessful mail-order business in New York, carrying out an idea which had always attracted him.
+
+      For the first few weeks after they reached New York Ada was happy and Saunders was glad that he had taken her away from Franklin. She joined an art-school class and at first displayed great talent. Saunders was pleased that she had this interest, because it was necessary for him to give his entire attention to the development of the crippled business he had bought.
+
+      About the time that prosperity began to come back to the business, Ada became discouraged with her slow progress at the art school; moreover, she was lonely in the evening when Saunders was shut away with his work. He tried having her stay in the room with him, but her melancholy was so distracting that he had to tell her the brutal truth—that he could not work when she was around. Nothing had ever hurt Ada like this and Saunders worked night after night with the consciousness that his wife was not sleeping but crying in bed. Yet every cent he had was in the business and for Ada's own sake he must put business before his wife.
+
+      Two former Franklin girls, Carol Lane, now Mrs. Leroy, and Marian Cole, an enterprising young business woman, came to call and tried to draw Ada into their social circles, but their efforts came to nothing, for Ada would not go out in the evening without her husband and she didn't really think they wanted her anyhow.
+
+      Just at the time when Saunders was able to see his way clearly ahead to a very successful future Ada gave up her work at the art school completely and began an active campaign to return to Franklin. She was desperately homesick, and she knew that she could never be happy in New York. She played her trump card when she told Saunders that there was a baby coming and that New York was no place to bring up babies. She wept so incessantly that Saunders was afraid it would be bad for the child, but when he remonstrated with her she only exclaimed hysterically that he no longer loved her. When he protested she declared that if he did love her he would take her back to Franklin. Saunders could see no chance of peace unless he acquiesced.
+
+      As if in direct answer to his wife's prayers he had an offer for the mail-order business of almost double what he had paid for it. Ada's parents, in response to her frantic letters, had bestirred themselves in Saunders's behalf, and he was offered a position in the Franklin bank. It was not a very good one, but Saunders knew that he could work up quickly and that opportunities would open in Franklin for a man of his ability and capital. But on the other hand he liked the mail-order business and saw that there was in it a fortune that he could never make in Franklin.
+    choices:
+    - label: The reader who decides that Saunders should move back to Franklin turns to paragraphs
+        S-29.
+      to: S-29
+    - label: The one who decides that he is to stay in New York turns to paragraphs S-30.
+      to: S-30
+  S-24:
+    title: S-24
+    text: |-
+      Saunders tried to break off tactfully with Ada when he saw that she wanted to marry him, but he had not reckoned with the tenacity of her nature. She bombarded him with telephone calls, sent him broken-hearted little notes, and finally appealed to his mother and Marge. The effect of all this was to confirm Saunders in his opinion that Ada was not the right wife for him.
+
+      But Ada had resources. When Saunders finally consented to go to her home for one last interview she greatly embarrassed him by going down on her knees to him and begging him to forgive her for whatever it was she had done to offend him. When he started to leave, she had violent hysterics and declared that she would kill herself. Her mother rushed in and Saunders made his escape.
+
+      Next morning it was all over town that poor Ada had locked herself in her room and turned on the gas, and her frightened parents had had a hard time to persuade her to unlock the door. After this they sent her to make a long visit to a relative in a Western city, where she married a Spaniard, writing back to her parents that it was a case of love at first sight. Saunders sent her a beautiful wedding gift and married a darned nice, sensible, plain, intelligent girl. For a while he was jumpy whenever an impatient word or praise of another woman slipped out of his mouth, but when he found that his wife was not sensitive like Ada, he settled down to be comfortable with her and continued to be comfortable.
+
+      The consequence was that the children brought up in this harmonious atmosphere had no nerves but much intelligence and health and joy in living. The Saunders family was a normal American family—the kind authors are always being asked to write about but can't, because the essence of drama is conflict, and there is no conflict in this sort of family.
+    choices: []
+  S-25:
+    title: S-25
+    text: |-
+      The divorce was obtained in Paris with maximum expense and minimum publicity. Carol stayed abroad with the children. Saunders, who had had to leave his father-in-law's office, applied himself to building up a business of his own. Naturally a home-loving man, he was bitterly lonely. He pondered over his life and wondered where he had made his mistakes. Again and again he thought of Helen, who was now a widow, living with her one child at her mother-in-law's in Franklin.
+
+      Saunders decided that it was time for him to go again to see his mother, who was getting old, and while he was in Franklin he took occasion to call on Helen. The change in her shocked him. She had lost her spirit and her looks. Instead of supporting herself, she had become a sycophant. She was dressed dowdily and her child behaved abominably, playing off his grandmother against his mother and demanding constant attention. There was relief all round when Saunders's call came to an end. Saunders reflected as he walked away that there were things to be said for Carol. She was never too tired to look her best and be entertaining. Her children were well brought up and adored her.
+
+      Next year Saunders went to Paris to see his children and straighten out Carol's financial affairs, which, as usual, she had managed to get into a tangle. He spent some terrible evenings over her bank-book, which had not been balanced since they separated. He saw Carol was not one to fend for herself. She was as happy as were the children to have him there and when the four were together it was like old times.
+
+      Saunders could not bear the thought of his lonely life in the United States and the consequence was that with some hesitation he suggested remarriage. He was surprised and delighted at Carol's gratitude. Their second marriage worked out more satisfactorily than had their first, because they were conscious of their mutual need of each other.
+    choices: []
+  S-26:
+    title: S-26
+    text: |-
+      Carol's reputation was saved, partly because the Elwells had an emotional reconciliation and went abroad to live but more because people said that if there had been any truth in those rumors a man like Mr. Mead would never have forgiven his wife.
+
+      Carol, frightened and repentant, became all wife and mother. When that palled, she took courses in poetry and psychology, dabbled a little in modeling, and began writing a novel which she never finished. She was considered a very talented woman who had given up a career for the sake of her husband and children. Saunders insisted that she and the children spend long summers in the wholesome atmosphere of Franklin, which they all loved.
+
+      The consequence of Saunders's making the best of a poor bargain was that he worked till he had accumulated enough to retire on, bought a beautiful tract of land on the outskirts of Franklin, and built a house that was the wonder of the neighborhood. He and Carol went abroad on trips, collecting treasures for their home.
+    choices: []
+  S-27:
+    title: S-27
+    text: |-
+      The immediate effect of Saunders's love-affair with Carol was an unexpected relaxation of the strain between him and Helen. He no longer demanded from her the warm-hearted response she was unable to give. Yet though he had given up hope of winning her love, resentment grew within him that the woman for whom he had done so much gave him so grudging a return.
+
+      The sense of guilt which Saunders refused to recognize found its outlet in additional resentment against his wife. He was not loved by the woman he adored; he was adored—if passingly—by the woman he did not love. He did not worry about being found out, because New York was so far from Franklin and he really did have business there. Moreover, he thought that Helen would not greatly care if she did know. All she wanted from him was a home for the boy.
+
+      When Helen did accidentally discover his unfaithfulness, he was astonished at her fury. During the scene that followed, reticence was utterly abandoned and for the first time since their marriage they spoke from the depths of their souls. Unfortunately, they spoke in anger. When Helen bitterly reproached him for deceiving her, Saunders was surprised to hear himself calling her a hard, cold woman, incapable of loving any one but her child. Helen replied that she had made it clear when she married him that she still loved Jed.
+
+      Hope died within Saunders. He saw that she had taken refuge in her love of a dead husband, to escape committing herself to the obligations of a complete and unselfish love for a living man. In his despair he later offered her a divorce with alimony, which she accepted.
+
+      This cataclysm destroyed Saunders's makeshift love-affair with Carol. For many years he had no interest in women, but filled up the place left vacant by the loss of Helen and her little boy by interesting himself more than ever in his younger brothers and sister. He immersed himself in work and developed a mail-order business. He eventually moved this enterprise to New York, where the undertaking was very successful.
+
+      Saunders's habits became set and he cared little for New York social life beyond a weekly game of golf with other business men. About ten years after his divorce from Helen he married his private secretary, a plain, smartly dressed young woman who knew his ways and was willing to adapt herself to them.
+
+      The consequence of Saunders's fairly consistent effort (with one backsliding) to do right, by both himself and his group, was that he finally made a marriage based on frankness and mutual confidence and developed a satisfying home life with a family of delightful children and an unexpectedly romantic devotion between himself and his wife.
+    choices: []
+  S-28:
+    title: S-28
+    text: |-
+      Saunders, refusing to solace his loneliness with Carol's light love, decided that romantic love was not for him and turned all of his attention to business, almost forgetting his wife's existence. Curiously enough, this had a good effect, for Helen was the type of woman who stands up bravely against life's adversities but is unhappy in a life of ease. She had defied her family in order to marry Jed, had never admitted his gradual deterioration, had refused to give up her child to the wealthy Mrs. Harringdale, and had struggled to support herself and her child when she was utterly worn out.
+
+      Saunders had married her in great admiration for her courage, hoping to make up to her for all she had gone through, but Helen, who would have made a marvelous wife for an invalid or any husband appealing strongly to her maternal instincts, had been unable to adapt herself to being the cherished possession of a paternally minded man. She had been irked by Saunders's excess devotion. She had felt like a fly struggling in a honey-pot.
+
+      Saunders had thought the situation at home was entirely his fault, until he had the reassuring knowledge that Carol found him lovable, reinforced by the satisfaction of having resisted temptation. This made him less of a door-mat and Helen, sensing the difference, got on better with him. She had more respect for him when he had more respect for himself.
+
+      The consequence was that the wicked Carol had done a good deed in making love to a man unhappily married, thus giving him back his self-esteem and enabling him to hold his own against his unappreciative wife.
+    choices: []
+  S-29:
+    title: S-29
+    text: |-
+      It was not easy for Saunders to become absorbed in bank work when he returned to Franklin because Ada wanted to leave New York. He had been uprooted from the store, in which he was tremendously interested, and uprooted again from the mail-order business just as it was becoming exciting. He loved the risks of merchandising and the triumph of winning under difficult conditions and would have gone back into the game he played so well had it not been for his agreement not to start a store in Franklin within ten years.
+
+      Saunders gradually accepted his fate and settled again into the life of Franklin. He did not see as much of his mother as he would have liked, because Ada was jealous and upset whenever she discovered that he had been at his old home. Conservative banking was intolerably dull to him, and he relieved the tedium by a little real-estate speculation on the side, at which he was moderately successful. He took up bridge at the men's club and golf at the country-club and Ada complained with plaintive gaiety that she was a golf widow in the summer and a bridge widow in winter.
+
+      Saunders knew that he had it in him to fill a far bigger position than he ever achieved in Franklin, and the nagging sense of unused capacities made him difficult to live with. Both Ada and the boy were glad to escape from his nervous irritability, through winters in Florida and summers in Maine.
+
+      He was looked upon as a successful citizen, but in his heart he felt that he was a failure and was ashamed that he had weakly allowed his wife to wreck a splendid business career, and this was the consequence of being too good-natured to oppose the rule of an infantile and unreasonable person.
+    choices: []
+  S-30:
+    title: S-30
+    text: |-
+      When Ada, for whose pleasure Saunders had left Franklin, began to campaign to return there, Saunders realized that it takes two to make a successful marriage, and that no matter how hard he tried to make his marriage go, he could not do it unless Ada coöperated. He saw that this little fragile creature, whom he had thought he could wind about his finger, had all her life used her weakness and her unhappiness as a weapon to secure her own way. He had married her for better, for worse, and he had been unfortunate enough to draw the worse.
+
+      But Saunders had no intention of being led by the nose. He sent Ada home to her parents to stay until after the baby was born, visiting her as often as possible. By the time the baby was old enough to travel, Ada was longing to get away from Franklin again, and he settled with his little family in Montclair, New Jersey, commuting to New York.
+
+      Ada made friends among the other young mothers and things went better, although the marriage was always far from ideal. Saunders's interest was more and more in his business, which flourished like a green bay-tree. By the time the novelty of the baby had worn off and Ada was complaining of how she was tied down, Saunders could afford an excellent nursery governess for the child and three months in a sanatorium for Ada.
+
+      Ada was so jealous of other women that it was simpler for Saunders to keep out of social life. The consequence was that his interest centered on his son and his business. Because of the careful attention he gave both, the one was companionable and the other succeeded. Saunders was able to give Ada long sojourns in European health resorts and with equanimity bear her returns home.
+    choices: []

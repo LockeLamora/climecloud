@@ -10,6 +10,7 @@ fr:
     departures: "Horaires bus & train"
     twofa: "Codes 2FA"
     settings: "Modifier les réglages"
+    games: "Jeux"
   common:
     save: "Enregistrer"
     back_to_menu: "Retour au menu"
@@ -250,3 +251,8 @@ fr:
       name: "Le compte doit avoir un nom."
       secret: "Ceci ne ressemble pas à une clé : lettres A-Z et chiffres 2-7, au moins 16."
       full: "%{count} comptes au maximum. Oubliez-en un d'abord."
+  games:
+    title: "Jeux"
+    begin: "Commencer"
+    restart: "Recommencer"
+    the_end: "Fin"

@@ -10,6 +10,7 @@ tr:
     departures: "Otobüs ve tren saatleri"
     twofa: "2FA kodları"
     settings: "Ayarları değiştir"
+    games: "Oyunlar"
   common:
     save: "Kaydet"
     back_to_menu: "Menüye dön"
@@ -250,3 +251,8 @@ tr:
       name: "Hesabın bir adı olmalı."
       secret: "Bu bir anahtara benzemiyor: A-Z harfleri ve 2-7 rakamları, en az 16."
       full: "En fazla %{count} hesap. Önce birini unutun."
+  games:
+    title: "Oyunlar"
+    begin: "Başla"
+    restart: "Baştan başla"
+    the_end: "Son"

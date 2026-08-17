@@ -10,6 +10,7 @@ pl:
     departures: "Godziny autobusów i pociągów"
     twofa: "Kody 2FA"
     settings: "Zmień ustawienia"
+    games: "Gry"
   common:
     save: "Zapisz"
     back_to_menu: "Powrót do menu"
@@ -250,3 +251,8 @@ pl:
       name: "Konto musi mieć nazwę."
       secret: "To nie wygląda na klucz: litery A-Z i cyfry 2-7, co najmniej 16."
       full: "Maksymalnie %{count} kont. Najpierw jedno zapomnij."
+  games:
+    title: "Gry"
+    begin: "Rozpocznij"
+    restart: "Zacznij od nowa"
+    the_end: "Koniec"

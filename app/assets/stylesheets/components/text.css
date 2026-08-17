@@ -18,7 +18,7 @@ a, a:visited {
    count of characters rather than a count of pixels, and a reader who turns their text size
    up gets a wider column rather than a narrower one. The handset is nowhere near the
    ceiling and simply fills its screen. */
-.route, .news, .news_topics {
+.route, .news, .news_topics, .games {
     max-width: 24em;
   }
 

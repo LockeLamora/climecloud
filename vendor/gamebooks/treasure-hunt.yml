@@ -1,0 +1,732 @@
+id: treasure-hunt
+order: 2
+title: Treasure Hunt
+author: '"Alan George"'
+year: c. 1940
+about: 'An A-MAZE-ing picture-maze storybook: John and Jennifer are hunting for a chest of gold
+  hidden in an old castle, and you choose which turnings they take. Every page has a picture, and
+  in every picture something is hidden.'
+credit:
+  text: Public domain. Scans from Bookwise
+  url: https://bookwise.io/alan-george/treasure-hunt
+cover:
+  src: /gamebooks/treasure-hunt/cover.png
+  width: 220
+  height: 293
+  alt: Treasure Hunt cover
+start: '0'
+sections:
+  '0':
+    title: An A-Maze-ing Treasure Hunt
+    text: |-
+      You will say this looks like a book. But you will find it is a lot more besides. It is a Puppet-show in which you move the little hero and heroine where you want to go. It is a Treasure Hunt where you have to seek the chest of gold and jewels. It is a Maze through which you and the children in the story will find your way—and perhaps lose it—meeting quaint people, before you return with the secret of the ancient castle you are setting out to reach.
+
+      On the next page you will be introduced to John and Jennifer. They have learnt that, somewhere along the road to the north of the two yew peacocks, there is a castle where a miserly baron of old is said to have hidden a big store of wealth. John and Jennifer mean to find it—with your help.
+
+      It is for you to decide which turnings they shall take. Sometimes, you may have to guess which is the best way. Sometimes, you will recognise landmarks if you remember everything John and Jennifer see as they go along. Sometimes, a glimpse of the castle itself will guide you.
+
+      Every right-hand page shows you a choice of ways. There are compass directions on each picture, telling you in which direction you are facing; and it will help you to remember that, for the purposes of the story, the time of day remains the same throughout their travels—always late afternoon, with the sun shining approximately from the west. There are footnotes telling you which page to turn to for the road you want to try. Turn straight to whatever page it is, and don't look at the pages you have to pass on the way.
+
+      And here is a SECRET: Later you will find a MAP where you will see all the roads you took and should have taken. But do not look at this map until you are told to do so. The treasure hunt will not be nearly such fun if you peep!
+    choices:
+    - label: Begin your Treasure Hunt
+      to: '1'
+  '1':
+    title: Page 1
+    text: |-
+      It was a lovely summer afternoon when John and Jennifer set out to find the treasure, said to be hidden in an old castle a few miles from the country town where they were staying. It was "somewhere past the two peacocks," they had been told.
+
+      So, when they reached two tall yew hedges trimmed to the shapes of peacocks, they knew they were getting "warm." But it was then their difficulties really began, because just beyond the peacocks were two turnings.
+
+      Now, when you are in doubt as to the right road to take, the simple thing to do is to consult a signpost. But the one at this particular corner said "TO THE TREASURE" on the arm which pointed to the left, and "TO THE TREASURE" on the arm pointing to the right. "How confusing!" said Jennifer. "We'd better ask a policeman." And just at that moment, along came a cheery-looking country constable; he laughed to see how puzzled they were.
+
+      "You might find it just as quickly by going to the left," he said with a knowing look. "That is, if you ever find it!" he added.
+
+      Just then, up tottered an ancient shepherd. "Doan't 'ee take no notice of he," he croaked; "man and boy, I've lived round these parts nigh on eighty years, and I say go to the right."
+
+      While the shepherd and the policeman were arguing, the children thanked them and went off, deciding to take the road which looked the nicer and to hope for the best.
+
+      (Now you will have to look at the picture on the opposite page and make your choice too.)
+
+      * (To make your search for hidden treasure still more interesting, a number of different objects are also "hidden" in each picture throughout the book. For instance, in the opposite page, the old shepherd has lost one of his SHEEP. Can you find it?)
+    image:
+      src: /gamebooks/treasure-hunt/p1.png
+      width: 220
+      height: 293
+      alt: The picture for page 1
+    choices:
+    - label: If they went down the hill to the left, turn to PAGE 5.
+      to: '5'
+    - label: If they went round to the right, turn to PAGE 7.
+      to: '7'
+  '2':
+    title: Page 2
+    text: |-
+      "There's the windmill again," said John, as they passed out of the village and looked up a hill on their left. "So we're not lost after all. Besides, it looks as if this road bends to the left, and I've been thinking that that ought to be the right direction."
+
+      But, as if to prove how wrong John was, the road did not go far before it wound round to the right again, with the windmill still on their right. A twist to the left, and there they were looking up at the signpost they had seen when they first came in. Behind it were the peacock-shaped yews and there, sitting on a mile-stone and laughing all over his face, was the old shepherd they had first met.
+
+      "Well done!" he called to them. "I knew you'd find the treasure."
+
+      "But we haven't," said John.
+
+      "Then what have you come back for?"
+
+      "We didn't know this road would bring us back," said Jennifer.
+
+      "Well, you're silly!" declared the old man, turning his head away and preparing to walk off. "You ought to know that all roads lead back—because the world is round."
+
+      "But we haven't been all round the world," said Jennifer, getting rather cross; "and, even if we had," she added, turning to John, "I don't believe we should find the treasure."
+
+      "Nor do I," agreed the shepherd; and left them to decide whether to go home, to go back to the village they had just left or to turn sharp to the right and start all over again.
+
+      (Which would you have done?)
+
+      * (The old man can't find his PIPE. Can you find it for him?)
+    image:
+      src: /gamebooks/treasure-hunt/p2.png
+      width: 220
+      height: 293
+      alt: The picture for page 2
+    choices:
+    - label: Out to the left means they give up and go home.
+    - label: Turn back means turn to PAGE 7.
+      to: '7'
+    - label: Round to the right means turn to PAGE 5.
+      to: '5'
+  '3':
+    title: Page 3
+    text: |-
+      The farmer, who was leaning over the orchard fence, laughed when they asked for fruit. "What! Apples in June!" he chuckled. So the children climbed up the hill which wound round in almost a complete semicircle, after which the road stretched straight ahead as far as they could see.
+
+      By the side of the road was a gipsy caravan and, when John asked a gipsy woman the usual question, "Which is the way to the Treasure?" she answered, "You must cross water," and disappeared into the caravan.
+
+      "That's not very helpful," said John, "but just look over there." And, peeping through a gap in the right-hand hedge, they saw, across the fields, the village they had just left, the other road leading from it past the piggery and, in the distance, the turrets of a castle.
+
+      A little farther on, on the same side, they passed a ploughed field with a tree and a scarecrow on its hilly centre; and ahead of them was a road-sign which said "SLOW. Water-Splash."
+
+      Beyond, a shallow stream crossed the road between a cluster of stepping-stones. The only reason why John and Jennifer did not both go straight to the stream was the fact that, once again, there was the choice of two ways, for just here another road from the right joined up with the one they were following.
+
+      "I think we ought to try this road back to the right," said John; "the turrets were over in that direction."
+
+      But Jennifer had begun to cross the stream. "We must go this way!" she cried; "just look at these darling ducklings!"
+
+      (Look at the picture and see which way you would have gone.)
+
+      * (To whom do the ducks belong? Somewhere in the picture, you MAY be able to find THE OWNER.)
+    image:
+      src: /gamebooks/treasure-hunt/p3.png
+      width: 220
+      height: 293
+      alt: The picture for page 3
+    choices:
+    - label: Straight ahead means turn to PAGE 13.
+      to: '13'
+    - label: Sharp round to the right means turn to PAGE 9.
+      to: '9'
+  '4':
+    title: Page 4
+    text: |-
+      They very soon came to the village of Little Castleton with its butcher's shop at the corner.
+
+      "Look!" cried John, pointing to some lettering on the shop; "that's the first time I've seen a butcher's sign that makes sense."
+
+      "Why?" asked Jennifer; "it only says ' JONES Family Butcher.'"
+
+      "But that's where they usually get it wrong," said John. "They've only three words to write, but they muddle it up and say ' Family JONES Butcher '!"
+
+      But Jennifer wasn't interested any more; she had just seen an ice-cream man and dashed off, waving to him to stop his tricycle.
+
+      Only when they had each bought an ice and had taken the first nibble did John and Jennifer look around to see where they were. Over to the left were the "Treasure Tea Rooms" and in front of the butcher's were the old village stocks.
+
+      "I wonder if that is one of the ' Treasures ' the signpost at Peacock Corner pointed to?" said John.
+
+      There was another road branching back sharply to the left. So, of course, that meant that, once again, they had to choose.
+
+      (Look at the picture on the opposite page and decide which road they did choose.)
+
+      * (The ice-cream man has a puncture. Where is his PUMP? Can YOU see it?)
+    image:
+      src: /gamebooks/treasure-hunt/p4.png
+      width: 220
+      height: 293
+      alt: The picture for page 4
+    choices:
+    - label: Sharp to the left means turn to PAGE 14.
+      to: '14'
+    - label: Straight ahead means turn to PAGE 2.
+      to: '2'
+  '5':
+    title: Page 5
+    text: |-
+      "Well, let's hope the policeman was right," said Jennifer. "I don't want to have to come back up this hill." She said this in little jerks of breath as the two of them raced down the steep hill towards the oast-houses they had seen in the near distance and the old water-mill on the left.
+
+      They could see now that the road wound round in a sharp hairpin bend to the left behind the water-mill. It led them over a stone bridge which crossed the mill stream and, when they were right round the bend, there in front of them was a little village with a covered well right in the middle of the street and, once again, two roads.
+
+      "You ask the way this time," said John. So Jennifer went up to the first person she saw, which was an old woman with long curls, a bonnet and a basket. "Ask her if she has the treasure in her basket," whispered John.
+
+      But Jennifer just said, "Please could you tell us the way to the treasure?"
+
+      "Well," answered the old woman, "there's ' Ye Treasure Inn ' just across the road; there's the ' Treasure Tea Rooms ' at Little Castleton, or there's Old Jakes going up the road now to his piggery; and he calls his favourite sow ' Treasure.'" And off she walked, leaving the children to puzzle which way to go.
+
+      "Little Castleton sounds likely, but the pigs sound more amusing," said John; "in any case, ' Ye Treasure Inn ' accounts for the signpost which said ' To the Treasure.'"
+
+      "There's an orchard up the hill to the left," said Jennifer; "I wonder if the farmer would spare us any fruit."
+
+      "Well, which way shall we go?" asked John.
+
+      (That is for you to decide. Look at the picture on the right and make your choice.)
+
+      * (You can see one pig in the picture on the opposite page; but can you find a SECOND PIG?)
+    image:
+      src: /gamebooks/treasure-hunt/p5.png
+      width: 220
+      height: 293
+      alt: The picture for page 5
+    choices:
+    - label: Up the hill to the left means turn to PAGE 3.
+      to: '3'
+    - label: Turn to the right means turn to PAGE 10.
+      to: '10'
+  '6':
+    title: Page 6
+    text: |-
+      Soon they were back at the road they had left only a few minutes ago, and the question was whether to go on in the direction they were going before they turned aside, or whether they should go back still farther to the previous cross-roads.
+
+      John was all for trying the new direction; Jennifer wanted to continue to retrace their footsteps. In the end, John had a bright idea.
+
+      He pulled a penny from his pocket. "I'll spin this," he said. "If it comes down heads, we'll go to the left. If it comes down tails, we'll go to the right."
+
+      John spun the coin—and which way do you think it fell?
+
+      (Look at the picture, and if you think you know the right way, you will see which page to turn to. If you're not sure, spin a coin as John did.)
+
+      * (There should be some DUCKS and a GOOSE somewhere near this stream; how many can you find?)
+    image:
+      src: /gamebooks/treasure-hunt/p6.png
+      width: 220
+      height: 293
+      alt: The picture for page 6
+    choices:
+    - label: Sharp to left means turn to PAGE 15.
+      to: '15'
+    - label: Straight ahead means turn to PAGE 13.
+      to: '13'
+  '7':
+    title: Page 7
+    text: |-
+      Waving "good-bye," the children took the road which had been the old shepherd's choice. It wound round to the right and then curved back again so that the windmill was on their left.
+
+      Just past the footpath which led to the mill, they came to a house faced with long brick steps, opposite to which was an old thatched cottage. "Look! the ' Treasure Tea Rooms '!" cried Jennifer, pointing to a notice on the wall of the quaint old house. "That must be what the signpost meant."
+
+      "And what the shepherd meant, too, perhaps," suggested John.
+
+      They had arrived at a pretty old village. Ancient stocks stood in front of a butcher's shop on the corner of two forking roads. "Oh dear!" said John; "which way do we go now?"
+
+      Jennifer waved her arm and pointed excitedly to the left-hand road; there, only a little way along, was a side path which ran up over a field towards a beautiful castle standing on top of a farther hill.
+
+      So really there were three ways this time—two roads, either of which might lead round to the castle, and a path which certainly looked as if it should lead straight to it.
+
+      (Look at the picture and pick out the way for John and Jennifer.)
+
+      * (The butcher has lost his CLEAVER—and a BULL. See if you can find them.)
+    image:
+      src: /gamebooks/treasure-hunt/p7.png
+      width: 220
+      height: 293
+      alt: The picture for page 7
+    choices:
+    - label: Bear to the left means turn to PAGE 12.
+      to: '12'
+    - label: Take footpath through gate means turn to PAGE 8.
+      to: '8'
+    - label: Fork to the right means turn to PAGE 14.
+      to: '14'
+  '8':
+    title: Page 8
+    text: |-
+      The children had their eyes fixed eagerly on the castle turrets, which seemed to grow bigger and bigger and nearer and nearer as they climbed the rough path up the hill.
+
+      Then, when they looked down into the small dip which they would have had to cross, they saw a high stone wall, blocking the way to right and left, as far as they could see.
+
+      Where the path they were on led down to the wall was a notice-board which said in large letters, "CASTLE GROUNDS. NO ENTRY." Beyond the notice-board, and set in the wall itself, was a strong door; nailed across this was another notice with the one word, "CLOSED."
+
+      "Well, back we go," said John cheerfully. "That castle is where the treasure is, I'm sure; and there must be a way in somewhere. We shall soon find it—if we don't lose ourselves getting round to the other side."
+
+      So, back they went, down the hill and along the path towards the road....
+
+      (... And then which way did they go?)
+
+      * (OWLS who hunt the castle grounds hid at the children's approach. Where are they hiding?)
+    image:
+      src: /gamebooks/treasure-hunt/p8.png
+      width: 220
+      height: 293
+      alt: The picture for page 8
+    choices:
+    - label: Retrace steps to road and then turn right means turn to PAGE 12.
+      to: '12'
+    - label: Back to the village means turn to PAGE 4.
+      to: '4'
+  '9':
+    title: Page 9
+    text: |-
+      "This is where we shall soon see who's right!" cried John boastfully, as they hurried on to where the road bent to the left by two pine trees. And, before they were quite round the bend, they saw the tip of a church spire above some trees, some little way off—and, behind it, in the farther distance, just a glimpse of towering castle turrets.
+
+      "That's where the treasure must be!" cried John delightedly. "Now you can see where we are."
+
+      "Yes, we can!" said Jennifer ruefully, because they had now followed round the rest of the bend, where the road came to a stop on the edge of a broken bridge over a wide stream.
+
+      A man was fishing from the end of the broken parapet. "Where do you two want to go?" he asked.
+
+      "To the castle," replied the children.
+
+      "Well, you can't get any farther this way," said the fisherman; "and that means you'll either have to go back the way you came, or go over the stile just behind you and follow the footpath which crosses the stream by a footbridge. That's the quickest way, but the bridge is a bit rickety."
+
+      "That's the way we'll go, thank you," said John.
+
+      "I think it would be safer to go back to the proper road we were on just now," said Jennifer.
+
+      (Which way would you go?)
+
+      * (How many FISH has the fisherman caught? You'll find out if you look for them.)
+    image:
+      src: /gamebooks/treasure-hunt/p9.png
+      width: 220
+      height: 293
+      alt: The picture for page 9
+    choices:
+    - label: Retrace steps means turn to PAGE 6.
+      to: '6'
+    - label: Take footpath to right means turn to PAGE 20.
+      to: '20'
+  '10':
+    title: Page 10
+    text: |-
+      They were soon out of the village and on a country lane again, when they heard a noise which a poet once described as "a wonderful grizling and gruzling and greedy sound." Straight ahead was a hilly field with a tree and a scarecrow in the middle of it; but it wasn't the scarecrow who was making the noise!
+
+      The children reached a gate on the left and, looking over, saw thirteen little piglets clustering around their huge mother.
+
+      "Oh, they are little treasures!" cried Jennifer.
+
+      "Grunt-gruzle-whee!" answered the little pigs, and "Urr-unk!" said their mother, as the children went on their way—round a right-hand bend and over a bridge, where they stopped short again.
+
+      First they noticed that there were two roads to choose from, one branching to the left and the other bearing to the right. Down the latter, a flock of sheep, in charge of a shepherd, was coming towards them with much baaing mingling with the sheep-dog's barks. But when they looked straight ahead, they just stood and gasped....
+
+      Right in front of them, on top of a hill, was the castle. But the puzzle was to know which road would lead them to the entrance, for there was a high wall all round the grounds.
+
+      (Which way would you have gone? Look at the picture and decide.)
+
+      * (Can you find the shepherd's SON and DAUGHTER anywhere in the picture?)
+    image:
+      src: /gamebooks/treasure-hunt/p10.png
+      width: 220
+      height: 293
+      alt: The picture for page 10
+    choices:
+    - label: Branch left means turn to PAGE 21.
+      to: '21'
+    - label: Bear right means turn to PAGE 4.
+      to: '4'
+  '11':
+    title: Page 11
+    text: |-
+      Up the hill they climbed, with the aerodrome on their right, followed a wide right-angle bend to the left, skirting a thick wood, and dipped down to a water-splash which ran across the road itself.
+
+      It was just what they wanted to cool their feet; so, although there were stepping-stones, they immediately decided to paddle. So they sat down by the roadside and at once pulled off their shoes and socks and splashed into the stream.
+
+      There they paddled about while making up their minds which way to go next, for just ahead there was another fork in the road—one way turning sharp to the left and the other going straight on for what looked like nearly a mile.
+
+      "I've got it all worked out," said Jennifer; "we must go straight on."
+
+      "So have I got it all worked out," said John, "and I say go to the left."
+
+      To save argument, they turned to a duck which had been interestedly watching them paddle. "Which is the quickest way to the treasure, please, Mrs. Duck?" asked Jennifer.
+
+      "Quack-quack!" said the duck.
+
+      "There you are," said Jennifer; "the duck said 'Straight on' quite plainly."
+
+      "It sounded like 'Turn left' to me," said John.
+
+      (What do you think the duck's answer ought to have been?)
+
+      * (A pair of WATER-VOLES live by the stream; where are they now?)
+    image:
+      src: /gamebooks/treasure-hunt/p11.png
+      width: 220
+      height: 293
+      alt: The picture for page 11
+    choices:
+    - label: Fork left at road sign means turn to PAGE 9.
+      to: '9'
+    - label: Straight on means turn to PAGE 15.
+      to: '15'
+  '12':
+    title: Page 12
+    text: |-
+      Leaving the footpath on their right, John and Jennifer followed the winding road, hoping it would make a turn towards the castle, which was now hidden by the near-by trees and bushes.
+
+      "We must be getting farther and farther away from it," grumbled Jennifer, as the road twisted itself into the form of an S.
+
+      As she spoke, there was a loud growl from the other side of the hedge, followed by a scraping and rustling as the tall grasses were pushed apart and out bounded a very cross spaniel. He rushed, barking, at the children, who ran away as fast as they could....
+
+      But they didn't run far, because when they looked round, they saw that the dog had turned back and was trotting off with his tail in the air, as though quite pleased to have hurried them on their way.
+
+      As the children paused for breath, they noticed that they had come to another turning. Above them, on the left, were two oast-houses. Away to the right was an old church and, on the near right, the corner of a high stone wall topped by a small turret.
+
+      "Shall we take the road to the right by the mile-stone," asked Jennifer, "or shall we keep round to the left and over that bridge?"
+
+      (Which road would you have chosen, if you had been John or Jennifer?)
+
+      * (The dog has lost TWO PUPPIES, and a puppy has lost its BONE. Can you find them?)
+    image:
+      src: /gamebooks/treasure-hunt/p12.png
+      width: 220
+      height: 293
+      alt: The picture for page 12
+    choices:
+    - label: Follow round to left means turn to PAGE 22.
+      to: '22'
+    - label: Branch right means turn to PAGE 21.
+      to: '21'
+  '13':
+    title: Page 13
+    text: |-
+      The children crossed the stepping-stones and continued up the road, with a wood on their right. The road started to bend sharply round to the right and, at the middle of the outer bend, was a chalk-pit. On the opposite side was a path into the wood.
+
+      John and Jennifer tried the path, only to find that it stopped short in the middle of the wood. So they came out again on to the road and round the rest of the bend, just in time to see a baby rabbit dashing across their path.
+
+      It wasn't a hawk that had frightened the rabbit, but an aeroplane. It came skimming over the tops of the trees and glided down to the far side of a big field on their left.
+
+      They could see quite a long way straight ahead. The road dipped down to where another road joined it on the right, and then on to where there was a railway and a level-crossing. So, once again, they had to choose the way; and this time there was nobody to ask.
+
+      "What about that road to the right?" asked John, while they were still some way off. "Can you see where it goes?"
+
+      But Jennifer could not see any better than John; the hedges just there were high and there were trees lining the new road itself. As they went down the hill, they could see even less until they reached the corner by a tall poplar. Then, looking down the right-hand road they saw that it soon turned through the trees to the left.
+
+      "Do let's go and watch the trains go by," suggested Jennifer.
+
+      But John was doubtful.
+
+      (Look at the picture and choose the way for them.)
+
+      * (Only one RABBIT is crossing the road; but there's another somewhere.... Where?)
+    image:
+      src: /gamebooks/treasure-hunt/p13.png
+      width: 220
+      height: 293
+      alt: The picture for page 13
+    choices:
+    - label: Bear left at foot of hill means turn to PAGE 16.
+      to: '16'
+    - label: Turn right at foot of hill means turn to PAGE 18.
+      to: '18'
+  '14':
+    title: Page 14
+    text: |-
+      When they had left the village behind, the road began to rise slightly. Soon they passed a rabbit-warren on their right, and saw that they were nearing a railway line. A train rushed by as they reached the bridge which crossed the line.
+
+      "This doesn't seem right," said Jennifer. "We saw the castle over to the left, a little way back, and now we seem to have passed it."
+
+      "Don't worry," said John; "can't you see, if we keep on, we're bound to cross the line again?" For, farther on, the road bent round in a half-circle and there was a level-crossing. The gates were just opening again and, now, they could see quite a long way ahead. An aerodrome was on one side of the road; on the opposite side, a road branched to the left and, from a distant field ahead, the top of a flagstaff was visible.
+
+      "I think we ought to turn to the left soon," said John as they reached the bottom of the slope. "Shall we take this first road or keep to what seems to be the main road, because that also seems to turn to the left at the top of the hill?"
+
+      But Jennifer was trying to catch a beautiful butterfly, and did not make any suggestion.
+
+      (Which way do you suggest—to the left or right of the tall poplar in the foreground?)
+
+      * (Could the CATERPILLAR hidden in the picture possibly turn into a butterfly? Find it and then answer the question.)
+    image:
+      src: /gamebooks/treasure-hunt/p14.png
+      width: 220
+      height: 293
+      alt: The picture for page 14
+    choices:
+    - label: Branch left means turn to PAGE 18.
+      to: '18'
+    - label: Keep to the right means turn to PAGE 11.
+      to: '11'
+  '15':
+    title: Page 15
+    text: |-
+      It seemed as if they had been walking up the long, straight road for ages, when suddenly they heard a voice. It was an old gipsy woman whom they had nearly passed without noticing. She was sitting on the step of a caravan pulled into a broad part of the road.
+
+      "Come along, dearies," she called; "let me tell your fortunes." Then she added, "I know what you're looking for, and you want me to help you to find it."
+
+      "Yes, please," said John; "yes, do tell us the way to the treasure."
+
+      "You will find it whichever way you go," said the old woman, "but first you must cross water. If you cross it twice, you will have to cross it again to make three times. And if you cross it again after that, you will have to cross it five times in all. Now, on your way, and good luck to you both."
+
+      John and Jennifer went striding along after their brief rest; and, all the time, they kept puzzling over the gipsy's words. Soon they rounded a hairpin bend in the road and caught a glimpse of a wide stream down in the valley on their right. Dipping down a hill, they came to a village with a covered well in the middle of the street and two roads beyond.
+
+      "If we take the right-hand road, we cross the water," said John, pointing to a bridge over the stream. "But it also takes us back to Peacock Corner, if that sign is to be trusted. Shall we go back and start all over again, or shall we take the road to the left and perhaps cross the stream higher up?"
+
+      (Which way would you take to "cross water"?)
+
+      * (The cow in the picture is looking for the COWMAN—or is it he who is looking for her? Anyway, see if you can find him).
+    image:
+      src: /gamebooks/treasure-hunt/p15.png
+      width: 220
+      height: 293
+      alt: The picture for page 15
+    choices:
+    - label: Take left-hand road means turn to PAGE 10.
+      to: '10'
+    - label: Take right-hand fork means turn to PAGE 19.
+      to: '19'
+  '16':
+    title: Page 16
+    text: |-
+      Before they reached the level-crossing, the gates closed to let a train go past; and before they opened again, a pony-trap drew up.
+
+      John looked at the driver. "Please, could you tell us where this road goes to?" he asked.
+
+      "Into the village," answered the man. "Is that where you want to go?"
+
+      "We don't really know," said Jennifer. "We're looking for the treasure."
+
+      "Jump in; it's the village you want," said the man, and they clambered up just as the gates were opening.
+
+      Round a wide bend... over a railway bridge... past a rabbit-warren on the left.... They had hardly time to notice the passing scenery before the trap pulled up in a small village.
+
+      "This is where you get down," he told them. "You'll find the Treasure on your left." He cracked his whip and drove off.
+
+      "Look! the 'Treasure Tea Rooms'!" cried Jennifer. "That must be what he meant."
+
+      "I suppose it must," agreed John. "Anyway, let's go in and have a drink; I'm as dry as a fish."
+
+      As they sat down with two glasses of ginger-beer in front of them, John asked the woman who served them, "Why do you call this the 'Treasure Tea Rooms'?"
+
+      "Don't ask me," she answered; "that was the name of it when I took over, years ago."
+
+      "I wondered if you had ever heard of the real treasure," said John a little later, as they left the shop.
+
+      "Well, there is a 'Treasure' in the next village," replied the woman, "and you can get there whether you go straight on or round to the right. Take your choice."
+
+      (Take your choice.)
+
+      * (The children have found the Tea Rooms. You should find it just as easy to find a TEAPOT and a TEASPOON.)
+    image:
+      src: /gamebooks/treasure-hunt/p16.png
+      width: 220
+      height: 293
+      alt: The picture for page 16
+    choices:
+    - label: Straight ahead means turn to PAGE 2.
+      to: '2'
+    - label: Sharp round to the right means turn to PAGE 12.
+      to: '12'
+  '17':
+    title: Page 17
+    text: |-
+      At the corner of the road, John sat down on a mile-stone. "That way?" he suggested.
+
+      "No, that way," said Jennifer, pointing in the opposite direction. Then she saw a shepherd, carrying a crook and making his way up the path to the oast-houses. "Let's ask him," she cried.
+
+      The man stopped as they came running up to him; he looked puzzled at John's question, "Please, could you tell us the way to the treasure?"
+
+      "Well," he said thoughtfully, "there's the Treasure Tea Rooms at Little Castleton." He waved his stick towards the road on their left. "Or," he said, "there's the game of Hunt the Treasure that the folk play round about Christmas-time at the Treasure Inn on the other side of the river; but then the 'treasure' is only a fat goose. Is that what you mean?" He pointed to the right-hand road, which ran over a bridge.
+
+      "Thank you, but we mean real treasure," cried both children.
+
+      As they turned away, John said, "I don't care if none of these people ever heard of the treasure. They name everything after it and play games about treasures, and don't even know why. It makes me think there really is treasure to be found, after all. So let's be on our way."
+
+      (Yes, but which way? See the opposite page and decide.)
+
+      * (A pair of THRUSHES sang to the children just here. Where are the birds hiding?)
+    image:
+      src: /gamebooks/treasure-hunt/p17.png
+      width: 220
+      height: 293
+      alt: The picture for page 17
+    choices:
+    - label: Turn left means turn to PAGE 4.
+      to: '4'
+    - label: Turn right means turn to PAGE 22.
+      to: '22'
+  '18':
+    title: Page 18
+    text: |-
+      Not a word did they say as they walked silently along the winding, shaded side road—not a word until suddenly they saw, straight in front of them, the towering walls and turrets of the CASTLE.
+
+      Just for a moment they stopped and stared. "Hurrah!" cried Jennifer; "Hurrah!" cried John, as they ran excitedly under the arched gateway.
+
+      But now that John and Jennifer had found the castle for which they had been looking, they did not go more than half-way up the path which wound up the hill towards it. That was because they saw a pit cut out of the side of the grassy slope; and in it was the entrance to a cave.
+
+      "That's just where the treasure might be hidden," said John. So they turned aside and stepped cautiously through the dark entrance.
+
+      They stood still until their eyes became accustomed to the faint light—and it was then they saw a great big chest. Together they pushed up the heavy lid and looked eagerly inside.
+
+      "The TREASURE!" they both cried at once. For here were masses of shining jewels and golden coins and all sorts of glittering things. The big chest was filled to the brim with treasures. What were they to do with their treasure-chest now that they had found it? That was going to be a difficult question.
+
+      They stood up and looked round the cave, trying to think what they should do next, when suddenly John saw a piece of paper lying on the ground beside the chest. He picked it up and, holding it in a shaft of light, said, "Come and look at this. It's a map, and I think it's a map showing the country round about the castle itself."
+
+      * (The children found the chest unlocked. Can you find the KEY that opened it?)
+    image:
+      src: /gamebooks/treasure-hunt/p18.png
+      width: 220
+      height: 293
+      alt: The picture for page 18
+    choices:
+    - label: To see the picture map they found, turn to PAGE 23.
+      to: '23'
+  '19':
+    title: Page 19
+    text: |-
+      To the sound of gurgling and splashing, which the children heard long before they reached the mill itself, the huge water-wheel turned slowly and heavily... "as though it were the mill which drives the stream and not the stream which drives the mill," as John said. "Well," he added, "this is the way to Peacock Corner, so we've found one signpost that tells the truth."
+
+      "I recognise the windmill up there on the left, too," said Jennifer, "and the hill in front."
+
+      They were trailing up slowly and were near the top when, just as they expected, the fat policeman appeared, grinning all over his round red face. "You're back, I see," he chuckled. "Have you found the treasure?"
+
+      "No," said John, "but we've found out that your way can't be right, because it takes us to the wrong side of the river."
+
+      "It takes you to the right side too, if you cross the water-splash," hinted the policeman. "There, now I've told you something, haven't I? So what are you going to do now? Will you go back the way you've just come, or will you try the other road, or will you give up the search and go home?"
+
+      (Which do you want to do? If it's time to go to bed, you can close the book now, and open it at page 1 to-morrow.)
+
+      * (The policeman always has an egg for his tea. Can you find the HEN that lays it?)
+    image:
+      src: /gamebooks/treasure-hunt/p19.png
+      width: 220
+      height: 293
+      alt: The picture for page 19
+    choices:
+    - label: Turn to the left means turn to PAGE 7.
+      to: '7'
+    - label: Turn back means turn to PAGE 5.
+      to: '5'
+    - label: Straight ahead means start again from PAGE 1.
+      to: '1'
+  '20':
+    title: Page 20
+    text: |-
+      As they scrambled over the stile and started along the path by the side of the stream, John pointed to the line of trees across the water. "When we get on the other side of those," he said, "you'll see how clever I was to come this way."
+
+      He led the way over the wooden foot-bridge, which was quite strong enough for the children's light weight, and up the slope of the meadow, where the path ran into the strip of woodland. Soon, it widened out into a small clearing, which ended in a fence with a squeezer leading on to the side of a road.
+
+      Jennifer threw herself down on the mossy ground, and John followed suit. "Don't go to sleep, lazybones!" murmured Jennifer, tickling his nose with a blade of grass.
+
+      After a brief rest, they went out to the edge of the road and looked both ways. To the left led past the church they had seen from the other side of the river; to the right, the road ran into a wider thoroughfare above which stood two oast-houses.
+
+      "Go ri-ight! Go ri-ight!" shrilled a blackbird overhead. "Left-left-left-left!" whispered the grasshoppers in the clearing.
+
+      (Which advice would you have taken?)
+
+      * (A SQUIRREL lives in this copse. Can you spot him?)
+    image:
+      src: /gamebooks/treasure-hunt/p20.png
+      width: 220
+      height: 293
+      alt: The picture for page 20
+    choices:
+    - label: Turn left means turn to PAGE 21.
+      to: '21'
+    - label: Turn right means turn to PAGE 17.
+      to: '17'
+  '21':
+    title: Page 21
+    text: |-
+      As they breasted the rise which led to the little old church, the children were able to see over the high wall on their right. It was evidently the wall of the castle grounds; for there, in the distance, were the turrets of the castle itself.
+
+      "We can't go far wrong now," said John. But, when they had passed the brow of the hill, they found that the road wound round to the left. There were tents in a field on their left, and soldiers drilling.
+
+      "Oh dear! Wrong again!" cried Jennifer. "Still, we might as well look at the soldiers."
+
+      The road wound right round the camp and finished up at a bridge over a broad stream. At least it was a bridge that had once gone over the stream; now, most of it was under the water.
+
+      "Look!" cried John; "the road goes round to the right again—just the way we want to go, if only we could get across."
+
+      On a corner of the broken bridge, on the opposite side of the stream, sat a fisherman, who had just hooked a silvery carp. When he heard John, he looked up and called out, "You had better not try to swim across, unless you want a free trip to the seaside; the current here is as strong as a horse."
+
+      "A sea-horse, I suppose!" shouted John.
+
+      "No, a wet-clothes-horse!" laughed the fisherman. "Anyhow, it will be Shanks's pony for you two, because you'll have to go back the way you came."
+
+      * (Grazing in one of the meadows is a... Well, that's what YOU will be if you can't find him!)
+    image:
+      src: /gamebooks/treasure-hunt/p21.png
+      width: 220
+      height: 293
+      alt: The picture for page 21
+    choices:
+    - label: Retrace steps means turn to PAGE 17.
+      to: '17'
+  '22':
+    title: Page 22
+    text: |-
+      On the bridge, they stopped to look along the course of the stream which went gurgling beneath, on its way to another stone bridge and a water-mill away downstream to the left.
+
+      Ahead, the road wound left, leaving behind them a ploughed field with a tree and a scarecrow in the centre, and taking them in the same direction as the stream.
+
+      John and Jennifer were hurrying again now, because they had found out that the best place to rest was at cross-roads, where they had to stop to think out which turning to take. They wanted to stop at the pig-sties on the right-hand side of the road, but they went straight on into a village. until they came to a covered well in the middle of the street.
+
+      "Shall we take the right-hand road and keep following the stream," asked John, "or shall we turn to the left and cross that bridge by the water-mill?"
+
+      "And arrive back where we came in!" said Jennifer. "Look! the signpost on the well points to ' Peacock Corner '; we don't want to go back to the beginning."
+
+      "And we don't want to keep on this side of the river," argued John, "because, unless I'm very muddled, the castle we saw was on the other side. It can't be far back to Peacock Corner, and we might get on better if we could start again."
+
+      (What did they decide to do?)
+
+      * (The OLD WOMAN who keeps the inn isn't in the inn; she's out. Where is she?)
+    image:
+      src: /gamebooks/treasure-hunt/p22.png
+      width: 220
+      height: 293
+      alt: The picture for page 22
+    choices:
+    - label: Turn sharp left means turn to PAGE 19.
+      to: '19'
+    - label: Bear right and up the hill means turn to PAGE 3.
+      to: '3'
+  '23':
+    title: Page 23
+    text: |-
+      "If only we'd had this map when we started out," said John, "we could have found our way here in half the time."
+
+      "Yes," agreed Jennifer, "but it wouldn't have been nearly so exciting. What a marvellous map it is!" she added; "it shows absolutely everything—all the houses we've passed, all the landmarks we've seen, villages, mills, oast-houses, bridges and even trees!"
+
+      John was looking puzzled. "This is only a rough sort of picture map," he said, "but it shows a railway, an aerodrome, a modern camp and a bridge that can't have been broken down very long. D'you see what that means? It means that it was drawn quite lately; and that means that someone else must have been here and found the treasure too. Let's have a look at that chest again."
+
+      They examined their find more closely. Suddenly Jennifer spied a small tab fixed to the back of the chest. "' KINNIKOLOR COMPANY,'" she read. "That's certainly a funny way for an ancient baron to label his secret hoard," she said, "unless that was the name of his band of followers, like the ' White Company ' or the Knights of the Round Table."
+
+      "Let's hurry home and ask Daddy about it," suggested John. "It won't take us long to find our way back with this map. And, if this ' treasure ' is treasure, we can get him to come and collect it in a car."
+
+      So, map in hand, they hurried gaily back towards the castle gateway.
+
+      (How easily can you find your way back to Peacock Corner —even with the aid of the map?)
+    image:
+      src: /gamebooks/treasure-hunt/p23.png
+      width: 220
+      height: 293
+      alt: The picture for page 23
+    choices:
+    - label: To start for home turn to PAGE 24.
+      to: '24'
+  '24':
+    title: Page 24
+    text: |-
+      When they reached the first fork in the road, John put the map in his pocket. "Now that I've studied it, I think I can find the way back to Peacock Corner without looking at the map every minute," he boasted.
+
+      They did find their way home—though not so easily as they expected.
+
+      "You are late for tea," cried their mother as they came in. "Be quick and wash your hands. Daddy is taking us all to the cinema to see ' Hidden Treasure '; quite a lot of the scenes were taken near an old castle somewhere in this part of the country."
+
+      John and Jennifer looked at each other.
+
+      "That seems to explain away our treasure-chest," said John ruefully.
+
+      "Never mind," said Jennifer, "it was great fun hunting for it—and seeing the film will be almost as exciting as finding the real treasure ourselves."
+    image:
+      src: /gamebooks/treasure-hunt/p24.png
+      width: 220
+      height: 293
+      alt: The picture for page 24
+    choices:
+    - label: Turn left means turn to PAGE 11.
+      to: '11'
+    - label: Turn right means turn to PAGE 16.
+      to: '16'

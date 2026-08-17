@@ -1,0 +1,30 @@
+<div class='games'>
+<b><%= glyph_text @section['title'] || @book['title'], heading: true %></b><br />
+<br />
+<%= simple_format(@section['text']) if @section['text'].present? %>
+<% if (image = @section['image']) %>
+<img src="<%= image['src'] %>" width="<%= image['width'] %>" height="<%= image['height'] %>" alt="<%= image['alt'] %>" /><br />
+<br />
+<% end %>
+<%# Only real page turns take a number; a choice without a destination is a %>
+<%# consequence the book states and leaves with the reader. %>
+<% number = 0 %>
+<% @section['choices'].each do |choice| %>
+<% if choice['to'] %>
+<% number += 1 %>
+<%= link_to "#{number} #{choice['label']}", games_section_path(book: @book['id'], section: choice['to']), accesskey: number.to_s %><br /><br />
+<% elsif choice['end'] %>
+<% number += 1 %>
+<%= link_to "#{number} #{choice['label']}", games_path, accesskey: number.to_s %><br /><br />
+<% else %>
+<%= choice['label'] %><br /><br />
+<% end %>
+<% end %>
+<% if @section['choices'].empty? %>
+<b><%= glyph_text t('games.the_end'), heading: true %></b><br />
+<br />
+<%= link_to "1 #{t('games.restart')}", games_section_path(book: @book['id'], section: @book['start']), accesskey: "1" %><br /><br />
+<% end %>
+<%= link_to "9 #{@book['title']}", games_book_path(book: @book['id']), accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

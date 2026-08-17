@@ -10,6 +10,7 @@ sw:
     departures: "Nyakati za basi na treni"
     twofa: "Misimbo ya 2FA"
     settings: "Badilisha mipangilio"
+    games: "Michezo"
   common:
     save: "Hifadhi"
     back_to_menu: "Rudi kwenye menyu"
@@ -250,3 +251,8 @@ sw:
       name: "Akaunti inahitaji jina."
       secret: "Hii haionekani kama ufunguo: herufi A-Z na tarakimu 2-7, angalau 16."
       full: "Akaunti %{count} ndicho kikomo. Sahau moja kwanza."
+  games:
+    title: "Michezo"
+    begin: "Anza"
+    restart: "Anza upya"
+    the_end: "Mwisho"

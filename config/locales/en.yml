@@ -10,6 +10,7 @@ en:
     departures: "Bus & train times"
     twofa: "2FA codes"
     settings: "Change settings"
+    games: "Games"
   common:
     save: "Save"
     back_to_menu: "Back to menu"
@@ -249,3 +250,8 @@ en:
       name: "The account needs a name."
       secret: "That does not look like a setup key: letters A-Z and digits 2-7, at least 16 of them."
       full: "%{count} accounts is the most this can hold. Forget one first."
+  games:
+    title: "Games"
+    begin: "Begin"
+    restart: "Start again"
+    the_end: "The End"

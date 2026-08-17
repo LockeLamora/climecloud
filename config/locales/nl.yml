@@ -10,6 +10,7 @@ nl:
     departures: "Bus- & treintijden"
     twofa: "2FA-codes"
     settings: "Instellingen wijzigen"
+    games: "Spellen"
   common:
     save: "Opslaan"
     back_to_menu: "Terug naar menu"
@@ -250,3 +251,8 @@ nl:
       name: "Het account heeft een naam nodig."
       secret: "Dit lijkt geen sleutel: letters A-Z en cijfers 2-7, minstens 16."
       full: "%{count} accounts is het maximum. Vergeet er eerst een."
+  games:
+    title: "Spellen"
+    begin: "Beginnen"
+    restart: "Opnieuw beginnen"
+    the_end: "Einde"

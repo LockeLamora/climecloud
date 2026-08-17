@@ -10,6 +10,7 @@ it:
     departures: "Orari bus e treno"
     twofa: "Codici 2FA"
     settings: "Modifica impostazioni"
+    games: "Giochi"
   common:
     save: "Salva"
     back_to_menu: "Torna al menu"
@@ -250,3 +251,8 @@ it:
       name: "L'account ha bisogno di un nome."
       secret: "Non sembra una chiave: lettere A-Z e cifre 2-7, almeno 16."
       full: "%{count} account al massimo. Prima dimenticane uno."
+  games:
+    title: "Giochi"
+    begin: "Inizia"
+    restart: "Ricomincia"
+    the_end: "Fine"

@@ -10,6 +10,7 @@ de:
     departures: "Bus- & Bahnzeiten"
     twofa: "2FA-Codes"
     settings: "Einstellungen ändern"
+    games: "Spiele"
   common:
     save: "Speichern"
     back_to_menu: "Zurück zum Menü"
@@ -250,3 +251,8 @@ de:
       name: "Das Konto braucht einen Namen."
       secret: "Das sieht nicht wie ein Schlüssel aus: Buchstaben A-Z und Ziffern 2-7, mindestens 16."
       full: "Mehr als %{count} Konten passen nicht. Vergessen Sie zuerst eines."
+  games:
+    title: "Spiele"
+    begin: "Beginnen"
+    restart: "Von vorn beginnen"
+    the_end: "Ende"

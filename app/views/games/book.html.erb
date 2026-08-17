@@ -1,0 +1,24 @@
+<div class='games'>
+<b><%= glyph_text @book['title'], heading: true %></b><br />
+<%= glyph_text "#{@book['author']}, #{@book['year']}" %><br />
+<br />
+<% if (cover = @book['cover']) %>
+<img src="<%= cover['src'] %>" width="<%= cover['width'] %>" height="<%= cover['height'] %>" alt="<%= cover['alt'] %>" /><br />
+<br />
+<% end %>
+<%= simple_format(@book['about']) %>
+<%# A book already under way opens where it was left, or from the top; a fresh one %>
+<%# just begins. Either way the first option is the one a reader almost always wants. %>
+<% if @bookmark %>
+<%= link_to "1 #{t('common.continue')}", games_section_path(book: @book['id'], section: @bookmark), accesskey: "1" %><br /><br />
+<%= link_to "2 #{t('games.restart')}", games_section_path(book: @book['id'], section: @book['start']), accesskey: "2" %><br /><br />
+<% else %>
+<%= link_to "1 #{t('games.begin')}", games_section_path(book: @book['id'], section: @book['start']), accesskey: "1" %><br /><br />
+<% end %>
+<%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+<% if (credit = @book['credit']) %>
+<br /><br />
+<div class='credit'><%= credit_link credit['text'], credit['url'] %></div>
+<% end %>
+</div>
