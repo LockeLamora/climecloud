@@ -1,7 +1,0 @@
-<%# No reading column here: the whole point of the page is to be wider than the %>
-<%# screen and panned around in cursor mode, looking for what the picture hides. %>
-<div>
-<%= link_to "0 #{@section['title']}", games_section_path(book: @book['id'], section: params[:section]), accesskey: "0" %><br />
-<br />
-<img src="<%= @image['src'] %>" width="<%= @image['width'] %>" height="<%= @image['height'] %>" alt="<%= @section.dig('image', 'alt') %>" />
-</div>

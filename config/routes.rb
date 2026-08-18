@@ -53,8 +53,6 @@ Rails.application.routes.draw do
   get 'games/:book' => 'games#book', as: :games_book
   post 'games/turn' => 'games#turn'
   get 'games/:book/:section' => 'games#section', as: :games_section
-  # A page's picture at a size worth panning around in cursor mode. A pure read.
-  get 'games/:book/:section/picture' => 'games#picture', as: :games_picture
 
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'

@@ -3,16 +3,11 @@
 <br />
 <%= simple_format(@section['text']) if @section['text'].present? %>
 <% if (image = @section['image']) %>
-<%# The picture is a link to itself at a size worth inspecting: the footnotes ask the %>
-<%# reader to find things hidden in it, so in cursor mode the picture can be clicked %>
-<%# and panned around. Block form, so the glyph styles leave the image untouched. %>
-<% if image['full'] %>
-<%= link_to games_picture_path(book: @book['id'], section: params[:section]) do %><img src="<%= image['src'] %>" width="<%= image['width'] %>" height="<%= image['height'] %>" alt="<%= image['alt'] %>" /><% end %><br />
-<br />
-<% else %>
+<%# Wider than the screen on purpose: the pictures hide objects the footnotes ask %>
+<%# the reader to find, so the page is scrolled over the full-size picture rather %>
+<%# than shrinking it to fit. %>
 <img src="<%= image['src'] %>" width="<%= image['width'] %>" height="<%= image['height'] %>" alt="<%= image['alt'] %>" /><br />
 <br />
-<% end %>
 <% end %>
 <%# Only real page turns take a number; a choice without a destination is a %>
 <%# consequence the book states and leaves with the reader. %>

@@ -37,21 +37,6 @@ class GamesController < ApplicationController
     redirect_to games_book_path(book: @book['id']) if @section.nil?
   end
 
-  # The section's picture alone, at a size worth panning around: the pictures hide
-  # objects the footnotes ask the reader to find, and 219 pixels is too small to look
-  # for a sheep in. A pure read, like the section itself.
-  def picture
-    @book = Gamebooks.find(params[:book])
-    if @book.nil?
-      redirect_to games_path
-      return
-    end
-
-    @section = @book['sections'][params[:section]]
-    @image = @section&.dig('image', 'full')
-    redirect_to games_book_path(book: @book['id']) if @image.nil?
-  end
-
   # Every choice in a section posts here. The bookmark is written and the reader is sent
   # on to the section's own GET, so the page being read keeps a plain URL that the back
   # button, a reload and the continue link can all fetch harmlessly.

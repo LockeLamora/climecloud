@@ -80,24 +80,13 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     assert_match '/gamebooks/treasure-hunt/p1.jpg', @response.body
   end
 
-  test 'the picture links to a full-size version worth inspecting' do
-    get '/games/treasure-hunt/1'
+  test 'every picture a section shows exists on disk' do
+    Gamebooks.find('treasure-hunt')['sections'].each_value do |section|
+      src = section.dig('image', 'src')
+      next if src.nil?
 
-    assert_match(%r{<a[^>]*href="/games/treasure-hunt/1/picture"[^>]*>\s*<img[^>]*p1\.jpg},
-                 @response.body)
-
-    get '/games/treasure-hunt/1/picture'
-
-    assert_response :success
-    assert_match '/gamebooks/treasure-hunt/p1-large.jpg', @response.body
-    assert_match '/games/treasure-hunt/1', @response.body
-    assert_nil cookies['CYOA'].presence
-  end
-
-  test 'a section with no picture has no picture page' do
-    get '/games/consider-the-consequences/H-1/picture'
-
-    assert_redirected_to '/games/consider-the-consequences'
+      assert Rails.root.join("public#{src}").exist?, "missing picture #{src}"
+    end
   end
 
   test 'a consequence without a destination is text rather than a link' do
