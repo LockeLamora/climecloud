@@ -24,7 +24,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'offers continue and restart once a bookmark is saved' do
-    get '/games/treasure-hunt/5'
+    post '/games/turn', params: { book: 'treasure-hunt', section: '5' }
     get '/games/treasure-hunt'
 
     assert_response :success
@@ -42,19 +42,30 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'a bookmark at the very start still reads as a fresh book' do
-    get '/games/treasure-hunt/0'
+    post '/games/turn', params: { book: 'treasure-hunt', section: '0' }
     get '/games/treasure-hunt'
 
     assert_match I18n.t('games.begin'), @response.body
   end
 
-  test 'remembers the last section read, one entry per book' do
-    get '/games/treasure-hunt/7'
-    get '/games/consider-the-consequences/H-1'
+  test 'turning a page bookmarks it and lands on its plain URL, one entry per book' do
+    post '/games/turn', params: { book: 'treasure-hunt', section: '7' }
+    assert_redirected_to '/games/treasure-hunt/7'
+
+    post '/games/turn', params: { book: 'consider-the-consequences', section: 'H-1' }
 
     saved = JSON.parse(cookies['CYOA'])
     assert_equal '7', saved['treasure-hunt']
     assert_equal 'H-1', saved['consider-the-consequences']
+  end
+
+  # Browsers that fetch links ahead of the cursor follow GETs the reader never chose,
+  # so a read must never move the bookmark. Turning a page is games/turn's job.
+  test 'reading a section does not move the bookmark' do
+    get '/games/treasure-hunt/7'
+
+    assert_response :success
+    assert_nil cookies['CYOA'].presence
   end
 
   test 'shows a section with its text and numbered choices' do
@@ -62,9 +73,31 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'two tall yew hedges', @response.body
-    assert_match '/games/treasure-hunt/5', @response.body
-    assert_match '/games/treasure-hunt/7', @response.body
+    # Choices are forms, not links, so nothing prefetches a page turn.
+    assert_match(%r{<form[^>]*action="/games/turn"}, @response.body)
+    assert_match(/name="section"[^>]*value="5"|value="5"[^>]*name="section"/, @response.body)
+    assert_match(/name="section"[^>]*value="7"|value="7"[^>]*name="section"/, @response.body)
     assert_match '/gamebooks/treasure-hunt/p1.jpg', @response.body
+  end
+
+  test 'the picture links to a full-size version worth inspecting' do
+    get '/games/treasure-hunt/1'
+
+    assert_match(%r{<a[^>]*href="/games/treasure-hunt/1/picture"[^>]*>\s*<img[^>]*p1\.jpg},
+                 @response.body)
+
+    get '/games/treasure-hunt/1/picture'
+
+    assert_response :success
+    assert_match '/gamebooks/treasure-hunt/p1-large.jpg', @response.body
+    assert_match '/games/treasure-hunt/1', @response.body
+    assert_nil cookies['CYOA'].presence
+  end
+
+  test 'a section with no picture has no picture page' do
+    get '/games/consider-the-consequences/H-1/picture'
+
+    assert_redirected_to '/games/consider-the-consequences'
   end
 
   test 'a consequence without a destination is text rather than a link' do
@@ -91,6 +124,13 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     get '/games/treasure-hunt/999'
     assert_redirected_to '/games/treasure-hunt'
+
+    post '/games/turn', params: { book: 'unknown', section: '1' }
+    assert_redirected_to '/games'
+
+    post '/games/turn', params: { book: 'treasure-hunt', section: '999' }
+    assert_redirected_to '/games/treasure-hunt'
+    assert_nil cookies['CYOA'].presence
   end
 
   test 'a garbled cookie is treated as no progress at all' do
@@ -100,7 +140,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match I18n.t('games.begin'), @response.body
 
-    get '/games/treasure-hunt/5'
+    post '/games/turn', params: { book: 'treasure-hunt', section: '5' }
     assert_equal({ 'treasure-hunt' => '5' }, JSON.parse(cookies['CYOA']))
   end
 

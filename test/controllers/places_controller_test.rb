@@ -115,24 +115,33 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, @response.body.scan('baby changing').length
   end
 
-  test 'remembers a place typed in by hand so it need not be typed again' do
-    get '/places', params: { lat: '53.4', lon: '-2.6', place: 'Othertown, UK' },
-                   headers: { 'COOKIE' => LOCATION_COOKIES }
+  test 'remembers a place chosen from the pick list so it need not be typed again' do
+    post '/places_save', params: { lat: '53.4', lon: '-2.6', place: 'Othertown, UK' },
+                         headers: { 'COOKIE' => LOCATION_COOKIES }
 
-    assert_response :success
-    assert_match 'Saved places', @response.body
-    assert_match 'Othertown, UK', @response.body
+    assert_response :redirect
 
     get '/places', headers: { 'COOKIE' => "#{LOCATION_COOKIES};#{cookies_header}" }
 
     assert_response :success
+    assert_match 'Saved places', @response.body
     assert_match 'Othertown, UK', @response.body
     assert_match 'Forget saved places', @response.body
   end
 
-  test 'forgets every saved place when asked' do
+  # Browsers that fetch links ahead of the cursor follow GETs the reader never chose, so
+  # carrying a place in the URL must not write it anywhere. Saving is places_save's job.
+  test 'browsing to a place does not save it' do
     get '/places', params: { lat: '53.4', lon: '-2.6', place: 'Othertown, UK' },
                    headers: { 'COOKIE' => LOCATION_COOKIES }
+
+    assert_response :success
+    assert_nil cookies['places_recent'].presence
+  end
+
+  test 'forgets every saved place when asked' do
+    post '/places_save', params: { lat: '53.4', lon: '-2.6', place: 'Othertown, UK' },
+                         headers: { 'COOKIE' => LOCATION_COOKIES }
     delete '/places_forget', headers: { 'COOKIE' => "#{LOCATION_COOKIES};#{cookies_header}" }
 
     assert_redirected_to '/places'

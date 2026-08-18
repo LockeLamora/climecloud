@@ -3,19 +3,27 @@
 <br />
 <%= simple_format(@section['text']) if @section['text'].present? %>
 <% if (image = @section['image']) %>
+<%# The picture is a link to itself at a size worth inspecting: the footnotes ask the %>
+<%# reader to find things hidden in it, so in cursor mode the picture can be clicked %>
+<%# and panned around. Block form, so the glyph styles leave the image untouched. %>
+<% if image['full'] %>
+<%= link_to games_picture_path(book: @book['id'], section: params[:section]) do %><img src="<%= image['src'] %>" width="<%= image['width'] %>" height="<%= image['height'] %>" alt="<%= image['alt'] %>" /><% end %><br />
+<br />
+<% else %>
 <img src="<%= image['src'] %>" width="<%= image['width'] %>" height="<%= image['height'] %>" alt="<%= image['alt'] %>" /><br />
 <br />
 <% end %>
+<% end %>
 <%# Only real page turns take a number; a choice without a destination is a %>
 <%# consequence the book states and leaves with the reader. %>
+<%# Buttons rather than links, as on the nearby-stops list: a page turn moves the %>
+<%# bookmark, and a browser that fetches links ahead of the cursor must not turn %>
+<%# pages. The POST bookmarks and redirects to the section's own GET. %>
 <% number = 0 %>
 <% @section['choices'].each do |choice| %>
 <% if choice['to'] %>
 <% number += 1 %>
-<%= link_to "#{number} #{choice['label']}", games_section_path(book: @book['id'], section: choice['to']), accesskey: number.to_s %><br /><br />
-<% elsif choice['end'] %>
-<% number += 1 %>
-<%= link_to "#{number} #{choice['label']}", games_path, accesskey: number.to_s %><br /><br />
+<%= button_to "#{number} #{choice['label']}", games_turn_path, params: { book: @book['id'], section: choice['to'] }, form_class: "inline-action", accesskey: number.to_s %><br /><br />
 <% else %>
 <%= choice['label'] %><br /><br />
 <% end %>

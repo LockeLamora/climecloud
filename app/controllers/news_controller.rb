@@ -171,6 +171,17 @@ class NewsController < ApplicationController
   end
 
   def scrape_article(url)
+    # An article opened twice — by the same reader coming back from the list, or by
+    # anyone else behind this host — should not spend Google's resolve allowance or the
+    # publisher's patience twice. A day, because headlines churn faster than that and
+    # the memory store evicts under pressure anyway. Only a successful scrape is kept:
+    # a throttle or a timeout must stay retryable, not become the answer for a day.
+    cached = Rails.cache.read([:news_article, url])
+    if cached
+      @article_url = cached[:url]
+      return cached[:result]
+    end
+
     # Twice before giving up: Google throttles this host's address in flurries, and a
     # resolve that fails cold often lands warm a moment later — the reader was pressing the
     # link again by hand to the same effect. Both attempts are inside tight timeouts, so
@@ -183,7 +194,12 @@ class NewsController < ApplicationController
     return { error: I18n.t('news.article_unavailable') } if resolved.nil?
 
     @article_url = resolved
-    Scraper.scrape_article(@article_url, gnews.get_useragent)
+    result = Scraper.scrape_article(@article_url, gnews.get_useragent)
+    if result[:error].nil?
+      Rails.cache.write([:news_article, url], { url: resolved, result: result },
+                        expires_in: 1.day)
+    end
+    result
   end
 
   def get_articles

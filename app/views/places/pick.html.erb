@@ -3,10 +3,14 @@
 <b><%= glyph_text params[:query].to_s, heading: true %></b>
 <br /><br />
 <ol>
+<%# Buttons rather than links, as on the nearby-stops list: choosing a candidate %>
+<%# saves it, and a browser that fetches links ahead of the cursor must not save %>
+<%# places the reader scrolled past. %>
 <% @candidates.each do |candidate| %>
-    <li><%= link_to candidate[:address], places_path(lat: candidate[:lat],
-                                                     lon: candidate[:lon],
-                                                     place: candidate[:address]) %></li>
+    <li><%= button_to candidate[:address], places_save_path,
+                      params: { lat: candidate[:lat], lon: candidate[:lon],
+                                place: candidate[:address] },
+                      form_class: "inline-action" %></li>
 <% end %>
 </ol>
 <br />

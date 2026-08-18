@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   get 'places' => 'places#index'
   get 'places_list' => 'places#list'
   get 'places_search' => 'places#search'
+  post 'places_save' => 'places#save'
   delete 'places_forget' => 'places#forget'
   get 'wikipedia' => 'wikipedia#search'
   get 'wikipedia_article' => 'wikipedia#article'
@@ -44,12 +45,16 @@ Rails.application.routes.draw do
   delete 'totp/forget' => 'totp#forget'
   delete 'totp/forget_all' => 'totp#forget_all'
 
-  # The gamebooks ship with the app and read nothing external. Reading a section notes
-  # the place in the CYOA cookie — client-side state like every other setting, so these
-  # GETs still store nothing on the server.
+  # The gamebooks ship with the app and read nothing external. Turning a page is a POST
+  # because it moves the bookmark in the CYOA cookie: a browser that prefetches whatever
+  # the cursor passes must not turn pages the reader never chose. The section GET below
+  # it is a pure read, so a prefetch of it costs nothing.
   get 'games' => 'games#index'
   get 'games/:book' => 'games#book', as: :games_book
+  post 'games/turn' => 'games#turn'
   get 'games/:book/:section' => 'games#section', as: :games_section
+  # A page's picture at a size worth panning around in cursor mode. A pure read.
+  get 'games/:book/:section/picture' => 'games#picture', as: :games_picture
 
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'

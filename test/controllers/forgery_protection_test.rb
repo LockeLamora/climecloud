@@ -74,9 +74,42 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
     assert_empty JSON.parse(cookies['departures_saved'].presence || '[]')
   end
 
+  test 'the which-did-you-mean buttons save the place rather than being rejected' do
+    stub_place_candidates
+
+    get '/places_search', params: { query: 'Othertown' }, headers: { 'HTTP_COOKIE' => LOCATION }
+
+    assert_response :success
+    assert_absolute_action '/places_save'
+
+    # No cookie header here: it would replace the session cookie the token verifies
+    # against, and the save takes its location from the params in any case.
+    post '/places_save', params: {
+      authenticity_token: token_from(response.body),
+      place: 'Othertown, UK', lat: '53.4', lon: '-2.6'
+    }
+
+    assert_response :redirect
+    assert_equal 'Othertown, UK', JSON.parse(cookies['places_recent']).first['place']
+  end
+
+  test 'the page-turn buttons move the bookmark rather than being rejected' do
+    get '/games/treasure-hunt/1'
+
+    assert_response :success
+    assert_absolute_action '/games/turn'
+
+    post '/games/turn', params: {
+      authenticity_token: token_from(response.body), book: 'treasure-hunt', section: '5'
+    }
+
+    assert_redirected_to '/games/treasure-hunt/5'
+    assert_equal '5', JSON.parse(cookies['CYOA'])['treasure-hunt']
+  end
+
   test 'the forget button clears the saved places rather than being rejected' do
-    get '/places', params: { lat: '53.4', lon: '-2.6', place: 'Othertown, UK' },
-                   headers: { 'HTTP_COOKIE' => LOCATION }
+    saved = [{ 'place' => 'Othertown, UK', 'lat' => '53.4', 'lon' => '-2.6' }].to_json
+    get '/places', headers: { 'HTTP_COOKIE' => "#{LOCATION};places_recent=#{saved}" }
 
     assert_response :success
     assert_absolute_action '/places_forget'
@@ -144,6 +177,19 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
 
     stub_request(:get, %r{api\.geoapify\.com/v1/geocode/autocomplete})
       .to_return(status: 200, body: { 'features' => [result] }.to_json,
+                 headers: { 'Content-Type' => 'application/json' })
+  end
+
+  # Two candidates, so the search lands on the "which did you mean?" page whose
+  # buttons are under test rather than redirecting to the single match.
+  def stub_place_candidates
+    features = [
+      { 'properties' => { 'lat' => 53.4, 'lon' => -2.6, 'formatted' => 'Othertown, UK' } },
+      { 'properties' => { 'lat' => 51.2, 'lon' => 0.5, 'formatted' => 'Othertown Green, UK' } }
+    ]
+
+    stub_request(:get, %r{api\.geoapify\.com/v1/geocode/autocomplete})
+      .to_return(status: 200, body: { 'features' => features }.to_json,
                  headers: { 'Content-Type' => 'application/json' })
   end
 

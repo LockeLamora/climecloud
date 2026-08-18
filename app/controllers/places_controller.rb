@@ -6,10 +6,12 @@ require 'geocode'
 class PlacesController < ApplicationController
   MAX_SAVED_PLACES = 5
 
+  # A pure read: a typed-in place is only remembered by #save, so a browser that
+  # fetches links ahead of the cursor cannot fill the saved list with places the
+  # reader scrolled past.
   def index
     return unless location_known?
 
-    remember_place if params[:place].present?
     @saved = saved_places
     # Digits nine and zero are the navigation on every page in this app, so a ninth
     # category cannot have a key of its own and the list is paged instead.
@@ -22,6 +24,15 @@ class PlacesController < ApplicationController
   def forget
     cookies.delete(:places_recent)
     redirect_to places_path
+  end
+
+  # Chosen from the "which did you mean?" list. Remembers the place and sends the
+  # reader on to the categories page as a plain GET, which stores nothing.
+  def save
+    return unless location_known?
+
+    remember_place(params[:place], @lat, @lon) if params[:place].present?
+    redirect_to places_path(place: params[:place], lat: params[:lat], lon: params[:lon])
   end
 
   # Somewhere typed in by hand. Nothing is remembered between visits: the choice is
@@ -42,7 +53,11 @@ class PlacesController < ApplicationController
     end
 
     if @candidates.length == 1
-      redirect_to places_path(place_params(@candidates.first))
+      # One match needs no picking, so it is remembered here: this URL is only ever
+      # reached by submitting the search form, which nothing prefetches.
+      candidate = @candidates.first
+      remember_place(candidate[:address], candidate[:lat], candidate[:lon])
+      redirect_to places_path(place_params(candidate))
       return
     end
 
@@ -90,8 +105,8 @@ class PlacesController < ApplicationController
     []
   end
 
-  def remember_place
-    entry = { 'place' => params[:place], 'lat' => @lat, 'lon' => @lon }
+  def remember_place(place, lat, lon)
+    entry = { 'place' => place, 'lat' => lat, 'lon' => lon }
     others = saved_places.reject { |saved| saved['place'] == entry['place'] }
 
     cookies.permanent[:places_recent] = ([entry] + others).first(MAX_SAVED_PLACES).to_json

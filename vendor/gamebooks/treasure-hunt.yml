@@ -51,6 +51,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 1
+      full:
+        src: /gamebooks/treasure-hunt/p1-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: If they went down the hill to the left, turn to PAGE 5.
       to: '5'
@@ -85,6 +89,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 2
+      full:
+        src: /gamebooks/treasure-hunt/p2-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Out to the left means they give up and go home.
     - label: Turn back means turn to PAGE 7.
@@ -116,6 +124,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 3
+      full:
+        src: /gamebooks/treasure-hunt/p3-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Straight ahead means turn to PAGE 13.
       to: '13'
@@ -148,6 +160,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 4
+      full:
+        src: /gamebooks/treasure-hunt/p4-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Sharp to the left means turn to PAGE 14.
       to: '14'
@@ -180,6 +196,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 5
+      full:
+        src: /gamebooks/treasure-hunt/p5-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Up the hill to the left means turn to PAGE 3.
       to: '3'
@@ -204,6 +224,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 6
+      full:
+        src: /gamebooks/treasure-hunt/p6-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Sharp to left means turn to PAGE 15.
       to: '15'
@@ -232,6 +256,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 7
+      full:
+        src: /gamebooks/treasure-hunt/p7-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Bear to the left means turn to PAGE 12.
       to: '12'
@@ -260,6 +288,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 8
+      full:
+        src: /gamebooks/treasure-hunt/p8-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Retrace steps to road and then turn right means turn to PAGE 12.
       to: '12'
@@ -292,6 +324,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 9
+      full:
+        src: /gamebooks/treasure-hunt/p9-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Retrace steps means turn to PAGE 6.
       to: '6'
@@ -320,6 +356,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 10
+      full:
+        src: /gamebooks/treasure-hunt/p10-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Branch left means turn to PAGE 21.
       to: '21'
@@ -354,6 +394,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 11
+      full:
+        src: /gamebooks/treasure-hunt/p11-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Fork left at road sign means turn to PAGE 9.
       to: '9'
@@ -382,6 +426,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 12
+      full:
+        src: /gamebooks/treasure-hunt/p12-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Follow round to left means turn to PAGE 22.
       to: '22'
@@ -414,6 +462,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 13
+      full:
+        src: /gamebooks/treasure-hunt/p13-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Bear left at foot of hill means turn to PAGE 16.
       to: '16'
@@ -440,6 +492,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 14
+      full:
+        src: /gamebooks/treasure-hunt/p14-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Branch left means turn to PAGE 18.
       to: '18'
@@ -468,6 +524,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 15
+      full:
+        src: /gamebooks/treasure-hunt/p15-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Take left-hand road means turn to PAGE 10.
       to: '10'
@@ -510,6 +570,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 16
+      full:
+        src: /gamebooks/treasure-hunt/p16-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Straight ahead means turn to PAGE 2.
       to: '2'
@@ -538,6 +602,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 17
+      full:
+        src: /gamebooks/treasure-hunt/p17-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Turn left means turn to PAGE 4.
       to: '4'
@@ -566,6 +634,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 18
+      full:
+        src: /gamebooks/treasure-hunt/p18-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: To see the picture map they found, turn to PAGE 23.
       to: '23'
@@ -590,6 +662,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 19
+      full:
+        src: /gamebooks/treasure-hunt/p19-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Turn to the left means turn to PAGE 7.
       to: '7'
@@ -618,6 +694,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 20
+      full:
+        src: /gamebooks/treasure-hunt/p20-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Turn left means turn to PAGE 21.
       to: '21'
@@ -648,6 +728,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 21
+      full:
+        src: /gamebooks/treasure-hunt/p21-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Retrace steps means turn to PAGE 17.
       to: '17'
@@ -674,6 +758,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 22
+      full:
+        src: /gamebooks/treasure-hunt/p22-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Turn sharp left means turn to PAGE 19.
       to: '19'
@@ -700,6 +788,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 23
+      full:
+        src: /gamebooks/treasure-hunt/p23-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: To start for home turn to PAGE 24.
       to: '24'
@@ -722,6 +814,10 @@ sections:
       width: 219
       height: 293
       alt: The picture for page 24
+      full:
+        src: /gamebooks/treasure-hunt/p24-large.jpg
+        width: 480
+        height: 640
     choices:
     - label: Turn left means turn to PAGE 11.
       to: '11'

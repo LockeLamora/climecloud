@@ -299,6 +299,31 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'national insurance', @response.body
   end
 
+  # The scrape is cached for a day, keyed on the Google link, so the same story opened
+  # twice costs Google's resolver and the publisher one visit rather than two. The suite
+  # runs on a null store, so this test brings a real one.
+  test 'a scraped article is served from cache the second time' do
+    original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    stub_article_lookup
+
+    2.times do
+      get news_article_url, params: { article: 'https://news.google.com/rss/articles/'\
+      'CBMinQFodHRwczovL3d3dy50aGVndWFyZGlhbi5jb20vYnVzaW5lc3MvbGl2ZS8yMDI0L21hci8wNS9qZXJlbXk'\
+      'taHVudC1mcmVlemUtZnVlbC1kdXR5LWJ1ZGdldC11ay1jYXItc2FsZXMtZmVicnVhcnktc2VydmljZXMtcmVjZXN'\
+      'zaW9uLWJpdGNvaW4tZ29sZC1idXNpbmVzcy1saXZl0gGdAWh0dHBzOi8vYW1wLnRoZWd1YXJkaWFuLmNvbS9idXNp'\
+      'bmVzcy9saXZlLzIwMjQvbWFyLzA1L2plcmVteS1odW50LWZyZWV6ZS1mdWVsLWR1dHktYnVkZ2V0LXVrLWNhci1zYWx'\
+      'lcy1mZWJydWFyeS1zZXJ2aWNlcy1yZWNlc3Npb24tYml0Y29pbi1nb2xkLWJ1c2luZXNzLWxpdmU?oc=5' }
+    end
+
+    assert_response :success
+    assert_match 'national insurance', @response.body
+    assert_requested :get, /theguardian\.com/, times: 1
+    assert_requested :post, %r{news\.google\.com/_/DotsSplashUi}, times: 1
+  ensure
+    Rails.cache = original_cache
+  end
+
   # Some publishers spell their punctuation out in spans meant only for a screen reader, so
   # hidden text is stripped before the story is read. Quotation marks themselves are
   # untouched: all three forms below come through as typed.
