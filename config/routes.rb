@@ -56,9 +56,12 @@ Rails.application.routes.draw do
 
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'
-  # Opening an article costs Google and a publisher a visit, so the headline buttons
-  # POST here and are redirected to the article's own GET: a browser that fetches links
-  # ahead of the cursor never submits a form, and the article page keeps a plain URL.
+  # A headline is a link like every other list entry, so the handset's cursor stops on
+  # it once and the drawn styles keep their glyphs — but its GET lands here, a page
+  # that renders from its own params and calls nothing, so the cursor prefetching
+  # links as it passes them spends nothing. The POST on that page is what actually
+  # opens the article, and a form is the one thing a prefetcher never fires.
+  get 'news_preview' => 'news#preview'
   post 'news_open' => 'news#open'
   get 'news_search' => 'news#search'
   # Defines the root path route ("/")

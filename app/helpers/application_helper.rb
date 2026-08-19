@@ -51,34 +51,20 @@ module ApplicationHelper
             height: renderer.height(lines, quiet: quiet))
   end
 
-  # A pressable choice in a list: one control with nothing inside it, in a small form
-  # of its own. The handset's cursor gives any element inside a button a stop of its
-  # own — an image or a span alike, so every headline took two presses to scroll past —
-  # while plain text inside a button, and the form around it, cost nothing. So the
-  # written styles get a text-only button, and the drawn styles get an image input: the
-  # glyph is the control itself rather than a child of one, and it is a real image
-  # rather than a CSS background, which the handset's proxy renderer does not paint.
+  # A pressable choice in a list: a button in a small form of its own, drawn like the
+  # links around it. A form is the one thing the handset's prefetcher never fires, so
+  # these carry the choices whose GET would spend something — saving a stop or a place,
+  # turning a page. The handset's cursor gives the glyph image inside the button a stop
+  # of its own; that cost is accepted on these short lists, and nothing tried avoids it
+  # (a CSS background glyph is not painted at all, and an image input double-stops and
+  # does not submit). Long lists that must scroll in one stop per entry are links.
   def choice_button(label, url, params, token: true, accesskey: nil)
     form_with url: url, authenticity_token: token, class: 'inline-action' do
       controls = params.map { |name, value| hidden_field_tag(name, value, id: nil) }
-      controls << if glyph_theme
-                    glyph_submit(label, accesskey: accesskey)
-                  else
-                    tag.button(label, type: 'submit', accesskey: accesskey)
-                  end
+      controls << tag.button(glyph_theme ? glyph_image(label, link: true) : label,
+                             type: 'submit', accesskey: accesskey)
       safe_join(controls)
     end
-  end
-
-  # The image input a choice presses on the drawn styles. The alt is the label, so a
-  # failed image degrades to readable text, as the drawn links do.
-  def glyph_submit(label, accesskey: nil)
-    renderer = glyph_renderer
-    lines = renderer.lines(label)
-
-    image_submit_tag(glyph_path(t: label, s: glyph_theme, l: '1'),
-                     alt: label, accesskey: accesskey,
-                     width: renderer.width(lines), height: renderer.height(lines))
   end
 
   # An attribution line, drawn like everything else but at the quiet size and in the dim

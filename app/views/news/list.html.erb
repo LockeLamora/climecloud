@@ -43,16 +43,15 @@
                    else
                      article[:article_title]
                    end %>
-                <%# A button rather than a link: opening an article costs Google and the %>
-                <%# publisher a visit, and a browser that fetches links ahead of the %>
-                <%# cursor must not spend that on headlines nobody chose. No token: the %>
-                <%# action only bounces to the article's GET, and forty tokens would %>
-                <%# weigh the list down. %>
-                <li><%= choice_button label, news_open_path,
-                                      { article: article[:article_url],
-                                        section: @section,
-                                        title: article[:article_title] },
-                                      token: false %></li>
+                <%# A link like every other list in the app, so the handset's cursor %>
+                <%# stops once per headline and the drawn styles keep their glyphs — but %>
+                <%# it links to the free preview page, so the cursor prefetching links %>
+                <%# as it passes them never spends a Google resolve or a publisher %>
+                <%# scrape on headlines nobody chose. %>
+                <li><%= link_to label,
+                                news_preview_path(article: article[:article_url],
+                                                  section: @section,
+                                                  title: article[:article_title]) %></li>
             <% end %>
             </ul>
             <br />

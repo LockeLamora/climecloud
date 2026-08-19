@@ -210,6 +210,7 @@ pl:
     article_unavailable: "Nie udało się otworzyć tego artykułu, spróbuj innego"
     source_link: "Przeczytaj oryginalne źródło tutaj"
     back_to_headlines: "Wróć do nagłówków"
+    open_article: "Czytaj artykuł"
     section:
       headlines: "Najważniejsze"
       world: "Świat"

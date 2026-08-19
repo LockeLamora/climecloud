@@ -210,6 +210,7 @@ ar:
     article_unavailable: "تعذر فتح هذا المقال، جرّب غيره"
     source_link: "اقرأ المصدر الأصلي هنا"
     back_to_headlines: "العودة إلى العناوين"
+    open_article: "اقرأ المقال"
     section:
       headlines: "أبرز الأخبار"
       world: "العالم"

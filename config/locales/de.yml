@@ -210,6 +210,7 @@ de:
     article_unavailable: "Dieser Artikel lässt sich nicht öffnen, versuchen Sie einen anderen"
     source_link: "Originalquelle hier lesen"
     back_to_headlines: "Zurück zu den Schlagzeilen"
+    open_article: "Artikel lesen"
     section:
       headlines: "Schlagzeilen"
       world: "Welt"

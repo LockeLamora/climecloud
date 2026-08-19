@@ -16,10 +16,6 @@ class NewsController < ApplicationController
   # set the app up, so anything arriving without one is sent to do that first rather
   # than spending the allowance.
   before_action :require_saved_location
-  # The open action changes nothing and stores nothing — it only bounces a headline
-  # to the article page — so it carries no token and each headline form stays small
-  # enough for a list of forty to reach the handset.
-  skip_forgery_protection only: :open
 
   def news
     @gnews = gnews
@@ -30,8 +26,18 @@ class NewsController < ApplicationController
     render :list
   end
 
-  # The headline buttons land here and are sent on to the article GET, which does the
-  # work. See the routes file: a form is the one thing a prefetching browser never fires.
+  # The page a headline links to: everything on it comes in with the request, so a
+  # prefetch of it costs nothing anywhere. See the routes file.
+  def preview
+    @article_url = params[:article]
+    @section = params[:section]
+    @title = params[:title]
+
+    render :preview
+  end
+
+  # The preview's one button lands here and is sent on to the article GET, which does
+  # the work.
   def open
     redirect_to news_article_path(article: params[:article], section: params[:section],
                                   title: params[:title])

@@ -107,13 +107,21 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
     assert_equal '5', JSON.parse(cookies['CYOA'])['treasure-hunt']
   end
 
-  # The headline buttons deliberately carry no token — the action changes nothing, and
-  # forty tokens would weigh the list down — so the controller has to keep skipping
-  # verification for it or every headline dies with a 422.
-  test 'the headline buttons open without a token by design' do
-    post '/news_open', params: { article: 'https://news.google.com/rss/articles/x?oc=5',
-                                 section: 'HEADLINES', title: 'A headline' },
-                       headers: { 'HTTP_COOKIE' => LOCATION }
+  # A headline links to the free preview page, whose one form is what opens the
+  # article. One form, so it carries an ordinary token like every other.
+  test 'the preview form opens the article rather than being rejected' do
+    get '/news_preview', params: { article: 'https://news.google.com/rss/articles/x?oc=5',
+                                   section: 'HEADLINES', title: 'A headline' },
+                         headers: { 'HTTP_COOKIE' => LOCATION }
+
+    assert_response :success
+    assert_absolute_action '/news_open'
+
+    post '/news_open', params: {
+      authenticity_token: token_from(response.body),
+      article: 'https://news.google.com/rss/articles/x?oc=5',
+      section: 'HEADLINES', title: 'A headline'
+    }
 
     assert_response :redirect
   end

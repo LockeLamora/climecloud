@@ -499,8 +499,8 @@ class ThemeTest < ApplicationSystemTestCase
       page.driver.browser.manage.add_cookie(name: 'country_code', value: 'gb')
       visit news_url
 
-      assert_equal 'block', style('.news button', 'display'), "#{name} leaves headlines inline"
-      assert_equal 1, page.evaluate_script("document.querySelector('.news button').getClientRects().length"),
+      assert_equal 'block', style('.news a', 'display'), "#{name} leaves headlines inline"
+      assert_equal 1, page.evaluate_script("document.querySelector('.news a').getClientRects().length"),
                    "#{name} draws the box once per wrapped line"
       assert_equal page.evaluate_script('document.documentElement.clientWidth'),
                    page.evaluate_script('document.documentElement.scrollWidth'),

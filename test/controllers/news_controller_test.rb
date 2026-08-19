@@ -19,7 +19,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   # to an article costs the allowance whether or not it is shown the article. That is why
   # the check is a before_action rather than a guard inside each one.
   test 'sends anyone without a saved location to settings rather than to Google' do
-    %w[/news /news_search /news_article].each do |path|
+    %w[/news /news_search /news_article /news_preview].each do |path|
       get path, headers: { 'COOKIE' => 'country_code=gb' },
                 params: { article: 'https://news.google.com/rss/articles/CBMinQFodHRwcw?oc=5' }
 
@@ -83,18 +83,18 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
                     'repeating each headline per source is a page the handset gives up on'
   end
 
-  # Anything inside a button is a second cursor stop on the handset — the wide box and
-  # then the narrow one — so on the drawn styles a choice is an image input: the glyph
-  # is the control itself, a real image the handset's proxy paints, holding nothing.
-  test 'glyph-theme headlines are image inputs with nothing inside for the cursor' do
+  # On the drawn styles a headline is an anchor with its glyph inside, like the main
+  # menu: the handset's cursor folds an anchor and its image into one stop, where the
+  # same image inside a button costs a second one.
+  test 'glyph-theme headlines are anchors carrying their glyphs' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => "#{COOKIES};theme=teletext" }
 
     assert_response :success
-    assert_match(%r{<input[^>]*type="image"[^>]*src="/glyph}, @response.body)
+    assert_match(%r{<li><a[^>]*news_preview[^>]*><img src="/glyph}, @response.body)
     assert_no_match(/<button/, @response.body,
-                    'a button around the glyph is the second cursor stop again')
+                    'a button in the scrolled list is a second cursor stop')
   end
 
   # Article bodies carry no glyphs on any style: prose is where reading comfort beats
@@ -169,8 +169,8 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert budget, 'a story with several sources lost its heading'
     assert_operator budget.scan('<li>').size, :>, 1, 'the alternate sources are gone again'
     assert_operator budget.scan('<li>').size, :<=, NewsController::SOURCES_PER_STORY
-    assert_match %r{<li><form[^>]*>.*?<button[^>]*>BBC\.com</button></form></li>}m, budget
-    assert_match %r{<li><form[^>]*>.*?<button[^>]*>GOV\.UK</button></form></li>}m, budget
+    assert_match %r{<li><a[^>]*>BBC\.com</a></li>}, budget
+    assert_match %r{<li><a[^>]*>GOV\.UK</a></li>}, budget
     assert_no_match(/<button[^>]*>[^<]*Jeremy Hunt announces/, budget,
                     'a source under a heading repeats the whole headline')
   end
@@ -197,9 +197,9 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
-    assert_equal 1, @response.body.scan(%r{<button[^>]*>Wireline</button>}).size,
+    assert_equal 1, @response.body.scan(%r{<li><a[^>]*>Wireline</a></li>}).size,
                  'the same outlet name twice reads as the same link twice'
-    assert_match %r{<button[^>]*>Testwire</button>}, @response.body,
+    assert_match %r{<li><a[^>]*>Testwire</a></li>}, @response.body,
                  'the other outlet has to survive the dedupe'
   end
 
@@ -210,27 +210,41 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
     assert_no_match(/<b>[^<]*Jealous/, @response.body,
                     'a lone source under a matching heading stacks the same sentence twice')
-    assert_match %r{<button[^>]*>[^<]*fiancé stabbed waitress[^<]*\(Daily Mail\)</button>},
+    assert_match %r{<li><a[^>]*>[^<]*fiancé stabbed waitress[^<]*\(Daily Mail\)</a></li>},
                  @response.body
   end
 
   # Buttons rather than links, so a browser that fetches links ahead of the cursor
   # cannot open articles nobody chose — each open costs Google and a publisher a visit.
-  # Text-only buttons: anything inside a button is a second cursor stop on the handset.
-  # And no tokens: the action only bounces to the article GET, and forty tokens would
-  # weigh the list down past what the handset accepts.
-  test 'each article is a text-only button, never a prefetchable link' do
+  # A headline is a link like every list in the app — one cursor stop, glyphs kept —
+  # but it links to the free preview page: prefetching it costs nothing, and the
+  # article sits behind the preview's POST, which a prefetcher never fires.
+  test 'each article is a link to the free preview, never to the article itself' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
-    assert_match(%r{<li><form[^>]*action="/news_open"}, @response.body)
-    assert_no_match(/<button[^>]*>\s*</, @response.body,
-                    'an element inside a button is a second cursor stop')
-    assert_no_match(/authenticity_token/, @response.body)
-    assert_no_match(/<a[^>]*news_article/, @response.body)
+    assert_match(/<li><a[^>]*news_preview/, @response.body)
+    assert_no_match(/news_article/, @response.body,
+                    'a headline href straight to the article is a prefetch that scrapes')
     assert_no_match(/<ul>\s*<a/, @response.body)
+  end
+
+  # The landing between a headline and its article renders from its own params: no
+  # feed, no resolve, no scrape, so the cursor prefetching headline links spends
+  # nothing. The one POST on it is what opens the article.
+  test 'the preview costs nothing and offers the article behind its one form' do
+    get news_preview_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5',
+                                    section: 'HEADLINES', title: 'A headline worth reading' },
+                          headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'A headline worth reading', @response.body
+    assert_match(%r{<form[^>]*action="/news_open"}, @response.body)
+    assert_match 'Read article', @response.body
+    assert_not_requested :get, /news\.google\.com/
+    assert_not_requested :post, /news\.google\.com/
   end
 
   test 'should load the news index page successfully when cookie is set' do
