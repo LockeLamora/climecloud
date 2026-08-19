@@ -47,6 +47,20 @@ form.inline-action button {
     cursor: pointer;
 }
 
+/* The glyph a button shows on the drawn styles, painted as this span's background
+   rather than placed inside the button as an image — an image inside a button is a
+   second cursor stop on the handset, so every headline and stop took two presses to
+   scroll past. The span itself is nothing the cursor stops on. The text stays inside
+   for tools that read rather than draw, made transparent so it does not print over
+   its own glyph. */
+form.inline-action button .glyph-button-label {
+  display: inline-block;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  white-space: nowrap;
+  color: transparent;
+}
+
 /* The controls follow the chosen screen style too. Without this the settings page — the
    one page a reader is on while choosing a style — keeps white boxes on a dark ground,
    and the boxes are most of that page. ApplicationHelper#theme_style_tag supplies the

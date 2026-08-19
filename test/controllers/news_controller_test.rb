@@ -83,6 +83,20 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
                     'repeating each headline per source is a page the handset gives up on'
   end
 
+  # An image inside a button is a second cursor stop on the handset — the wide box and
+  # then the narrow one — so on the drawn styles a button's glyph is painted as its
+  # label's background, and the button holds nothing the cursor stops on separately.
+  test 'glyph-theme headline buttons hold no image for the cursor to stop on' do
+    stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => "#{COOKIES};theme=teletext" }
+
+    assert_response :success
+    assert_no_match(/<button[^>]*>\s*<img/, @response.body)
+    assert_match(%r{<span class="glyph-button-label" style="background-image:url\(/glyph},
+                 @response.body)
+  end
+
   # Article bodies carry no glyphs on any style: prose is where reading comfort beats
   # theming, and a long story as images is the page that would not open. The chrome around
   # it — title, nav links — keeps the treatment.

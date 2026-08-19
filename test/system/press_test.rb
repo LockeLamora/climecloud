@@ -73,7 +73,7 @@ class PressTest < ApplicationSystemTestCase
     visit news_url
     # A single-source story's lead: the multi-source stories offer their links as short
     # outlet names, and only a full headline is long enough to wrap.
-    link = all('.news a').find { |candidate| candidate.text.length > 40 }
+    link = all('.news button').find { |candidate| candidate.text.length > 40 }
 
     assert link, 'this test is only meaningful on a headline long enough to wrap'
 

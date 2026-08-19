@@ -23,7 +23,7 @@ module ApplicationHelper
   def button_to(name = nil, options = nil, html_options = nil, &)
     return super if block_given? || !name.is_a?(String) || glyph_theme.nil?
 
-    super(options, html_options) { glyph_image(name, link: true) }
+    super(options, html_options) { glyph_button_label(name) }
   end
 
   # For text that is not a link: headings and titles, drawn in place by the views. A
@@ -50,11 +50,23 @@ module ApplicationHelper
   end
 
   # The label inside a hand-written submit button, drawn like the generated ones: the
-  # glyph styles get their image, every other style the plain text. For the lists whose
-  # buttons share one form — a form per button gave the handset's cursor two stops for
-  # every entry, the form and then the button inside it.
+  # glyph styles get their glyph, every other style the plain text.
   def button_label(text)
-    glyph_theme ? glyph_image(text, link: true) : text
+    glyph_theme ? glyph_button_label(text) : text
+  end
+
+  # A button's glyph is painted as a background rather than placed inside it as an
+  # image: the handset's cursor gives an image inside a button a focus stop of its own —
+  # the wide box and then the narrow one — so every headline and stop took two presses
+  # to scroll past. A background is part of the button, and the cursor stops once. An
+  # image inside a link costs nothing, so links keep their <img> and its alt fallback.
+  def glyph_button_label(text)
+    renderer = glyph_renderer
+    lines = renderer.lines(text)
+
+    tag.span(text, class: 'glyph-button-label',
+                   style: "background-image:url(#{glyph_path(t: text, s: glyph_theme, l: '1')});" \
+                          "width:#{renderer.width(lines)}px;height:#{renderer.height(lines)}px")
   end
 
   # An attribution line, drawn like everything else but at the quiet size and in the dim
