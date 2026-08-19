@@ -683,6 +683,32 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     ENV.delete('FIXIE_URL')
   end
 
+  # Google's wall wears two costumes: production showed the resolve refused as a 302
+  # towards www.google.com rather than a flat 429. Either way it is the wall, and the
+  # proxy gets its one retry.
+  test 'a resolve walled by redirect fails over to the proxy' do
+    ENV['FIXIE_URL'] = 'http://fixie:secret@proxy.usefixie.test:80'
+    stub_request(:get, %r{news\.google\.com/rss/articles/})
+      .to_return(status: 200, body: '<html data-n-a-ts="1709600000" data-n-a-sg="sig"></html>')
+    walled = stub_request(:post, %r{news\.google\.com/_/DotsSplashUi})
+             .to_return({ status: 302, headers: { 'Location' => 'https://www.google.com/sorry/index?continue=x' } },
+                        { status: 200, body: '[["wrb.fr",null,"[\"https://www.theguardian.com/x\"]"]]' })
+    sorry = stub_request(:get, %r{www\.google\.com/sorry})
+    stub_request(:get, /theguardian\.com/)
+      .to_return(status: 200,
+                 body: '<html><body><article><p>The proxy stepped around the wall.</p></article></body></html>')
+
+    get news_article_url, params: { article: 'https://news.google.com/rss/articles/CBMi?oc=5' },
+                          headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'The proxy stepped around the wall.', @response.body
+    assert_requested walled, times: 2
+    assert_not_requested sorry
+  ensure
+    ENV.delete('FIXIE_URL')
+  end
+
   # The feed is shared by everyone on this host, so looking at the same section twice
   # inside a few minutes costs Google one visit. The suite runs on a null cache store,
   # so this test brings a real one.

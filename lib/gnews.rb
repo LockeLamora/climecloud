@@ -49,6 +49,7 @@ class Gnews
   def get_article(url)
     res = fetch_article_page(URI(url))
     return :rate_limited if res&.code == Relay::RATE_LIMITED
+
     unless res.is_a?(Net::HTTPSuccess)
       # A refusal that is not a rate limit: a 403 to a flagged address, or a redirect
       # chain that never landed. Named in the log, or it renders as "could not open"
@@ -182,15 +183,17 @@ class Gnews
     uri = URI('https://news.google.com/_/DotsSplashUi/data/batchexecute') # ?rpcids=Fbv4je"
     req = '[[["Fbv4je","[\"garturlreq\",[[\"en-GB\",\"GB\",[\"FINANCE_TOP_INDICES\",\"WEB_TEST_1_0_0\"],null,null,1,1,\"GB:en\",null,0,null,null,null,null,null,0,5],\"en-GB\",\"GB\",1,[2,4,8],1,1,\"691331303\",0,0,null,0],\"' + url + '\",' + timestamp + ',\"' + signature + '\"]",null,"generic"]]]'
     res = batchexecute(uri, req)
-    if res.code == Relay::RATE_LIMITED
-      Rails.logger.warn("News article resolve rate limited#{proxy ? ' - retrying via proxy' : ' and no proxy configured'}")
+    if walled?(res)
+      Rails.logger.warn("News article resolve walled - #{refusal_detail(res)}" \
+                        "#{proxy ? ', retrying via proxy' : ' and no proxy configured'}")
       res = batchexecute(uri, req, via: proxy) if proxy
     end
-    # Only a body Google answered with 200 is worth parsing. The rate-limit wall is a
-    # page of links, and the fallback parse below used to fish the wall's own URL out of
-    # it and hand that back as "the article" — which was then scraped, 429ed, and shown
-    # to the reader as a source link to a captcha.
-    return :rate_limited if res.code == Relay::RATE_LIMITED
+    # Only a body Google answered with 200 is worth parsing. The wall is a page of
+    # links, and the fallback parse below used to fish the wall's own URL out of it and
+    # hand that back as "the article" — which was then scraped, 429ed, and shown to the
+    # reader as a source link to a captcha.
+    return :rate_limited if walled?(res)
+
     unless res.is_a?(Net::HTTPSuccess)
       Rails.logger.warn("News article resolve refused - #{refusal_detail(res)}")
       return nil
@@ -242,6 +245,14 @@ class Gnews
   # a Google host is some interstitial fished out of a page that was not the answer.
   # Every rejection is logged: a silent nil here renders as "could not open this
   # article" with nothing in the log to say why.
+  # Google's wall wears two costumes: a flat 429, and a 302 towards www.google.com's
+  # sorry page — the same refusal dressed as a redirect, which is what production logs
+  # showed on 2026-08-19. The resolve endpoint is an API POST that never redirects a
+  # welcome caller anywhere, so from it any redirect is the wall.
+  def walled?(res)
+    !res.nil? && (res.code == Relay::RATE_LIMITED || res.code.start_with?('3'))
+  end
+
   # What a refused response was, sized for one log line: the status, and for a redirect
   # still in flight the host it was pointing at, which is how a consent loop names
   # itself.
