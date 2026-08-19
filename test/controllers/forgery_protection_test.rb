@@ -107,6 +107,17 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
     assert_equal '5', JSON.parse(cookies['CYOA'])['treasure-hunt']
   end
 
+  # The headline buttons deliberately carry no token — the action changes nothing, and
+  # forty tokens would weigh the list down — so the controller has to keep skipping
+  # verification for it or every headline dies with a 422.
+  test 'the headline buttons open without a token by design' do
+    post '/news_open', params: { article: 'https://news.google.com/rss/articles/x?oc=5',
+                                 section: 'HEADLINES', title: 'A headline' },
+                       headers: { 'HTTP_COOKIE' => LOCATION }
+
+    assert_response :redirect
+  end
+
   test 'the forget button clears the saved places rather than being rejected' do
     saved = [{ 'place' => 'Othertown, UK', 'lat' => '53.4', 'lon' => '-2.6' }].to_json
     get '/places', headers: { 'HTTP_COOKIE' => "#{LOCATION};places_recent=#{saved}" }

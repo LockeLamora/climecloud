@@ -16,6 +16,10 @@ class NewsController < ApplicationController
   # set the app up, so anything arriving without one is sent to do that first rather
   # than spending the allowance.
   before_action :require_saved_location
+  # The open action changes nothing and stores nothing — it only bounces a headline
+  # to the article page — so it carries no token and each headline form stays small
+  # enough for a list of forty to reach the handset.
+  skip_forgery_protection only: :open
 
   def news
     @gnews = gnews
@@ -24,6 +28,13 @@ class NewsController < ApplicationController
     prepare_articles
 
     render :list
+  end
+
+  # The headline buttons land here and are sent on to the article GET, which does the
+  # work. See the routes file: a form is the one thing a prefetching browser never fires.
+  def open
+    redirect_to news_article_path(article: params[:article], section: params[:section],
+                                  title: params[:title])
   end
 
   def article
@@ -170,6 +181,21 @@ class NewsController < ApplicationController
     end
   end
 
+  # The feed costs Google a visit and every reader on this host shares the allowance, so
+  # a fetched list is kept for a few minutes: long enough that hopping between sections
+  # and back, or a link-prefetching browser sweeping the section digits, costs one fetch
+  # rather than one per look, and short enough that the news stays news. Only a feed that
+  # actually arrived is kept — an outage must stay retryable.
+  def cached_feed
+    key = [:news_feed, gnews.get_ceid, @section, @search_query]
+    cached = Rails.cache.read(key)
+    return cached if cached
+
+    articles, title = gnews.get_articles_from_api(@search_query)
+    Rails.cache.write(key, [articles, title], expires_in: 10.minutes) unless articles.nil?
+    [articles, title]
+  end
+
   def scrape_article(url)
     # An article opened twice — by the same reader coming back from the list, or by
     # anyone else behind this host — should not spend Google's resolve allowance or the
@@ -182,16 +208,8 @@ class NewsController < ApplicationController
       return cached[:result]
     end
 
-    # Twice before giving up: Google throttles this host's address in flurries, and a
-    # resolve that fails cold often lands warm a moment later — the reader was pressing the
-    # link again by hand to the same effect. Both attempts are inside tight timeouts, so
-    # the worst case is still an answer in seconds, not a page that never opens.
-    resolved = nil
-    2.times do
-      resolved = gnews.get_article(url)
-      break if resolved
-    end
-    return { error: I18n.t('news.article_unavailable') } if resolved.nil?
+    resolved = resolve_article(url)
+    return { error: I18n.t('news.article_unavailable') } unless resolved.is_a?(String)
 
     @article_url = resolved
     result = Scraper.scrape_article(@article_url, gnews.get_useragent)
@@ -202,8 +220,29 @@ class NewsController < ApplicationController
     result
   end
 
+  # The resolve is the fragile half — it is the endpoint Google walls off first — so a
+  # link already resolved once is not resolved again even when the scrape after it
+  # failed: retrying the publisher does not need to spend Google's patience too.
+  def resolve_article(url)
+    cached = Rails.cache.read([:news_resolve, url])
+    return cached if cached
+
+    # Twice before giving up: Google throttles this host's address in flurries, and a
+    # resolve that fails cold often lands warm a moment later — the reader was pressing the
+    # link again by hand to the same effect. Both attempts are inside tight timeouts, so
+    # the worst case is still an answer in seconds, not a page that never opens. A
+    # rate limit is the exception: asking again into a wall only builds the wall higher.
+    resolved = nil
+    2.times do
+      resolved = gnews.get_article(url)
+      break if resolved
+    end
+    Rails.cache.write([:news_resolve, url], resolved, expires_in: 1.day) if resolved.is_a?(String)
+    resolved
+  end
+
   def get_articles
-    @articles, @title = gnews.get_articles_from_api(@search_query)
+    @articles, @title = cached_feed
 
     if @articles.nil?
       @error = I18n.t('news.unavailable')

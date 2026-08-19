@@ -155,9 +155,9 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert budget, 'a story with several sources lost its heading'
     assert_operator budget.scan('<li>').size, :>, 1, 'the alternate sources are gone again'
     assert_operator budget.scan('<li>').size, :<=, NewsController::SOURCES_PER_STORY
-    assert_match %r{<li><a[^>]*>BBC\.com</a></li>}, budget
-    assert_match %r{<li><a[^>]*>GOV\.UK</a></li>}, budget
-    assert_no_match(/<li><a[^>]*>[^<]*Jeremy Hunt announces/, budget,
+    assert_match %r{<li><form[^>]*action="/news_open".*?<button[^>]*>BBC\.com</button>}m, budget
+    assert_match %r{<li><form[^>]*action="/news_open".*?<button[^>]*>GOV\.UK</button>}m, budget
+    assert_no_match(/<button[^>]*>[^<]*Jeremy Hunt announces/, budget,
                     'a source under a heading repeats the whole headline')
   end
 
@@ -183,9 +183,9 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
-    assert_equal 1, @response.body.scan(%r{<li><a[^>]*>Wireline</a></li>}).size,
+    assert_equal 1, @response.body.scan(%r{<button[^>]*>Wireline</button>}).size,
                  'the same outlet name twice reads as the same link twice'
-    assert_match %r{<li><a[^>]*>Testwire</a></li>}, @response.body,
+    assert_match %r{<button[^>]*>Testwire</button>}, @response.body,
                  'the other outlet has to survive the dedupe'
   end
 
@@ -196,17 +196,20 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
     assert_no_match(/<b>[^<]*Jealous/, @response.body,
                     'a lone source under a matching heading stacks the same sentence twice')
-    assert_match %r{<li><a[^>]*>[^<]*fiancé stabbed waitress[^<]*\(Daily Mail\)</a></li>},
+    assert_match %r{<button[^>]*>[^<]*fiancé stabbed waitress[^<]*\(Daily Mail\)</button>},
                  @response.body
   end
 
-  test 'each article is a list item rather than a loose link in a list' do
+  # Buttons rather than links, so a browser that fetches links ahead of the cursor
+  # cannot open articles nobody chose — each open costs Google and a publisher a visit.
+  test 'each article is a list item holding a button, never a prefetchable link' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
-    assert_match(/<li><a[^>]*news_article/, @response.body)
+    assert_match(%r{<li><form[^>]*action="/news_open"}, @response.body)
+    assert_no_match(/<a[^>]*news_article/, @response.body)
     assert_no_match(/<ul>\s*<a/, @response.body)
   end
 
@@ -586,7 +589,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   # later, and the reader was pressing the link again by hand to the same effect.
   test 'a resolve that fails once is tried once more before giving up' do
     stub_request(:get, %r{news\.google\.com/rss/articles/})
-      .to_return({ status: 429, body: '' },
+      .to_return({ status: 500, body: '' },
                  { status: 200, body: '<html data-n-a-ts="1709600000" data-n-a-sg="sig"></html>' })
     stub_request(:post, %r{news\.google\.com/_/DotsSplashUi})
       .to_return(status: 200, body: '[["wrb.fr",null,"[\"https://www.theguardian.com/x\"]"]]')
@@ -598,6 +601,54 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'Second try read it.', @response.body
+  end
+
+  # Asking again into a rate-limit wall only builds it higher: a 429 is not retried, and
+  # the wall's own page — a page of links — must never be fished for a "resolved" URL and
+  # scraped as if it were the article. Both happened in production on 2026-08-19.
+  test 'a rate-limited resolve is not retried and its captcha page is not the article' do
+    stub_request(:get, %r{news\.google\.com/rss/articles/})
+      .to_return(status: 200, body: '<html data-n-a-ts="1709600000" data-n-a-sg="sig"></html>')
+    walled = stub_request(:post, %r{news\.google\.com/_/DotsSplashUi})
+             .to_return(status: 429,
+                        body: 'To continue, visit https://www.google.com/sorry/index?continue=x')
+    sorry = stub_request(:get, %r{www\.google\.com/sorry})
+
+    get news_article_url, params: { article: 'https://news.google.com/rss/articles/CBMi?oc=5' },
+                          headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Could not open this article', @response.body
+    assert_requested walled, times: 1
+    assert_not_requested sorry
+  end
+
+  # The feed is shared by everyone on this host, so looking at the same section twice
+  # inside a few minutes costs Google one visit. The suite runs on a null cache store,
+  # so this test brings a real one.
+  test 'a section feed is served from cache the second time' do
+    original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    feed = stub_request(:get, /news.google.com/)
+           .to_return(body: file_fixture('news_response.xml').read)
+
+    2.times { get news_url, headers: { 'COOKIE' => COOKIES } }
+
+    assert_response :success
+    assert_requested feed, times: 1
+  ensure
+    Rails.cache = original_cache
+  end
+
+  # The headline buttons post here; the article page itself stays a plain GET.
+  test 'opening a headline bounces to the article page' do
+    post news_open_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5',
+                                  section: 'HEADLINES', title: 'A headline' },
+                        headers: { 'COOKIE' => COOKIES }
+
+    assert_redirected_to news_article_path(article: 'https://news.google.com/rss/articles/x?oc=5',
+                                           section: 'HEADLINES', title: 'A headline')
+    assert_not_requested :get, /news\.google\.com/
   end
 
   test 'still says what the story was when the publisher refuses the page' do

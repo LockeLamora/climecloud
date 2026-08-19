@@ -56,6 +56,10 @@ Rails.application.routes.draw do
 
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'
+  # Opening an article costs Google and a publisher a visit, so the headline buttons
+  # POST here and are redirected to the article's own GET: a browser that fetches links
+  # ahead of the cursor never submits a form, and the article page keeps a plain URL.
+  post 'news_open' => 'news#open'
   get 'news_search' => 'news#search'
   # Defines the root path route ("/")
   root 'index#index'

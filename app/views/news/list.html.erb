@@ -43,10 +43,16 @@
                    else
                      article[:article_title]
                    end %>
-                <li><%= link_to label,
-                                news_article_path(article: article[:article_url],
-                                                  section: @section,
-                                                  title: article[:article_title]) %></li>
+                <%# A button rather than a link, as on the nearby-stops list: opening an %>
+                <%# article costs Google and the publisher a visit, and a browser that %>
+                <%# fetches links ahead of the cursor must not spend that on headlines %>
+                <%# nobody chose. The POST bounces to the article's own GET. %>
+                <li><%= button_to label, news_open_path,
+                                  params: { article: article[:article_url],
+                                            section: @section,
+                                            title: article[:article_title] },
+                                  authenticity_token: false,
+                                  form_class: "inline-action" %></li>
             <% end %>
             </ul>
             <br />

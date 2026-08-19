@@ -2,6 +2,7 @@
 
 require 'net/http'
 require 'uri'
+require 'relay'
 
 class Gnews
   # The sections Google publishes a feed for, in the order they are offered, named once
@@ -26,6 +27,12 @@ class Gnews
     @useragent
   end
 
+  # Which country-and-language edition the feed is asked for: what a cache of that feed
+  # has to be keyed by, so two readers with different editions never share a list.
+  def get_ceid
+    @ceid
+  end
+
   # Everything here answers inside a few seconds or answers nil, never hangs. A resolve
   # with no timeout and no redirect cap sits for minutes when Google throttles this host's
   # address or walks it through a consent chain, and a page that takes minutes is one the
@@ -34,8 +41,12 @@ class Gnews
   TIMEOUT_SECONDS = 5
   MAX_REDIRECTS = 5
 
+  # Answers the publisher's URL, nil for a failure worth one more try, or :rate_limited
+  # for Google's wall — asking again into a wall only builds it higher, so the caller
+  # must not retry that one.
   def get_article(url)
     res = follow_redirects(get_with_timeout(URI(url)))
+    return :rate_limited if res&.code == Relay::RATE_LIMITED
     return nil unless res.is_a?(Net::HTTPSuccess)
 
     timestamp = get_timestamp(res.body)
@@ -150,9 +161,26 @@ class Gnews
                                               open_timeout: TIMEOUT_SECONDS, read_timeout: TIMEOUT_SECONDS) do |http|
       http.request(Net::HTTP::Post.new(uri).tap { |post| post.set_form_data('f.req' => req) })
     end
-    resolved_url(res.body)
+    # Only a body Google answered with 200 is worth parsing. The rate-limit wall is a
+    # page of links, and the fallback parse below used to fish the wall's own URL out of
+    # it and hand that back as "the article" — which was then scraped, 429ed, and shown
+    # to the reader as a source link to a captcha.
+    return :rate_limited if res.code == Relay::RATE_LIMITED
+    return nil unless res.is_a?(Net::HTTPSuccess)
+
+    keep_off_google(resolved_url(res.body))
   rescue StandardError => e
     Rails.logger.warn("News article resolve refused - #{e.class}")
+    nil
+  end
+
+  # A resolved article lives on a publisher's site by definition, so anything still on
+  # a Google host is some interstitial fished out of a page that was not the answer.
+  def keep_off_google(resolved)
+    return nil if resolved.blank? || URI(resolved).host&.end_with?('google.com')
+
+    resolved
+  rescue URI::InvalidURIError
     nil
   end
 
