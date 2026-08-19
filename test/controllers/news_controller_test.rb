@@ -627,6 +627,50 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_not_requested sorry
   end
 
+  # With a proxy provisioned, a walled resolve gets one more try through it — a
+  # dedicated egress address, spent only after the shared one is refused, so the
+  # proxy's monthly allowance goes on the mornings that need it and nothing else.
+  test 'a rate-limited resolve gets one retry through the proxy when one is provisioned' do
+    ENV['FIXIE_URL'] = 'http://fixie:secret@proxy.usefixie.test:80'
+    stub_request(:get, %r{news\.google\.com/rss/articles/})
+      .to_return(status: 200, body: '<html data-n-a-ts="1709600000" data-n-a-sg="sig"></html>')
+    walled = stub_request(:post, %r{news\.google\.com/_/DotsSplashUi})
+             .to_return({ status: 429, body: 'visit https://www.google.com/sorry/index' },
+                        { status: 200, body: '[["wrb.fr",null,"[\"https://www.theguardian.com/x\"]"]]' })
+    stub_request(:get, /theguardian\.com/)
+      .to_return(status: 200,
+                 body: '<html><body><article><p>The proxy carried it through the wall.</p></article></body></html>')
+
+    get news_article_url, params: { article: 'https://news.google.com/rss/articles/CBMi?oc=5' },
+                          headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'The proxy carried it through the wall.', @response.body
+    assert_requested walled, times: 2
+  ensure
+    ENV.delete('FIXIE_URL')
+  end
+
+  # A walled feed tries the dedicated proxy address before the public relays: the
+  # relays are flaky strangers, the proxy is ours. Driven through the FIXIE_URL
+  # fallback because the suite blanks credentials — CI has no master key to decrypt
+  # them, and the dev machine is made to match.
+  test 'a rate-limited feed tries the proxy before the public relays' do
+    ENV['FIXIE_URL'] = 'http://fixie:secret@proxy.usefixie.test:80'
+    stub_request(:get, /news.google.com/)
+      .to_return({ status: 429, body: '' },
+                 { status: 200, body: file_fixture('news_response.xml').read })
+    relays = stub_request(:get, /r\.jina\.ai|allorigins|codetabs/)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match 'Budget 2024', @response.body
+    assert_not_requested relays
+  ensure
+    ENV.delete('FIXIE_URL')
+  end
+
   # The feed is shared by everyone on this host, so looking at the same section twice
   # inside a few minutes costs Google one visit. The suite runs on a null cache store,
   # so this test brings a real one.

@@ -42,10 +42,12 @@ class Gnews
   MAX_REDIRECTS = 5
 
   # Answers the publisher's URL, nil for a failure worth one more try, or :rate_limited
-  # for Google's wall — asking again into a wall only builds it higher, so the caller
-  # must not retry that one.
+  # for Google's wall — asking direct again into a wall only builds it higher, so the
+  # caller must not retry that one. What is worth one more try is the proxy: a dedicated
+  # egress address whose reputation is this app's alone, spent only after the shared
+  # address is walled so a month's small allowance goes on the mornings that need it.
   def get_article(url)
-    res = follow_redirects(get_with_timeout(URI(url)))
+    res = fetch_article_page(URI(url))
     return :rate_limited if res&.code == Relay::RATE_LIMITED
     return nil unless res.is_a?(Net::HTTPSuccess)
 
@@ -78,11 +80,9 @@ class Gnews
   private
 
   # Google counts its allowance against the calling IP, which every reader on this host
-  # shares, so a 429 here is nothing the reader in front of it did. A relay fetches the
-  # feed once more from a different address.
-  #
-  # Only the feed. Opening an article takes a scrape of Google's own page for two data
-  # attributes and then a POST to resolve the link, and none of the relays carry a POST.
+  # shares, so a 429 here is nothing the reader in front of it did. The proxy — a
+  # dedicated address whose reputation is this app's alone — fetches the feed once more,
+  # and the public relays stay behind it as the last resort they always were.
   def fetch_feed(uri)
     res = Net::HTTP.get_response(uri)
     res = Net::HTTP.get_response(URI.parse(res['location'])) if res.code.start_with?('3')
@@ -91,7 +91,21 @@ class Gnews
     Rails.logger.warn("News feed refused by google - #{res.code}")
     return nil unless res.code == Relay::RATE_LIMITED
 
-    Relay.fetch(uri, subject: 'News feed', impatient: true) { |body| feed_in(body) }
+    fetch_feed_via_proxy(uri) ||
+      Relay.fetch(uri, subject: 'News feed', impatient: true) { |body| feed_in(body) }
+  end
+
+  # One more try through the dedicated address. Anything short of a parseable feed
+  # answers nil, and the relay chain gets its turn as before.
+  def fetch_feed_via_proxy(uri)
+    return nil unless proxy
+
+    Rails.logger.warn('News feed rate limited - retrying via proxy')
+    res = get_with_timeout(uri, via: proxy)
+    res = get_with_timeout(URI(res['location']), via: proxy) if res&.code&.start_with?('3')
+    return nil unless res.is_a?(Net::HTTPSuccess)
+
+    feed_in(res.body)
   end
 
   # A relay reports its own success rather than Google's, and the first of them rewrites
@@ -157,9 +171,10 @@ class Gnews
   def rss_to_url(url, timestamp, signature)
     uri = URI('https://news.google.com/_/DotsSplashUi/data/batchexecute') # ?rpcids=Fbv4je"
     req = '[[["Fbv4je","[\"garturlreq\",[[\"en-GB\",\"GB\",[\"FINANCE_TOP_INDICES\",\"WEB_TEST_1_0_0\"],null,null,1,1,\"GB:en\",null,0,null,null,null,null,null,0,5],\"en-GB\",\"GB\",1,[2,4,8],1,1,\"691331303\",0,0,null,0],\"' + url + '\",' + timestamp + ',\"' + signature + '\"]",null,"generic"]]]'
-    res = Net::HTTP.start(uri.host, uri.port, use_ssl: true,
-                                              open_timeout: TIMEOUT_SECONDS, read_timeout: TIMEOUT_SECONDS) do |http|
-      http.request(Net::HTTP::Post.new(uri).tap { |post| post.set_form_data('f.req' => req) })
+    res = batchexecute(uri, req)
+    if res.code == Relay::RATE_LIMITED && proxy
+      Rails.logger.warn('News article resolve rate limited - retrying via proxy')
+      res = batchexecute(uri, req, via: proxy)
     end
     # Only a body Google answered with 200 is worth parsing. The rate-limit wall is a
     # page of links, and the fallback parse below used to fish the wall's own URL out of
@@ -174,6 +189,38 @@ class Gnews
     nil
   end
 
+  # Direct first, and once more through the proxy when the shared address is walled.
+  def fetch_article_page(uri)
+    res = follow_redirects(get_with_timeout(uri))
+    return res unless res&.code == Relay::RATE_LIMITED && proxy
+
+    Rails.logger.warn('News article page rate limited - retrying via proxy')
+    follow_redirects(get_with_timeout(uri, via: proxy), via: proxy)
+  end
+
+  def batchexecute(uri, req, via: nil)
+    Net::HTTP.start(uri.host, uri.port, *proxy_args(via), use_ssl: true,
+                                                          open_timeout: TIMEOUT_SECONDS, read_timeout: TIMEOUT_SECONDS) do |http|
+      http.request(Net::HTTP::Post.new(uri).tap { |post| post.set_form_data('f.req' => req) })
+    end
+  end
+
+  # Any ordinary HTTP proxy URL — a tinyproxy on a rented box works the same as the
+  # add-ons. Read from the credentials file like the other keys, or from FIXIE_URL,
+  # which is the variable the proxy add-ons inject on their own. Absent in development
+  # and until one is provisioned, and everything above behaves as if the fallback did
+  # not exist.
+  def proxy
+    @proxy ||= begin
+      url = Rails.application.credentials.fixie&.url.presence || ENV['FIXIE_URL'].presence
+      url && URI(url)
+    end
+  end
+
+  def proxy_args(via)
+    via ? [via.host, via.port, via.user, via.password] : []
+  end
+
   # A resolved article lives on a publisher's site by definition, so anything still on
   # a Google host is some interstitial fished out of a page that was not the answer.
   def keep_off_google(resolved)
@@ -185,21 +232,22 @@ class Gnews
   end
 
   # A few steps and no further: an uncapped chain is how a consent loop holds a page open
-  # for minutes.
-  def follow_redirects(res)
+  # for minutes. The chain stays on whichever route it started — a proxied attempt that
+  # hopped back to the walled address mid-chain would be the direct attempt again.
+  def follow_redirects(res, via: nil)
     MAX_REDIRECTS.times do
       break unless res&.code&.start_with?('3')
 
-      res = get_with_timeout(URI(res.to_hash['location'][0]))
+      res = get_with_timeout(URI(res.to_hash['location'][0]), via: via)
     end
     res
   end
 
   # One request that answers inside the timeout or answers nil; the rescue covers DNS,
   # connection and read failures alike, all of which mean the same thing to the reader.
-  def get_with_timeout(uri)
-    Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https',
-                                        open_timeout: TIMEOUT_SECONDS, read_timeout: TIMEOUT_SECONDS) do |http|
+  def get_with_timeout(uri, via: nil)
+    Net::HTTP.start(uri.host, uri.port, *proxy_args(via), use_ssl: uri.scheme == 'https',
+                                                          open_timeout: TIMEOUT_SECONDS, read_timeout: TIMEOUT_SECONDS) do |http|
       http.request(Net::HTTP::Get.new(uri, { 'user-agent' => @useragent }))
     end
   rescue StandardError => e
