@@ -107,25 +107,6 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
     assert_equal '5', JSON.parse(cookies['CYOA'])['treasure-hunt']
   end
 
-  # A headline links to the free preview page, whose one form is what opens the
-  # article. One form, so it carries an ordinary token like every other.
-  test 'the preview form opens the article rather than being rejected' do
-    get '/news_preview', params: { article: 'https://news.google.com/rss/articles/x?oc=5',
-                                   section: 'HEADLINES', title: 'A headline' },
-                         headers: { 'HTTP_COOKIE' => LOCATION }
-
-    assert_response :success
-    assert_absolute_action '/news_open'
-
-    post '/news_open', params: {
-      authenticity_token: token_from(response.body),
-      article: 'https://news.google.com/rss/articles/x?oc=5',
-      section: 'HEADLINES', title: 'A headline'
-    }
-
-    assert_response :redirect
-  end
-
   test 'the forget button clears the saved places rather than being rejected' do
     saved = [{ 'place' => 'Othertown, UK', 'lat' => '53.4', 'lon' => '-2.6' }].to_json
     get '/places', headers: { 'HTTP_COOKIE' => "#{LOCATION};places_recent=#{saved}" }

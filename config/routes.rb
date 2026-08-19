@@ -57,12 +57,12 @@ Rails.application.routes.draw do
   get 'news' => 'news#news'
   get 'news_article' => 'news#article'
   # A headline is a link like every other list entry, so the handset's cursor stops on
-  # it once and the drawn styles keep their glyphs — but its GET lands here, a page
-  # that renders from its own params and calls nothing, so the cursor prefetching
-  # links as it passes them spends nothing. The POST on that page is what actually
-  # opens the article, and a form is the one thing a prefetcher never fires.
-  get 'news_preview' => 'news#preview'
-  post 'news_open' => 'news#open'
+  # it once and the drawn styles keep their glyphs — but its GET lands here, an instant
+  # redirect that itself calls nothing. A reader's browser follows the redirect to the
+  # article in the same press; whether the handset's prefetcher follows it too is what
+  # the logs will say — a news_open hit with no article render after it means the
+  # prefetcher stopped at the redirect and spent nothing.
+  get 'news_open' => 'news#open'
   get 'news_search' => 'news#search'
   # Defines the root path route ("/")
   root 'index#index'

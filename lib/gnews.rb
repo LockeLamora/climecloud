@@ -176,9 +176,9 @@ class Gnews
     uri = URI('https://news.google.com/_/DotsSplashUi/data/batchexecute') # ?rpcids=Fbv4je"
     req = '[[["Fbv4je","[\"garturlreq\",[[\"en-GB\",\"GB\",[\"FINANCE_TOP_INDICES\",\"WEB_TEST_1_0_0\"],null,null,1,1,\"GB:en\",null,0,null,null,null,null,null,0,5],\"en-GB\",\"GB\",1,[2,4,8],1,1,\"691331303\",0,0,null,0],\"' + url + '\",' + timestamp + ',\"' + signature + '\"]",null,"generic"]]]'
     res = batchexecute(uri, req)
-    if res.code == Relay::RATE_LIMITED && proxy
-      Rails.logger.warn('News article resolve rate limited - retrying via proxy')
-      res = batchexecute(uri, req, via: proxy)
+    if res.code == Relay::RATE_LIMITED
+      Rails.logger.warn("News article resolve rate limited#{proxy ? ' - retrying via proxy' : ' and no proxy configured'}")
+      res = batchexecute(uri, req, via: proxy) if proxy
     end
     # Only a body Google answered with 200 is worth parsing. The rate-limit wall is a
     # page of links, and the fallback parse below used to fish the wall's own URL out of
@@ -194,11 +194,15 @@ class Gnews
   end
 
   # Direct first, and once more through the proxy when the shared address is walled.
+  # The wall is logged whether or not a proxy is there to answer it: a run of quiet
+  # failures with no line saying why is how this went undiagnosed once already.
   def fetch_article_page(uri)
     res = follow_redirects(get_with_timeout(uri))
-    return res unless res&.code == Relay::RATE_LIMITED && proxy
+    return res unless res&.code == Relay::RATE_LIMITED
 
-    Rails.logger.warn('News article page rate limited - retrying via proxy')
+    Rails.logger.warn("News article stub rate limited#{proxy ? ' - retrying via proxy' : ' and no proxy configured'}")
+    return res unless proxy
+
     follow_redirects(get_with_timeout(uri, via: proxy), via: proxy)
   end
 

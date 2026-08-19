@@ -17,10 +17,9 @@ class NewsTest < ApplicationSystemTestCase
     stub_article_lookup
     visit news_url
     assert_text 'Budget 2024 live: Jeremy Hunt'
+    # The headline's href is the free redirect; the browser follows it to the article
+    # in the same press.
     first('.news li a').click
-    # The free preview stands between the list and the article; its one button pays
-    # the Google and publisher visits.
-    click_button '1 Read article'
     assert_text 'BBC programmes on iPlayer'
   end
 

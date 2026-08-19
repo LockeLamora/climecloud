@@ -210,7 +210,6 @@ es:
     article_unavailable: "No se pudo abrir este artículo, prueba con otro"
     source_link: "Leer la fuente original aquí"
     back_to_headlines: "Volver a titulares"
-    open_article: "Leer artículo"
     section:
       headlines: "Titulares"
       world: "Mundo"

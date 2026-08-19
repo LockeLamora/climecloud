@@ -19,7 +19,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
   # to an article costs the allowance whether or not it is shown the article. That is why
   # the check is a before_action rather than a guard inside each one.
   test 'sends anyone without a saved location to settings rather than to Google' do
-    %w[/news /news_search /news_article /news_preview].each do |path|
+    %w[/news /news_search /news_article /news_open].each do |path|
       get path, headers: { 'COOKIE' => 'country_code=gb' },
                 params: { article: 'https://news.google.com/rss/articles/CBMinQFodHRwcw?oc=5' }
 
@@ -92,7 +92,7 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     get news_url, headers: { 'COOKIE' => "#{COOKIES};theme=teletext" }
 
     assert_response :success
-    assert_match(%r{<li><a[^>]*news_preview[^>]*><img src="/glyph}, @response.body)
+    assert_match(%r{<li><a[^>]*news_open[^>]*><img src="/glyph}, @response.body)
     assert_no_match(/<button/, @response.body,
                     'a button in the scrolled list is a second cursor stop')
   end
@@ -214,37 +214,19 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
                  @response.body
   end
 
-  # Buttons rather than links, so a browser that fetches links ahead of the cursor
-  # cannot open articles nobody chose — each open costs Google and a publisher a visit.
   # A headline is a link like every list in the app — one cursor stop, glyphs kept —
-  # but it links to the free preview page: prefetching it costs nothing, and the
-  # article sits behind the preview's POST, which a prefetcher never fires.
-  test 'each article is a link to the free preview, never to the article itself' do
+  # but its href is the free redirect, not the article: a prefetcher that stops at
+  # redirects spends nothing on headlines nobody chose.
+  test 'each article is a link to the free redirect, never to the article itself' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
-    assert_match(/<li><a[^>]*news_preview/, @response.body)
+    assert_match(/<li><a[^>]*news_open/, @response.body)
     assert_no_match(/news_article/, @response.body,
                     'a headline href straight to the article is a prefetch that scrapes')
     assert_no_match(/<ul>\s*<a/, @response.body)
-  end
-
-  # The landing between a headline and its article renders from its own params: no
-  # feed, no resolve, no scrape, so the cursor prefetching headline links spends
-  # nothing. The one POST on it is what opens the article.
-  test 'the preview costs nothing and offers the article behind its one form' do
-    get news_preview_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5',
-                                    section: 'HEADLINES', title: 'A headline worth reading' },
-                          headers: { 'COOKIE' => COOKIES }
-
-    assert_response :success
-    assert_match 'A headline worth reading', @response.body
-    assert_match(%r{<form[^>]*action="/news_open"}, @response.body)
-    assert_match 'Read article', @response.body
-    assert_not_requested :get, /news\.google\.com/
-    assert_not_requested :post, /news\.google\.com/
   end
 
   test 'should load the news index page successfully when cookie is set' do
@@ -718,15 +700,17 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     Rails.cache = original_cache
   end
 
-  # The headline buttons post here; the article page itself stays a plain GET.
+  # The headline hrefs land here; the redirect itself calls nothing, so a prefetch of
+  # it is free, and the article page does the work only when the redirect is followed.
   test 'opening a headline bounces to the article page' do
-    post news_open_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5',
-                                  section: 'HEADLINES', title: 'A headline' },
-                        headers: { 'COOKIE' => COOKIES }
+    get news_open_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5',
+                                 section: 'HEADLINES', title: 'A headline' },
+                       headers: { 'COOKIE' => COOKIES }
 
     assert_redirected_to news_article_path(article: 'https://news.google.com/rss/articles/x?oc=5',
                                            section: 'HEADLINES', title: 'A headline')
     assert_not_requested :get, /news\.google\.com/
+    assert_not_requested :post, /news\.google\.com/
   end
 
   test 'still says what the story was when the publisher refuses the page' do

@@ -26,18 +26,8 @@ class NewsController < ApplicationController
     render :list
   end
 
-  # The page a headline links to: everything on it comes in with the request, so a
-  # prefetch of it costs nothing anywhere. See the routes file.
-  def preview
-    @article_url = params[:article]
-    @section = params[:section]
-    @title = params[:title]
-
-    render :preview
-  end
-
-  # The preview's one button lands here and is sent on to the article GET, which does
-  # the work.
+  # Where a headline's href lands: an instant redirect to the article that itself
+  # calls nothing. See the routes file for what this buys against the prefetcher.
   def open
     redirect_to news_article_path(article: params[:article], section: params[:section],
                                   title: params[:title])

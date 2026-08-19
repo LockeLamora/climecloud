@@ -210,7 +210,6 @@ fr:
     article_unavailable: "Impossible d'ouvrir cet article, essayez-en un autre"
     source_link: "Lire la source originale ici"
     back_to_headlines: "Retour aux titres"
-    open_article: "Lire l'article"
     section:
       headlines: "À la une"
       world: "Monde"
