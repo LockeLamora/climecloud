@@ -53,9 +53,13 @@ class Gnews
 
     timestamp = get_timestamp(res.body)
     signature = get_signature(res.body)
-    # Google serves a consent page instead of the article to some clients, which has
-    # neither value in it. Better to say we cannot open it than to die on a nil.
-    return nil if timestamp.nil? || signature.nil?
+    # Google serves a consent page instead of the article stub to some clients, which
+    # has neither value in it. Better to say we cannot open it than to die on a nil —
+    # but say so in the log too, or a run of these reads as nothing at all.
+    if timestamp.nil? || signature.nil?
+      Rails.logger.warn('News article stub carried no timestamp/signature - consent or variant page served')
+      return nil
+    end
 
     # A copy, not a mutation: the caller retries with the same URL when a resolve fails,
     # and a half-stripped string must not be what the second attempt fetches.
@@ -223,11 +227,21 @@ class Gnews
 
   # A resolved article lives on a publisher's site by definition, so anything still on
   # a Google host is some interstitial fished out of a page that was not the answer.
+  # Every rejection is logged: a silent nil here renders as "could not open this
+  # article" with nothing in the log to say why.
   def keep_off_google(resolved)
-    return nil if resolved.blank? || URI(resolved).host&.end_with?('google.com')
+    if resolved.blank?
+      Rails.logger.warn('News article resolve answered 200 with no URL in it')
+      return nil
+    end
+    if URI(resolved).host&.end_with?('google.com')
+      Rails.logger.warn("News article resolved to a google host, not a publisher - #{URI(resolved).host}")
+      return nil
+    end
 
     resolved
   rescue URI::InvalidURIError
+    Rails.logger.warn('News article resolved to an unparseable URL')
     nil
   end
 
