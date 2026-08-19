@@ -49,7 +49,13 @@ class Gnews
   def get_article(url)
     res = fetch_article_page(URI(url))
     return :rate_limited if res&.code == Relay::RATE_LIMITED
-    return nil unless res.is_a?(Net::HTTPSuccess)
+    unless res.is_a?(Net::HTTPSuccess)
+      # A refusal that is not a rate limit: a 403 to a flagged address, or a redirect
+      # chain that never landed. Named in the log, or it renders as "could not open"
+      # with nothing to say why — the last silent path found the hard way.
+      Rails.logger.warn("News article stub refused - #{refusal_detail(res)}")
+      return nil
+    end
 
     timestamp = get_timestamp(res.body)
     signature = get_signature(res.body)
@@ -185,7 +191,10 @@ class Gnews
     # it and hand that back as "the article" — which was then scraped, 429ed, and shown
     # to the reader as a source link to a captcha.
     return :rate_limited if res.code == Relay::RATE_LIMITED
-    return nil unless res.is_a?(Net::HTTPSuccess)
+    unless res.is_a?(Net::HTTPSuccess)
+      Rails.logger.warn("News article resolve refused - #{refusal_detail(res)}")
+      return nil
+    end
 
     keep_off_google(resolved_url(res.body))
   rescue StandardError => e
@@ -233,6 +242,20 @@ class Gnews
   # a Google host is some interstitial fished out of a page that was not the answer.
   # Every rejection is logged: a silent nil here renders as "could not open this
   # article" with nothing in the log to say why.
+  # What a refused response was, sized for one log line: the status, and for a redirect
+  # still in flight the host it was pointing at, which is how a consent loop names
+  # itself.
+  def refusal_detail(res)
+    return 'no response' if res.nil?
+
+    toward = begin
+      res.code.start_with?('3') ? " toward #{URI(res['location'].to_s).host}" : ''
+    rescue URI::InvalidURIError
+      ''
+    end
+    "response #{res.code}#{toward}"
+  end
+
   def keep_off_google(resolved)
     if resolved.blank?
       Rails.logger.warn('News article resolve answered 200 with no URL in it')
