@@ -20,6 +20,14 @@
 </div>
 <br /><br />
 <div class="news">
+    <%# One form around every headline rather than one form each: the handset's cursor %>
+    <%# stops on a form and again on the button inside it, so forty forms made every %>
+    <%# headline two presses. The pressed button carries its own story — the article %>
+    <%# link and the headline travel together in its value, split apart again in %>
+    <%# NewsController#open. No token: the action only bounces to the article's GET. %>
+    <%= form_with url: news_open_path, method: :post, authenticity_token: false,
+                  class: "inline-action" do %>
+    <%= hidden_field_tag :section, @section %>
     <% @news_items.each do |item| %>
             <% multi = item[:articles].length > 1 %>
             <%# The heading is the grouping: a story with several sources keeps it, and the
@@ -46,15 +54,12 @@
                 <%# A button rather than a link, as on the nearby-stops list: opening an %>
                 <%# article costs Google and the publisher a visit, and a browser that %>
                 <%# fetches links ahead of the cursor must not spend that on headlines %>
-                <%# nobody chose. The POST bounces to the article's own GET. %>
-                <li><%= button_to label, news_open_path,
-                                  params: { article: article[:article_url],
-                                            section: @section,
-                                            title: article[:article_title] },
-                                  authenticity_token: false,
-                                  form_class: "inline-action" %></li>
+                <%# nobody chose. %>
+                <li><button type="submit" name="article"
+                            value="<%= article[:article_url] %> <%= article[:article_title] %>"><%= button_label label %></button></li>
             <% end %>
             </ul>
             <br />
+    <% end %>
     <% end %>
 </div>

@@ -3,7 +3,6 @@ module ApplicationHelper
   # their glow, the C64 and teletext for their character sets. See PhosphorGlyph and
   # CellGlyph.
   PHOSPHOR_THEMES = %w[crt-green crt-amber plasma].freeze
-  GLYPH_THEMES = (PHOSPHOR_THEMES + GlyphController::CHARSETS.keys).freeze
 
   # On the glyph styles every text link is drawn as an image: the label goes to the SVG
   # endpoint and comes back with the style baked in — the bloom and the raster, or the
@@ -50,6 +49,14 @@ module ApplicationHelper
             height: renderer.height(lines, quiet: quiet))
   end
 
+  # The label inside a hand-written submit button, drawn like the generated ones: the
+  # glyph styles get their image, every other style the plain text. For the lists whose
+  # buttons share one form — a form per button gave the handset's cursor two stops for
+  # every entry, the form and then the button inside it.
+  def button_label(text)
+    glyph_theme ? glyph_image(text, link: true) : text
+  end
+
   # An attribution line, drawn like everything else but at the quiet size and in the dim
   # tone, as .credit keeps it elsewhere. The block form of link_to passes through the
   # glyph override untouched, which is what lets this choose its own image.
@@ -70,7 +77,15 @@ module ApplicationHelper
 
   def glyph_theme
     theme = Themes.resolve(cookies[:theme])
-    GLYPH_THEMES.include?(theme) ? theme : nil
+    glyph_themes.include?(theme) ? theme : nil
+  end
+
+  # Computed on first use rather than held in a constant: naming GlyphController while
+  # this module loads is circular whenever the controller's own load is what pulled the
+  # helpers in, and the load order that hits it depends on which page runs first. The
+  # half-loaded module that resulted took every view down with undefined glyph_text.
+  def glyph_themes
+    @glyph_themes ||= PHOSPHOR_THEMES + GlyphController::CHARSETS.keys
   end
 
   # The chosen palette, as a style block for the document head. See Themes::BASE_PALETTE

@@ -129,6 +129,16 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Forget saved places', @response.body
   end
 
+  # The pick-list buttons share one form, so each button carries its whole choice in
+  # one value: two coordinates that never hold a space, then the address, which may.
+  test 'a pick-list button carries its whole choice in one value' do
+    post '/places_save', params: { choice: '53.4 -2.6 Othertown, UK' },
+                         headers: { 'COOKIE' => LOCATION_COOKIES }
+
+    assert_redirected_to places_path(place: 'Othertown, UK', lat: '53.4', lon: '-2.6')
+    assert_equal 'Othertown, UK', JSON.parse(cookies['places_recent']).first['place']
+  end
+
   # Browsers that fetch links ahead of the cursor follow GETs the reader never chose, so
   # carrying a place in the URL must not write it anywhere. Saving is places_save's job.
   test 'browsing to a place does not save it' do

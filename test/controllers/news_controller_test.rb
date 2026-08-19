@@ -155,8 +155,8 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert budget, 'a story with several sources lost its heading'
     assert_operator budget.scan('<li>').size, :>, 1, 'the alternate sources are gone again'
     assert_operator budget.scan('<li>').size, :<=, NewsController::SOURCES_PER_STORY
-    assert_match %r{<li><form[^>]*action="/news_open".*?<button[^>]*>BBC\.com</button>}m, budget
-    assert_match %r{<li><form[^>]*action="/news_open".*?<button[^>]*>GOV\.UK</button>}m, budget
+    assert_match %r{<li><button[^>]*>BBC\.com</button></li>}, budget
+    assert_match %r{<li><button[^>]*>GOV\.UK</button></li>}, budget
     assert_no_match(/<button[^>]*>[^<]*Jeremy Hunt announces/, budget,
                     'a source under a heading repeats the whole headline')
   end
@@ -202,13 +202,17 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
   # Buttons rather than links, so a browser that fetches links ahead of the cursor
   # cannot open articles nobody chose — each open costs Google and a publisher a visit.
-  test 'each article is a list item holding a button, never a prefetchable link' do
+  # One shared form rather than one per headline: the handset's cursor stops on a form
+  # and again on its button, and forty forms made every headline two presses.
+  test 'each article is a button in one shared form, never a prefetchable link' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
-    assert_match(%r{<li><form[^>]*action="/news_open"}, @response.body)
+    assert_equal 1, @response.body.scan(%r{action="/news_open"}).size,
+                 'every headline shares the one form, or scrolling doubles again'
+    assert_match(/<li><button[^>]*name="article"/, @response.body)
     assert_no_match(/<a[^>]*news_article/, @response.body)
     assert_no_match(/<ul>\s*<a/, @response.body)
   end
@@ -640,14 +644,16 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     Rails.cache = original_cache
   end
 
-  # The headline buttons post here; the article page itself stays a plain GET.
+  # The headline buttons post here; the article page itself stays a plain GET. The
+  # pressed button's value carries the link and the headline together, split at the
+  # first space, which a URL never contains.
   test 'opening a headline bounces to the article page' do
-    post news_open_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5',
-                                  section: 'HEADLINES', title: 'A headline' },
+    post news_open_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5 A headline, with spaces',
+                                  section: 'HEADLINES' },
                         headers: { 'COOKIE' => COOKIES }
 
     assert_redirected_to news_article_path(article: 'https://news.google.com/rss/articles/x?oc=5',
-                                           section: 'HEADLINES', title: 'A headline')
+                                           section: 'HEADLINES', title: 'A headline, with spaces')
     assert_not_requested :get, /news\.google\.com/
   end
 
