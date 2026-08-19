@@ -13,25 +13,15 @@
 <%# consequence the book states and leaves with the reader. %>
 <%# Buttons rather than links, as on the nearby-stops list: a page turn moves the %>
 <%# bookmark, and a browser that fetches links ahead of the cursor must not turn %>
-<%# pages. One form around all the choices rather than one each — the handset's %>
-<%# cursor stops on a form and again on its button, which made every choice two %>
-<%# presses. The pressed button names the destination; the POST bookmarks it and %>
-<%# redirects to the section's own GET. %>
-<% if @section['choices'].any? { |choice| choice['to'] } %>
-<%= form_with url: games_turn_path, method: :post, class: "inline-action" do %>
-<%= hidden_field_tag :book, @book['id'] %>
+<%# pages. The POST bookmarks the destination and redirects to its own GET. %>
 <% number = 0 %>
 <% @section['choices'].each do |choice| %>
 <% if choice['to'] %>
 <% number += 1 %>
-<button type="submit" name="section" value="<%= choice['to'] %>" accesskey="<%= number %>"><%= button_label "#{number} #{choice['label']}" %></button><br /><br />
+<%= choice_button "#{number} #{choice['label']}", games_turn_path,
+                  { book: @book['id'], section: choice['to'] },
+                  accesskey: number.to_s %><br /><br />
 <% else %>
-<%= choice['label'] %><br /><br />
-<% end %>
-<% end %>
-<% end %>
-<% else %>
-<% @section['choices'].each do |choice| %>
 <%= choice['label'] %><br /><br />
 <% end %>
 <% end %>

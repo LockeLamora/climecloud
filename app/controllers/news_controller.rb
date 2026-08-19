@@ -32,11 +32,9 @@ class NewsController < ApplicationController
 
   # The headline buttons land here and are sent on to the article GET, which does the
   # work. See the routes file: a form is the one thing a prefetching browser never fires.
-  # The pressed button's value carries the article link and the headline together —
-  # the link never holds a space, so the first one is the seam.
   def open
-    article, title = params[:article].to_s.split(' ', 2)
-    redirect_to news_article_path(article: article, section: params[:section], title: title)
+    redirect_to news_article_path(article: params[:article], section: params[:section],
+                                  title: params[:title])
   end
 
   def article

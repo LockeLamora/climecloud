@@ -405,7 +405,7 @@ class DeparturesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_no_match(/href="[^"]*departures_save/, @response.body)
-    assert_match %r{<form[^>]*method="post"[^>]*action="/departures_save"}, @response.body
+    assert_match %r{<form[^>]*action="/departures_save"[^>]*method="post"}, @response.body
   end
 
   # Every action in this app is a digit, and the digit has to reach the thing that acts.

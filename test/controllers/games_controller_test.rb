@@ -73,9 +73,9 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'two tall yew hedges', @response.body
-    # Choices are buttons in one shared form, not links: nothing prefetches a page
-    # turn, and the handset's cursor stops once per choice rather than twice.
-    assert_equal 1, @response.body.scan(%r{action="/games/turn"}).size
+    # Choices are text-only buttons, not links: nothing prefetches a page turn, and
+    # nothing sits inside a button for the handset's cursor to stop on separately.
+    assert_equal 2, @response.body.scan(%r{action="/games/turn"}).size
     assert_match(/name="section"[^>]*value="5"|value="5"[^>]*name="section"/, @response.body)
     assert_match(/name="section"[^>]*value="7"|value="7"[^>]*name="section"/, @response.body)
     assert_match '/gamebooks/treasure-hunt/p1.jpg', @response.body

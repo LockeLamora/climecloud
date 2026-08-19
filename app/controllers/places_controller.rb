@@ -27,11 +27,8 @@ class PlacesController < ApplicationController
   end
 
   # Chosen from the "which did you mean?" list. Remembers the place and sends the
-  # reader on to the categories page as a plain GET, which stores nothing. The pressed
-  # button's value carries the whole choice — two coordinates that never hold a space,
-  # then the address, which may — so the first two spaces are the seams.
+  # reader on to the categories page as a plain GET, which stores nothing.
   def save
-    params[:lat], params[:lon], params[:place] = params[:choice].split(' ', 3) if params[:choice].present?
     return unless location_known?
 
     remember_place(params[:place], @lat, @lon) if params[:place].present?

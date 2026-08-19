@@ -6,8 +6,8 @@
 <% end %>
 <ol start="<%= (@page * Departures::PAGE_SIZE) + 1 %>">
 <% @nearby.each do |stop| %>
-    <li><%= button_to stop[:name], departures_save_path, params: { id: stop[:id], name: stop[:name] },
-                      form_class: "inline-action" %></li>
+    <li><%= choice_button stop[:name], departures_save_path,
+                          { id: stop[:id], name: stop[:name] } %></li>
 <% end %>
 </ol>
 <%# Nearest first, so the stop someone wants is usually on the first page. When it is %>

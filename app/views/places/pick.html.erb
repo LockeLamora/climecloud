@@ -4,18 +4,14 @@
 <br /><br />
 <%# Buttons rather than links, as on the nearby-stops list: choosing a candidate %>
 <%# saves it, and a browser that fetches links ahead of the cursor must not save %>
-<%# places the reader scrolled past. One form around all of them rather than one %>
-<%# each — the handset's cursor stops on a form and again on its button, which made %>
-<%# every candidate two presses. The button's value carries the whole choice: two %>
-<%# coordinates that never hold a space, then the address, which may. %>
-<%= form_with url: places_save_path, method: :post, class: "inline-action" do %>
+<%# places the reader scrolled past. %>
 <ol>
 <% @candidates.each do |candidate| %>
-    <li><button type="submit" name="choice"
-                value="<%= candidate[:lat] %> <%= candidate[:lon] %> <%= candidate[:address] %>"><%= button_label candidate[:address] %></button></li>
+    <li><%= choice_button candidate[:address], places_save_path,
+                          { lat: candidate[:lat], lon: candidate[:lon],
+                            place: candidate[:address] } %></li>
 <% end %>
 </ol>
-<% end %>
 <br />
 <%= link_to "(#{t('common.none_of_these')})", places_path %>
 <%= render "shared/osm_credit" %>

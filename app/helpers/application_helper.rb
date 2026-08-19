@@ -19,11 +19,13 @@ module ApplicationHelper
   end
 
   # The one-button forms take the same treatment, or saving a stop and forgetting one sit
-  # untreated between drawn links.
+  # untreated between drawn links. The image inside the button costs the handset's
+  # cursor a second stop, so anything pressed while scrolling a list uses choice_button
+  # below instead; what remains here is the lone forget-style button a page holds once.
   def button_to(name = nil, options = nil, html_options = nil, &)
     return super if block_given? || !name.is_a?(String) || glyph_theme.nil?
 
-    super(options, html_options) { glyph_button_label(name) }
+    super(options, html_options) { glyph_image(name, link: true) }
   end
 
   # For text that is not a link: headings and titles, drawn in place by the views. A
@@ -49,24 +51,34 @@ module ApplicationHelper
             height: renderer.height(lines, quiet: quiet))
   end
 
-  # The label inside a hand-written submit button, drawn like the generated ones: the
-  # glyph styles get their glyph, every other style the plain text.
-  def button_label(text)
-    glyph_theme ? glyph_button_label(text) : text
+  # A pressable choice in a list: one control with nothing inside it, in a small form
+  # of its own. The handset's cursor gives any element inside a button a stop of its
+  # own — an image or a span alike, so every headline took two presses to scroll past —
+  # while plain text inside a button, and the form around it, cost nothing. So the
+  # written styles get a text-only button, and the drawn styles get an image input: the
+  # glyph is the control itself rather than a child of one, and it is a real image
+  # rather than a CSS background, which the handset's proxy renderer does not paint.
+  def choice_button(label, url, params, token: true, accesskey: nil)
+    form_with url: url, authenticity_token: token, class: 'inline-action' do
+      controls = params.map { |name, value| hidden_field_tag(name, value, id: nil) }
+      controls << if glyph_theme
+                    glyph_submit(label, accesskey: accesskey)
+                  else
+                    tag.button(label, type: 'submit', accesskey: accesskey)
+                  end
+      safe_join(controls)
+    end
   end
 
-  # A button's glyph is painted as a background rather than placed inside it as an
-  # image: the handset's cursor gives an image inside a button a focus stop of its own —
-  # the wide box and then the narrow one — so every headline and stop took two presses
-  # to scroll past. A background is part of the button, and the cursor stops once. An
-  # image inside a link costs nothing, so links keep their <img> and its alt fallback.
-  def glyph_button_label(text)
+  # The image input a choice presses on the drawn styles. The alt is the label, so a
+  # failed image degrades to readable text, as the drawn links do.
+  def glyph_submit(label, accesskey: nil)
     renderer = glyph_renderer
-    lines = renderer.lines(text)
+    lines = renderer.lines(label)
 
-    tag.span(text, class: 'glyph-button-label',
-                   style: "background-image:url(#{glyph_path(t: text, s: glyph_theme, l: '1')});" \
-                          "width:#{renderer.width(lines)}px;height:#{renderer.height(lines)}px")
+    image_submit_tag(glyph_path(t: label, s: glyph_theme, l: '1'),
+                     alt: label, accesskey: accesskey,
+                     width: renderer.width(lines), height: renderer.height(lines))
   end
 
   # An attribution line, drawn like everything else but at the quiet size and in the dim

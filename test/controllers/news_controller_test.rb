@@ -83,18 +83,18 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
                     'repeating each headline per source is a page the handset gives up on'
   end
 
-  # An image inside a button is a second cursor stop on the handset — the wide box and
-  # then the narrow one — so on the drawn styles a button's glyph is painted as its
-  # label's background, and the button holds nothing the cursor stops on separately.
-  test 'glyph-theme headline buttons hold no image for the cursor to stop on' do
+  # Anything inside a button is a second cursor stop on the handset — the wide box and
+  # then the narrow one — so on the drawn styles a choice is an image input: the glyph
+  # is the control itself, a real image the handset's proxy paints, holding nothing.
+  test 'glyph-theme headlines are image inputs with nothing inside for the cursor' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => "#{COOKIES};theme=teletext" }
 
     assert_response :success
-    assert_no_match(/<button[^>]*>\s*<img/, @response.body)
-    assert_match(%r{<span class="glyph-button-label" style="background-image:url\(/glyph},
-                 @response.body)
+    assert_match(%r{<input[^>]*type="image"[^>]*src="/glyph}, @response.body)
+    assert_no_match(/<button/, @response.body,
+                    'a button around the glyph is the second cursor stop again')
   end
 
   # Article bodies carry no glyphs on any style: prose is where reading comfort beats
@@ -169,8 +169,8 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert budget, 'a story with several sources lost its heading'
     assert_operator budget.scan('<li>').size, :>, 1, 'the alternate sources are gone again'
     assert_operator budget.scan('<li>').size, :<=, NewsController::SOURCES_PER_STORY
-    assert_match %r{<li><button[^>]*>BBC\.com</button></li>}, budget
-    assert_match %r{<li><button[^>]*>GOV\.UK</button></li>}, budget
+    assert_match %r{<li><form[^>]*>.*?<button[^>]*>BBC\.com</button></form></li>}m, budget
+    assert_match %r{<li><form[^>]*>.*?<button[^>]*>GOV\.UK</button></form></li>}m, budget
     assert_no_match(/<button[^>]*>[^<]*Jeremy Hunt announces/, budget,
                     'a source under a heading repeats the whole headline')
   end
@@ -216,17 +216,19 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
 
   # Buttons rather than links, so a browser that fetches links ahead of the cursor
   # cannot open articles nobody chose — each open costs Google and a publisher a visit.
-  # One shared form rather than one per headline: the handset's cursor stops on a form
-  # and again on its button, and forty forms made every headline two presses.
-  test 'each article is a button in one shared form, never a prefetchable link' do
+  # Text-only buttons: anything inside a button is a second cursor stop on the handset.
+  # And no tokens: the action only bounces to the article GET, and forty tokens would
+  # weigh the list down past what the handset accepts.
+  test 'each article is a text-only button, never a prefetchable link' do
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
 
     get news_url, headers: { 'COOKIE' => COOKIES }
 
     assert_response :success
-    assert_equal 1, @response.body.scan(%r{action="/news_open"}).size,
-                 'every headline shares the one form, or scrolling doubles again'
-    assert_match(/<li><button[^>]*name="article"/, @response.body)
+    assert_match(%r{<li><form[^>]*action="/news_open"}, @response.body)
+    assert_no_match(/<button[^>]*>\s*</, @response.body,
+                    'an element inside a button is a second cursor stop')
+    assert_no_match(/authenticity_token/, @response.body)
     assert_no_match(/<a[^>]*news_article/, @response.body)
     assert_no_match(/<ul>\s*<a/, @response.body)
   end
@@ -702,16 +704,14 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     Rails.cache = original_cache
   end
 
-  # The headline buttons post here; the article page itself stays a plain GET. The
-  # pressed button's value carries the link and the headline together, split at the
-  # first space, which a URL never contains.
+  # The headline buttons post here; the article page itself stays a plain GET.
   test 'opening a headline bounces to the article page' do
-    post news_open_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5 A headline, with spaces',
-                                  section: 'HEADLINES' },
+    post news_open_url, params: { article: 'https://news.google.com/rss/articles/x?oc=5',
+                                  section: 'HEADLINES', title: 'A headline' },
                         headers: { 'COOKIE' => COOKIES }
 
     assert_redirected_to news_article_path(article: 'https://news.google.com/rss/articles/x?oc=5',
-                                           section: 'HEADLINES', title: 'A headline, with spaces')
+                                           section: 'HEADLINES', title: 'A headline')
     assert_not_requested :get, /news\.google\.com/
   end
 
