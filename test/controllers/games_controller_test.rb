@@ -12,9 +12,15 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match 'Consider the Consequences!', @response.body
-    assert_match 'Flight from the Dark', @response.body
+    # A series is one shelf entry; its volumes live on the series page.
+    assert_match 'Lone Wolf', @response.body
+    assert_no_match(/Flight from the Dark/, @response.body)
     # Hidden, not gone: the shelf omits it while its URLs and bookmarks keep working.
     assert_no_match(/Treasure Hunt/, @response.body)
+
+    get '/games/series/lone-wolf'
+    assert_match 'Book One - Flight from the Dark', @response.body
+    assert_match 'Book Two - Fire on the Water', @response.body
 
     get '/games/treasure-hunt'
     assert_response :success
@@ -250,7 +256,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     assert_match %r{/games/engine-trial/arena\?}, @response.headers['Location']
     fight = JSON.parse(cookies['CYOA'])['engine-trial'].split('|', 4).last
-    assert_equal '1:next:1:0', fight,
+    assert_equal '1:next:1:0:14', fight,
                  'a ratio of eleven or more fells five endurance in the first round'
 
     get '/games/engine-trial/arena'
@@ -282,7 +288,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     rolled = stats.split(',').to_h { |pair| pair.split(':').then { |k, v| [k, v.to_i] } }
 
     assert_includes 10..19, rolled['skill']
-    assert_includes 20..31, rolled['endurance'], 'a helmet or waistcoat can raise the roll'
+    assert_includes 20..33, rolled['endurance'], 'a helmet or waistcoat can raise the roll'
     assert_equal rolled['endurance'], rolled['endurance_max'],
                  'the endurance rolled is the ceiling healing mends towards'
     assert_includes 0..21, rolled['gold'], 'a pouch throw, or twelve crowns more'

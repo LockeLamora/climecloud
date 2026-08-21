@@ -1,0 +1,8 @@
+<div class='games'>
+<b><%= glyph_text @books.first['series'], heading: true %></b><br /><br />
+<% @books.each_with_index do |book, index| %>
+<%= link_to "#{index + 1} #{book['volume']} - #{book['title']}", games_book_path(book: book['id']), accesskey: (index + 1).to_s %><br /><br />
+<% end %>
+<%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

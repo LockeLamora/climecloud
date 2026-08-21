@@ -308,7 +308,7 @@ class WarRigTest < ActionDispatch::IntegrationTest
   test 'a battle draught works mid-fight only and its virtue dies with the fight' do
     pack 'shade', items: 'club,tonic:1'
     post '/games/use', params: { book: BOOK, item: 'tonic' }
-    assert_equal '0:99:0:4', entry.split('|', 4).last, 'the bonus rides the fight string'
+    assert_equal '0:99:0:4:20', entry.split('|', 4).last, 'the bonus rides the fight string'
     assert_no_match(/tonic/, entry.split('|')[2], 'the draught is spent')
 
     fight_round 'shade'

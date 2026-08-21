@@ -1,13 +1,15 @@
 <div class='games'>
 <b><%= glyph_text t('games.title'), heading: true %></b><br /><br />
-<% @books.each_with_index do |book, index| %>
-<%= link_to "#{index + 1} #{book['title']}", games_book_path(book: book['id']), accesskey: (index + 1).to_s %><br /><br />
+<% @shelf.each_with_index do |entry, index| %>
+<% title = entry['series'] || entry['title'] %>
+<% path = entry['series'] ? games_series_path(name: entry['series'].parameterize) : games_book_path(book: entry['id']) %>
+<%= link_to "#{index + 1} #{title}", path, accesskey: (index + 1).to_s %><br /><br />
 <% end %>
 <%# The little games below the books, numbered on from them. %>
 <% [['Higher or Lower', games_hilo_path], ['Pontoon', games_pontoon_path],
     ['Tramp Trader', games_trader_path], ['The Long Haul', games_journey_path],
     ['Riddle of the day', games_riddle_path]].each_with_index do |(title, path), index| %>
-<% number = @books.length + index + 1 %>
+<% number = @shelf.length + index + 1 %>
 <%= link_to "#{number} #{title}", path, accesskey: number.to_s %><br /><br />
 <% end %>
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

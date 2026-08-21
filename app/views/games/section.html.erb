@@ -78,8 +78,8 @@
 <% foe, remaining = @combat %>
 <%= glyph_text "#{foe['name']}: Combat Skill #{foe['skill']} - Endurance #{remaining}#{@round.to_i.positive? ? " - Round #{@round + 1}" : ''}" %><br />
 <%# The weapon is the engine's pick, not the reader's: every weapon strikes alike, %>
-<%# so the skilled one counts whenever it is held. This line shows what counts. %>
-<% if (arm = armament(@book, Array(@items))) %>
+<%# so the skilled one counts whenever it is held — or the book forces the arms. %>
+<% if (arm = battle_arms(@book, @section['combat'], Array(@items))) %>
 <% weapon, worth = arm %>
 <%= glyph_text "Fighting #{weapon == 'bare hands' ? 'bare-handed' : "with the #{weapon}"}#{worth.zero? ? '' : " (skill #{format('%+d', worth)})"}." %><br />
 <% end %>
@@ -108,7 +108,7 @@
 <%# like the provisions. Each withdraws once it is held or barred. Offered mid-fight %>
 <%# too — the sword at your feet is most wanted with the blades out. %>
 <% Array(@section['offers']).each do |offer| %>
-<% next unless offer_open?(@book, offer, Array(@items)) %>
+<% next unless offer_open?(@book, offer, Array(@items), @stats) %>
 <%= choice_button offer['label'] || "Take the #{offer['item']}", games_take_path,
                   { book: @book['id'], item: offer['item'] }, css: 'provision' %><br /><br />
 <% end %>
@@ -116,19 +116,23 @@
 <%# consequence the book states and leaves with the reader, and a choice whose kit or %>
 <%# toll is missing shows what it wanted rather than vanishing — in the theme's error %>
 <%# colour, so a barred way reads barred at a glance. A stat fork shows only the line %>
-<%# that is true, as the paper reader follows it; choices wait while a fight is on. %>
-<%# Buttons rather than links: a page turn moves the bookmark, and a browser that %>
-<%# fetches links ahead of the cursor must not turn pages. Each button names its %>
-<%# place in the section; the destination is the server's to decide. %>
-<% if @combat.nil? %>
+<%# that is true, as the paper reader follows it; choices wait while a fight is on, %>
+<%# except the ones the book offers mid-fight ('always'). Buttons rather than links: %>
+<%# a page turn moves the bookmark, and a browser that fetches links ahead of the %>
+<%# cursor must not turn pages. Each button names its place in the section; the %>
+<%# destination is the server's to decide. %>
 <% number = 0 %>
 <% @section['choices'].each_with_index do |choice, index| %>
+<% next if @combat && !choice['always'] %>
 <% if choice['to'].nil? && choice['test'].nil? && choice['pick'].nil? %>
 <%= choice['label'] %><br /><br />
 <% elsif !within?(choice['when'], @stats) %>
 <% elsif choice['without'] && Array(@items).include?(choice['without']) %>
+<% elsif choice['without_any'] && (choice['without_any'] & Array(@items)).any? %>
 <% elsif choice['needs'] && !Array(@items).include?(choice['needs']) %>
 <span class='error'><%= glyph_text "#{choice['label']} (needs the #{choice['needs']})", error: true %></span><br /><br />
+<% elsif choice['needs_any'] && (choice['needs_any'] & Array(@items)).empty? %>
+<span class='error'><%= glyph_text "#{choice['label']} (needs the #{choice['needs_any'].join(' or ')})", error: true %></span><br /><br />
 <% elsif (choice['cost'] || {}).any? { |stat, price| (@stats || {}).fetch(stat, 0) < price } %>
 <span class='error'><%= glyph_text "#{choice['label']} (#{choice['cost'].map { |stat, price| "#{stat} #{price}" }.join(', ')} - not enough)", error: true %></span><br /><br />
 <% else %>
@@ -140,11 +144,10 @@
                   accesskey: number.to_s %><br /><br />
 <% end %>
 <% end %>
-<% if @section['choices'].empty? %>
+<% if @combat.nil? && @section['choices'].empty? %>
 <b><%= glyph_text t('games.the_end'), heading: true %></b><br />
 <br />
 <%= choice_button "1 #{t('games.restart')}", games_restart_path, { book: @book['id'] }, accesskey: "1" %><br /><br />
-<% end %>
 <% end %>
 <% end %>
 <%= link_to "9 #{@book['title']}", games_book_path(book: @book['id']), accesskey: "9" %><br />
