@@ -3210,6 +3210,9 @@ sections:
     - label: Turn to 165.
       to: '165'
     title: '222'
+    offers:
+    - item: captain d'val's sword
+      label: Keep Captain D'Val's Sword
   '223':
     text: |-
       Pushing open the trapdoor, you climb out onto the watchtower roof. You are greeted by a shocking sight. The bodies of Sommlending soldiers lie scattered over the floor; their armour is rent and torn and they have all suffered terrible wounds. Over the carnage hovers a monstrous bird. Its wings beat the smoke-filled air, its razor-sharp talons slashing and mutilating everything they touch. Astride the creature sits a warrior wreathed in iron and steel, the scimitar in his hand stained with Sommlending blood. He swings one leg from his gem-encrusted saddle, pauses, and then leaps down to the watchtower roof. A voice echoes in your head as the warrior closes in.

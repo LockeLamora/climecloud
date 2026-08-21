@@ -2291,6 +2291,9 @@ sections:
     - label: Now return to 10 and choose your next course of action.
       to: '10'
     title: '156'
+    offers:
+    - item: green gallowbrush
+      label: Keep the Potion of Gallowbrush
   '157':
     text: |-
       You take the Potion from your Backpack and carefully open the door just wide enough to be able to empty the contents of the vial into the bubbling cauldron. You do not have to wait long for the Ice Barbarians to fall asleep after their meal. (Remember to erase this potion from your Action Chart.)

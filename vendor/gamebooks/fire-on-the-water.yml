@@ -955,13 +955,13 @@ sections:
     - label: If you have collected the necessary documents on your quest, turn to
         126.
       to: '126'
-      needs: white pass
+      needs: harbour papers
     - label: If you do not have either the Seal or the documents, leave the room and
         return to the outer hall by turning to 318.
       to: '318'
       without_any:
       - seal of hammerdal
-      - white pass
+      - harbour papers
     title: '62'
   '63':
     text: You are awoken during the night by the weight of something on your chest.
@@ -3717,6 +3717,8 @@ sections:
     - label: Turn to 246.
       to: '246'
     title: '263'
+    effects:
+      take: red pass
   '264':
     text: Focusing your powers of concentration on the snake’s head, you will it to
       slither away in search of food. Slowly but surely your psychic suggestion works,
