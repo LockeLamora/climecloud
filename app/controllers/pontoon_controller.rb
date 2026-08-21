@@ -36,8 +36,13 @@ class PontoonController < ApplicationController
 
     drawn, deck = PlayingCards.deal(deck)
     player += drawn
-    if PlayingCards.hand_value(player) > 21
+    total = PlayingCards.hand_value(player)
+    if total > 21
       save([bank - STAKE, 'done', deck, player.join, dealer.join, 'bust'])
+    elsif total == 21
+      # Twenty-one cannot be improved and any card busts it: the hand sticks itself
+      # rather than offering a twist nobody should press.
+      showdown(bank, deck, player, dealer)
     else
       save([bank, 'play', deck, player.join, dealer.join, ''])
     end
@@ -48,13 +53,7 @@ class PontoonController < ApplicationController
     bank, phase, deck, player, dealer, = state
     return redirect_to games_pontoon_path unless phase == 'play'
 
-    # The house has no choices to make: it draws to seventeen and stops.
-    while PlayingCards.hand_value(dealer) < 17
-      drawn, deck = PlayingCards.deal(deck)
-      dealer += drawn
-    end
-    save([settled_bank(bank, player, dealer), 'done', deck, player.join,
-          dealer.join, verdict(player, dealer)])
+    showdown(bank, deck, player, dealer)
     redirect_to games_pontoon_path
   end
 
@@ -65,6 +64,17 @@ class PontoonController < ApplicationController
   end
 
   private
+
+  # The house has no choices to make: it draws to seventeen and stops, and the hand
+  # settles.
+  def showdown(bank, deck, player, dealer)
+    while PlayingCards.hand_value(dealer) < 17
+      drawn, deck = PlayingCards.deal(deck)
+      dealer += drawn
+    end
+    save([settled_bank(bank, player, dealer), 'done', deck, player.join,
+          dealer.join, verdict(player, dealer)])
+  end
 
   def settled_bank(bank, player, dealer)
     case verdict(player, dealer)

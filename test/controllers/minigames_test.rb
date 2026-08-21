@@ -71,6 +71,20 @@ class MinigamesTest < ActionDispatch::IntegrationTest
     assert_equal 'bust', result
   end
 
+  # Twenty-one cannot be improved and any card busts it, so a twist that lands there
+  # sticks itself: no redundant twist-or-stick page.
+  test 'pontoon twisting to twenty-one settles the hand at once' do
+    cookies['PONTOON'] = '100|play|6d2c|Ts5h|9h8c|'
+
+    post '/games/pontoon/twist'
+
+    bank, phase, _deck, player, dealer, result = cookies['PONTOON'].split('|')
+    assert_equal 'done', phase, 'the hand plays out without asking again'
+    assert_equal 'Ts5h6d', player
+    assert_equal '9h8c', dealer, 'seventeen stands'
+    assert_equal %w[110 won], [bank, result]
+  end
+
   test 'pontoon sticking on twenty beats a house that stands on seventeen' do
     cookies['PONTOON'] = '100|play|5h2d|TsKd|9h8c|'
 
