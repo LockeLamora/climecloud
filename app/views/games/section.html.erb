@@ -148,8 +148,9 @@
 <% elsif choice['needs'].to_s.start_with?('been to ') && !holds?(Array(@items), choice['needs']) %>
 <% elsif choice['needs'] && !holds?(Array(@items), choice['needs']) %>
 <span class='error'><%= glyph_text "#{choice['label']} (needs the #{choice['needs']})", error: true %></span><br /><br />
-<% elsif choice['needs_any'] && choice['needs_any'].none? { |name| holds?(Array(@items), name) } %>
-<span class='error'><%= glyph_text "#{choice['label']} (needs the #{choice['needs_any'].join(' or ')})", error: true %></span><br /><br />
+<% elsif choice['needs_any'] && choice['needs_any'].none? { |name| any_of(Array(@items), name) } %>
+<% wanted = choice['needs_any'].map { |name| Array(name).join(' and the ') }.join(' or the ') %>
+<span class='error'><%= glyph_text "#{choice['label']} (needs the #{wanted})", error: true %></span><br /><br />
 <% elsif (choice['cost'] || {}).any? { |stat, price| (@stats || {}).fetch(stat, 0) < price } %>
 <span class='error'><%= glyph_text "#{choice['label']} (#{choice['cost'].map { |stat, price| "#{stat} #{price}" }.join(', ')} - not enough)", error: true %></span><br /><br />
 <% else %>

@@ -2460,6 +2460,8 @@ sections:
         stat: gold
         at_most: 0
     title: '168'
+    effects:
+      take: been to gorn cove
   '169':
     text: |-
       You leave the gaming-house and walk dejectedly back towards the coach station. In the distance you can see the east gate of the city. Waiting below it is the coach to Durenor. You must get to Port Bax—the future of Sommerlund depends on it. You slip past the guard and board the coach without him seeing you enter. As the departure time gets nearer, five other passengers climb into the coach and seat themselves around you. The guard slams the door and you begin your journey to Port Bax.
@@ -5043,6 +5045,7 @@ worn:
 - been to the graveyard
 - been to ragadorn
 - red pass
+- been to gorn cove
 weapons:
   list:
   - dagger

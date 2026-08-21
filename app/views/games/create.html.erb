@@ -1,18 +1,36 @@
 <div class='games'>
 <b><%= glyph_text t("games.make.#{@step}_title"), heading: true %></b><br />
 <br />
-<%# What the sheet holds so far, so the reader can see the Kai Lord taking shape. %>
+<%# The sheet so far, so the Kai Lord can be seen taking shape. %>
 <% if @make['skill'] %>
 <%= glyph_text "Combat Skill #{@make['skill']}#{" - Endurance #{@make['endurance']}" if @make['endurance']}" %><br />
 <% end %>
 <% if @make['kai'].any? %>
-<%= glyph_text "Disciplines: #{@make['kai'].map { |name| @book.dig('disciplines', name, 'name') || name }.join(', ')}" %><br />
+<%= glyph_text "Disciplines: #{@make['kai'].map { |name| @book.dig('disciplines', name, 'name') || name }.join(', ')}#{" (#{@make['weapon']})" if @make['weapon']}" %><br />
 <% end %>
 <br />
 <%= simple_format(t("games.make.#{@step}_says", count: @book.dig('item_draw', 'count'))) %>
-<%# Each offer names itself, then explains itself in the book's own words. The %>
-<%# button carries only the name: an image inside a button costs the handset's %>
-<%# cursor a second stop, and the prose belongs outside it anyway. %>
+<% if @rolled %>
+<%# A throw the book makes: the number the Random Number Table gave, what the rules %>
+<%# add to it, and the choice of keeping it or throwing again. %>
+<% if @offer %>
+<% if @offer['rnt'] %>
+<b><%= glyph_text "#{t('games.make.rnt')} #{@offer['rnt']} + #{@offer['plus']} = #{@offer['label']}", heading: true %></b><br />
+<% else %>
+<b><%= glyph_text @offer['label'], heading: true %></b><br />
+<% end %>
+<% if @offer['about'].present? %>
+<div class='credit'><%= glyph_theme ? glyph_image(@offer['about'], keep_case: true, quiet: true) : @offer['about'] %></div>
+<% end %>
+<br />
+<%= choice_button "1 #{t('games.make.accept')}", games_build_path(book: @book['id']),
+                  { pick: 'accept' }, accesskey: "1", css: 'provision' %><br /><br />
+<% end %>
+<%= choice_button "2 #{t('games.make.reroll')}", games_build_path(book: @book['id']),
+                  { pick: 'reroll' }, accesskey: "2" %><br /><br />
+<% else %>
+<%# The disciplines are the reader's own choice. Each names itself, then explains %>
+<%# itself in the book's own words, outside the button where the cursor can skip it. %>
 <% @options.each_with_index do |option, index| %>
 <%= choice_button "#{index + 1} #{option['label']}", games_build_path(book: @book['id']),
                   { pick: option['pick'] }, accesskey: (index + 1).to_s %><br />
@@ -23,6 +41,7 @@
 <div class='credit'><%= glyph_theme ? glyph_image(option['about'], keep_case: true, quiet: true) : option['about'] %></div>
 <% end %>
 <br />
+<% end %>
 <% end %>
 <%= link_to "9 #{@book['title']}", games_book_path(book: @book['id']), accesskey: "9" %><br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

@@ -3,9 +3,12 @@
 require 'test_helper'
 require 'gamebooks'
 
-# Building a Kai Lord by hand instead of by dice: every score, discipline and item
-# chosen, each explained in the book's own words. Every step is a pure-read GET and
-# every answer a POST, as everything else in the games section is.
+# Building a Kai Lord step by step. The book throws for the scores, the Weaponskill
+# weapon and the find among the ruins, so the wizard throws too and shows the number
+# the Random Number Table gave — a reader who dislikes a throw may take another. The
+# five disciplines are the reader's own choice, as the books say. Every step is a
+# pure-read GET and every answer a POST, so nothing rerolls under a prefetching
+# cursor.
 class CharacterWizardTest < ActionDispatch::IntegrationTest
   BOOK = 'flight-from-the-dark'
 
@@ -18,62 +21,109 @@ class CharacterWizardTest < ActionDispatch::IntegrationTest
     @response.body
   end
 
-  test 'the book offers the dice or the reader, and only offers the wizard for books with disciplines' do
+  def sheet = JSON.parse(cookies['MAKE'].presence || '{}')
+
+  def build_through_scores
+    answer 'begin'
+    answer 'accept'
+    answer 'accept'
+  end
+
+  test 'the book offers the dice or the reader, and only where there is a sheet to build' do
     get "/games/#{BOOK}"
     assert_match I18n.t('games.begin'), @response.body
     assert_match I18n.t('games.make_character'), @response.body
+    assert_match(%r{action="/games/create/#{BOOK}"}, @response.body,
+                 'entering the wizard is a POST: a throw must never happen on a fetch')
 
     get '/games/treasure-hunt'
-    assert_no_match(/#{I18n.t('games.make_character')}/, @response.body,
-                    'a book without a character sheet has nothing to build')
-
+    assert_no_match(/#{I18n.t('games.make_character')}/, @response.body)
     get '/games/create/treasure-hunt'
     assert_redirected_to '/games'
   end
 
-  test 'each step explains itself in the book own words' do
-    assert_match 'Combat Skill', page
-    assert_match '>1 10<', page, 'the ten scores the dice could have given'
-    assert_match '>10 19<', page
+  test 'a score is thrown, shown with its dice, and may be thrown again' do
+    answer 'begin'
+    first = sheet['roll']
+    assert_includes 10..19, first, 'Combat Skill is the table plus ten'
 
-    answer 17
-    assert_match 'Endurance', page
-    assert_match '>1 20<', page
-
-    answer 25
     body = page
-    assert_match 'Combat Skill 17 - Endurance 25', body, 'the sheet so far'
+    assert_match 'Combat Skill', body
+    assert_match "#{I18n.t('games.make.rnt')} #{first - 10} + 10 = #{first}", body,
+                 'the reader sees the number the table gave and what the rules add'
+    assert_match I18n.t('games.make.accept'), body
+    assert_match I18n.t('games.make.reroll'), body
+
+    20.times do
+      answer 'reroll'
+      break if sheet['roll'] != first
+    end
+    assert_not_equal first, sheet['roll'], 'throwing again gives another number'
+    assert_nil sheet['skill'], 'and nothing is committed until it is kept'
+
+    kept = sheet['roll']
+    answer 'accept'
+    assert_equal kept, sheet['skill']
+    assert_includes 20..29, sheet['roll'], 'Endurance is thrown next'
+  end
+
+  test 'reading the wizard never throws anything' do
+    answer 'begin'
+    before = sheet['roll']
+    3.times { page }
+    assert_equal before, sheet['roll'], 'a fetch leaves the dice alone'
+  end
+
+  test 'the disciplines are the reader own choice, explained in the book own words' do
+    build_through_scores
+
+    body = page
     assert_match 'You have mastered 5 of the ten Kai Disciplines', body
-    # The disciplines are described, and the four with a rule state it.
     assert_match 'blend in with his surroundings', body, 'Camouflage, as the book puts it'
     assert_match 'Hunting: no need for a Meal when instructed to eat', body
     assert_match 'Mindblast: +2 COMBAT SKILL points', body
+
+    answer 'camouflage'
+    assert_equal ['camouflage'], sheet['kai']
+    answer 'flying'
+    assert_equal ['camouflage'], sheet['kai'], 'a discipline that does not exist is no answer'
   end
 
-  test 'a character built by hand starts the story exactly as chosen' do
-    answer 17
-    answer 25
-    ['weaponskill', 'healing', 'sixth sense', 'mindshield', 'camouflage'].each { |d| answer d }
+  test 'choosing weaponskill asks for the weapon there and then, and throws for it' do
+    build_through_scores
+    answer 'weaponskill'
 
-    assert_match '>6 Sword<', page, 'the weapon it was learned in is asked for next'
+    assert_equal 'weapon', page[/Weaponskill/] ? 'weapon' : 'wrong step'
+    assert_includes Gamebooks.find(BOOK)['weapons']['skill_table'], sheet['roll'],
+                    'the weapon comes off the book own table'
+    assert_equal 1, sheet['kai'].length, 'and it is asked before the next discipline'
 
-    answer 'sword'
-    assert_match 'Adds 4 ENDURANCE points', page, 'the waistcoat explains itself'
+    answer 'accept'
+    assert_includes Gamebooks.find(BOOK)['weapons']['skill_table'], sheet['weapon']
+    assert_match 'You have mastered', page, 'then the remaining disciplines'
+  end
 
-    chainmail = Gamebooks.find(BOOK)['equipment_draw'].index { |g| g['item'] == 'chainmail waistcoat' }
-    answer chainmail
+  test 'the find among the ruins is the book throw, not the reader pick' do
+    build_through_scores
+    ['camouflage', 'healing', 'sixth sense', 'mindshield', 'tracking'].each { |d| answer d }
 
+    body = page
+    assert_match I18n.t('games.make.kit_title'), body
+    assert_match I18n.t('games.make.accept'), body
+    assert_match I18n.t('games.make.reroll'), body
+    table = Gamebooks.find(BOOK)['equipment_draw']
+    assert_includes 0...table.length, sheet['roll'], 'one row of the equipment table'
+    assert_no_match(/>3 /, body, 'no menu of every item to choose from')
+
+    answer 'accept'
     assert_redirected_to "/games/#{BOOK}/start"
     section, stats, items = JSON.parse(cookies['CYOA'])[BOOK].split('|')
     rolled = stats.split(',').to_h { |pair| pair.split(':').then { |k, v| [k, v.to_i] } }
 
     assert_equal 'start', section
-    assert_equal 17, rolled['skill'], 'the score chosen, not a rolled one'
-    assert_equal [29, 29], [rolled['endurance'], rolled['endurance_max']],
-                 'twenty-five chosen, and the waistcoat lifts both by four'
+    assert_includes 10..19, rolled['skill']
+    assert_equal rolled['endurance_max'], rolled['endurance']
     held = items.split(',')
-    assert_includes held, 'weaponskill in sword'
-    assert_includes held, 'chainmail waistcoat'
     assert_includes held, 'axe', 'the monastery axe comes as always'
     draw = Gamebooks.find(BOOK)['item_draw']['from']
     chosen = held.count { |i| draw.include?(i) || i.start_with?('weaponskill in ') }
@@ -81,23 +131,10 @@ class CharacterWizardTest < ActionDispatch::IntegrationTest
     assert_nil cookies['MAKE'].presence, 'the half-built sheet is put away'
   end
 
-  test 'the wizard refuses answers that are not on offer and keeps its place' do
-    answer 99
-    assert_match 'Combat Skill', page, 'a score off the table is no answer at all'
-
-    answer 12
-    answer 21
-    answer 'flying'
-    body = page
-    assert_match 'You have mastered', body, 'and neither is a discipline that does not exist'
-    assert_no_match(/Disciplines: /, body, 'nothing was recorded')
-  end
-
   test 'a sheet begun for one book is not muddled into another' do
-    answer 17
-    answer 25
+    build_through_scores
     get '/games/create/fire-on-the-water'
-    assert_match 'Combat Skill', @response.body, 'the other book starts from its own first question'
-    assert_no_match(/Combat Skill 17/, @response.body)
+    assert_no_match(/Combat Skill \d+ -/, @response.body,
+                    'the other book starts from its own first question')
   end
 end

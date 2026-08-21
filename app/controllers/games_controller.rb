@@ -7,7 +7,7 @@ require 'lone_wolf'
 class GamesController < ApplicationController
   # The questions the character wizard asks, in order. Named here rather than only in
   # the code that walks them, so the locale test can find the keys they look up.
-  WIZARD_STEPS = %i[skill endurance kai weapon kit].freeze
+  WIZARD_STEPS = %i[skill endurance weapon kai kit].freeze
 
   # No require_saved_location: the books ship with the app, so a reader without a
   # postcode spends nobody's rate limit here.
@@ -47,9 +47,13 @@ class GamesController < ApplicationController
     @bookmark = saved if saved != @book['start'] && @book['sections'].key?(saved)
   end
 
-  # The character sheet a reader fills in themselves, instead of letting the dice do
-  # it. A pure read: it shows whichever step is still unanswered, explaining each
-  # score, discipline and item in the book's own words. #build records the answers.
+  # The character sheet built a step at a time. The book rolls for the scores, the
+  # Weaponskill weapon and the find among the ruins, so the wizard rolls those too and
+  # shows the throw — a reader who dislikes one may throw it again. The five
+  # disciplines are the reader's own choice, as the books say they are.
+  #
+  # A pure read: nothing is rolled here, or a browser fetching links ahead of the
+  # cursor would reroll the character. Every throw happens in #build.
   def create
     @book = Gamebooks.find(params[:book])
     if @book.nil? || @book['disciplines'].nil?
@@ -59,11 +63,14 @@ class GamesController < ApplicationController
 
     @make = making(@book)
     @step = next_step(@book, @make)
-    @options = step_options(@book, @make, @step)
+    @rolled = ROLLED.include?(@step)
+    @options = @rolled ? [] : step_options(@book, @make, @step)
+    @offer = offered_roll(@book, @make, @step) if @rolled
   end
 
-  # One answer recorded, then back to the wizard for the next question — or, once the
-  # sheet is full, the character is written and the story begins.
+  # One answer recorded — a discipline chosen, a throw accepted or thrown again —
+  # then back to the wizard for the next question. Once the sheet is full the
+  # character is written and the story begins.
   def build
     book = Gamebooks.find(params[:book])
     if book.nil? || book['disciplines'].nil?
@@ -71,9 +78,8 @@ class GamesController < ApplicationController
       return
     end
 
-    make = making(book)
-    step = next_step(book, make)
-    record(book, make, step, params[:pick])
+    make = params[:pick] == 'begin' ? { 'book' => book['id'], 'kai' => [] } : making(book)
+    answer(book, make, params[:pick])
     cookies['MAKE'] = make.to_json
 
     return redirect_to games_create_path(book: book['id']) unless next_step(book, make) == :done
@@ -276,11 +282,13 @@ class GamesController < ApplicationController
     WIZARD_STEPS.find { |step| wanted?(book, make, step) } || :done
   end
 
+  # The weapon comes the moment Weaponskill is chosen, not at the end: an initiate
+  # learns their weapon as they learn the discipline.
   def wanted?(book, make, step)
     case step
     when :skill, :endurance then make[step.to_s].nil?
-    when :kai then make['kai'].length < book['item_draw']['count']
     when :weapon then make['kai'].include?('weaponskill') && make['weapon'].nil?
+    when :kai then make['kai'].length < book['item_draw']['count']
     when :kit then !book['equipment_draw'].nil? && make['kit'].nil?
     end
   end
@@ -331,19 +339,57 @@ class GamesController < ApplicationController
     ((count + plus)..((count * faces) + plus)).to_a
   end
 
-  # An answer only counts if it was actually on offer: a hand-typed POST cannot make
-  # a Kai Lord of impossible scores or invent a discipline.
-  def record(book, make, step, pick)
-    offered = step_options(book, make, step).map { |option| option['pick'] }
-    return unless offered.map(&:to_s).include?(pick.to_s)
+  # The steps the book throws for rather than letting the reader choose.
+  ROLLED = %i[skill endurance weapon kit].freeze
 
-    make[step.to_s] = step == :kai ? make['kai'] + [pick] : cast(step, pick)
+  # One answer. On a thrown step the reader either keeps the throw or asks for
+  # another; on the disciplines they name one. Either way the next thrown step is
+  # thrown here, never on a read.
+  def answer(book, make, pick)
+    step = next_step(book, make)
+    if ROLLED.include?(step)
+      keep_or_throw(make, step, pick)
+    elsif step == :kai && book['item_draw']['from'].include?(pick) && !make['kai'].include?(pick)
+      make['kai'] += [pick]
+    end
+    throw_for(book, make)
   end
 
-  # The scores and the equipment row are numbers; the disciplines and the weapon are
-  # named as they ride in the satchel.
-  def cast(step, pick)
-    %i[skill endurance kit].include?(step) ? pick.to_i : pick
+  def keep_or_throw(make, step, pick)
+    return make['roll'] = nil if pick == 'reroll'
+    return unless pick == 'accept' && make['roll']
+
+    make[step.to_s] = make['roll']
+    make['roll'] = nil
+  end
+
+  # Whatever thrown step is now current gets its throw, if it has not got one.
+  def throw_for(book, make)
+    step = next_step(book, make)
+    return unless ROLLED.include?(step) && make['roll'].nil?
+
+    make['roll'] = case step
+                   when :skill, :endurance then Dice.roll(book['stats'][step.to_s]['start'].to_s)
+                   when :weapon then book['weapons']['skill_table'].sample
+                   when :kit then rand(book['equipment_draw'].length)
+                   end
+  end
+
+  # A throw as the book states it: the Random Number Table's own number, and what is
+  # added to it. Reported so the reader can see the roll behind the score.
+  def offered_roll(book, make, step)
+    value = make['roll']
+    return nil if value.nil?
+
+    case step
+    when :skill, :endurance
+      base = span(book['stats'][step.to_s]['start']).first
+      { 'label' => value.to_s, 'rnt' => value - base, 'plus' => base }
+    when :weapon then { 'label' => value.capitalize }
+    when :kit
+      grant = book['equipment_draw'][value]
+      { 'label' => kit_label(grant), 'about' => grant['about'] }
+    end
   end
 
   # The finished sheet written as a character, and the story opened at page one.
@@ -422,18 +468,26 @@ class GamesController < ApplicationController
 
   def pick_number(book, pick, stats, items)
     rolled = Dice.roll(pick['roll'] || '1d10-1')
-    rolled += pick_bonus(book, pick['plus'], items)
+    # A throw may be sweetened by more than one thing, so plus takes a rule or a list.
+    rules = pick['plus'].is_a?(Array) ? pick['plus'] : [pick['plus']].compact
+    rolled += rules.sum { |rule| pick_bonus(book, rule, items) }
     Array(pick['sway']).each { |rule| rolled += rule['add'] if within?(rule, stats) }
     rolled
   end
 
-  # What sweetens a throw: a named discipline or item held ('item'/'any'), or —
-  # 'skilled' — fighting form, when the weapon in hand earns its Weaponskill bonus.
+  # What sweetens a throw: a named discipline or item held ('item'/'any'), the Kai
+  # rank reached ('rank'), or — 'skilled' — fighting form, when the weapon in hand
+  # earns its Weaponskill bonus.
   def pick_bonus(book, plus, items)
     return 0 if plus.nil?
     return skilled_pick(book, plus, items) if plus['skilled']
 
-    Array(plus['any'] || plus['item']).any? { |name| holds?(items, name) } ? plus['add'] : 0
+    earned?(plus, items) ? plus['add'] : 0
+  end
+
+  def earned?(plus, items)
+    Array(plus['any'] || plus['item']).any? { |name| holds?(items, name) } ||
+      (plus['rank'] && rank_of(items) >= plus['rank'])
   end
 
   def skilled_pick(book, plus, items)
@@ -478,16 +532,21 @@ class GamesController < ApplicationController
     foe, = standing(from, fight)
     return redirect_to games_section_path(book: book['id'], section: params[:from]) if foe.nil?
 
-    _, _, round, buff, mark = fight_parts(fight)
-    mark = stats.fetch(loss_stat(book), 0) if fight.blank?
+    _, _, round, buff, mark, clock = fight_parts(fight)
+    if fight.blank?
+      mark = stats.fetch(loss_stat(book), 0)
+      clock = breath(from['combat'], items)
+      fight = "0:#{standing(from, fight).last}:0:0:#{mark}:#{clock}" if clock
+    end
     number, foe_loss, hurt, remaining = strike_outcome(book, from, stats, items, fight)
     stats[loss_stat(book)] = [stats.fetch(loss_stat(book), 0) - hurt, 0].max
 
     index = from['combat']['enemies'].index(foe)
+    tail = "#{buff}:#{mark}#{":#{clock}" if clock}"
     fight = if remaining.positive?
-              "#{index}:#{remaining}:#{round + 1}:#{buff}:#{mark}"
+              "#{index}:#{remaining}:#{round + 1}:#{tail}"
             else
-              "#{index + 1}:next:#{round + 1}:#{buff}:#{mark}"
+              "#{index + 1}:next:#{round + 1}:#{tail}"
             end
     return if aftermath?(book, from, stats, items, fight, hurt: hurt, foe_loss: foe_loss)
 
@@ -560,7 +619,8 @@ class GamesController < ApplicationController
     end
     hurt = wolf_loss == LoneWolf::KILLED ? stats.fetch(loss_stat(book), 0) : wolf_loss
     hurt = temper(book, combat, stats, fight, hurt)
-    [number, foe_loss, hurt + mindforce_toll(combat, items), foe_loss >= remaining ? 0 : remaining - foe_loss]
+    [number, foe_loss, hurt + mindforce_toll(combat, items, fight),
+     foe_loss >= remaining ? 0 : remaining - foe_loss]
   end
 
   # What softens or sharpens a wound: the surprise that spares the first rounds
@@ -573,10 +633,20 @@ class GamesController < ApplicationController
     rand(0..9) == fangs['die_on'] ? stats.fetch(loss_stat(book), 0) + hurt : 0
   end
 
-  def mindforce_toll(combat, items)
-    return 0 if combat['drain'].nil? || items.include?(combat.dig('drain', 'without'))
+  # What a fight costs beyond the blades: a Mindforce gnawing every round, and the
+  # burning lungs of a fight held underwater once the breath thrown at the start of
+  # it has run out.
+  def mindforce_toll(combat, items, fight)
+    _, _, round, _, _, clock = fight_parts(fight)
+    toll = drain_toll(combat['drain'], items, round)
+    toll + (combat['drown'] && clock && round >= clock ? combat['drown']['endurance'].to_i : 0)
+  end
 
-    combat.dig('drain', 'endurance').to_i
+  def drain_toll(rule, items, round)
+    return 0 if rule.nil? || items.include?(rule['without'])
+    return 0 if round < rule.fetch('from_round', 0)
+
+    rule['endurance'].to_i
   end
 
   # A contest rather than a fight to the death — an arm-wrestle: the first to
@@ -589,7 +659,7 @@ class GamesController < ApplicationController
     lost = stats.fetch(loss_stat(book), 0) <= 0
     return false unless lost || standing(from, fight).nil?
 
-    stats[loss_stat(book)] = fight_parts(fight).last
+    stats[loss_stat(book)] = fight_parts(fight)[4]
     travel(book, lost ? contest['lose'] : contest['win'], stats, items)
     true
   end
@@ -647,11 +717,13 @@ class GamesController < ApplicationController
     bonus + hindrances(combat, items, round) + trinkets(book, items)
   end
 
-  # A penalty that applies only from a given round — the Mindforce that starts once
-  # the surprise of the first blow has passed.
+  # A penalty that applies only over part of a fight — the Mindforce that starts once
+  # the surprise of the first blow has passed, or the disadvantage of fighting from
+  # the ground until you can regain your feet.
   def hindrances(combat, items, round)
     Array(combat['without']).sum do |rule|
-      next 0 if items.include?(rule['item']) || round < rule.fetch('from_round', 0)
+      next 0 if items.include?(rule['item'])
+      next 0 if round < rule.fetch('from_round', 0) || round >= rule.fetch('until_round', round + 1)
 
       rule['modifier']
     end
@@ -732,12 +804,21 @@ class GamesController < ApplicationController
   end
 
   # The fight string unpacked: enemy index, endurance left, rounds fought this
-  # combat, any battle draught's bonus, and the health the fight was entered on (for
-  # the contests that give it back). Older cookies carried fewer fields; the missing
-  # ones read as zero.
+  # combat, any battle draught's bonus, the health the fight was entered on (for the
+  # contests that give it back), and — for a fight held underwater — the round the
+  # reader's breath runs out on. Older cookies carried fewer fields; the missing ones
+  # read as zero.
   def fight_parts(fight)
-    index, left, round, buff, mark = fight.to_s.split(':')
-    [index.to_i, left, round.to_i, buff.to_i, mark.to_i]
+    index, left, round, buff, mark, clock = fight.to_s.split(':')
+    [index.to_i, left, round.to_i, buff.to_i, mark.to_i, clock&.to_i]
+  end
+
+  # How long the reader can hold their breath, thrown once as the fight begins.
+  def breath(combat, items)
+    rule = combat['drown']
+    return nil if rule.nil?
+
+    Dice.roll(rule['roll'] || '1d10') + (items.include?(rule.dig('plus', 'item')) ? rule.dig('plus', 'add').to_i : 0)
   end
 
   # A battle draught: spent mid-fight, its bonus rides in the fight string and is
@@ -776,10 +857,19 @@ class GamesController < ApplicationController
 
   def kit_allows?(choice, items)
     return false if choice['needs'] && !holds?(items, choice['needs'])
-    return false if choice['needs_any']&.none? { |name| holds?(items, name) }
+    return false if choice['needs_any']&.none? { |name| any_of(items, name) }
 
     ranked?(choice, items) && unhindered?(choice, items)
   end
+
+  # An entry in needs_any may itself be a list, meaning all of those together: a
+  # Torch AND a Tinderbox, or else a Firesphere.
+  def any_of(items, name)
+    return name.all? { |part| holds?(items, part) } if name.is_a?(Array)
+
+    holds?(items, name)
+  end
+  helper_method :any_of
 
   def ranked?(choice, items)
     return false if choice['rank'] && rank_of(items) < choice['rank']
