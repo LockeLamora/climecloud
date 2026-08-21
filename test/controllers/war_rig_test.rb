@@ -228,6 +228,29 @@ class WarRigTest < ActionDispatch::IntegrationTest
     assert_not_includes held, 'club'
   end
 
+  test 'a bundled offer hands over its companions in the same press' do
+    pack 'armoury', items: 'club'
+    post '/games/take', params: { book: BOOK, item: 'flint' }
+
+    held = entry.split('|')[2].split(',')
+    assert_includes held, 'flint'
+    assert_includes held, 'steel', 'the companion arrives with the main find'
+  end
+
+  test 'the combat panel names the weapon the engine fights with' do
+    pack 'pit', items: 'club'
+    get "/games/#{BOOK}/pit"
+    assert_match 'Fighting with the club.', @response.body
+
+    pack 'pit', items: 'sabre,weaponskill in sabre'
+    get "/games/#{BOOK}/pit"
+    assert_match(/Fighting with the sabre \(skill \+2\)/, @response.body)
+
+    pack 'pit', items: 'salve'
+    get "/games/#{BOOK}/pit"
+    assert_match(/Fighting bare-handed \(skill -4\)/, @response.body)
+  end
+
   test 'an exchange offer takes a weapon in payment and stands only while one is held' do
     pack 'smithy', items: 'club'
     post '/games/take', params: { book: BOOK, item: 'sabre' }
@@ -258,6 +281,14 @@ class WarRigTest < ActionDispatch::IntegrationTest
     pack 'camp'
     post '/games/turn', params: { book: BOOK, from: 'camp', choice: 11 }
     assert_match(/gold:50/, entry, 'the pouch holds fifty of the hundred')
+    assert_equal 'gold+45', landing.last['fx'], 'the notice reports what actually landed'
+
+    get "/games/#{BOOK}/hoard", params: { fx: 'gold+45' }
+    assert_match 'Gold +45.', @response.body
+
+    get "/games/#{BOOK}/hoard", params: { fx: 'stamina-4' }
+    assert_match(%r{<span class='error'>Stamina -4\.</span>}, @response.body,
+                 'a loss reads in red')
 
     pack 'camp', items: 'club,salve,meal:1', stats: 'skill:10,stamina:10,stamina_max:20,gold:5,gold_max:50'
     post '/games/turn', params: { book: BOOK, from: 'camp', choice: 0 }

@@ -24,6 +24,15 @@
 <% if params[:lost].present? %>
 <span class='error'><%= glyph_text "Lost: the #{params[:lost]}.", error: true %></span><br />
 <% end %>
+<%# The ledger of what the page turn did to the stats: gains plain, losses in red. %>
+<% params[:fx].to_s.split(',').each do |change| %>
+<% next unless (move = change.match(/\A([a-z_ ]+)([+-]\d+)\z/)) %>
+<% if move[2].to_i.negative? %>
+<span class='error'><%= glyph_text "#{move[1].capitalize} #{move[2]}.", error: true %></span><br />
+<% else %>
+<%= glyph_text "#{move[1].capitalize} #{move[2]}." %><br />
+<% end %>
+<% end %>
 <br />
 <%# Standing provisions: offered on every page while any remain, in the theme's own %>
 <%# good colour so they read apart from the book's choices. A battle draught is the %>
@@ -61,6 +70,12 @@
 <% if @combat %>
 <% foe, remaining = @combat %>
 <%= glyph_text "#{foe['name']}: Combat Skill #{foe['skill']} - Endurance #{remaining}#{@round.to_i.positive? ? " - Round #{@round + 1}" : ''}" %><br />
+<%# The weapon is the engine's pick, not the reader's: every weapon strikes alike, %>
+<%# so the skilled one counts whenever it is held. This line shows what counts. %>
+<% if (arm = armament(@book, Array(@items))) %>
+<% weapon, worth = arm %>
+<%= glyph_text "Fighting #{weapon == 'bare hands' ? 'bare-handed' : "with the #{weapon}"}#{worth.zero? ? '' : " (skill #{format('%+d', worth)})"}." %><br />
+<% end %>
 <br />
 <%= choice_button 'Fight a round of combat', games_turn_path,
                   { book: @book['id'], from: params[:section], choice: 'fight' } %><br />

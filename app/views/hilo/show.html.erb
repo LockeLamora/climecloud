@@ -1,7 +1,8 @@
 <div class='games'>
 <b><%= glyph_text 'Higher or Lower', heading: true %></b><br />
 <br />
-<%= glyph_text "On the table: #{PlayingCards.name(@card)}" %><br />
+<%= glyph_text 'On the table:' %><br />
+<%= card_image(@card) %><br />
 <%= glyph_text "Streak #{@streak} - best #{@best}" %><br />
 <br />
 <%# Guesses are buttons, as every move in the games section is: a browser that %>

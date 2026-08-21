@@ -3284,7 +3284,9 @@ sections:
     title: '267'
     offers:
     - item: message
-    - item: dagger
+      with:
+      - dagger
+      label: Take the Message and the Dagger
   '268':
     text: You black out for only a few minutes before you are revived with a measure
       of strong spirit. Feeling weary but thankful to be alive, you lean on the shoulders
@@ -4220,7 +4222,9 @@ sections:
     title: '347'
     offers:
     - item: torch
-    - item: tinderbox
+      with:
+      - tinderbox
+      label: Take a Torch and the Tinderbox
     - item: short sword
   '348':
     text: Raising your boot to kick away the dead snake, your heart skips a beat as

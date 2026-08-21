@@ -54,6 +54,7 @@ Rails.application.routes.draw do
   # The little games: every view a pure read, every move a POST, all state in a small
   # cookie of its own like the CYOA bookmark. Named before the book routes below, or
   # games/:book would swallow them.
+  get 'card/:code' => 'card#show', as: :playing_card
   get 'games/hilo' => 'hilo#show', as: :games_hilo
   post 'games/hilo/guess' => 'hilo#guess'
   get 'games/pontoon' => 'pontoon#show', as: :games_pontoon

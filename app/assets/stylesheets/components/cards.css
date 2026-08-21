@@ -1,0 +1,6 @@
+/* The little playing cards (see CardController): laid in a row with a breath between
+   them, wrapping when a fat pontoon hand outgrows the 220px column. */
+img.card {
+    margin: 0 2px 2px 0;
+    vertical-align: middle;
+}

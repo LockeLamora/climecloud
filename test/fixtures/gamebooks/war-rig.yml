@@ -112,6 +112,7 @@ sections:
       - { item: sabre }
       - { item: pike }
       - { item: torch, unless: [sabre] }
+      - { item: flint, with: [steel], label: Take the flint and steel }
     choices:
       - label: Back to camp
         to: camp

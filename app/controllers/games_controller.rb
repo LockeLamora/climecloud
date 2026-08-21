@@ -202,7 +202,9 @@ class GamesController < ApplicationController
       return
     end
 
-    notices = luck.each_with_object({}) { |fortune, acc| acc.merge!(apply_effect_hash(fortune, book, stats, items)) }
+    notices = luck.each_with_object({}) do |fortune, acc|
+      merge_notices(acc, apply_effect_hash(fortune, book, stats, items))
+    end
     travel(book, destination, stats, items, rolled: rolled, notices: notices)
   end
 
@@ -245,7 +247,7 @@ class GamesController < ApplicationController
   # show, which keeps the section's GET a pure read.
   def travel(book, destination, stats, items, rolled: nil, notices: {})
     landing = book['sections'][destination]
-    notices = notices.merge(apply_effects(book, landing, stats, items))
+    notices = merge_notices(notices.dup, apply_effects(book, landing, stats, items))
     mend(book, stats, items, landing)
     remember(book, destination, stats, items)
     redirect_to games_section_path(book: book['id'], section: destination,
@@ -336,15 +338,24 @@ class GamesController < ApplicationController
   # Bare hands cost the book's stated penalty; the weapon Weaponskill was learned in
   # earns its bonus while one is held. Books without a weapons table are unmoved.
   def weapon_bonus(book, items)
+    arm = armament(book, items)
+    arm ? arm.last : 0
+  end
+
+  # What the fight is fought with, and what that is worth — for the ratio and for the
+  # page to say. The reader never picks a weapon because there is nothing to pick:
+  # every weapon strikes alike, so the skilled one counts whenever it is held.
+  def armament(book, items)
     rules = book['weapons']
-    return 0 if rules.nil?
+    return nil if rules.nil?
 
     held = rules['list'] & items
-    return rules.fetch('unarmed', -4) if held.empty?
+    return ['bare hands', rules.fetch('unarmed', -4)] if held.empty?
 
     skilled = items.filter_map { |entry| entry[/\Aweaponskill in (.+)\z/, 1] }.first
-    held.include?(skilled) ? rules.fetch('bonus', 2) : 0
+    held.include?(skilled) ? [skilled, rules.fetch('bonus', 2)] : [held.first, 0]
   end
+  helper_method :armament
 
   # Which enemy stands, and with how much left: the stored fight if one is under way,
   # otherwise the next enemy fresh from the book. nil when every enemy is down.
@@ -417,8 +428,26 @@ class GamesController < ApplicationController
     notices = shift_kit(effects, book, items)
     notices[:ate] = eat(book, stats, items) if effects['must_eat']
     risk(effects['risk'], book, stats, items, notices) if effects['risk']
-    effects.except(*KIT_EFFECTS).each { |stat, delta| credit(stats, stat, delta) }
+
+    # Every stat the page moves is reported as it actually landed — a pouch already
+    # nearly full says +2, not the +15 the text promised — so nothing happens silently.
+    changes = effects.except(*KIT_EFFECTS).filter_map do |stat, delta|
+      before = stats.fetch(stat, 0)
+      credit(stats, stat, delta)
+      landed = stats[stat] - before
+      "#{stat}#{format('%+d', landed)}" unless landed.zero?
+    end
+    merge_notices(notices, { fx: changes.join(',') }) if changes.any?
     notices
+  end
+
+  # Notices folded together without losing news: the fx ledgers concatenate where
+  # every other key simply takes the later value.
+  def merge_notices(base, extra)
+    fx = [base[:fx], extra[:fx]].compact_blank.join(',')
+    base.merge!(extra)
+    base[:fx] = fx if fx.present?
+    base
   end
 
   # The satchel side of an effects hash: things taken, dropped, gained by the
@@ -444,7 +473,7 @@ class GamesController < ApplicationController
     rolled = Dice.roll(rule['roll'] || '1d10-1')
     hit = rolled >= rule.fetch('at_least', rolled) && rolled <= rule.fetch('at_most', rolled)
     branch = hit ? rule['then'] : rule['else']
-    notices.merge!(apply_effect_hash(branch, book, stats, items)) if branch
+    merge_notices(notices, apply_effect_hash(branch, book, stats, items)) if branch
   end
 
   # The book has said "you must now eat": Hunting feeds the hunter for nothing, a
@@ -535,12 +564,19 @@ class GamesController < ApplicationController
 
   # Taking an offer up: counted things join their pile; a weapon may cost the belt
   # its plainest arm — the one Weaponskill was not learned in — either because the
-  # offer is an exchange or because two are already carried.
+  # offer is an exchange or because two are already carried. An offer may bring
+  # companions ('with'), for the pages that hand over a find in one go.
   def claim(book, offer, items)
     return add_count(items, offer['item'], offer['count']) && nil if offer['count']
 
     gave = make_room(book, offer, items)
     items << offer['item']
+    Array(offer['with']).each do |extra|
+      next if items.include?(extra)
+
+      gave ||= make_room(book, { 'item' => extra }, items)
+      items << extra
+    end
     gave
   end
 

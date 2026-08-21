@@ -4,16 +4,21 @@
 <%= glyph_text "Bank: #{@bank}" %><br />
 <br />
 <% if @phase == 'play' %>
-<%= glyph_text "You: #{@player.map { |card| PlayingCards.show(card) }.join(' ')} (#{PlayingCards.hand_value(@player)})" %><br />
-<%= glyph_text "House shows: #{PlayingCards.show(@dealer.first)}" %><br />
+<%# Hands are pictures: bare imgs outside any anchor, so the cursor passes them by. %>
+<%= glyph_text "You (#{PlayingCards.hand_value(@player)}):" %><br />
+<% @player.each do |card| %><%= card_image(card) %><% end %><br />
+<%= glyph_text 'House shows:' %><br />
+<%= card_image(@dealer.first) %><%= card_image('back') %><br />
 <br />
 <%= choice_button '1 Twist', games_pontoon_twist_path, {}, accesskey: '1' %><br />
 <br />
 <%= choice_button '2 Stick', games_pontoon_stick_path, {}, accesskey: '2' %><br />
 <% else %>
 <% if @phase == 'done' %>
-<%= glyph_text "You: #{@player.map { |card| PlayingCards.show(card) }.join(' ')} (#{PlayingCards.hand_value(@player)})" %><br />
-<%= glyph_text "House: #{@dealer.map { |card| PlayingCards.show(card) }.join(' ')} (#{PlayingCards.hand_value(@dealer)})" %><br />
+<%= glyph_text "You (#{PlayingCards.hand_value(@player)}):" %><br />
+<% @player.each do |card| %><%= card_image(card) %><% end %><br />
+<%= glyph_text "House (#{PlayingCards.hand_value(@dealer)}):" %><br />
+<% @dealer.each do |card| %><%= card_image(card) %><% end %><br />
 <%= glyph_text({ 'won' => 'You won the hand.', 'lost' => 'The house takes it.',
                  'push' => 'A push - stakes back.', 'bust' => 'Bust. The house takes it.',
                  'natural' => 'Pontoon! Paid half as much again.' }.fetch(@result, '')) %><br />

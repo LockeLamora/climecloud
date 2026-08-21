@@ -44,6 +44,21 @@ class MinigamesTest < ActionDispatch::IntegrationTest
     assert_equal 7, best.to_i
   end
 
+  # The card games show their hands as little pictures — bare imgs, which the
+  # handset's cursor passes without stopping — with the house's second card face down.
+  test 'the table games draw their cards as pictures' do
+    cookies['PONTOON'] = '100|play|5h2d|TsTd|9h8c|'
+    get '/games/pontoon'
+    assert_match %r{<img src="/card/Ts"[^>]*class="card"}, @response.body
+    assert_match '/card/9h', @response.body, 'the house shows its first card'
+    assert_match '/card/back', @response.body, 'and hides its second'
+    assert_no_match(%r{/card/8c}, @response.body, 'the hidden card is not in the page')
+
+    cookies['HILO'] = '2s 7 7'
+    get '/games/hilo'
+    assert_match '/card/2s', @response.body
+  end
+
   test 'pontoon twisting into a bust costs the stake and ends the hand' do
     cookies['PONTOON'] = '100|play|5h2d|TsTd|9h8c|'
 

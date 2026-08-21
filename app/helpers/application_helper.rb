@@ -1,3 +1,5 @@
+require 'playing_cards'
+
 module ApplicationHelper
   # The styles whose text can only reach the handset as an image: the phosphor styles for
   # their glow, the C64 and teletext for their character sets. See PhosphorGlyph and
@@ -26,6 +28,16 @@ module ApplicationHelper
   # button_to is left alone on every theme: any element inside a button costs the
   # handset's cursor a second stop, so buttons carry plain text — the theme's style
   # block colours it — and only anchors carry glyph images.
+
+  # A playing card as its picture: a bare img outside any anchor or button, so it
+  # costs the cursor nothing. The size is stated here rather than read off the
+  # controller, which a helper must not name while the module loads (see
+  # glyph_themes below for the circle that taught that lesson).
+  def card_image(card)
+    label = card == 'back' ? 'face-down card' : PlayingCards.name(card)
+    tag.img(src: playing_card_path(code: card), alt: label,
+            width: 30, height: 42, class: 'card')
+  end
 
   # For text that is not a link: headings and titles, drawn in place by the views. A
   # heading is marked as one, for the styles that write their headings in a colour of

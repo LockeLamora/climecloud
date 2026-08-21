@@ -233,8 +233,10 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     cookies['CYOA'] = { 'engine-trial' => 'start|skill:1,stamina:14,gold:5|lamp' }.to_json
     post '/games/turn', params: { book: 'engine-trial', from: 'start', choice: 3 }
 
-    assert_match %r{/games/engine-trial/fallen\?rolled=\d+}, @response.headers['Location'],
+    assert_match %r{/games/engine-trial/fallen\?.*rolled=\d+}, @response.headers['Location'],
                  'two dice cannot land under a skill of one'
+    assert_match(/fx=stamina-2/, @response.headers['Location'],
+                 'the bruising landing reports itself')
     assert_match 'stamina:12', JSON.parse(cookies['CYOA'])['engine-trial'],
                  'the fall costs the two stamina the section says'
   end
