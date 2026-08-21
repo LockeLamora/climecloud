@@ -205,6 +205,11 @@ sections:
         the corridor by turning to 126.
       to: '126'
     title: '10'
+    offers:
+    - item: backpack
+      unless:
+      - backpack
+      label: Take the pack for a Backpack
   '11':
     text: ''
     choices:
@@ -243,7 +248,8 @@ sections:
       take:
       - rope
       - sleeping furs
-      must_eat: true
+      must_eat:
+        hunting: false
   '13':
     text: There is a lever in the wall and a spy-hole in the centre of the door. Peering
       through the spy-hole, you see a strange sight. A man in a dark robe is kneeling
@@ -301,6 +307,8 @@ sections:
     - label: Turn to 63.
       to: '63'
     title: '16'
+    effects:
+      drop_backpack: 2
   '17':
     text: You recognize that you are suffering the first effects of snow-blindness.
       Unless you act now, the more painful symptoms of this malady will soon appear.
@@ -421,10 +429,15 @@ sections:
     - label: If you wish to take one of the Bracelets, put it on your wrist, mark
         it on your Action Chart as a Special Item, and turn to 187.
       to: '187'
+      effects:
+        take: gold bracelet
     - label: If you do not wish to take a Bracelet, you may continue your exploration
         and turn to 63.
       to: '63'
     title: '26'
+    offers:
+    - item: dagger
+    - item: mace
   '27':
     text: You stumble along the bleak rock-face for nearly an hour, finding nowhere
       to shelter from the bitter wind. Unless you have rubbed Baknar oil into your
@@ -619,6 +632,10 @@ sections:
       to: '237'
     title: '38'
     offers:
+    - item: backpack
+      unless:
+      - backpack
+      label: Take the old fur Backpack
     - item: rope
   '39':
     text: So far, so good. The guards do not seem to be paying you any attention.
@@ -1105,6 +1122,9 @@ sections:
     - label: If you do not have either of these skills, you can open the door and
         attack the Doomwolves by turning to 137.
       to: '137'
+      without_any:
+      - hunting
+      - animal kinship
     - label: If you would rather back away from the cell door and descend the stairs,
         turn to 261.
       to: '261'
@@ -1573,8 +1593,10 @@ sections:
     choices:
     - label: If, at this time, you wish to head south (right), turn to 330.
       to: '330'
+      always: true
     - label: If you wish to head north (left), turn to 198.
       to: '198'
+      always: true
     - label: If you win the combat, turn to 282.
       to: '282'
     combat:
@@ -1692,7 +1714,8 @@ sections:
       to: '223'
     title: '117'
     effects:
-      must_eat: true
+      must_eat:
+        hunting: false
   '118':
     text: He is frail and weak, far too weak to climb. You tell him to tie the rope
       around his waist so that you can haul him out of the prison. Slowly he follows
@@ -1837,6 +1860,7 @@ sections:
         about the city, to allay any suspicions you may have about who he claims to
         be, by turning to 11.
       to: '11'
+      needs: been to ragadorn
     - label: If you prefer to close the cell door and return to the main corridor,
         turn to 254.
       to: '254'
@@ -1902,7 +1926,8 @@ sections:
       - animal kinship
     title: '132'
     effects:
-      must_eat: true
+      must_eat:
+        hunting: false
   '133':
     text: A M’lare bowl hangs from the ceiling directly above the fissure.
     choices:
@@ -1971,9 +1996,6 @@ sections:
       can turn and fight back. The remaining two beasts attack one at a time, trying
       to sting you with their barbed tongues.
     choices:
-    - label: If you lose any ENDURANCE points during this combat, even when attempting
-        to evade, turn immediately to 66.
-      to: '66'
     - label: If you win the combat without losing any ENDURANCE points, turn to 25.
       to: '25'
     - label: You may evade the fight by turning to 277.
@@ -1986,6 +2008,7 @@ sections:
       - name: Kalkoth 2
         skill: 10
         endurance: 32
+      on_wound: '66'
     title: '138'
   '139':
     text: You are suddenly aware of a dull throbbing pain in your side. The skin beneath
@@ -2256,7 +2279,8 @@ sections:
           add: 1
     title: '155'
     effects:
-      must_eat: true
+      must_eat:
+        hunting: false
   '156':
     text: You recognize the aroma of concentrated Gallowbrush, or ‘Sleeptooth’ as
       it is commonly called in Sommerlund. This is the thorny briar your Kai masters
@@ -2283,21 +2307,17 @@ sections:
   '158':
     text: As the Ice Barbarian scout is on skis, you will only be able to fight one
       round of combat before the momentum of his attack carries him past you.
-    choices:
-    - label: If you sustain a higher ENDURANCE point loss than the enemy in this one
-        round of combat, turn to 165.
-      to: '165'
-    - label: If the Ice Barbarian scout loses more ENDURANCE points than you in this
-        one round of combat, turn to 271.
-      to: '271'
-    - label: If you both lose exactly the same number of ENDURANCE points in this
-        one round of combat, turn to 337.
-      to: '337'
+    choices: []
     combat:
       enemies:
       - name: Ice Barbarian Scout
         skill: 20
         endurance: 28
+      duel:
+        rounds: 1
+        more: '165'
+        less: '271'
+        same: '337'
     title: '158'
   '159':
     text: The man stares you straight in the eye and says, ‘The Ragad.’
@@ -2587,9 +2607,6 @@ sections:
 
       Deduct an additional 3 ENDURANCE points from the Kalkoth’s ENDURANCE point total for each round of combat you fight. This represents the damage inflicted by Fenor.
     choices:
-    - label: If you lose any ENDURANCE points during this combat, turn immediately
-        to 129.
-      to: '129'
     - label: If you kill the creature without losing any ENDURANCE points, turn to
         70.
       to: '70'
@@ -2598,6 +2615,8 @@ sections:
       - name: Kalkoth
         skill: 11
         endurance: 35
+      on_wound: '129'
+      ally: 3
     title: '180'
   '181':
     text: The Gold Crowns clatter along the corridor, but do not have the desired
@@ -2740,10 +2759,16 @@ sections:
         to 348.
       to: '348'
       needs: sixth sense
+      needs_any:
+      - tracking
+      - sixth sense
     - label: If you do not have either of these skills, you can look for shelter towards
         the north by turning to 27.
       to: '27'
       without: sixth sense
+      without_any:
+      - tracking
+      - sixth sense
     - label: If you prefer, you can search towards the south by turning to 314.
       to: '314'
     title: '190'
@@ -2946,16 +2971,16 @@ sections:
   '208':
     text: The Ice Barbarian sees you approach and draws his bone sword. He moves to
       the centre of the bottom stair to prevent you running past him.
-    choices:
-    - label: If you win the combat within four rounds, turn to 4.
-      to: '4'
-    - label: If you win the fight in more than four rounds, turn to 81.
-      to: '81'
+    choices: []
     combat:
       enemies:
       - name: Ice Barbarian
         skill: 17
         endurance: 30
+      win_within:
+        rounds: 4
+        to: '4'
+        else: '81'
     title: '208'
   '209':
     text: All night you cling to the frozen rock-face. The icy wind whips you and
@@ -3332,7 +3357,8 @@ sections:
       to: '297'
     title: '237'
     effects:
-      must_eat: true
+      must_eat:
+        hunting: false
   '238':
     text: |-
       The two days that follow are sheer hell. Ridges formed by deeply fissured ice-mounds continually bar your way, and you are forced to dismount and manhandle the sledges across them. Progress is slow. The Kanu-dogs are nervous and take fright at the slightest instance and the sledges frequently capsize and spill their loads.
@@ -3480,9 +3506,11 @@ sections:
     choices:
     - label: If you have ever visited the Graveyard of the Ancients, turn to 77.
       to: '77'
+      needs: been to the graveyard
     - label: If you have not, you are suspicious of this pungent liquid and quickly
         discard the broken glass. Return to 10 and choose your next course of action.
       to: '10'
+      without: been to the graveyard
     title: '250'
   '251':
     text: |-
@@ -3742,10 +3770,12 @@ sections:
     choices:
     - label: If you have ever visited the Graveyard of the Ancients, turn to 177.
       to: '177'
+      needs: been to the graveyard
     - label: If you have not, you quickly replace stopper of the Vial. The vapour
         is making you nauseous, and you decide against keeping this suspicious fluid.
         Return to 10 and choose your next course of action.
       to: '10'
+      without: been to the graveyard
     title: '268'
   '269':
     text: You reach a tunnel on the far side of the chasm and follow it for many miles.
@@ -3851,9 +3881,17 @@ sections:
         turn to 293.
       to: '293'
       needs: animal kinship
+      needs_any:
+      - hunting
+      - tracking
+      - animal kinship
     - label: If you do not possess any of the above skills, turn to 197.
       to: '197'
       without: animal kinship
+      without_any:
+      - hunting
+      - tracking
+      - animal kinship
     title: '275'
   '276':
     text: You soon reach the junction where the corridor meets another running from
@@ -3862,6 +3900,9 @@ sections:
     - label: If you have the Kai Discipline of Hunting or Tracking, turn to 219.
       to: '219'
       needs: hunting
+      needs_any:
+      - hunting
+      - tracking
     - label: If you wish to head east, turn to 349.
       to: '349'
     - label: If you decide to go west, turn to 50.
@@ -3935,7 +3976,9 @@ sections:
     title: '280'
     effects:
       endurance: -1
-      take: corroded bone key
+    offers:
+    - item: corroded bone key
+      label: Wipe the Key and pocket it
   '281':
     text: |-
       You cover your nose with your sleeve and turn away from the carcass. Irian has regained consciousness, and is quick to begin scooping out some Baknar oil for himself.
@@ -4071,14 +4114,16 @@ sections:
         to 341.
       to: '341'
       needs: sixth sense
+      rank: 7
     - label: If you have the Kai Discipline of Sixth Sense but have not yet reached
         the rank of Guardian, turn to 124.
       to: '124'
       needs: sixth sense
+      rank_below: 7
     - label: If you do not have the Kai Discipline of Sixth Sense, you prepare yourself
         to fight and pass through the misty arch. Turn to 264.
       to: '264'
-      needs: sixth sense
+      without: sixth sense
     title: '290'
   '291':
     text: |-
@@ -4139,6 +4184,8 @@ sections:
     effects:
       must_eat:
         meals: 2
+        penalty: 6
+        hunting: false
   '295':
     text: |-
       On seeing you enter, the two old men jump to their feet and flee from the chamber along a smaller passageway. Their screams of panic echo loudly throughout the caverns.
@@ -4165,6 +4212,9 @@ sections:
       - name: Ice Barbarians
         skill: 17
         endurance: 30
+      overtime:
+        rounds: 3
+        to: '173'
     title: '296'
   '297':
     text: You have been walking along the passage for less than five minutes when
@@ -4634,10 +4684,12 @@ sections:
     choices:
     - label: If you have smeared Baknar oil into your skin, turn to 202.
       to: '202'
+      needs: baknar oil
     - label: If you have not applied Baknar oil to your skin, you can avoid the Kalkoth
         by retracing your route back to the entrance of the other tunnel, by turning
         to 284.
       to: '284'
+      without: baknar oil
     - label: If you wish to attack the creatures, you can turn to 138.
       to: '138'
     title: '329'
@@ -4692,6 +4744,9 @@ sections:
     - label: If you have the Kai Discipline of Sixth Sense or Hunting, turn to 249.
       to: '249'
       needs: sixth sense
+      needs_any:
+      - sixth sense
+      - hunting
     - label: If you wish to head north, turn to 104.
       to: '104'
     - label: If you wish to go south, turn to 69.
@@ -4931,40 +4986,52 @@ sections:
     - item: sword
       spends: armoury choice
       label: A Sword
+      about: A soldier's blade, and the commonest weapon in Sommerlund.
     - item: short sword
       spends: armoury choice
       label: A Short Sword
+      about: Lighter than a sword and quicker in a close corner.
     - item: padded leather waistcoat
       spends: armoury choice
       effects:
         endurance: 2
       label: A Padded Leather Waistcoat (endurance +2)
+      about: Worn on the body. Adds 2 ENDURANCE points to your total.
     - item: spear
       spends: armoury choice
       label: A Spear
+      about: Reach, at the cost of close work.
     - item: mace
       spends: armoury choice
       label: A Mace
+      about: 'A weighted head on a haft: crude, but it answers armour.'
     - item: warhammer
       spends: armoury choice
       label: A Warhammer
+      about: A smith's weapon grown large, and heavy enough to stun.
     - item: axe
       spends: armoury choice
       label: An Axe
+      about: The weapon you carry out of the monastery, plain and dependable.
     - item: potion
       count: 1
       spends: armoury choice
       label: A Potion of Laumspur (endurance +4)
+      about: A Healing Potion. Restores 4 ENDURANCE points, and there is one dose.
     - item: quarterstaff
       spends: armoury choice
       label: A Quarterstaff
+      about: A staff of seasoned wood, the traveller's friend.
     - item: meal
       count: 1
       spends: armoury choice
       label: Special Rations (one Meal)
+      about: Food for the road. A Meal is eaten when the story demands one, or when
+        you choose.
     - item: broadsword
       spends: armoury choice
       label: A Broadsword
+      about: A heavy two-edged blade, the pride of the Durenese smithies.
     choices:
     - label: Board the Cardonal and sail for Kalte
       to: '1'
@@ -5008,6 +5075,9 @@ worn:
 - message
 - soap
 - seal of hammerdal
+- been to the graveyard
+- been to ragadorn
+- backpack
 weapons:
   list:
   - dagger
@@ -5052,3 +5122,55 @@ healing:
   item: healing
   stat: endurance
   delta: 1
+disciplines:
+  camouflage:
+    name: Camouflage
+    about: This Discipline enables a Kai Lord to blend in with his surroundings. In
+      the countryside, he can hide undetected among trees and rocks and pass close
+      to an enemy without being seen.
+  hunting:
+    name: Hunting
+    about: This skill ensures that a Kai Lord will never starve in the wild. He will
+      always be able to hunt for food for himself except in areas of wasteland and
+      desert.
+  sixth sense:
+    name: Sixth Sense
+    about: This skill may warn a Kai Lord of imminent danger. It may also reveal the
+      true purpose of a stranger or strange object encountered in your adventure.
+  tracking:
+    name: Tracking
+    about: This skill enables a Kai Lord to make the correct choice of a path in the
+      wild, to discover the location of a person or object in a town or city and to
+      read the secrets of footprints or tracks.
+  healing:
+    name: Healing
+    about: This Discipline can be used to restore ENDURANCE points lost in combat.
+      If you possess this skill you may restore 1 ENDURANCE point to your total for
+      every numbered section of the book you pass through in which you are not involved
+      in combat.
+    effect: 'Healing: +1 ENDURANCE point for each section without combat'
+  weaponskill:
+    name: Weaponskill
+    about: Upon entering the Kai Monastery, each initiate is taught to master one
+      type of weapon.
+  mindshield:
+    name: Mindshield
+    about: Vonotar and many of the evil creatures under his command have the ability
+      to attack you using their Mindforce. The Kai Discipline of Mindshield prevents
+      you from losing any ENDURANCE points when subjected to this form of attack.
+    effect: 'Mindshield: no points lost when attacked by Mindblast'
+  mindblast:
+    name: Mindblast
+    about: This enables a Kai Lord to attack an enemy using the force of his mind.
+      It can be used at the same time as normal combat weapons and adds two extra
+      points to your COMBAT SKILL. Not all the creatures encountered on this adventure
+      will be harmed by Mindblast.
+    effect: 'Mindblast: +2 COMBAT SKILL points'
+  animal kinship:
+    name: Animal Kinship
+    about: This skill enables a Kai Lord to communicate with some animals and to be
+      able to guess the intentions of others.
+  mind over matter:
+    name: Mind Over Matter
+    about: Mastery of this Discipline enables a Kai Lord to move small objects with
+      his powers of concentration.

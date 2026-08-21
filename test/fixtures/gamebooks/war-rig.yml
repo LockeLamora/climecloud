@@ -69,6 +69,8 @@ sections:
         to: shrine
       - label: Spring the trap
         to: trap
+      - label: Squeeze through the closing door
+        to: crush
   field:
     title: The field
     text: Supper time.
@@ -146,6 +148,13 @@ sections:
     title: The trap
     text: A snare that snaps one weapon in two.
     effects: { drop_weapons: one }
+    choices:
+      - label: Back to camp
+        to: camp
+  crush:
+    title: The closing door
+    text: The slab comes down and two things in the pack are crushed.
+    effects: { drop_backpack: 2 }
     choices:
       - label: Back to camp
         to: camp

@@ -11,7 +11,14 @@ class LocalesTest < ActiveSupport::TestCase
   def dynamic_keys
     %w[language_name places.kind.unnamed] +
       %w[origin destination].map { |field| "directions.field_#{field}" } +
-      place_keys + transport_keys + direction_keys + news_keys + theme_keys + totp_keys
+      place_keys + transport_keys + direction_keys + news_keys + theme_keys + totp_keys +
+      wizard_keys
+  end
+
+  def wizard_keys
+    GamesController::WIZARD_STEPS.flat_map do |step|
+      ["games.make.#{step}_title", "games.make.#{step}_says"]
+    end
   end
 
   def totp_keys

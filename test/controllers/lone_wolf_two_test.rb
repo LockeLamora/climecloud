@@ -41,8 +41,8 @@ class LoneWolfTwoTest < ActionDispatch::IntegrationTest
     rolled = stats_of(stats)
     assert_equal [17, 26], [rolled['skill'], rolled['endurance_max']],
                  'the scores carry as they stood'
-    assert_includes 24..25, rolled['endurance'],
-                    'as carried - or one better, if the new discipline drawn is Healing'
+    assert_equal 26, rolled['endurance'],
+                 'months of rest between adventures: the new book opens at full strength'
     assert_includes 40..50, rolled['gold'], 'thirty carried plus a fresh pouch, pouch-capped'
 
     held = items.split(',')
@@ -165,7 +165,7 @@ class LoneWolfTwoTest < ActionDispatch::IntegrationTest
 
     assert_equal "/games/#{BOOK}/116", landing.first
     rolled = stats_of(entry.split('|')[1])
-    assert_includes 5..14, rolled['gold'], 'the cups pay the throw plus five'
+    assert_includes 4..13, rolled['gold'], 'the throw plus five, less the crown for the room'
     assert_match(/gold\+\d+/, landing.last['fx'])
   end
 

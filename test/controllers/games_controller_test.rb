@@ -11,12 +11,15 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     get '/games'
 
     assert_response :success
-    assert_match 'Consider the Consequences!', @response.body
     # A series is one shelf entry; its volumes live on the series page.
     assert_match 'Lone Wolf', @response.body
     assert_no_match(/Flight from the Dark/, @response.body)
-    # Hidden, not gone: the shelf omits it while its URLs and bookmarks keep working.
+    # Hidden, not gone: the shelf omits these while their URLs and bookmarks work.
     assert_no_match(/Treasure Hunt/, @response.body)
+    assert_no_match(/Consider the Consequences/, @response.body)
+
+    get '/games/consider-the-consequences'
+    assert_response :success
 
     get '/games/series/lone-wolf'
     assert_match 'Book One - Flight from the Dark', @response.body

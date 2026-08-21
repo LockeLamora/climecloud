@@ -377,6 +377,7 @@ sections:
     choices:
     - label: If you have a Golden Key and wish to use it, turn to 326.
       to: '326'
+      needs: golden key
     - label: If you have the Kai Discipline of Mind Over Matter, turn to 151.
       to: '151'
       needs: mind over matter
@@ -553,6 +554,8 @@ sections:
     - label: If you wish to approach them and tell your story, turn to 289.
       to: '289'
     title: '37'
+    effects:
+      must_eat: true
   '38':
     text: |-
       For half an hour or more you press on through the forest, through the rich vegetation and ferns. You happen upon a small clear stream where you stop for a few minutes to wash your face and drink of the cold, fresh water.
@@ -613,15 +616,15 @@ sections:
     choices:
     - label: If you win, turn to 195.
       to: '195'
-    - label: After three rounds of combat, you position yourself so that you can run
-        down the hill. If you wish to evade at this time then turn to 106 and chance
-        being wounded as you flee.
-      to: '106'
     combat:
       enemies:
       - name: Black Bear
         skill: 16
         endurance: 10
+      evade:
+        after: 3
+        to: '106'
+        label: Break off and run down the hill
     title: '43'
   '44':
     text: |-
@@ -1298,6 +1301,9 @@ sections:
     - label: Turn to 284.
       to: '284'
     title: '102'
+    effects:
+      take:
+      - been to the graveyard
   '103':
     text: The overgrown path leads to a junction where another track branches off
       towards the east.
@@ -2011,6 +2017,8 @@ sections:
     - label: Turn to 209.
       to: '209'
     title: '161'
+    effects:
+      take: golden key
   '162':
     text: As you get nearer to the men, you call to them. As they turn to face you,
       your skin turns cold and your heart pounds, for they are Drakkarim in disguise.
@@ -2098,6 +2106,8 @@ sections:
     - label: Turn to 64.
       to: '64'
     title: '168'
+    effects:
+      must_eat: true
   '169':
     text: |-
       As you pass each skull, it slowly turns, as if watching your every move. You are halfway across the room when you hear the sharp crack of bone splitting. Suddenly you see hideous shapes hatching inside the skulls, and stretching their wings.
@@ -2311,6 +2321,8 @@ sections:
       gain:
         meal: 4
       must_eat: true
+    offers:
+    - item: sword
   '185':
     text: |-
       You narrow your eyes and scan the trees for some sign of the hidden archer. Your wait is not a long one, for a moment later a sharp pain tears through your chest and you are thrown back by the force of three arrows. Two of the black shafts have sunk deep into your rib cage, and the third has pierced your thigh.
@@ -2802,8 +2814,6 @@ sections:
       insects that sting your face and clog your nose. Something wraps itself around
       your leg. It is a Marshviper and you must fight it.
     choices:
-    - label: If you lose any ENDURANCE points in the combat, turn to 271.
-      to: '271'
     - label: If you kill it without losing any ENDURANCE points, turn to 348.
       to: '348'
     combat:
@@ -2811,6 +2821,7 @@ sections:
       - name: Marshviper
         skill: 16
         endurance: 6
+      on_wound: '271'
     title: '227'
   '228':
     text: The path continues eastwards but soon disappears into thick undergrowth.
@@ -2997,6 +3008,7 @@ sections:
       needs: mindshield
     - label: If you do not, turn to 9.
       to: '9'
+      without: mindshield
     title: '242'
   '243':
     text: Hurrying through the forest, you stumble and fall down a steep slope which
@@ -3191,6 +3203,9 @@ sections:
     - label: Turn to 50.
       to: '50'
     title: '258'
+    effects:
+      drop_backpack: true
+      drop_weapons: true
   '259':
     text: |-
       The room is getting colder. You gradually notice the smell of sulphur in the air. You can hear chanting in the distance. It sounds as if it is somewhere in another part of this cave. A slit in the stone wall opens, and the end of a black staff begins to appear. Suddenly a bolt of blue lightning leaps from the staff and hits you in the chest.
@@ -3344,6 +3359,7 @@ sections:
     - label: If you do not possess this skill, you prepare your weapon and stealthily
         approach the huts. Turn to 305.
       to: '305'
+      without: tracking
     title: '272'
   '273':
     text: The outer fieldworks of the city can now be seen. Drawn across the river
@@ -3368,6 +3384,8 @@ sections:
     - label: Turn to 331.
       to: '331'
     title: '274'
+    effects:
+      drop_weapons: true
   '275':
     text: |-
       You have followed this twisting track for about twenty minutes when you hear the beating of wings high above the trees. Looking up you see a large Kraan approaching from the north, its huge black wings casting a gigantic shadow on the trees below.
@@ -3395,6 +3413,8 @@ sections:
     choices:
     - label: Lose 1 ENDURANCE point and turn to 213.
       to: '213'
+      effects:
+        endurance: -1
     title: '276'
   '277':
     text: |-
@@ -3485,10 +3505,11 @@ sections:
       - name: Vordak
         skill: 17
         endurance: 25
-      surprise: 4
+      surprise: 2
       without:
       - item: mindshield
         modifier: -2
+        from_round: 1
     title: '283'
   '284':
     text: |-
@@ -3712,6 +3733,7 @@ sections:
       needs: camouflage
     - label: If you do not, turn to 72.
       to: '72'
+      without: camouflage
     title: '303'
   '304':
     text: |-
@@ -3781,6 +3803,8 @@ sections:
     - label: If you wish to chase after the runaway horse, turn to 233.
       to: '233'
     title: '308'
+    effects:
+      endurance: -1
   '309':
     text: |-
       You have taken less than ten paces when the raven squawks a warning to the stranger. Turning to face you, the robed creature utters a piercing screech that freezes your blood and grips your stomach with fear and panic. It is a Vordak, a lieutenant of the Darklords and one of the undead. Within seconds, a host of Giaks appear at its side and attack you. You fight bravely but you are greatly outnumbered.
@@ -3914,6 +3938,8 @@ sections:
     - label: Turn to 264.
       to: '264'
     title: '320'
+    effects:
+      endurance: -2
   '321':
     text: You walk for nearly an hour along the twisting river’s edge. Beyond the
       next turn you can hear the faint noise of battle. You carefully climb a steep
@@ -4007,6 +4033,9 @@ sections:
     - label: Turn to 284.
       to: '284'
     title: '329'
+    effects:
+      take:
+      - been to the graveyard
   '330':
     text: Fatigued by your exertions, you stop to rest for a few minutes at a fallen
       tree. You notice a large bundle, beneath the trunk.
@@ -4191,6 +4220,8 @@ sections:
     choices:
     - label: Lose 2 ENDURANCE points and turn to 213.
       to: '213'
+      effects:
+        endurance: -2
     title: '343'
   '344':
     text: You are weak and dizzy. You can no longer feel your legs and they refuse
@@ -4317,6 +4348,9 @@ worn:
 - helmet
 - chainmail waistcoat
 - crystal star pendant
+- been to the graveyard
+- been to ragadorn
+- golden key
 weapons:
   list:
   - dagger
@@ -4343,22 +4377,89 @@ weapons:
   - broadsword
 equipment_draw:
 - item: broadsword
+  about: A heavy two-edged blade, the pride of the Durenese smithies.
 - item: sword
+  about: A soldier's blade, and the commonest weapon in Sommerlund.
 - item: helmet
   endurance: 2
+  about: Worn on the head. Adds 2 ENDURANCE points to your total.
 - gain:
     meal: 2
+  about: Food for the road. A Meal is eaten when the story demands one, or when you
+    choose.
 - item: chainmail waistcoat
   endurance: 4
+  about: Worn on the body. Adds 4 ENDURANCE points to your total.
 - item: mace
+  about: 'A weighted head on a haft: crude, but it answers armour.'
 - gain:
     potion: 1
+  about: A Healing Potion. Restores 4 ENDURANCE points, and there is one dose.
+  name: 1 x Healing Potion
 - item: quarterstaff
+  about: A staff of seasoned wood, the traveller's friend.
 - item: spear
+  about: Reach, at the cost of close work.
 - gold: 12
+  about: Gold Crowns for your belt pouch. The pouch holds fifty.
 healing:
   item: healing
   stat: endurance
   delta: 1
 series: Lone Wolf
 volume: Book One
+disciplines:
+  camouflage:
+    name: Camouflage
+    about: This Discipline enables a Kai Lord to blend in with his surroundings. In
+      the countryside, he can hide undetected among trees and rocks and pass close
+      to an enemy without being seen.
+  hunting:
+    name: Hunting
+    about: This skill ensures that a Kai Lord will never starve in the wild. He will
+      always be able to hunt for food for himself except in areas of wasteland and
+      desert. The skill also enables a Kai Lord to be able to move stealthily when
+      stalking his prey.
+    effect: 'Hunting: no need for a Meal when instructed to eat'
+  sixth sense:
+    name: Sixth Sense
+    about: This skill may warn a Kai Lord of imminent danger. It may also reveal the
+      true purpose of a stranger or strange object encountered in your adventure.
+  tracking:
+    name: Tracking
+    about: This skill enables a Kai Lord to make the correct choice of a path in the
+      wild, to discover the location of a person or object in a town or city and to
+      read the secrets of footprints or tracks.
+  healing:
+    name: Healing
+    about: This Discipline can be used to restore ENDURANCE points lost in combat.
+      If you possess this skill you may restore 1 ENDURANCE point to your total for
+      every numbered section of the book you pass through in which you are not involved
+      in combat.
+    effect: 'Healing: +1 ENDURANCE point for each section without combat'
+  weaponskill:
+    name: Weaponskill
+    about: Upon entering the Kai Monastery, each initiate is taught to master one
+      type of weapon.
+  mindshield:
+    name: Mindshield
+    about: The Darklords and many of the evil creatures in their command have the
+      ability to attack you using their Mindforce. The Kai Discipline of Mindshield
+      prevents you from losing any ENDURANCE points when subjected to this form of
+      attack.
+    effect: 'Mindshield: no points lost when attacked by Mindblast'
+  mindblast:
+    name: Mindblast
+    about: This enables a Kai Lord to attack an enemy using the force of his mind.
+      It can be used at the same time as normal combat weapons and adds two extra
+      points to your COMBAT SKILL. Not all the creatures encountered on this adventure
+      will be harmed by Mindblast.
+    effect: 'Mindblast: +2 COMBAT SKILL points'
+  animal kinship:
+    name: Animal Kinship
+    about: This skill enables a Kai Lord to communicate with some animals and to be
+      able to guess the intentions of others.
+  mind over matter:
+    name: Mind Over Matter
+    about: Mastery of this Discipline enables a Kai Lord to move small objects with
+      his powers of concentration.

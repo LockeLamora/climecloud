@@ -76,6 +76,8 @@ Rails.application.routes.draw do
 
   # Before the :book wildcard, or games/series/lone-wolf would read as a section.
   get 'games/series/:name' => 'games#series', as: :games_series
+  get 'games/create/:book' => 'games#create', as: :games_create
+  post 'games/create/:book' => 'games#build', as: :games_build
   get 'games/:book' => 'games#book', as: :games_book
   post 'games/turn' => 'games#turn'
   post 'games/restart' => 'games#restart'

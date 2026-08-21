@@ -139,7 +139,9 @@ class LoneWolfThreeTest < ActionDispatch::IntegrationTest
   # A Kalkoth's barbed tongue: the least wound is a paralysing sting, and the fight
   # ends there rather than being fought out.
   test 'a wound the book acts on ends the fight where it stands' do
-    pack '123', stats: 'skill:1,endurance:40,endurance_max:40,gold:5,gold_max:50'
+    # Armed and hale, so the sting is what ends this, never a killing blow.
+    pack '123', stats: 'skill:15,endurance:90,endurance_max:90,gold:5,gold_max:50',
+                items: 'sword'
 
     landed = nil
     20.times do

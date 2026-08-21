@@ -7,7 +7,10 @@
 <%= glyph_text @stats.reject { |name, _| name.end_with?('_max') }.map { |name, value| "#{name.capitalize} #{value}" }.join(' - ') %><br />
 <%# sub, not tr: tr would truncate the replacement to a space and leave "meal 3", %>
 <%# which reads like a section number rather than a count. %>
-<%= glyph_text "Carrying: #{@items.presence&.map { |held| held.sub(':', ' x') }&.join(', ') || 'nothing'}" %><br />
+<%# Places the reader has been are remembered, not carried: they gate later books' %>
+<%# "if you have ever visited..." branches but never clutter the satchel. %>
+<% carried = Array(@items).reject { |held| held.start_with?('been to ') } %>
+<%= glyph_text "Carrying: #{carried.presence&.map { |held| held.sub(':', ' x') }&.join(', ') || 'nothing'}" %><br />
 <% if params[:rolled].present? %>
 <%= glyph_text "The Random Number Table gives #{params[:rolled].to_i}." %><br />
 <% end %>
@@ -83,7 +86,12 @@
 <%# so the skilled one counts whenever it is held — or the book forces the arms. %>
 <% if (arm = battle_arms(@book, @section['combat'], Array(@items))) %>
 <% weapon, worth = arm %>
-<%= glyph_text "Fighting #{weapon == 'bare hands' ? 'bare-handed' : "with the #{weapon}"}#{worth.zero? ? '' : " (skill #{format('%+d', worth)})"}." %><br />
+<% held = worth.zero? ? '' : " (skill #{format('%+d', worth)})" %>
+<% if weapon == 'level' %>
+<%= glyph_text 'A contest of strength: no weapon counts.' %><br />
+<% else %>
+<%= glyph_text "Fighting #{weapon == 'bare hands' ? 'bare-handed' : "with the #{weapon}"}#{held}." %><br />
+<% end %>
 <% end %>
 <%# The worked-out ratio, so every bonus and penalty the book lays on is visible. %>
 <%= glyph_text "Attack ratio #{format('%+d', combat_ratio(@book, @section, @stats || {}, Array(@items), @fight))}." %><br />
@@ -135,6 +143,9 @@
 <% elsif choice['without_any'] && choice['without_any'].any? { |name| holds?(Array(@items), name) } %>
 <% elsif choice['rank'] && rank_of(Array(@items)) < choice['rank'] %>
 <% elsif choice['rank_below'] && rank_of(Array(@items)) >= choice['rank_below'] %>
+<%# A memory of somewhere the reader has never been is nothing they can go and %>
+<%# fetch, so that branch simply is not theirs: hidden, like a stat fork. %>
+<% elsif choice['needs'].to_s.start_with?('been to ') && !holds?(Array(@items), choice['needs']) %>
 <% elsif choice['needs'] && !holds?(Array(@items), choice['needs']) %>
 <span class='error'><%= glyph_text "#{choice['label']} (needs the #{choice['needs']})", error: true %></span><br /><br />
 <% elsif choice['needs_any'] && choice['needs_any'].none? { |name| holds?(Array(@items), name) } %>

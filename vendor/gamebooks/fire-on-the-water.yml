@@ -341,11 +341,63 @@ sections:
 
       As the body is being dragged outside, you walk to the bar and call for the innkeeper. You press a Gold Crown into his hand and ask for a room for the night.
     choices:
-    - label: Turn to 314.
-      to: '314'
+    - label: Gather what the players left on the table
+      pick:
+        roll: 1d10
+        routes:
+        - min: 1
+          max: 1
+          to: '314'
+          effects:
+            gold: 3
+        - min: 2
+          max: 2
+          to: '314'
+          effects:
+            gold: 6
+        - min: 3
+          max: 3
+          to: '314'
+          effects:
+            gold: 9
+        - min: 4
+          max: 4
+          to: '314'
+          effects:
+            gold: 12
+        - min: 5
+          max: 5
+          to: '314'
+          effects:
+            gold: 15
+        - min: 6
+          max: 6
+          to: '314'
+          effects:
+            gold: 18
+        - min: 7
+          max: 7
+          to: '314'
+          effects:
+            gold: 21
+        - min: 8
+          max: 8
+          to: '314'
+          effects:
+            gold: 24
+        - min: 9
+          max: 9
+          to: '314'
+          effects:
+            gold: 27
+        - min: 10
+          max: 10
+          to: '314'
+          effects:
+            gold: 30
     title: '21'
     effects:
-      gold: 3d10
+      gold: -1
     offers:
     - item: dagger
       label: Take the Card Sharp's Dagger
@@ -434,6 +486,8 @@ sections:
     - label: Your rest is very refreshing. Restore 2 ENDURANCE points (if any have
         been lost on your adventure so far) and turn to 312.
       to: '312'
+      effects:
+        endurance: 2
     title: '27'
   '28':
     text: The cowardly Szalls squeal in terror and run in all directions to avoid
@@ -604,6 +658,8 @@ sections:
     title: '37'
     effects:
       must_eat: true
+      take:
+      - been to ragadorn
   '38':
     text: You grab the shaft of the Spear and thrust it upwards into the rib cage
       of the Helghast. It screams in agony and rage, and releases its grip on your
@@ -658,6 +714,8 @@ sections:
     - label: If you wish to take his advice, restore 1 ENDURANCE point and turn to
         194.
       to: '194'
+      effects:
+        endurance: 1
     - label: If you prefer to stay awake and keep watch for any other survivors of
         the storm, turn to 251.
       to: '251'
@@ -869,6 +927,7 @@ sections:
       - name: Halvorc
         skill: 8
         endurance: 11
+      shielded_rounds: 2
     title: '60'
   '61':
     text: Through the pouring rain, you can just make out the dark shape of a city
@@ -892,12 +951,17 @@ sections:
         to him, you will have to risk showing him the Seal of Hammerdal if you possess
         it. Turn to 263.
       to: '263'
+      needs: seal of hammerdal
     - label: If you have collected the necessary documents on your quest, turn to
         126.
       to: '126'
+      needs: white pass
     - label: If you do not have either the Seal or the documents, leave the room and
         return to the outer hall by turning to 318.
       to: '318'
+      without_any:
+      - seal of hammerdal
+      - white pass
     title: '62'
   '63':
     text: You are awoken during the night by the weight of something on your chest.
@@ -1030,6 +1094,7 @@ sections:
     title: '72'
     effects:
       endurance: 1
+      gold: -1
   '73':
     text: |-
       The climb is very difficult, for you have only one free hand—the other holds the glowing hilt of the Sommerswerd.
@@ -1073,6 +1138,8 @@ sections:
       to: '142'
       cost:
         gold: 10
+      effects:
+        take: white pass
     - label: If you do not have enough money or do not wish to purchase the pass,
         leave this office and return to the hall by turning to 318.
       to: '318'
@@ -1640,7 +1707,7 @@ sections:
       to: '314'
     title: '116'
     effects:
-      gold: 1d10+4
+      gold: 1d10+3
   '117':
     text: |-
       It is a large passenger wagon similar to those used by highway travellers of Sommerlund. The driver pulls the horses to a halt and stares at you from under the wide brim of his hat. You ask where he’s bound for.
@@ -1868,6 +1935,8 @@ sections:
     - label: If you wish to mount his horse and escape, turn to 150.
       to: '150'
     title: '132'
+    offers:
+    - item: spear
   '133':
     text: Looking directly into the sailor’s eyes, you concentrate your Mindblast
       at his open hand. Suddenly the man falls backwards from his chair, clutching
@@ -1947,6 +2016,9 @@ sections:
     - label: If you wish to head west, turn to 114.
       to: '114'
     title: '139'
+    effects:
+      gain:
+        meal: 2
   '140':
     text: |-
       Both guards stare at the Seal in awe. The legend of the Seal of Hammerdal is well known to all the people of Durenor. It is said that of all the lost treasures of Durenor, the Seal of Hammerdal is the one they would not wish returned. The anxious faces of the two guards show they clearly realize its significance.
@@ -2084,6 +2156,8 @@ sections:
     title: '148'
     effects:
       must_eat: true
+      take:
+      - been to ragadorn
   '149':
     text: You can sense that this guard is a loyal Durenese soldier. If you were to
       attempt to bribe him, he would be likely to consider it a grave insult and attack
@@ -2251,6 +2325,7 @@ sections:
     - label: If you are carrying a Weapon and wish to demonstrate your Kai Weaponskill,
         turn to 255.
       to: '255'
+      needs: weaponskill
     - label: If you wish to demonstrate your Kai Discipline of Animal Kinship, turn
         to 203.
       to: '203'
@@ -2281,9 +2356,6 @@ sections:
   '162':
     text: He bellows his battle-cry and lunges at your head.
     choices:
-    - label: You may evade combat at any time by running into the trees and turning
-        to 244.
-      to: '244'
     - label: If you win the combat, turn to 302.
       to: '302'
     combat:
@@ -2291,6 +2363,10 @@ sections:
       - name: Knight of the White Mountain
         skill: 20
         endurance: 27
+      evade:
+        after: 0
+        to: '244'
+        label: Break off and escape
     title: '162'
   '163':
     text: |-
@@ -2541,6 +2617,17 @@ sections:
     - label: Turn to 186.
       to: '186'
     title: '181'
+    offers:
+    - item: rope
+      price: 4
+      label: Buy a Rope (4 Gold Crowns)
+    - item: lantern
+      price: 6
+      label: Buy a Lantern (6 Gold Crowns)
+    - item: potion
+      count: 1
+      price: 7
+      label: Buy a Potion of Laumspur (7 Gold Crowns)
   '182':
     text: You must find shelter for the night or you will risk being arrested by the
       city guard. Your Kai sense tells you that the best course of action is to return
@@ -2583,9 +2670,6 @@ sections:
     text: As you race along the corpse-littered deck, two Drakkarim warriors emerge
       from a doorway and attack you by surprise. You must fight them one at a time.
     choices:
-    - label: You may evade at any stage of the combat by diving into the sea. Turn
-        to 286.
-      to: '286'
     - label: If you kill them both in combat, you can then jump to the deck of a nearby
         Durenese ship by turning to 120.
       to: '120'
@@ -2597,6 +2681,10 @@ sections:
       - name: Drakkar 2
         skill: 16
         endurance: 26
+      evade:
+        after: 0
+        to: '286'
+        label: Break off and escape
     title: '185'
   '186':
     text: |-
@@ -2626,6 +2714,10 @@ sections:
     - label: Turn to 265.
       to: '265'
     title: '187'
+    offers:
+    - item: sword
+    - item: dagger
+    - item: mace
   '188':
     text: Your quick wits and skill have saved you from a venomous bite. As the snake
       disappears into the long grass beyond the road, you gather together your Backpack
@@ -3117,6 +3209,8 @@ sections:
     - label: If you wish to buy a room for the night pay the innkeeper 2 Gold Crowns
         and turn to 56.
       to: '56'
+      cost:
+        gold: 2
     - label: If you wish to try your luck at winning some Gold Crowns at arm-wrestling,
         turn to 276.
       to: '276'
@@ -3207,6 +3301,7 @@ sections:
     - label: If you want to show him the Seal of Hammerdal (if you still have it),
         turn to 223.
       to: '223'
+      needs: seal of hammerdal
     title: '232'
   '233':
     text: "‘We’re bound for Ragadorn—due there by noon today,’ he says, his face almost
@@ -3216,12 +3311,19 @@ sections:
     - label: If you wish to ride inside the coach, pay the driver 3 Gold Crowns and
         turn to 37.
       to: '37'
+      cost:
+        gold: 3
     - label: If you would prefer to stay on the roof, pay him one Gold Crown and turn
         to 148.
       to: '148'
+      cost:
+        gold: 1
     - label: If you cannot pay the fare, you must leave the coach and walk. Turn to
         292.
       to: '292'
+      when:
+        stat: gold
+        at_most: 0
     title: '233'
   '234':
     text: |-
@@ -3410,11 +3512,16 @@ sections:
     choices:
     - label: If you have a White Pass, turn to 170.
       to: '170'
+      needs: white pass
     - label: If you have a Red Pass, turn to 202.
       to: '202'
+      needs: red pass
     - label: If you do not have a pass, you will be refused entry to the harbour.
         Turn to 327.
       to: '327'
+      without_any:
+      - white pass
+      - red pass
     title: '246'
   '247':
     text: |-
@@ -3457,6 +3564,7 @@ sections:
     - label: If you choose to reveal the Seal of Hammerdal (if you still possess it),
         turn to 223.
       to: '223'
+      needs: seal of hammerdal
     title: '250'
   '251':
     text: |-
@@ -3593,6 +3701,9 @@ sections:
     - label: Turn to 65.
       to: '65'
     title: '262'
+    offers:
+    - item: sword
+    - item: dagger
   '263':
     text: |-
       The man stares at the Seal with a look of shocked dismay. Without saying a word, he gets up from his chair and beckons you to follow him up a flight of spiral stairs that lead to a domed chamber. Here you meet the captain of the port watch. He listens intently as you tell of the war in Sommerlund and of your urgent mission.
@@ -3691,9 +3802,6 @@ sections:
 
       As he speaks, a door crashes open behind you and you turn to see three harbour thugs advancing towards you. Each is armed with a scimitar and you have no choice but to fight all three as one enemy.
     choices:
-    - label: You may evade after two rounds of combat by running through a side door.
-        Turn to 125.
-      to: '125'
     - label: If you win this combat, turn to 333.
       to: '333'
     combat:
@@ -3701,6 +3809,10 @@ sections:
       - name: Harbour Thugs
         skill: 16
         endurance: 25
+      evade:
+        after: 2
+        to: '125'
+        label: Break off and escape
     title: '268'
   '269':
     text: |-
@@ -4045,9 +4157,6 @@ sections:
     text: The people flee the tavern as the town guard attack. There are six of them
       and you must fight them one at a time.
     choices:
-    - label: You may evade at any time by running out of the back door and turning
-        to 88.
-      to: '88'
     - label: If you kill all of the town guard in combat, turn to 221.
       to: '221'
     combat:
@@ -4070,6 +4179,10 @@ sections:
       - name: Town Guard 4
         skill: 10
         endurance: 17
+      evade:
+        after: 0
+        to: '88'
+        label: Break off and escape
     title: '296'
   '297':
     text: Halfway along this street on the left-hand side is a large stable and coach
@@ -4165,6 +4278,7 @@ sections:
       gold: 3
     offers:
     - item: dagger
+      count: 3
     - item: short sword
   '302':
     text: |-
@@ -4177,6 +4291,9 @@ sections:
     - label: Turn to 244.
       to: '244'
     title: '302'
+    offers:
+    - item: short sword
+    - item: dagger
   '303':
     text: Piles of rotting garbage litter this stretch of the waterfront, giving off
       such an evil smell that you are forced to cover your mouth and nose with your
@@ -4219,6 +4336,7 @@ sections:
       - name: Border Guard
         skill: 16
         endurance: 24
+      double_damage: true
     title: '306'
   '307':
     text: The guards look angry and ready to attack. You will have to think of something
@@ -4229,6 +4347,7 @@ sections:
     - label: If you decide to show them the Seal of Hammerdal (if you still have it),
         turn to 140.
       to: '140'
+      needs: seal of hammerdal
     - label: If you think it is safer to draw your weapon and attack, turn to 282.
       to: '282'
     title: '307'
@@ -4677,6 +4796,8 @@ sections:
         drop:
         - magic spear
     title: '338'
+    effects:
+      endurance: -2
   '339':
     text: 'After only half an hour, the coach is stopped by some armed horsemen. They
       wear the black ship and red crest emblem of Lachlan the Overlord of Ragadorn.
@@ -4687,8 +4808,13 @@ sections:
     - label: If you can pay the tax, do so and the coach will be allowed to go on
         its way. Turn to 249.
       to: '249'
+      cost:
+        gold: 1
     - label: If you have no money, turn to 50.
       to: '50'
+      when:
+        stat: gold
+        at_most: 0
     title: '339'
   '340':
     text: You have been walking along the deserted tunnel for a further half-hour
@@ -4794,9 +4920,6 @@ sections:
 
       ‘Perhaps neither you nor I are all we claim to be. No matter. You will not live long enough to discover who I really am!’ You hear a door crash open behind you. Spinning round, you see three harbour thugs moving towards you. Each is armed with a scimitar and you must fight them as one enemy.
     choices:
-    - label: You may evade after two rounds of combat by using a side door and turning
-        to 125.
-      to: '125'
     - label: If you win the combat, turn to 333.
       to: '333'
     combat:
@@ -4804,6 +4927,10 @@ sections:
       - name: Harbour Thugs
         skill: 16
         endurance: 25
+      evade:
+        after: 2
+        to: '125'
+        label: Break off and escape
     title: '348'
   '349':
     text: You have covered nearly three miles when you see a group of wagons in the
@@ -4843,37 +4970,49 @@ sections:
     - item: sword
       spends: armoury choice
       label: A Sword
+      about: A soldier's blade, and the commonest weapon in Sommerlund.
     - item: short sword
       spends: armoury choice
       label: A Short Sword
+      about: Lighter than a sword and quicker in a close corner.
     - item: meal
       count: 2
       spends: armoury choice
       label: Two Meals
+      about: Food for the road. A Meal is eaten when the story demands one, or when
+        you choose.
     - item: chainmail waistcoat
       spends: armoury choice
       effects:
         endurance: 4
       label: A Chainmail Waistcoat (endurance +4)
+      about: Worn on the body. Adds 4 ENDURANCE points to your total.
     - item: mace
       spends: armoury choice
       label: A Mace
+      about: 'A weighted head on a haft: crude, but it answers armour.'
     - item: potion
       count: 1
       spends: armoury choice
       label: A Healing Potion (endurance +4)
+      about: A Healing Potion. Restores 4 ENDURANCE points, and there is one dose.
     - item: quarterstaff
       spends: armoury choice
       label: A Quarterstaff
+      about: A staff of seasoned wood, the traveller's friend.
     - item: spear
       spends: armoury choice
       label: A Spear
+      about: Reach, at the cost of close work.
     - item: shield
       spends: armoury choice
       label: A Shield (skill +2 in combat)
+      about: Slung on the shoulder until blows fall. Adds 2 to your COMBAT SKILL in
+        combat.
     - item: broadsword
       spends: armoury choice
       label: A Broadsword
+      about: A heavy two-edged blade, the pride of the Durenese smithies.
     choices:
     - label: Leave for the quay
       to: '1'
@@ -4901,6 +5040,9 @@ worn:
 - scroll
 - message
 - soap
+- been to the graveyard
+- been to ragadorn
+- red pass
 weapons:
   list:
   - dagger
@@ -4942,3 +5084,58 @@ healing:
   item: healing
   stat: endurance
   delta: 1
+disciplines:
+  camouflage:
+    name: Camouflage
+    about: This Discipline enables a Kai Lord to blend in with his surroundings. In
+      the countryside, he can hide undetected among trees and rocks and pass close
+      to an enemy without being seen.
+  hunting:
+    name: Hunting
+    about: This skill ensures that a Kai Lord will never starve in the wild. He will
+      always be able to hunt for food for himself except in areas of wasteland and
+      desert. The skill also enables a Kai Lord to be able to move stealthily when
+      stalking his prey.
+    effect: 'Hunting: no need for a Meal when instructed to eat'
+  sixth sense:
+    name: Sixth Sense
+    about: This skill may warn a Kai Lord of imminent danger. It may also reveal the
+      true purpose of a stranger or strange object encountered in your adventure.
+  tracking:
+    name: Tracking
+    about: This skill enables a Kai Lord to make the correct choice of a path in the
+      wild, to discover the location of a person or object in a town or city and to
+      read the secrets of footprints or tracks.
+  healing:
+    name: Healing
+    about: This Discipline can be used to restore ENDURANCE points lost in combat.
+      If you possess this skill you may restore 1 ENDURANCE point to your total for
+      every numbered section of the book you pass through in which you are not involved
+      in combat.
+    effect: 'Healing: +1 ENDURANCE point for each section without combat'
+  weaponskill:
+    name: Weaponskill
+    about: Upon entering the Kai Monastery, each initiate is taught to master one
+      type of weapon.
+  mindshield:
+    name: Mindshield
+    about: The Darklords and many of the evil creatures in their command have the
+      ability to attack you using their Mindforce. The Kai Discipline of Mindshield
+      prevents you from losing any ENDURANCE points when subjected to this form of
+      attack.
+    effect: 'Mindshield: no points lost when attacked by Mindblast'
+  mindblast:
+    name: Mindblast
+    about: This enables a Kai Lord to attack an enemy using the force of his mind.
+      It can be used at the same time as normal combat weapons and adds two extra
+      points to your COMBAT SKILL. Not all the creatures encountered on this adventure
+      will be harmed by Mindblast.
+    effect: 'Mindblast: +2 COMBAT SKILL points'
+  animal kinship:
+    name: Animal Kinship
+    about: This skill enables a Kai Lord to communicate with some animals and to be
+      able to guess the intentions of others.
+  mind over matter:
+    name: Mind Over Matter
+    about: Mastery of this Discipline enables a Kai Lord to move small objects with
+      his powers of concentration.

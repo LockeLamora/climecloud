@@ -1,10 +1,12 @@
+---
 id: consider-the-consequences
 order: 1
 title: Consider the Consequences!
 author: Doris Webster & Mary Alden Hopkins
 year: 1930
-about: The first branching-path book ever published. Steer Helen, Jed and Saunders through the crises
-  of their lives, one decision at a time, to any of forty-three endings.
+about: The first branching-path book ever published. Steer Helen, Jed and Saunders
+  through the crises of their lives, one decision at a time, to any of forty-three
+  endings.
 start: start
 sections:
   start:
@@ -56,11 +58,12 @@ sections:
 
       Helen, who had only just caught her breath after making one decision, now faced a second. She knew that Jed's mother was insanely jealous and that she would selfishly do everything she could to stop the marriage under the pretense that she was acting for Jed's happiness. On the other hand, Helen disliked anything clandestine.
     choices:
-    - label: The reader who thinks she will be wise to avoid argument and trouble by eloping turns
-        to paragraphs H-3.
+    - label: The reader who thinks she will be wise to avoid argument and trouble
+        by eloping turns to paragraphs H-3.
       to: H-3
-    - label: The one who thinks she would better decide to return home, determined to face the music
-        and go through with her marriage in spite of opposition, turns to paragraphs H-4.
+    - label: The one who thinks she would better decide to return home, determined
+        to face the music and go through with her marriage in spite of opposition,
+        turns to paragraphs H-4.
       to: H-4
   H-2:
     title: H-2
@@ -80,11 +83,11 @@ sections:
 
       Jed was anxious to go to his mother's home, and he explained to Helen that his mother had done everything for him and he felt deeply indebted to her. Helen knew that he really did love Mrs. Harringdale in spite of her peculiarities. She also realized the practical advantages of this course even better than Jed did. His income from bond-selling was precarious and not enough at best to afford them a comfortable home. While she herself was able to face poverty, she hesitated to subject Jed to unaccustomed hardships to which he might not be physically equal.
     choices:
-    - label: The reader who wishes Helen to accept her mother-in-law's offer turns to paragraphs
-        H-7.
+    - label: The reader who wishes Helen to accept her mother-in-law's offer turns
+        to paragraphs H-7.
       to: H-7
-    - label: He who wishes her to face hard work and actual poverty on Jed's precarious and meager
-        salary turns to paragraphs H-8.
+    - label: He who wishes her to face hard work and actual poverty on Jed's precarious
+        and meager salary turns to paragraphs H-8.
       to: H-8
   H-4:
     title: H-4
@@ -97,11 +100,11 @@ sections:
 
       Helen foresaw that the situation would remain unchanged indefinitely. She still loved Jed and she knew that she was the love of his life, but it was clear that he would not marry until his mother died.
     choices:
-    - label: The reader who thinks Helen should stick by Jed until her problem is solved by the
-        death of Mrs. Harringdale turns to paragraphs H-9.
+    - label: The reader who thinks Helen should stick by Jed until her problem is
+        solved by the death of Mrs. Harringdale turns to paragraphs H-9.
       to: H-9
-    - label: The one who thinks she should definitely break her engagement to Jed turns to paragraphs
-        H-10.
+    - label: The one who thinks she should definitely break her engagement to Jed
+        turns to paragraphs H-10.
       to: H-10
   H-5:
     title: H-5
@@ -112,7 +115,8 @@ sections:
 
       Marian telegraphed her of a good opening in the magazine office where she was employed, which Helen could fill because of her business training. Although she would start at only twenty dollars a week, there was the chance of rapid promotion. Marian herself was now earning fifty. But there was also a stenographic position in Franklin open to her at twelve dollars a week with a probable increase to fifteen. If she took this job she could continue to live at home, thus eliminating the expense of board and at the same time affording her mother the companionship of a daughter.
     choices:
-    - label: The reader who thinks Helen should take the Franklin job turns to paragraphs H-11.
+    - label: The reader who thinks Helen should take the Franklin job turns to paragraphs
+        H-11.
       to: H-11
     - label: He who thinks she should take the New York job turns to paragraphs H-12.
       to: H-12
@@ -129,10 +133,11 @@ sections:
 
       (Note: H-12 is the same situation resulting from one of her other possible decisions, for fate occasionally leads by different routes to the same point.)
     choices:
-    - label: The reader who thinks Helen should stay in the printing-house turns to paragraphs H-13.
+    - label: The reader who thinks Helen should stay in the printing-house turns to
+        paragraphs H-13.
       to: H-13
-    - label: The reader who thinks she should accept the position in the magazine office turns to
-        paragraphs H-12.
+    - label: The reader who thinks she should accept the position in the magazine
+        office turns to paragraphs H-12.
       to: H-12
   H-7:
     title: H-7
@@ -141,12 +146,13 @@ sections:
 
       The birth of a child brought a brief armistice between the two women, followed by even worse conditions. Helen made up her mind that Jed and she must move, but the decision was now not hers to make, for Jed definitely refused to leave his mother's home. This was partly because of his increasing ill-health. His death came suddenly, leaving Helen financially dependent upon her mother-in-law, who would give her a home but refused her separate maintenance.
     choices:
-    - label: The reader who feels that Helen should stay on in order to spare her frail child the
-        dangerous hardships of poverty and insure his inheritance turns to paragraphs H-14.
+    - label: The reader who feels that Helen should stay on in order to spare her
+        frail child the dangerous hardships of poverty and insure his inheritance
+        turns to paragraphs H-14.
       to: H-14
-    - label: The one who thinks it Helen's duty to leave the mother-in-law's house and the demoralizing
-        influences which Helen believes ruined Jed's life, and attempt to earn a living for herself
-        and her child, turns to paragraphs H-16.
+    - label: The one who thinks it Helen's duty to leave the mother-in-law's house
+        and the demoralizing influences which Helen believes ruined Jed's life, and
+        attempt to earn a living for herself and her child, turns to paragraphs H-16.
       to: H-16
   H-8:
     title: H-8
@@ -155,11 +161,12 @@ sections:
 
       Jed, who had almost stopped drinking after his marriage, again fled from the harsh realities of life into the splendid fantasies of drink. As a direct result he lost his job and after months of idleness was glad to take one as an automobile salesman. The reéstablished drink habit held, however, and he met with a serious accident while driving under the influence of intoxicants. Although Mrs. Harringdale now came to their aid, it was too late; Jed's weakened constitution hastened his death. Helen was left a widow with a frail child dependent on her. Mrs. Harringdale offered to adopt the little boy and bring him up as her heir, provided Helen would relinquish all legal claim upon him.
     choices:
-    - label: The reader who advises Helen to sacrifice her mother-love in order to give her delicate
-        child expert medical attention, financial security, and education turns to paragraphs H-15.
+    - label: The reader who advises Helen to sacrifice her mother-love in order to
+        give her delicate child expert medical attention, financial security, and
+        education turns to paragraphs H-15.
       to: H-15
-    - label: The one who advises her to keep him and attempt to earn a living for the two of them
-        turns to paragraphs H-16.
+    - label: The one who advises her to keep him and attempt to earn a living for
+        the two of them turns to paragraphs H-16.
       to: H-16
   H-9:
     title: H-9
@@ -177,9 +184,11 @@ sections:
 
       These are both situations in which she finds herself in other potential lives; for one may occasionally reach the same point by different paths.
     choices:
-    - label: The reader who thinks that Helen should take the Franklin job turns to paragraphs H-11.
+    - label: The reader who thinks that Helen should take the Franklin job turns to
+        paragraphs H-11.
       to: H-11
-    - label: The one who thinks she should take the New York job turns to paragraphs H-12.
+    - label: The one who thinks she should take the New York job turns to paragraphs
+        H-12.
       to: H-12
   H-11:
     title: H-11
@@ -199,9 +208,11 @@ sections:
 
       Helen had not known that life could be so gay. But eventually a time came when she had to decide which to put first, her job at the magazine office or her social life. A telegram came from the editor, Paul Merritt, who was out West addressing a convention, directing her to remove a certain article, found to be libelous, from the issue about to go on the press. It was five o'clock, but the foreman of the printing-plant said that if Helen would stay to proofread the new matter to be substituted, make the readjustments in make-up and O.K. the press proof, he would keep part of the composing staff there until twelve o'clock and the magazine could come out on time. If Helen worked overtime correcting the proofs she would impress Mr. Merritt and really help the business. On the other hand, her hours were from nine to five and she was under no obligation to work longer. Only those higher up had to worry about emergencies. Moreover, there was a party on that night, an important party, and Helen had bought a new dress for the benefit of Phil Burns, a young artist whom she was beginning to find extremely congenial.
     choices:
-    - label: The reader who would advise Helen to go to the party turns to paragraphs H-19.
+    - label: The reader who would advise Helen to go to the party turns to paragraphs
+        H-19.
       to: H-19
-    - label: The one who would advise her to do the overtime work turns to paragraphs H-20.
+    - label: The one who would advise her to do the overtime work turns to paragraphs
+        H-20.
       to: H-20
   H-13:
     title: H-13
@@ -265,11 +276,11 @@ sections:
 
       Helen's mother was aghast at the suggestion that her daughter should leave her, and Simeon cabled his frantic disapproval. The whole city of Franklin rose up and took sides, some saying that Helen had heard "the Lord's call" and others that "duty begins at home."
     choices:
-    - label: The reader who thinks that Helen should go to China as Mr. Montgomery's wife turns
-        to paragraphs H-23.
+    - label: The reader who thinks that Helen should go to China as Mr. Montgomery's
+        wife turns to paragraphs H-23.
       to: H-23
-    - label: The reader who thinks that she should remain with her invalid mother turns to paragraphs
-        H-24.
+    - label: The reader who thinks that she should remain with her invalid mother
+        turns to paragraphs H-24.
       to: H-24
   H-19:
     title: H-19
@@ -293,14 +304,16 @@ sections:
 
       Helen had this time not two but three courses open to her.
     choices:
-    - label: The reader who thinks she should give up Paul completely turns to paragraphs H-25.
+    - label: The reader who thinks she should give up Paul completely turns to paragraphs
+        H-25.
       to: H-25
-    - label: He who thinks she should encourage him to get a divorce and marry her turns to paragraphs
-        H-26.
+    - label: He who thinks she should encourage him to get a divorce and marry her
+        turns to paragraphs H-26.
       to: H-26
-    - label: He who thinks she should give herself to Paul while he at the same time remains with
-        his wife and children, so that both Paul and Helen may, without breaking up his home, have
-        the emotional happiness they need, turns to paragraphs H-27.
+    - label: He who thinks she should give herself to Paul while he at the same time
+        remains with his wife and children, so that both Paul and Helen may, without
+        breaking up his home, have the emotional happiness they need, turns to paragraphs
+        H-27.
       to: H-27
   H-21:
     title: H-21
@@ -311,11 +324,11 @@ sections:
 
       Helen had planned to spend the afternoon at her first husband's grave with her little boy, for it was the second anniversary of Jed's death.
     choices:
-    - label: The reader who thinks she should go off for a good time with Saunders on the anniversary
-        of Jed's death turns to paragraphs H-28.
+    - label: The reader who thinks she should go off for a good time with Saunders
+        on the anniversary of Jed's death turns to paragraphs H-28.
       to: H-28
-    - label: He who thinks she should carry flowers to Jed's grave and spend the time in a manner
-        appropriate to the occasion turns to paragraphs H-29.
+    - label: He who thinks she should carry flowers to Jed's grave and spend the time
+        in a manner appropriate to the occasion turns to paragraphs H-29.
       to: H-29
   H-22:
     title: H-22
@@ -389,7 +402,8 @@ sections:
 
       When Helen asked further questions his repressed resentment against her burst forth and he told her that ever since their marriage she had been indifferent to him in spite of everything he had done to please her, and that he had received from Carol the kindness which his own wife refused him. He admitted frankly that he had been unfaithful to Helen, but declared with unexpected vehemence that since she did not love him he was justified in seeking love elsewhere so long as he continued to give her and her boy a good home.
     choices:
-    - label: The reader who thinks that she should divorce Saunders turns to paragraphs H-32.
+    - label: The reader who thinks that she should divorce Saunders turns to paragraphs
+        H-32.
       to: H-32
     - label: The one who thinks she should not turns to paragraphs H-33.
       to: H-33
@@ -429,9 +443,11 @@ sections:
 
       Helen now wished that she had appreciated Saunders's devotion. The chance came to go with him on a week-end skiing party, but when young Jed heard of it he was heart-broken at the thought of his mother leaving him with his nurse for three days. He pleaded with her not to go. He became hysterical and sobbed, "Oh, don't go, Mummie! don't go!"
     choices:
-    - label: The reader who thinks she should stay with her child turns to paragraphs H-34.
+    - label: The reader who thinks she should stay with her child turns to paragraphs
+        H-34.
       to: H-34
-    - label: The reader who thinks she should go with her husband turns to paragraphs H-35.
+    - label: The reader who thinks she should go with her husband turns to paragraphs
+        H-35.
       to: H-35
   H-34:
     title: H-34
@@ -474,7 +490,8 @@ sections:
 
       It was a terrible punishment, for an hour of dalliance, to ruin his career and hurt his mother so cruelly. Yet the child was his as much as Gwen's.
     choices:
-    - label: The reader who decides that Jed is to marry Gwen turns to paragraphs J-1.
+    - label: The reader who decides that Jed is to marry Gwen turns to paragraphs
+        J-1.
       to: J-1
     - label: The one who decides that he is not to marry her turns to paragraphs J-2.
       to: J-2
@@ -497,7 +514,8 @@ sections:
 
       You have been away long enough. It is now time for you to come home and relieve me of the care of the estate. My head gets quite muddled over taxes and rents. I shall turn the entire responsibility over to you. You are young, but you can learn. You can have the attic made into a studio and you can paint afternoons, but I am too old to live without you.
     choices:
-    - label: The reader who thinks he should return to Franklin turns to paragraphs J-3.
+    - label: The reader who thinks he should return to Franklin turns to paragraphs
+        J-3.
       to: J-3
     - label: The reader who thinks he should stay in Paris turns to paragraphs J-4.
       to: J-4
@@ -522,7 +540,8 @@ sections:
 
       Carol indignantly stood up for the single standard. If she forgave him, he should forgive her.
     choices:
-    - label: The reader who wishes Jed to go on with the marriage turns to paragraphs J-5.
+    - label: The reader who wishes Jed to go on with the marriage turns to paragraphs
+        J-5.
       to: J-5
     - label: The one who wishes him to break with Carol turns to paragraphs J-6.
       to: J-6
@@ -553,9 +572,11 @@ sections:
 
       The watchman, a man of unquestioned honesty, told his strange story, and the insurance company took prompt action. Jed faced arrest. He foresaw certain conviction, a long term of imprisonment and lifelong disgrace. Suicide again seemed to him the only alternative. He had a revolver in his room, and as the police rang the bell he picked it up.
     choices:
-    - label: The reader who decides that Jed is to commit suicide turns to paragraphs J-7.
+    - label: The reader who decides that Jed is to commit suicide turns to paragraphs
+        J-7.
       to: J-7
-    - label: The reader who decides that he is to live on, disgraced, turns to paragraphs J-8.
+    - label: The reader who decides that he is to live on, disgraced, turns to paragraphs
+        J-8.
       to: J-8
   J-4:
     title: J-4
@@ -570,8 +591,8 @@ sections:
 
       Jed thought that he could easily cajole her out of these strong-minded notions, but she pointed out some three or four of her intimate friends who had both successful careers and happy home lives. She told him that though she loved him she knew that she could not be happy with a man too crystallized to adapt himself to a wife with a career.
     choices:
-    - label: The reader who thinks Jed should give up Europe and marry Marian Cole turns to paragraphs
-        J-9.
+    - label: The reader who thinks Jed should give up Europe and marry Marian Cole
+        turns to paragraphs J-9.
       to: J-9
     - label: He who thinks he should give up Marian turns to paragraphs J-10.
       to: J-10
@@ -613,9 +634,11 @@ sections:
 
       The two years that followed were distressing to everybody. Mrs. Harringdale would not recognize her son's engagement to Helen, except by fulminating against it. She developed high blood-pressure under the strain, and the doctors warned Jed that any undue excitement would bring on a stroke and possibly be fatal to his mother. At the end of two years Helen insisted that they must separate or marry. If he was to hold her, Jed had to choose between his mother's health and marriage with Helen. He felt deeply the truth of the old saying that a man may have many sweethearts but he has only one mother.
     choices:
-    - label: The reader who decides that he is to marry Helen turns to paragraphs J-13.
+    - label: The reader who decides that he is to marry Helen turns to paragraphs
+        J-13.
       to: J-13
-    - label: The reader who decides that he is to stand by his mother turns to paragraphs J-14.
+    - label: The reader who decides that he is to stand by his mother turns to paragraphs
+        J-14.
       to: J-14
   J-7:
     title: J-7
@@ -658,18 +681,19 @@ sections:
   J-11:
     title: J-11
     text: Having given himself up to the police, with the confession that he had unintentionally
-      killed Bullen in a drunken row, Jed sent for a good lawyer. He told his lawyer the whole story
-      and the lawyer assured him that no French jury would be hard on a man who had killed his wife's
-      lover under such circumstances. He was surprised that Jed hesitated to sacrifice his wife's
-      reputation to clear himself and said that unless he pleaded the unwritten law he faced the
-      certainty of a long jail sentence. Jed consulted Carol, who begged him not to tell, for she
-      was sure he would get off.
+      killed Bullen in a drunken row, Jed sent for a good lawyer. He told his lawyer
+      the whole story and the lawyer assured him that no French jury would be hard
+      on a man who had killed his wife's lover under such circumstances. He was surprised
+      that Jed hesitated to sacrifice his wife's reputation to clear himself and said
+      that unless he pleaded the unwritten law he faced the certainty of a long jail
+      sentence. Jed consulted Carol, who begged him not to tell, for she was sure
+      he would get off.
     choices:
-    - label: The reader who thinks Jed should tell that it was finding his wife in Bullen's room
-        that incited him to murder, turns to paragraphs J-15.
+    - label: The reader who thinks Jed should tell that it was finding his wife in
+        Bullen's room that incited him to murder, turns to paragraphs J-15.
       to: J-15
-    - label: The one who thinks he should protect his wife's reputation by silence turns to paragraphs
-        J-16.
+    - label: The one who thinks he should protect his wife's reputation by silence
+        turns to paragraphs J-16.
       to: J-16
   J-12:
     title: J-12
@@ -767,10 +791,11 @@ sections:
 
       Mr. Braley's offer would not be repeated, because if Saunders did not take it, another clerk, who was Mr. Braley's second choice, would get the chance. But Saunders's younger brother Alfred wanted to go to Massachusetts Tech to study architecture and had saved up a hundred dollars toward this purpose. If he could borrow Saunders's five hundred, he could manage, with the utmost economy, to scrape through his first year. The following years would be easier, because if he made a good record he could count on a scholarship and upon work found for him by the students' employment bureau. The lad was more brilliant than his elder brother and very lovable. He was extremely dear to Saunders.
     choices:
-    - label: The reader who thinks Saunders should lend the money to Alfred turns to paragraphs
-        S-1.
+    - label: The reader who thinks Saunders should lend the money to Alfred turns
+        to paragraphs S-1.
       to: S-1
-    - label: The reader who thinks he should invest it in the store turns to paragraphs S-2.
+    - label: The reader who thinks he should invest it in the store turns to paragraphs
+        S-2.
       to: S-2
   S-1:
     title: S-1
@@ -785,7 +810,8 @@ sections:
 
       Saunders suddenly found himself faced with the problem of whether or not to close his eyes to this small piece of graft. If he did, his brother's excellent design would be accepted, and the fact would give Alfred a fine start in his profession, the Mead family would be able to move into a house with modern conveniences where the housework would be easier for Mrs. Mead, and a couple of thousand dollars could be put aside toward a rainy day. Moreover, the school would be built in a good location instead of an unsuitable one across the railroad tracks. If, on the other hand, he refused the offer, Alfred's chance would be lost and he himself might be forced to denounce Donovan in an effort, probably futile, to block the scheme of putting the school-house in a dangerous location.
     choices:
-    - label: The reader who thinks he should accept the offer turns to paragraphs S-3.
+    - label: The reader who thinks he should accept the offer turns to paragraphs
+        S-3.
       to: S-3
     - label: The one who thinks he should refuse turns to paragraphs S-4.
       to: S-4
@@ -802,7 +828,8 @@ sections:
     choices:
     - label: The reader who wishes him to buy the car turns to paragraphs S-5.
       to: S-5
-    - label: The one who wishes him to invest his windfall in the store turns to paragraphs S-6.
+    - label: The one who wishes him to invest his windfall in the store turns to paragraphs
+        S-6.
       to: S-6
   S-3:
     title: S-3
@@ -819,7 +846,8 @@ sections:
 
       Saunders, bitterly regretting his own false step, urged Alfred to give up the whole business, but Alfred, with unexpected stubbornness, said that Saunders's day of authority over him was past. He assured his brother that although the material was scamped and the construction altered to a cheaper form, the building was still fireproof and better than a good many buildings about which nobody made any fuss.
     choices:
-    - label: The reader who thinks Saunders should expose the ring turns to paragraphs S-7.
+    - label: The reader who thinks Saunders should expose the ring turns to paragraphs
+        S-7.
       to: S-7
     - label: The one who thinks he should keep quiet turns to paragraphs S-8.
       to: S-8
@@ -838,10 +866,11 @@ sections:
 
       At this moment Barton Brothers, who had recently opened a branch store in Franklin, approached Saunders with an offer of a position in their Cleveland store, where he would receive a thorough training in modern merchandising methods. The manager of the local branch told him frankly that they had watched his work at Braley's and recognized him as a man with a future. The Cleveland position offered him an opportunity he would never get at Braley's, since the man who had bought into the firm when Saunders had failed to do so was not interested in advancing him. The cost of moving the family to Cleveland or of supporting them apart from him in Franklin had to be taken into account. He would have no money left to give to Marge.
     choices:
-    - label: The reader who thinks that he should stay at Braley's and finance Marge in Boston turns
-        to paragraphs S-9.
+    - label: The reader who thinks that he should stay at Braley's and finance Marge
+        in Boston turns to paragraphs S-9.
       to: S-9
-    - label: The reader who thinks he should accept the Cleveland offer turns to paragraphs S-10.
+    - label: The reader who thinks he should accept the Cleveland offer turns to paragraphs
+        S-10.
       to: S-10
   S-5:
     title: S-5
@@ -854,7 +883,8 @@ sections:
 
       Saunders faced the problem of whether or not to ask Carol to marry him. He was still in love with Helen—whom he could not have. But he enjoyed Carol and he had good reason to believe that her father would advance the career of his daughter's husband.
     choices:
-    - label: The reader who thinks he should ask Carol to marry him turns to paragraphs S-11.
+    - label: The reader who thinks he should ask Carol to marry him turns to paragraphs
+        S-11.
       to: S-11
     - label: The reader who thinks he should not turns to paragraphs S-12.
       to: S-12
@@ -867,7 +897,8 @@ sections:
 
       As Saunders knew that he would make good, a big prospect opened before him. Although he now owned some stock in Braley's store, it was not yet enough to be a major factor in his decision; but it was clear to him that the prosperity of Mr. Braley's store depended on him, and in his new position he would be in direct competition with Braley. Moreover, his departure to a rival store would be a serious blow to the old man, who had been like a father to him.
     choices:
-    - label: The reader who thinks he should accept the new offer turns to paragraphs S-13.
+    - label: The reader who thinks he should accept the new offer turns to paragraphs
+        S-13.
       to: S-13
     - label: The one who thinks he should stay with Braley turns to paragraphs S-14.
       to: S-14
@@ -918,11 +949,11 @@ sections:
 
       "Saunders," he said, "you must send this boy to college and not allow his brilliant future to be sacrificed as yours has been. When you graduated I longed to see you go to college, but of course your father's death made that impossible. But you have now a chance to realize your own ambitions through your brother."
     choices:
-    - label: The reader who decides that Saunders is to give up his year of study in order to send
-        Jimmie to college turns to paragraphs S-15.
+    - label: The reader who decides that Saunders is to give up his year of study
+        in order to send Jimmie to college turns to paragraphs S-15.
       to: S-15
-    - label: The reader who decides that he is to set Jimmie to work and take the course at Harvard
-        himself, turns to paragraphs S-16.
+    - label: The reader who decides that he is to set Jimmie to work and take the
+        course at Harvard himself, turns to paragraphs S-16.
       to: S-16
   S-10:
     title: S-10
@@ -952,7 +983,8 @@ sections:
 
       Elwell, a neighbor of the Mead's, had recently made a fortune in speculation which had enabled him to retire his former wife with a big alimony and substitute for her the latest thing in wives, with whom Carol had struck up sudden intimacy. Saunders, though slow, had had five years in which to learn to size up people like the Elwells. He did not trust either of them and he thought they had a bad influence on Carol. Unable to leave his business and go with the party, Saunders foresaw that Carol would get into trouble again.
     choices:
-    - label: The reader who thinks that he should forbid Carol's going turns to paragraphs S-17.
+    - label: The reader who thinks that he should forbid Carol's going turns to paragraphs
+        S-17.
       to: S-17
     - label: The one who thinks he should not interfere turns to paragraphs S-18.
       to: S-18
@@ -963,8 +995,8 @@ sections:
 
       Five years after Helen had eloped with Jed she again came into Saunders's life. Jed had died, leaving Helen struggling to support her child, whom she would not turn over to Jed's wealthy mother—the price the old lady demanded for any help. Saunders loved Helen more than ever. Although she always looked tired and drawn, to Saunders she still seemed the most beautiful woman in the world. He admired her gallantry and her devotion to her child. He asked her to marry him and she told him honestly that she would be glad to marry him for the child's sake but that she wanted him to understand clearly that what she felt for him was gratitude, not love.
     choices:
-    - label: The reader who thinks he should marry Helen under these circumstances turns to paragraphs
-        S-19.
+    - label: The reader who thinks he should marry Helen under these circumstances
+        turns to paragraphs S-19.
       to: S-19
     - label: The one who thinks he should not marry her turns to paragraphs S-20.
       to: S-20
@@ -985,11 +1017,11 @@ sections:
 
       Saunders was faced with the problem of whether to marry the congenial, suitable woman who loved him and whom he liked or the vivid girl with whom he was infatuated.
     choices:
-    - label: The reader who decides that he is to marry Florence, the aunt, turns to paragraphs
-        S-21.
+    - label: The reader who decides that he is to marry Florence, the aunt, turns
+        to paragraphs S-21.
       to: S-21
-    - label: The reader who decides that he is to marry Mahalia, the niece, turns to paragraphs
-        S-22.
+    - label: The reader who decides that he is to marry Mahalia, the niece, turns
+        to paragraphs S-22.
       to: S-22
   S-14:
     title: S-14
@@ -1010,7 +1042,8 @@ sections:
 
       This incident brought Saunders face to face with the problem of whether or not he should ask Ada to marry him. His feeling toward her was different from what he had felt for Helen. Looking back, he could see that Helen had had something of the masculine in her, but Ada was all feminine. She made him feel strong and competent. He longed to create for her an environment in which she could bloom into happiness and success, for he had come to realize that she was a highly talented girl. Did he love her? Yes, he was sure he did.
     choices:
-    - label: The reader who decides that Saunders is to marry Ada turns to paragraphs S-23.
+    - label: The reader who decides that Saunders is to marry Ada turns to paragraphs
+        S-23.
       to: S-23
     - label: The one who decides that he is not to marry her turns to paragraphs S-24.
       to: S-24
@@ -1062,7 +1095,8 @@ sections:
 
       Saunders, going directly to Elwell to silence these outrageous rumors, learned that Mrs. Elwell had indeed started suit for divorce, had named Carol, and had ample evidence to support her accusation. Saunders was stunned. He faced Carol, who after a terrific scene, tearfully admitted her guilt, putting all the blame on Elwell. She declared with complete sincerity that she never would have gone on the trip if she had suspected for one moment that anything like this could happen. She begged Saunders to stand by her.
     choices:
-    - label: The reader who thinks Saunders should insist on a divorce turns to paragraphs S-25.
+    - label: The reader who thinks Saunders should insist on a divorce turns to paragraphs
+        S-25.
       to: S-25
     - label: He who thinks Carol should not be divorced turns to paragraphs S-26.
       to: S-26
@@ -1085,8 +1119,8 @@ sections:
 
       It was not very long before he realized that Carol was willing to make up to him for his wife's coldness. They were drawn together because both had found marriage disappointing. While he felt no desire to repudiate his financial obligations to Helen, he wondered whether he was not justified in following the example of many men in situations similar to his own and seeking an ephemeral love more spontaneous than his wife's dutiful acquiescence.
     choices:
-    - label: The reader who thinks that he should have a love-affair with Carol turns to paragraphs
-        S-27.
+    - label: The reader who thinks that he should have a love-affair with Carol turns
+        to paragraphs S-27.
       to: S-27
     - label: The one who thinks he should not do so turns to paragraphs S-28.
       to: S-28
@@ -1142,10 +1176,11 @@ sections:
 
       As if in direct answer to his wife's prayers he had an offer for the mail-order business of almost double what he had paid for it. Ada's parents, in response to her frantic letters, had bestirred themselves in Saunders's behalf, and he was offered a position in the Franklin bank. It was not a very good one, but Saunders knew that he could work up quickly and that opportunities would open in Franklin for a man of his ability and capital. But on the other hand he liked the mail-order business and saw that there was in it a fortune that he could never make in Franklin.
     choices:
-    - label: The reader who decides that Saunders should move back to Franklin turns to paragraphs
-        S-29.
+    - label: The reader who decides that Saunders should move back to Franklin turns
+        to paragraphs S-29.
       to: S-29
-    - label: The one who decides that he is to stay in New York turns to paragraphs S-30.
+    - label: The one who decides that he is to stay in New York turns to paragraphs
+        S-30.
       to: S-30
   S-24:
     title: S-24
@@ -1228,3 +1263,4 @@ sections:
 
       Ada was so jealous of other women that it was simpler for Saunders to keep out of social life. The consequence was that his interest centered on his son and his business. Because of the careful attention he gave both, the one was companionable and the other succeeded. Saunders was able to give Ada long sojourns in European health resorts and with equanimity bear her returns home.
     choices: []
+hidden: true

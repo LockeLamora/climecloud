@@ -1,0 +1,29 @@
+<div class='games'>
+<b><%= glyph_text t("games.make.#{@step}_title"), heading: true %></b><br />
+<br />
+<%# What the sheet holds so far, so the reader can see the Kai Lord taking shape. %>
+<% if @make['skill'] %>
+<%= glyph_text "Combat Skill #{@make['skill']}#{" - Endurance #{@make['endurance']}" if @make['endurance']}" %><br />
+<% end %>
+<% if @make['kai'].any? %>
+<%= glyph_text "Disciplines: #{@make['kai'].map { |name| @book.dig('disciplines', name, 'name') || name }.join(', ')}" %><br />
+<% end %>
+<br />
+<%= simple_format(t("games.make.#{@step}_says", count: @book.dig('item_draw', 'count'))) %>
+<%# Each offer names itself, then explains itself in the book's own words. The %>
+<%# button carries only the name: an image inside a button costs the handset's %>
+<%# cursor a second stop, and the prose belongs outside it anyway. %>
+<% @options.each_with_index do |option, index| %>
+<%= choice_button "#{index + 1} #{option['label']}", games_build_path(book: @book['id']),
+                  { pick: option['pick'] }, accesskey: (index + 1).to_s %><br />
+<% if option['effect'].present? %>
+<%= glyph_text option['effect'] %><br />
+<% end %>
+<% if option['about'].present? %>
+<div class='credit'><%= glyph_theme ? glyph_image(option['about'], keep_case: true, quiet: true) : option['about'] %></div>
+<% end %>
+<br />
+<% end %>
+<%= link_to "9 #{@book['title']}", games_book_path(book: @book['id']), accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

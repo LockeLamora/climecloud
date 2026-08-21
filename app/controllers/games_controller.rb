@@ -5,6 +5,10 @@ require 'dice'
 require 'lone_wolf'
 
 class GamesController < ApplicationController
+  # The questions the character wizard asks, in order. Named here rather than only in
+  # the code that walks them, so the locale test can find the keys they look up.
+  WIZARD_STEPS = %i[skill endurance kai weapon kit].freeze
+
   # No require_saved_location: the books ship with the app, so a reader without a
   # postcode spends nobody's rate limit here.
 
@@ -41,6 +45,40 @@ class GamesController < ApplicationController
 
     saved = bookmarks[@book['id']].to_s.split('|').first
     @bookmark = saved if saved != @book['start'] && @book['sections'].key?(saved)
+  end
+
+  # The character sheet a reader fills in themselves, instead of letting the dice do
+  # it. A pure read: it shows whichever step is still unanswered, explaining each
+  # score, discipline and item in the book's own words. #build records the answers.
+  def create
+    @book = Gamebooks.find(params[:book])
+    if @book.nil? || @book['disciplines'].nil?
+      redirect_to games_path
+      return
+    end
+
+    @make = making(@book)
+    @step = next_step(@book, @make)
+    @options = step_options(@book, @make, @step)
+  end
+
+  # One answer recorded, then back to the wizard for the next question — or, once the
+  # sheet is full, the character is written and the story begins.
+  def build
+    book = Gamebooks.find(params[:book])
+    if book.nil? || book['disciplines'].nil?
+      redirect_to games_path
+      return
+    end
+
+    make = making(book)
+    step = next_step(book, make)
+    record(book, make, step, params[:pick])
+    cookies['MAKE'] = make.to_json
+
+    return redirect_to games_create_path(book: book['id']) unless next_step(book, make) == :done
+
+    begin_made(book, make)
   end
 
   # A pure read: the bookmark and the stats move in #turn, never here, so a browser
@@ -219,6 +257,120 @@ class GamesController < ApplicationController
 
   private
 
+  # ---- Building a character by hand -------------------------------------------------
+
+  # The half-built sheet, from the cookie. A sheet begun for another book is
+  # abandoned rather than muddled with this one.
+  def making(book)
+    made = JSON.parse(cookies['MAKE'].presence || '{}')
+    made = {} unless made['book'] == book['id']
+    made['book'] = book['id']
+    made['kai'] ||= []
+    made
+  rescue JSON::ParserError
+    { 'book' => book['id'], 'kai' => [] }
+  end
+
+  # The first question still unanswered.
+  def next_step(book, make)
+    WIZARD_STEPS.find { |step| wanted?(book, make, step) } || :done
+  end
+
+  def wanted?(book, make, step)
+    case step
+    when :skill, :endurance then make[step.to_s].nil?
+    when :kai then make['kai'].length < book['item_draw']['count']
+    when :weapon then make['kai'].include?('weaponskill') && make['weapon'].nil?
+    when :kit then !book['equipment_draw'].nil? && make['kit'].nil?
+    end
+  end
+
+  # What that question offers, each with the book's own words for it.
+  def step_options(book, make, step)
+    case step
+    when :skill, :endurance then score_options(book, step)
+    when :kai then kai_options(book, make)
+    when :weapon then book['weapons']['skill_table'].uniq.map { |w| { 'pick' => w, 'label' => w.capitalize } }
+    when :kit then kit_options(book)
+    else []
+    end
+  end
+
+  def score_options(book, step)
+    span(book['stats'][step.to_s]['start']).map { |n| { 'pick' => n, 'label' => n.to_s } }
+  end
+
+  def kai_options(book, make)
+    book['item_draw']['from'].reject { |name| make['kai'].include?(name) }.map do |name|
+      entry = book['disciplines'][name] || {}
+      { 'pick' => name, 'label' => entry['name'] || name.capitalize,
+        'about' => entry['about'], 'effect' => entry['effect'] }
+    end
+  end
+
+  def kit_options(book)
+    book['equipment_draw'].each_with_index.map do |grant, index|
+      { 'pick' => index, 'label' => kit_label(grant), 'about' => grant['about'] }
+    end
+  end
+
+  def kit_label(grant)
+    return grant['name'] if grant['name']
+    return grant['item'].split.map(&:capitalize).join(' ') if grant['item']
+    return grant['gain'].map { |name, n| "#{n} x #{name.capitalize}" }.join(', ') if grant['gain']
+
+    grant.except('about', 'name').map { |stat, n| "#{n} #{stat.capitalize}" }.join
+  end
+
+  # The span a dice string can land on, low to high: '1d10+9' is ten to nineteen.
+  def span(dice)
+    roll = dice.to_s.match(/\A(\d+)d(\d+)([+-]\d+)?\z/)
+    return [Dice.roll(dice.to_s)] if roll.nil?
+
+    count, faces, plus = roll.captures.map(&:to_i)
+    ((count + plus)..((count * faces) + plus)).to_a
+  end
+
+  # An answer only counts if it was actually on offer: a hand-typed POST cannot make
+  # a Kai Lord of impossible scores or invent a discipline.
+  def record(book, make, step, pick)
+    offered = step_options(book, make, step).map { |option| option['pick'] }
+    return unless offered.map(&:to_s).include?(pick.to_s)
+
+    make[step.to_s] = step == :kai ? make['kai'] + [pick] : cast(step, pick)
+  end
+
+  # The scores and the equipment row are numbers; the disciplines and the weapon are
+  # named as they ride in the satchel.
+  def cast(step, pick)
+    %i[skill endurance kit].include?(step) ? pick.to_i : pick
+  end
+
+  # The finished sheet written as a character, and the story opened at page one.
+  def begin_made(book, make)
+    stats = { 'skill' => make['skill'], 'endurance' => make['endurance'] }
+    stats['endurance_max'] = make['endurance']
+    stats['gold'] = Dice.roll(book['stats']['gold']['start'].to_s) if book['stats']['gold']
+    stats['gold_max'] = book.dig('stats', 'gold', 'cap') if book.dig('stats', 'gold', 'cap')
+
+    items = chosen_kit(book, make)
+    endow(book, stats, items, book['equipment_draw'][make['kit']]) if make['kit']
+
+    cookies.delete('MAKE')
+    remember(book, book['start'], stats, items)
+    redirect_to games_section_path(book: book['id'], section: book['start'])
+  end
+
+  def chosen_kit(book, make)
+    kit = Array(book['items']).dup
+    kit += make['kai'].reject { |name| name == 'weaponskill' }
+    kit << "weaponskill in #{make['weapon']}" if make['weapon']
+    (book['consumables'] || {}).each do |name, item|
+      kit << "#{name}:#{item['start']}" if item['start'].to_i.positive?
+    end
+    kit
+  end
+
   # The choice carried out: kit checked, tolls paid, dice thrown or the Random Number
   # Table picked, the destination's own effects applied, and the whole position
   # written back as one cookie entry.
@@ -337,7 +489,7 @@ class GamesController < ApplicationController
             else
               "#{index + 1}:next:#{round + 1}:#{buff}:#{mark}"
             end
-    return if aftermath?(book, from, stats, items, fight, hurt: hurt)
+    return if aftermath?(book, from, stats, items, fight, hurt: hurt, foe_loss: foe_loss)
 
     remember(book, params[:from], stats, items, fight)
     redirect_to games_section_path(book: book['id'], section: params[:from],
@@ -346,11 +498,28 @@ class GamesController < ApplicationController
 
   # Everything a round can end besides the enemy: a contest settled, a wound the book
   # acts on, a victory judged by its speed, a fight the book cuts short.
-  def aftermath?(book, from, stats, items, fight, hurt:)
-    contest_settled?(book, from, stats, items, fight) ||
+  def aftermath?(book, from, stats, items, fight, hurt:, foe_loss: 0)
+    duelled?(book, from, stats, items, fight, hurt: hurt, foe_loss: foe_loss) ||
+      contest_settled?(book, from, stats, items, fight) ||
       on_wound?(book, from, stats, items, hurt) ||
       win_routed?(book, from, stats, items, fight) ||
       dragged_off?(book, from, stats, items, fight)
+  end
+
+  # A passing duel — a scout on skis whose momentum carries him by — decided by one
+  # exchange: who came off worse settles where the reader goes next.
+  def duelled?(book, from, stats, items, fight, hurt:, foe_loss:)
+    rule = from['combat']['duel']
+    _, _, round, = fight_parts(fight)
+    return false unless rule && round >= rule.fetch('rounds', 1)
+
+    landed = foe_loss >= LoneWolf::KILLED ? Float::INFINITY : foe_loss
+    to = if hurt > landed then rule['more']
+         elsif landed > hurt then rule['less']
+         else rule['same']
+         end
+    travel(book, to, stats, items)
+    true
   end
 
   # The wound that ends the fight by itself — a Kalkoth's paralysing sting: any
@@ -382,8 +551,13 @@ class GamesController < ApplicationController
     _, remaining = standing(from, fight)
     number = rand(0..9)
     foe_loss, wolf_loss = LoneWolf.strike(combat_ratio(book, from, stats, items, fight), number)
-    foe_loss *= 2 if combat['undead'] && foe_loss < LoneWolf::KILLED &&
-                     battle_arms(book, combat, items).first == book['undead_bane']
+    if foe_loss < LoneWolf::KILLED
+      # The bane of the undead doubles what such enemies lose; some fights double for
+      # a reason of their own, and in some a companion lands blows of their own.
+      bane = combat['undead'] && battle_arms(book, combat, items).first == book['undead_bane']
+      foe_loss *= 2 if bane || combat['double_damage']
+      foe_loss += combat['ally'].to_i
+    end
     hurt = wolf_loss == LoneWolf::KILLED ? stats.fetch(loss_stat(book), 0) : wolf_loss
     hurt = temper(book, combat, stats, fight, hurt)
     [number, foe_loss, hurt + mindforce_toll(combat, items), foe_loss >= remaining ? 0 : remaining - foe_loss]
@@ -456,25 +630,31 @@ class GamesController < ApplicationController
 
     ratio = stats.fetch('skill', 0) - foe['skill'] + buff + combat.fetch('modifier', 0)
     ratio += combat['surprise'].to_i if round.zero?
-    ratio + kit_ratio(book, combat, items)
+    ratio + kit_ratio(book, combat, items, round)
   end
   helper_method :combat_ratio
 
   # What the satchel adds: the weapon in hand, Mindblast unless this enemy shrugs it,
   # penalties without a named item (a torch in the dark, Mindshield against a
   # Mindforce), and anything — a Shield — the book says helps while carried.
-  def kit_ratio(book, combat, items)
+  def kit_ratio(book, combat, items, round = 0)
     # Books without a weapons table — the trial rigs — fight unarmed and unpenalised.
     bonus = (battle_arms(book, combat, items) || [nil, 0]).last
     if items.include?('mindblast') && !Array(combat['immune']).include?('mindblast')
       # A partially immune enemy states what the mind is worth against it.
       bonus += combat.fetch('mindblast', 2)
     end
-    bonus + hindrances(combat, items) + trinkets(book, items)
+    bonus + hindrances(combat, items, round) + trinkets(book, items)
   end
 
-  def hindrances(combat, items)
-    Array(combat['without']).sum { |rule| items.include?(rule['item']) ? 0 : rule['modifier'] }
+  # A penalty that applies only from a given round — the Mindforce that starts once
+  # the surprise of the first blow has passed.
+  def hindrances(combat, items, round)
+    Array(combat['without']).sum do |rule|
+      next 0 if items.include?(rule['item']) || round < rule.fetch('from_round', 0)
+
+      rule['modifier']
+    end
   end
 
   def trinkets(book, items)
@@ -524,7 +704,9 @@ class GamesController < ApplicationController
   def battle_arms(book, combat, items)
     forced = combat['arms']
     return armament(book, items) if forced.nil?
-    return ['bare hands', 0] if forced == 'level'
+    # A contest of strength — an arm-wrestle — is not fought bare-handed; it is
+    # fought with no weapon counting for either side.
+    return ['level', 0] if forced == 'level'
 
     forced_arm(book, forced, items)
   end
@@ -717,7 +899,7 @@ class GamesController < ApplicationController
     notices = swap_kit(effects, items)
     notices[:lost] = steal(book, items) if effects['steal']
     shed_weapons(book, items, effects['drop_weapons'], notices) if effects['drop_weapons']
-    strip_backpack(book, items) if effects['drop_backpack']
+    strip_backpack(book, items, effects['drop_backpack']) if effects['drop_backpack']
     items.reject! { |held| Array(book['worn']).include?(held) } if effects['drop_specials']
     notices
   end
@@ -834,8 +1016,11 @@ class GamesController < ApplicationController
     end
   end
 
-  def strip_backpack(book, items)
-    backpack_items(book, items).each do |name|
+  # The whole pack, or — given a number — that many things crushed out of it.
+  def strip_backpack(book, items, count)
+    doomed = backpack_items(book, items)
+    doomed = doomed.sample(count) if count.is_a?(Integer)
+    doomed.each do |name|
       items.reject! { |held| held == name || held.start_with?("#{name}:") }
     end
   end
@@ -958,11 +1143,21 @@ class GamesController < ApplicationController
       stats, items = finished_legacy(book, legacy)
       next if stats.nil?
 
-      stats['gold_max'] = book.dig('stats', 'gold', 'cap') if book.dig('stats', 'gold', 'cap')
-      credit(stats, 'gold', Dice.roll(legacy['purse'] || '1d10+9')) if legacy['purse']
-      return [stats, items + [new_discipline(book, items)].compact + Array(book['items'])]
+      return [rested(book, stats, legacy),
+              items + [new_discipline(book, items)].compact + Array(book['items'])]
     end
     nil
+  end
+
+  # Months pass between adventures — the Kai Lord is feted, rested and healed — so a
+  # new book opens at the endurance carried over rather than at the wounds the last
+  # one ended on, with a fresh purse on top of whatever gold survived.
+  def rested(book, stats, legacy)
+    stats['gold_max'] = book.dig('stats', 'gold', 'cap') if book.dig('stats', 'gold', 'cap')
+    credit(stats, 'gold', Dice.roll(legacy['purse'] || '1d10+9')) if legacy['purse']
+    ceiling = stats["#{loss_stat(book)}_max"]
+    stats[loss_stat(book)] = ceiling if ceiling
+    stats
   end
 
   # The previous book's character, if its bookmark stands on the named final page
@@ -1002,15 +1197,19 @@ class GamesController < ApplicationController
   end
 
   # The starting equipment table: one throw, one grant — an item, a handful of
-  # something counted, or a stat bonus that raises the rolled maximum with it.
-  def endow(book, stats, items)
+  # something counted, or a stat bonus that raises the rolled maximum with it. A
+  # reader who built their own character names the grant instead of throwing for it.
+  def endow(book, stats, items, chosen = nil)
     table = book['equipment_draw']
     return if table.nil?
 
-    grant = table.sample
+    grant = chosen || table.sample
     items << grant['item'] if grant['item']
     (grant['gain'] || {}).each { |name, extra| add_count(items, name, extra) }
-    grant.except('item', 'gain').each { |stat, delta| boost(book, stats, stat, delta) }
+    # Everything left over is a stat the grant lifts; 'about' and 'name' are only
+    # there so the character wizard can present it.
+    grant.except('item', 'gain', 'about', 'name')
+         .each { |stat, delta| boost(book, stats, stat, delta) }
   end
 
   # A grant that adds to a rolled stat raises the rolled maximum with it: the helmet

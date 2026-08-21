@@ -16,6 +16,11 @@
 <%= choice_button "2 #{t('games.restart')}", games_restart_path, { book: @book['id'] }, accesskey: "2" %><br /><br />
 <% else %>
 <%= link_to "1 #{t('games.begin')}", games_section_path(book: @book['id'], section: @book['start']), accesskey: "1" %><br /><br />
+<%# The dice are the book's own way, and stay the first offer; a reader who would %>
+<%# rather build their Kai Lord can choose every score and discipline instead. %>
+<% if @book['disciplines'] %>
+<%= link_to "2 #{t('games.make_character')}", games_create_path(book: @book['id']), accesskey: "2" %><br /><br />
+<% end %>
 <% end %>
 <%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
