@@ -11,7 +11,9 @@
 <%# just begins. Either way the first option is the one a reader almost always wants. %>
 <% if @bookmark %>
 <%= link_to "1 #{t('common.continue')}", games_section_path(book: @book['id'], section: @bookmark), accesskey: "1" %><br /><br />
-<%= link_to "2 #{t('games.restart')}", games_section_path(book: @book['id'], section: @book['start']), accesskey: "2" %><br /><br />
+<%# A POST: starting again forgets the bookmark and the character together, and %>
+<%# nothing that fetches links ahead of the cursor may do that uninvited. %>
+<%= choice_button "2 #{t('games.restart')}", games_restart_path, { book: @book['id'] }, accesskey: "2" %><br /><br />
 <% else %>
 <%= link_to "1 #{t('games.begin')}", games_section_path(book: @book['id'], section: @book['start']), accesskey: "1" %><br /><br />
 <% end %>

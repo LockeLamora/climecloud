@@ -1,0 +1,91 @@
+<div class='games'>
+<b><%= glyph_text 'The Long Haul', heading: true %></b><br />
+<br />
+<% if @arrived %>
+<%= simple_format("Samarkand Station, day #{@run[:day]}. The pod goes over the threshold on a cargo sled, " \
+                  'still humming, and a courier in station grey counts out two thousand in scrip without ' \
+                  "meeting anyone's eye. #{JourneyController::CREW.join(', ')} watch the sled out of sight. " \
+                  'Nobody asks. That was the job.') %>
+<%= choice_button '1 Take another job', games_journey_restart_path, {}, accesskey: '1' %><br />
+<% elsif @perished %>
+<%= simple_format("The run ends on day #{@run[:day]}, #{@run[:miles]} AU out, the ship drifting cold. " \
+                  'In time a salvage crew will find the pod in the hold, still humming, and take up the ' \
+                  'contract without knowing it.') %>
+<%= choice_button '1 Take another job', games_journey_restart_path, {}, accesskey: '1' %><br />
+<% else %>
+<% if @run[:day] == 1 && @run[:miles].zero? && @run[:note].blank? %>
+<%# The job, stated once at the rail of Erebus Dock. %>
+<%= simple_format('The job: one sealed cryo-pod, hold temperature exact, delivered to Samarkand Station — ' \
+                  "2,400 AU down a lane the liners stopped using. Two thousand scrip on delivery. The broker's " \
+                  'only other instruction: do not open it, do not scan it, and if it starts humming louder, drive faster.' \
+                  "\n\nThe crew: Vex, who shoots; Moth, who keeps the drive alive; Saint, who navigates and prays, " \
+                  'in that order. Stations are far apart out here — fuel, rations and parts exist only where ' \
+                  'there is a dock, and between docks the void sells nothing.') %>
+<% end %>
+<%= glyph_text "Day #{@run[:day]} - #{@run[:miles]} of #{JourneyController::DISTANCE} AU" %><br />
+<% if @docked %>
+<%= glyph_text "Docked at #{@docked[1]}." %><br />
+<% elsif !@ambushed && !@crossing && @ahead %>
+<%= glyph_text "Past #{@behind[1]}; #{@ahead[1]} lies #{@ahead[0] - @run[:miles]} AU on." %><br />
+<% end %>
+<%= glyph_text "Fuel #{@run[:petrol]} - rations #{@run[:food]} - parts #{@run[:spares]}" %><br />
+<%= glyph_text "Crew #{@run[:health]}/10 - scrip #{@run[:cash]}" %><br />
+<% if @run[:note].present? %>
+<br />
+<%# A note starting with the mark is the move that did not happen and why, in the %>
+<%# error red; anything else is the void talking. %>
+<% if @run[:note].start_with?('!') %>
+<span class='error'><%= @run[:note][1..] %></span><br />
+<% else %>
+<%= simple_format(@run[:note]) %>
+<% end %>
+<% end %>
+<br />
+<% if @ambushed %>
+<% if @run[:cash] >= 20 %>
+<%= choice_button '1 Buy them off (scrip -20)', games_journey_act_path, { move: 'pay_off' }, accesskey: '1' %><br />
+<br />
+<% end %>
+<%= choice_button '2 Burn hard for it (fuel -6, and luck)', games_journey_act_path, { move: 'run_for_it' }, accesskey: '2' %><br />
+<br />
+<%= choice_button '3 Repel boarders (luck decides)', games_journey_act_path, { move: 'fight' }, accesskey: '3' %><br />
+<% elsif @crossing %>
+<%= glyph_text @crossing[:name] %><br />
+<br />
+<% if @run[:cash] >= @crossing[:fare] %>
+<%= choice_button "1 #{@crossing[:pay]} (scrip -#{@crossing[:fare]})", games_journey_act_path, { move: 'pay' }, accesskey: '1' %><br />
+<br />
+<% else %>
+<%= glyph_text "They want #{@crossing[:fare]}; the purse holds #{@run[:cash]}." %><br />
+<br />
+<% end %>
+<%= choice_button "2 #{@crossing[:risk]}", games_journey_act_path, { move: 'risk' }, accesskey: '2' %><br />
+<br />
+<%= choice_button '3 Hold position a day (rations -2)', games_journey_act_path, { move: 'wait' }, accesskey: '3' %><br />
+<% else %>
+<%# Every label carries its price, so the ledger is read before the press, not after. %>
+<%= choice_button '1 Burn steady (80 AU: fuel -4, rations -2)', games_journey_act_path, { move: 'steady' }, accesskey: '1' %><br />
+<br />
+<%= choice_button '2 Burn hard (130 AU: fuel -7, rations -3, crew -1)', games_journey_act_path, { move: 'push' }, accesskey: '2' %><br />
+<br />
+<%= choice_button '3 Stand down a day (crew +2, rations -2)', games_journey_act_path, { move: 'rest' }, accesskey: '3' %><br />
+<br />
+<% if @docked %>
+<%# Dock business: the only shops and the only shifts on the lane. %>
+<%= choice_button "4 A shift on the dock (scrip +25)", games_journey_act_path, { move: 'work' }, accesskey: '4' %><br />
+<br />
+<%= choice_button '5 Buy fuel (10 for 30)', games_journey_act_path, { move: 'buy_petrol' }, accesskey: '5' %><br />
+<br />
+<%= choice_button '6 Buy rations (10 for 20)', games_journey_act_path, { move: 'buy_food' }, accesskey: '6' %><br />
+<br />
+<%= choice_button '7 Buy a drive part (50)', games_journey_act_path, { move: 'buy_spare' }, accesskey: '7' %><br />
+<% else %>
+<%# Deep space: nothing for sale, nothing paying — only what the drift gives up. %>
+<%= choice_button '4 Trawl the drift (a day for whatever the void gives)', games_journey_act_path, { move: 'trawl' }, accesskey: '4' %><br />
+<% end %>
+<% end %>
+<% end %>
+<br />
+<%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

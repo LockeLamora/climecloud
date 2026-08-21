@@ -1,7 +1,61 @@
 <div class='games'>
 <b><%= glyph_text @section['title'] || @book['title'], heading: true %></b><br />
 <br />
+<%# The character sheet, for the books that keep one: written by #turn, read here. %>
+<%# The rolled maximums are bookkeeping, not news, and stay off the line. %>
+<% if @stats.present? %>
+<%= glyph_text @stats.reject { |name, _| name.end_with?('_max') }.map { |name, value| "#{name.capitalize} #{value}" }.join(' - ') %><br />
+<%= glyph_text "Carrying: #{@items.presence&.map { |held| held.tr(':', ' x') }&.join(', ') || 'nothing'}" %><br />
+<% if params[:rolled].present? %>
+<%= glyph_text "The dice came up #{params[:rolled].to_i}." %><br />
+<% end %>
+<% if params[:used].present? && (spent = @book.dig('consumables', params[:used])) %>
+<%= glyph_text "#{spent['label']}: done." %><br />
+<% end %>
+<br />
+<%# Standing provisions: offered on every page while any remain, in green so they %>
+<%# read apart from the book's own choices. Not while blades are out, though. %>
+<% if !@dead && @combat.nil? && (pantry = @book['consumables']) %>
+<% pantry.each do |name, item| %>
+<% held = count_of(Array(@items), name) %>
+<% next unless held.positive? %>
+<%= choice_button "#{item['label']} (#{held} left)", games_use_path,
+                  { book: @book['id'], item: name }, css: 'provision' %><br />
+<br />
+<% end %>
+<% end %>
+<% end %>
+<% if @dead %>
+<b><%= glyph_text t('games.the_end'), heading: true %></b><br />
+<%= glyph_text 'Your strength is spent, and the story ends here.' %><br />
+<br />
+<%= choice_button "1 #{t('games.restart')}", games_restart_path, { book: @book['id'] }, accesskey: "1" %><br />
+<br />
+<% else %>
 <%= simple_format(@section['text']) if @section['text'].present? %>
+<% if @section['rnt'] %>
+<%# Nobody carries the book's random number table: one is drawn here for the reader %>
+<%# to use with the section's instructions. Display only — nothing hangs on it %>
+<%# server-side, exactly as the paper book trusts the reader with the real table. %>
+<%= glyph_text "The Random Number Table gives: #{rand(0..9)}" %><br />
+<br />
+<% end %>
+<% if @section['combat'] %>
+<% if params[:rn].present? %>
+<%= glyph_text "Random number #{params[:rn].to_i}: the enemy loses #{params[:foe].to_i >= LoneWolf::KILLED ? 'everything' : params[:foe].to_i}, you lose #{params[:you].to_i}." %><br />
+<% end %>
+<% if @combat %>
+<% foe, remaining = @combat %>
+<%= glyph_text "#{foe['name']}: Combat Skill #{foe['skill']} - Endurance #{remaining}" %><br />
+<br />
+<%= choice_button 'Fight a round of combat', games_turn_path,
+                  { book: @book['id'], from: params[:section], choice: 'fight' } %><br />
+<br />
+<% else %>
+<%= glyph_text 'The fight is won.' %><br />
+<br />
+<% end %>
+<% end %>
 <% if (image = @section['image']) %>
 <%# Wider than the screen on purpose: the pictures hide objects the footnotes ask %>
 <%# the reader to find, so the page is scrolled over the full-size picture rather %>
@@ -10,25 +64,34 @@
 <br />
 <% end %>
 <%# Only real page turns take a number; a choice without a destination is a %>
-<%# consequence the book states and leaves with the reader. %>
-<%# Buttons rather than links, as on the nearby-stops list: a page turn moves the %>
-<%# bookmark, and a browser that fetches links ahead of the cursor must not turn %>
-<%# pages. The POST bookmarks the destination and redirects to its own GET. %>
+<%# consequence the book states and leaves with the reader, and a choice whose kit or %>
+<%# toll is missing shows what it wanted rather than vanishing. Buttons rather than %>
+<%# links, as on the nearby-stops list: a page turn moves the bookmark, and a browser %>
+<%# that fetches links ahead of the cursor must not turn pages. Each button names its %>
+<%# place in the section; the destination is the server's to decide — it may hang on %>
+<%# a toll or the dice. %>
 <% number = 0 %>
-<% @section['choices'].each do |choice| %>
-<% if choice['to'] %>
-<% number += 1 %>
-<%= choice_button "#{number} #{choice['label']}", games_turn_path,
-                  { book: @book['id'], section: choice['to'] },
-                  accesskey: number.to_s %><br /><br />
-<% else %>
+<% @section['choices'].each_with_index do |choice, index| %>
+<% if choice['to'].nil? && choice['test'].nil? %>
 <%= choice['label'] %><br /><br />
+<% elsif choice['needs'] && !Array(@items).include?(choice['needs']) %>
+<%= glyph_text "#{choice['label']} (needs the #{choice['needs']})" %><br /><br />
+<% elsif (choice['cost'] || {}).any? { |stat, price| (@stats || {}).fetch(stat, 0) < price } %>
+<%= glyph_text "#{choice['label']} (#{choice['cost'].map { |stat, price| "#{stat} #{price}" }.join(', ')} - not enough)" %><br /><br />
+<% else %>
+<% number += 1 %>
+<% price = (choice['cost'] || {}).map { |stat, cost| " (#{stat} -#{cost})" }.join %>
+<% trial = choice['test'] ? " (test #{choice['test']['stat']})" : '' %>
+<%= choice_button "#{number} #{choice['label']}#{price}#{trial}", games_turn_path,
+                  { book: @book['id'], from: params[:section], choice: index },
+                  accesskey: number.to_s %><br /><br />
 <% end %>
 <% end %>
 <% if @section['choices'].empty? %>
 <b><%= glyph_text t('games.the_end'), heading: true %></b><br />
 <br />
-<%= link_to "1 #{t('games.restart')}", games_section_path(book: @book['id'], section: @book['start']), accesskey: "1" %><br /><br />
+<%= choice_button "1 #{t('games.restart')}", games_restart_path, { book: @book['id'] }, accesskey: "1" %><br /><br />
+<% end %>
 <% end %>
 <%= link_to "9 #{@book['title']}", games_book_path(book: @book['id']), accesskey: "9" %><br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

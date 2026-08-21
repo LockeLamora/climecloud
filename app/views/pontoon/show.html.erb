@@ -1,0 +1,32 @@
+<div class='games'>
+<b><%= glyph_text 'Pontoon', heading: true %></b><br />
+<br />
+<%= glyph_text "Bank: #{@bank}" %><br />
+<br />
+<% if @phase == 'play' %>
+<%= glyph_text "You: #{@player.map { |card| PlayingCards.show(card) }.join(' ')} (#{PlayingCards.hand_value(@player)})" %><br />
+<%= glyph_text "House shows: #{PlayingCards.show(@dealer.first)}" %><br />
+<br />
+<%= choice_button '1 Twist', games_pontoon_twist_path, {}, accesskey: '1' %><br />
+<br />
+<%= choice_button '2 Stick', games_pontoon_stick_path, {}, accesskey: '2' %><br />
+<% else %>
+<% if @phase == 'done' %>
+<%= glyph_text "You: #{@player.map { |card| PlayingCards.show(card) }.join(' ')} (#{PlayingCards.hand_value(@player)})" %><br />
+<%= glyph_text "House: #{@dealer.map { |card| PlayingCards.show(card) }.join(' ')} (#{PlayingCards.hand_value(@dealer)})" %><br />
+<%= glyph_text({ 'won' => 'You won the hand.', 'lost' => 'The house takes it.',
+                 'push' => 'A push - stakes back.', 'bust' => 'Bust. The house takes it.',
+                 'natural' => 'Pontoon! Paid half as much again.' }.fetch(@result, '')) %><br />
+<br />
+<% end %>
+<% if @bank >= PontoonController::STAKE %>
+<%= choice_button "1 Deal (stake #{PontoonController::STAKE})", games_pontoon_deal_path, {}, accesskey: '1' %><br />
+<% else %>
+<%= glyph_text 'The bank is empty.' %><br />
+<%= choice_button '1 Start again with 100', games_pontoon_reset_path, {}, accesskey: '1' %><br />
+<% end %>
+<% end %>
+<br />
+<%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

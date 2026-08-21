@@ -47,6 +47,15 @@ form.inline-action button {
     cursor: pointer;
 }
 
+/* A provision — eating a meal, drinking a draught — is not a page turn: it stands
+   apart in green wherever it is offered, so the book's own choices keep their colour.
+   The class outweighs the palette block's plain button selector on specificity, so
+   the green survives every written style; the drawn styles bake their colours into
+   the glyph images and keep them. */
+form.inline-action button.provision {
+  color: green;
+}
+
 /* The controls follow the chosen screen style too. Without this the settings page — the
    one page a reader is on while choosing a style — keeps white boxes on a dark ground,
    and the boxes are most of that page. ApplicationHelper#theme_style_tag supplies the

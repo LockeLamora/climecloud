@@ -16,8 +16,16 @@ class Gamebooks
 
   class << self
     def all
-      @all ||= Dir[Rails.root.join(DIR, '*.yml')].map { |file| YAML.safe_load_file(file) }
-                                                 .sort_by { |book| book['order'] }
+      @all ||= Dir[*paths].map { |file| YAML.safe_load_file(file) }
+                          .sort_by { |book| book['order'] }
+    end
+
+    # The shelf, plus — under test only — the fixtures that exercise the stats layer
+    # without putting an engineering rig on the real shelf.
+    def paths
+      list = [Rails.root.join(DIR, '*.yml')]
+      list << Rails.root.join('test/fixtures/gamebooks/*.yml') if Rails.env.test?
+      list
     end
 
     def find(id)

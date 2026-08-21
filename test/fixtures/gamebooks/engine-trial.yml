@@ -1,0 +1,77 @@
+# An engineering rig, not a book: the smallest set of sections that exercises every
+# stats-layer mechanic — rolled characters, kit, tolls, dice tests and effects. Loaded
+# only under test; see Gamebooks.paths.
+id: engine-trial
+order: 99
+title: Engine Trial
+author: Fixture
+year: 2026
+about: The rig that proves the stats layer.
+start: start
+stats:
+  skill: { start: '1d6+6' }
+  stamina: { start: '2d6+12', max: true }
+  gold: { start: '5' }
+items: [lamp]
+consumables:
+  ration: { start: 2, label: 'Eat a ration (stamina +3)', effects: { stamina: 3 } }
+dies_at_zero: stamina
+sections:
+  start:
+    title: The trial
+    text: A rope on a hook, a toll-gate, a locked door and a chasm.
+    choices:
+      - label: Take the rope
+        to: store
+      - label: Pay the toll
+        to: paid
+        cost: { gold: 3 }
+      - label: Try the locked door
+        to: vault
+        needs: rope
+      - label: Leap the chasm
+        test: { stat: skill, roll: '2d6', win: across, lose: fallen }
+      - label: Enter the arena
+        to: arena
+      - label: Enter the doom pit
+        to: doom
+  store:
+    title: The rope
+    text: Coiled over the shoulder.
+    effects: { take: rope }
+    choices:
+      - label: Back to the trial
+        to: start
+  paid:
+    title: The gate
+    text: The keeper waves you through.
+    choices:
+      - label: Back to the trial
+        to: start
+  vault:
+    title: The vault
+    text: The rope's weight on the latch does it.
+    choices: []
+  across:
+    title: The far side
+    text: Made it.
+    choices: []
+  fallen:
+    title: The ledge below
+    text: A bruising landing.
+    effects: { stamina: -2 }
+    choices: []
+  arena:
+    title: The arena
+    text: A soft-armed braggart bars the way.
+    combat: { enemies: [{ name: Braggart, skill: 1, endurance: 5 }] }
+    choices:
+      - label: Leave by the victors' gate
+        to: start
+  doom:
+    title: The doom pit
+    text: A giant with a maul.
+    combat: { enemies: [{ name: Giant, skill: 40, endurance: 99 }] }
+    choices:
+      - label: Crawl out
+        to: start

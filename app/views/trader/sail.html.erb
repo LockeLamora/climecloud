@@ -1,0 +1,13 @@
+<div class='games'>
+<b><%= glyph_text 'The harbour board', heading: true %></b><br />
+<%= glyph_text "From #{TraderController::PORTS[@port]}. The debt grows for every day at sea." %><br />
+<br />
+<% TraderController::PORTS.each_with_index do |name, port| %>
+<% next if port == @port %>
+<% days = [(port - @port).abs, 1].max %>
+<%= choice_button "#{name} (#{days} #{days == 1 ? 'day' : 'days'})", games_trader_go_path, { port: port } %><br />
+<br />
+<% end %>
+<%= link_to '9 Stay in port', games_trader_path, accesskey: '9' %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

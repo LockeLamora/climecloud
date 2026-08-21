@@ -50,8 +50,33 @@ Rails.application.routes.draw do
   # the cursor passes must not turn pages the reader never chose. The section GET below
   # it is a pure read, so a prefetch of it costs nothing.
   get 'games' => 'games#index'
+
+  # The little games: every view a pure read, every move a POST, all state in a small
+  # cookie of its own like the CYOA bookmark. Named before the book routes below, or
+  # games/:book would swallow them.
+  get 'games/hilo' => 'hilo#show', as: :games_hilo
+  post 'games/hilo/guess' => 'hilo#guess'
+  get 'games/pontoon' => 'pontoon#show', as: :games_pontoon
+  post 'games/pontoon/deal' => 'pontoon#deal'
+  post 'games/pontoon/twist' => 'pontoon#twist'
+  post 'games/pontoon/stick' => 'pontoon#stick'
+  post 'games/pontoon/reset' => 'pontoon#reset'
+  get 'games/trader' => 'trader#show', as: :games_trader
+  get 'games/trader/sail' => 'trader#sail', as: :games_trader_sail
+  post 'games/trader/trade' => 'trader#trade'
+  post 'games/trader/go' => 'trader#go'
+  post 'games/trader/pay' => 'trader#pay'
+  post 'games/trader/retire' => 'trader#retire'
+  get 'games/journey' => 'journey#show', as: :games_journey
+  post 'games/journey/act' => 'journey#act'
+  post 'games/journey/restart' => 'journey#restart'
+  get 'games/riddle' => 'riddle#show', as: :games_riddle
+  post 'games/riddle/answer' => 'riddle#answer'
+
   get 'games/:book' => 'games#book', as: :games_book
   post 'games/turn' => 'games#turn'
+  post 'games/restart' => 'games#restart'
+  post 'games/use' => 'games#use'
   get 'games/:book/:section' => 'games#section', as: :games_section
 
   get 'news' => 'news#news'

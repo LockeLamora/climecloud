@@ -1,0 +1,28 @@
+<div class='games'>
+<b><%= glyph_text 'Tramp Trader', heading: true %></b><br />
+<br />
+<%= glyph_text "Day #{@day} - #{TraderController::PORTS[@port]}" %><br />
+<%= glyph_text "Cash #{@cash} - debt #{@debt} - hold #{@cargo.sum}/#{TraderController::HOLD}" %><br />
+<% if @best.positive? %>
+<%= glyph_text "Best voyage: #{@best}" %><br />
+<% end %>
+<br />
+<%# One line per good: today's price here, what is in the hold, and the two moves. %>
+<%# Buying takes all the hold or cash allows; selling clears the good. %>
+<% TraderController::GOODS.each_with_index do |(name, _low, _high), good| %>
+<%= glyph_text "#{name} at #{@prices[good]} - holding #{@cargo[good]}" %><br />
+<%= choice_button "Buy #{name.downcase}", games_trader_trade_path, { good: good, op: 'buy' } %>
+<%= choice_button "Sell #{name.downcase}", games_trader_trade_path, { good: good, op: 'sell' } %><br />
+<br />
+<% end %>
+<%= link_to '1 Sail on', games_trader_sail_path, accesskey: '1' %><br />
+<br />
+<% if @debt.positive? && @cash.positive? %>
+<%= choice_button '2 Pay down the debt', games_trader_pay_path, {}, accesskey: '2' %><br />
+<br />
+<% end %>
+<%= choice_button '3 Retire ashore', games_trader_retire_path, {}, accesskey: '3' %><br />
+<br />
+<%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

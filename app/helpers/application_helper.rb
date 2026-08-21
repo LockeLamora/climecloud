@@ -58,11 +58,11 @@ module ApplicationHelper
   # of its own; that cost is accepted on these short lists, and nothing tried avoids it
   # (a CSS background glyph is not painted at all, and an image input double-stops and
   # does not submit). Long lists that must scroll in one stop per entry are links.
-  def choice_button(label, url, params, token: true, accesskey: nil)
+  def choice_button(label, url, params, token: true, accesskey: nil, css: nil)
     form_with url: url, authenticity_token: token, class: 'inline-action' do
       controls = params.map { |name, value| hidden_field_tag(name, value, id: nil) }
       controls << tag.button(glyph_theme ? glyph_image(label, link: true) : label,
-                             type: 'submit', accesskey: accesskey)
+                             type: 'submit', accesskey: accesskey, class: css)
       safe_join(controls)
     end
   end

@@ -1,0 +1,17 @@
+<div class='games'>
+<b><%= glyph_text 'Higher or Lower', heading: true %></b><br />
+<br />
+<%= glyph_text "On the table: #{PlayingCards.name(@card)}" %><br />
+<%= glyph_text "Streak #{@streak} - best #{@best}" %><br />
+<br />
+<%# Guesses are buttons, as every move in the games section is: a browser that %>
+<%# fetches links ahead of the cursor must not play the hand. %>
+<%= choice_button '1 Higher', games_hilo_guess_path, { call: 'higher' }, accesskey: '1' %><br />
+<br />
+<%= choice_button '2 Lower', games_hilo_guess_path, { call: 'lower' }, accesskey: '2' %><br />
+<br />
+<%= glyph_text 'Same rank pushes: the card changes, the streak stands.' %><br />
+<br />
+<%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>

@@ -1,5 +1,8 @@
 id: treasure-hunt
 order: 2
+# Off the shelf for now: hidden books keep their URLs and their bookmarks, they
+# just go unlisted. Delete this line to put it back.
+hidden: true
 title: Treasure Hunt
 author: '"Alan George"'
 year: c. 1940

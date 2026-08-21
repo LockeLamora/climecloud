@@ -100,7 +100,7 @@ class ForgeryProtectionTest < ActionDispatch::IntegrationTest
     assert_absolute_action '/games/turn'
 
     post '/games/turn', params: {
-      authenticity_token: token_from(response.body), book: 'treasure-hunt', section: '5'
+      authenticity_token: token_from(response.body), book: 'treasure-hunt', from: '1', choice: 0
     }
 
     assert_redirected_to '/games/treasure-hunt/5'

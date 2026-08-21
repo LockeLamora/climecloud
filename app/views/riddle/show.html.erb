@@ -1,0 +1,22 @@
+<div class='games'>
+<b><%= glyph_text 'Riddle of the day', heading: true %></b><br />
+<br />
+<%= simple_format(@riddle[:q]) %>
+<% if @answered %>
+<% right = @pick == @riddle[:right] %>
+<%= glyph_text "You said: #{@riddle[:a][@pick]}" %><br />
+<%= glyph_text(right ? 'Right!' : "It was: #{@riddle[:a][@riddle[:right]]}") %><br />
+<br />
+<%= glyph_text "Streak #{@streak} - best #{@best}. A new riddle at midnight." %><br />
+<% else %>
+<%# One guess a day, and guesses are buttons like every move in the games section: a %>
+<%# browser that fetches links ahead of the cursor must not spend it. %>
+<% @riddle[:a].each_with_index do |option, index| %>
+<%= choice_button "#{index + 1} #{option}", games_riddle_answer_path, { pick: index }, accesskey: (index + 1).to_s %><br />
+<br />
+<% end %>
+<% end %>
+<br />
+<%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+</div>
