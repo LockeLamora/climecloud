@@ -265,6 +265,20 @@ class WarRigTest < ActionDispatch::IntegrationTest
     assert_includes held, 'steel', 'the companion arrives with the main find'
   end
 
+  test 'the prose reads once: fought rounds keep the page to the numbers' do
+    pack 'pit', items: 'club'
+    get "/games/#{BOOK}/pit"
+    assert_match 'An ogre, unimpressed', @response.body, 'the set-up shows on arrival'
+
+    fight_round 'pit'
+    follow_redirect!
+    assert_no_match(/An ogre, unimpressed/, @response.body,
+                    'from the first round the prose stands aside')
+    assert_match(/Random number \d: the enemy loses/, @response.body)
+    assert_match 'Ogre: Combat Skill 10', @response.body
+    assert_match 'Fight a round of combat', @response.body
+  end
+
   test 'the combat panel names the weapon the engine fights with' do
     pack 'pit', items: 'club'
     get "/games/#{BOOK}/pit"

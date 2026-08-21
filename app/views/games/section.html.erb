@@ -58,7 +58,11 @@
 <%= choice_button "1 #{t('games.restart')}", games_restart_path, { book: @book['id'] }, accesskey: "1" %><br />
 <br />
 <% else %>
-<%= simple_format(@section['text']) if @section['text'].present? %>
+<%# The prose reads once: from the first fought round the page keeps to the numbers %>
+<%# — the roll, what each side lost, both endurances — with nothing to re-scroll. %>
+<% if @section['text'].present? && (@combat.nil? || @round.to_i.zero?) %>
+<%= simple_format(@section['text']) %>
+<% end %>
 <% if @section['rnt'] %>
 <%# Nobody carries the book's random number table: one is drawn here for the reader %>
 <%# to use with the section's instructions. Display only — nothing hangs on it %>
