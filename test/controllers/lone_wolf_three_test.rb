@@ -18,6 +18,9 @@ class LoneWolfThreeTest < ActionDispatch::IntegrationTest
   VETERAN_ONE = '350|skill:16,endurance:23,endurance_max:25,gold:12,gold_max:50|' \
                 'camouflage,healing,sixth sense,tracking,mindblast,axe,meal:1|'
 
+  # The armoury sits one page past the new-discipline lesson.
+  ARMOURY_CHOICE = 1
+
   def pack(section, stats: 'skill:15,endurance:25,endurance_max:25,gold:10,gold_max:50',
            items: 'sword', fight: '')
     cookies['CYOA'] = { BOOK => "#{section}|#{stats}|#{items}|#{fight}" }.to_json
@@ -43,12 +46,14 @@ class LoneWolfThreeTest < ActionDispatch::IntegrationTest
 
   test 'a kai lord who finished book two carries everything and learns a seventh skill' do
     cookies['CYOA'] = { 'fire-on-the-water' => VETERAN_TWO }.to_json
-    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
 
     assert_redirected_to "/games/#{BOOK}/armoury"
     _section, stats, items = entry.split('|')
     rolled = stats_of(stats)
-    assert_equal [19, 29], [rolled['skill'], rolled['endurance_max']], 'the scores carry'
+    # Current scores carry, and the score walked in with is the new ceiling.
+    assert_equal [19, 27, 27], [rolled['skill'], rolled['endurance'], rolled['endurance_max']],
+                 'the scores carry as they stood'
     assert_equal 50, rolled['gold'], 'forty-four plus a fresh pouch, capped at fifty'
 
     held = items.split(',')
@@ -57,13 +62,14 @@ class LoneWolfThreeTest < ActionDispatch::IntegrationTest
     assert_includes held, 'meal:2'
     assert_includes held, 'map of kalte'
     assert_includes held, 'armoury choice:2'
-    assert_equal 7, disciplines_in(held), 'six carried, one learned on the road'
+    assert_equal 6, disciplines_in(held), 'the six carried over'
+    assert_includes held, 'discipline choice:1', 'the seventh is the reader\'s to choose'
   end
 
   test 'finishing only book one still carries that kai lord into kalte' do
     cookies['CYOA'] = { 'fire-on-the-water' => '12|skill:15,endurance:20|sword|',
                         'flight-from-the-dark' => VETERAN_ONE }.to_json
-    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
 
     _section, stats, items = entry.split('|')
     rolled = stats_of(stats)
@@ -71,11 +77,12 @@ class LoneWolfThreeTest < ActionDispatch::IntegrationTest
     assert_includes 22..31, rolled['gold'], 'twelve carried plus the Anskaven pouch'
     held = items.split(',')
     assert_includes held, 'axe'
-    assert_equal 6, disciplines_in(held), 'five carried, one learned'
+    assert_equal 5, disciplines_in(held), 'the five carried over'
+    assert_includes held, 'discipline choice:1', 'and one more to choose'
   end
 
   test 'with nothing finished, a fresh kai lord is rolled by the book three rules' do
-    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
 
     _section, stats, items = entry.split('|')
     rolled = stats_of(stats)

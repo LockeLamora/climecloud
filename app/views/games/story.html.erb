@@ -1,0 +1,12 @@
+<div class='games'>
+<b><%= glyph_text t('games.story_so_far'), heading: true %></b><br />
+<%= glyph_text @book['title'] %><br />
+<br />
+<%= simple_format(@book['story']) %>
+<%= link_to "9 #{@book['title']}", games_book_path(book: @book['id']), accesskey: "9" %><br />
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
+<% if (credit = @book['credit']) %>
+<br /><br />
+<div class='credit'><%= credit_link credit['text'], credit['url'] %></div>
+<% end %>
+</div>

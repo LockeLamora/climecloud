@@ -258,6 +258,13 @@ tr:
     begin: "Başla"
     restart: "Baştan başla"
     the_end: "Son"
+    story_so_far: "Şimdiye kadarki hikâye"
+    chart:
+      disciplines: "Disiplinler"
+      weapons: "Silahlar"
+      backpack: "Sırt çantası"
+      specials: "Özel eşyalar"
+      none: "yok"
     make_character: "Kendi karakterini seç"
     make:
       skill_title: "Dövüş Becerisi"

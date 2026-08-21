@@ -258,6 +258,13 @@ vi:
     begin: "Bắt đầu"
     restart: "Bắt đầu lại"
     the_end: "Hết"
+    story_so_far: "Câu chuyện đến nay"
+    chart:
+      disciplines: "Kỹ năng"
+      weapons: "Vũ khí"
+      backpack: "Ba lô"
+      specials: "Vật phẩm đặc biệt"
+      none: "không có"
     make_character: "Tự chọn nhân vật"
     make:
       skill_title: "Kỹ năng Chiến đấu"

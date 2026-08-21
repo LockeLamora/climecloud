@@ -258,6 +258,13 @@ nl:
     begin: "Beginnen"
     restart: "Opnieuw beginnen"
     the_end: "Einde"
+    story_so_far: "Het verhaal tot nu toe"
+    chart:
+      disciplines: "Disciplines"
+      weapons: "Wapens"
+      backpack: "Rugzak"
+      specials: "Bijzondere voorwerpen"
+      none: "geen"
     make_character: "Kies je eigen personage"
     make:
       skill_title: "Vechtvaardigheid"

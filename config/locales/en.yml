@@ -257,6 +257,13 @@ en:
     begin: "Begin"
     restart: "Start again"
     the_end: "The End"
+    story_so_far: "The Story So Far"
+    chart:
+      disciplines: "Disciplines"
+      weapons: "Weapons"
+      backpack: "Backpack"
+      specials: "Special Items"
+      none: "none"
     make_character: "Choose your own character"
     make:
       skill_title: "Combat Skill"

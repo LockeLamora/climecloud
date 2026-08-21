@@ -258,6 +258,13 @@ ur:
     begin: "شروع کریں"
     restart: "دوبارہ شروع کریں"
     the_end: "اختتام"
+    story_so_far: "اب تک کی کہانی"
+    chart:
+      disciplines: "مہارتیں"
+      weapons: "ہتھیار"
+      backpack: "بیگ"
+      specials: "خاص اشیاء"
+      none: "کچھ نہیں"
     make_character: "اپنا کردار خود چنیں"
     make:
       skill_title: "جنگی مہارت"

@@ -258,6 +258,13 @@ ru:
     begin: "Начать"
     restart: "Начать заново"
     the_end: "Конец"
+    story_so_far: "Что было прежде"
+    chart:
+      disciplines: "Дисциплины"
+      weapons: "Оружие"
+      backpack: "Рюкзак"
+      specials: "Особые предметы"
+      none: "ничего"
     make_character: "Выбрать своего героя"
     make:
       skill_title: "Боевое мастерство"

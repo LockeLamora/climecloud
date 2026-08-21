@@ -258,6 +258,13 @@ id:
     begin: "Mulai"
     restart: "Mulai ulang"
     the_end: "Tamat"
+    story_so_far: "Kisah sejauh ini"
+    chart:
+      disciplines: "Disiplin"
+      weapons: "Senjata"
+      backpack: "Ransel"
+      specials: "Barang khusus"
+      none: "tidak ada"
     make_character: "Pilih tokohmu sendiri"
     make:
       skill_title: "Keterampilan Tempur"

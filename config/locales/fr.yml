@@ -258,6 +258,13 @@ fr:
     begin: "Commencer"
     restart: "Recommencer"
     the_end: "Fin"
+    story_so_far: "L’histoire jusqu’ici"
+    chart:
+      disciplines: "Disciplines"
+      weapons: "Armes"
+      backpack: "Sac à dos"
+      specials: "Objets spéciaux"
+      none: "aucun"
     make_character: "Choisissez votre personnage"
     make:
       skill_title: "Habileté au combat"

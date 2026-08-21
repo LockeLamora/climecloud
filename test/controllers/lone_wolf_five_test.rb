@@ -14,6 +14,9 @@ class LoneWolfFiveTest < ActionDispatch::IntegrationTest
                   'camouflage,hunting,sixth sense,tracking,mindshield,healing,mindblast,' \
                   'weaponskill in sword,sommerswerd,sword,meal:2,badge of rank|'
 
+  # The armoury sits one page past the new-discipline lesson.
+  ARMOURY_CHOICE = 1
+
   def pack(section, stats: 'skill:18,endurance:26,endurance_max:26,gold:20,gold_max:50',
            items: 'sword', fight: '')
     cookies['CYOA'] = { BOOK => "#{section}|#{stats}|#{items}|#{fight}" }.to_json
@@ -37,13 +40,14 @@ class LoneWolfFiveTest < ActionDispatch::IntegrationTest
 
   test 'a kai lord out of Ruanon sails on with everything and a ninth discipline' do
     cookies['CYOA'] = { 'the-chasm-of-doom' => CHASM_VETERAN }.to_json
-    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
 
     assert_redirected_to "/games/#{BOOK}/armoury"
     _section, stats, items = entry.split('|')
     rolled = stats_of(stats)
     assert_equal 21, rolled['skill']
-    assert_equal 31, rolled['endurance'], 'rested to the ceiling between adventures'
+    assert_equal [29, 29], [rolled['endurance'], rolled['endurance_max']],
+                 'the current score carries, and is the new ceiling'
     assert_equal 50, rolled['gold'], 'the pouch cannot hold more than fifty'
 
     held = items.split(',')
@@ -52,7 +56,8 @@ class LoneWolfFiveTest < ActionDispatch::IntegrationTest
     assert_includes held, 'armoury choice:4'
     draw = Gamebooks.find(BOOK)['item_draw']['from']
     skills = held.count { |i| draw.include?(i) || i.start_with?('weaponskill in ') }
-    assert_equal 9, skills, 'eight carried, one more learned'
+    assert_equal 8, skills, 'the eight carried over'
+    assert_includes held, 'discipline choice:1', 'the ninth is the reader\'s to choose'
   end
 
   test 'the quayside stores allow four picks and no more' do

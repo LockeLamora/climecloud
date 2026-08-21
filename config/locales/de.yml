@@ -258,6 +258,13 @@ de:
     begin: "Beginnen"
     restart: "Von vorn beginnen"
     the_end: "Ende"
+    story_so_far: "Die Geschichte bisher"
+    chart:
+      disciplines: "Disziplinen"
+      weapons: "Waffen"
+      backpack: "Rucksack"
+      specials: "Besondere Gegenstände"
+      none: "keine"
     make_character: "Eigenen Charakter wählen"
     make:
       skill_title: "Kampfgeschick"

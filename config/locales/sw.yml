@@ -258,6 +258,13 @@ sw:
     begin: "Anza"
     restart: "Anza upya"
     the_end: "Mwisho"
+    story_so_far: "Hadithi hadi sasa"
+    chart:
+      disciplines: "Stadi"
+      weapons: "Silaha"
+      backpack: "Mkoba"
+      specials: "Vitu maalum"
+      none: "hakuna"
     make_character: "Chagua mhusika wako"
     make:
       skill_title: "Ustadi wa Mapigano"

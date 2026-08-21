@@ -86,6 +86,10 @@ sections:
 
       You are given a map of the desert empire, a pouch of Gold Crowns, and your pick of four things from the quayside stores. Vassagonia is not kind: a wound left untended festers with every page, and there is no hunting in the sand.
     choices:
+    - label: Learn a new Kai Discipline
+      to: newskill
+      needs: discipline choice
+      quiet: true
     - label: Take your pick of the stores
       to: armoury
   '1':
@@ -4478,8 +4482,10 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Sixth Sense, turn to 358.
       to: '358'
+      needs: sixth sense
     - label: If you do not possess this skill, turn to 263.
       to: '263'
+      without: sixth sense
     title: '314'
   '315':
     text: |-
@@ -4678,8 +4684,10 @@ sections:
     - label: If you possess a Rope, you can attempt to climb down to the gardens below.
         Turn to 305.
       to: '305'
+      needs: rope
     - label: If you do not possess a Rope, turn to 387.
       to: '387'
+      without: rope
     title: '329'
   '330':
     text: You parry the Drakkar’s blow and turn it aside, but he is quick to recover.
@@ -4737,8 +4745,10 @@ sections:
     choices:
     - label: If you possess the Sommerswerd, turn to 258.
       to: '258'
+      needs: sommerswerd
     - label: If you do not have the Special Item, turn to 348.
       to: '348'
+      without: sommerswerd
     title: '333'
   '334':
     text: You are in combat with two grim-faced warriors. They block the stair and
@@ -4764,6 +4774,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Sixth Sense, turn to 204.
       to: '204'
+      needs: sixth sense
     - label: If you wish to attempt to grab the stone, turn to 268.
       to: '268'
     - label: If you wish to ignore the stone and attack Haakon, turn to 390.
@@ -4798,6 +4809,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Sixth Sense, turn to 365.
       to: '365'
+      needs: sixth sense
     - label: If you wish to accept his invitation, turn to 225.
       to: '225'
     - label: If you wish to decline his offer and continue towards Ikaresh, turn to
@@ -4891,9 +4903,11 @@ sections:
     - label: If you possess some Oede herb and wish to give it to the poor vaxeler,
         turn to 321.
       to: '321'
+      needs: oede herb
     - label: If you do not have any Oede herb, or if you do not wish to give it to
         this unfortunate wretch, flee the cave and turn to 270.
       to: '270'
+      without: oede herb
     title: '344'
   '345':
     text: |-
@@ -5170,9 +5184,11 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Tracking, turn to 220.
       to: '220'
+      needs: tracking
     - label: If you do not possess this skill, you can either climb the stairs to
         the small portal by turning to 352.
       to: '352'
+      without: tracking
     - label: Or follow the winding path into the trees, by turning to 391.
       to: '391'
     title: '363'
@@ -5275,8 +5291,10 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Healing, turn to 377.
       to: '377'
+      needs: healing
     - label: If you do not possess this skill, turn to 339.
       to: '339'
+      without: healing
     title: '371'
   '372':
     text: |-
@@ -5405,8 +5423,10 @@ sections:
     choices:
     - label: If you possess a Black Crystal Cube, turn to 229.
       to: '229'
+      needs: black crystal cube
     - label: If you do not have this Special Item, turn to 247.
       to: '247'
+      without: black crystal cube
     title: '380'
   '381':
     text: |-
@@ -5435,8 +5455,10 @@ sections:
     choices:
     - label: If you have ever been given a Crystal Star Pendant, turn to 399.
       to: '399'
+      needs: crystal star pendant
     - label: If you do not have this Special Item, turn to 294.
       to: '294'
+      without: crystal star pendant
     title: '382'
   '383':
     text: You trudge through the loose red sand, your faces covered to protect them
@@ -5477,6 +5499,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Tracking, turn to 292.
       to: '292'
+      needs: tracking
     - label: If you wish to enter the alley and knock at the door, turn to 206.
       to: '206'
     - label: If you wish to continue along the street, turn to 346.
@@ -5643,6 +5666,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Sixth Sense, turn to 266.
       to: '266'
+      needs: sixth sense
     - label: If you wish to ascend the spiral stairs, turn to 322.
       to: '322'
     - label: If you wish to descend the spiral stairs, turn to 360.
@@ -5731,8 +5755,132 @@ sections:
       spends: armoury choice
       label: A Shield (skill +2 in combat)
     choices:
+    - label: Learn a new Kai Discipline
+      to: newskill
+      needs: discipline choice
+      quiet: true
     - label: Sail for Barrakeesh
       to: '1'
+  newskill:
+    title: A New Kai Discipline
+    text: Every adventure you survive raises your rank in the Kai, and with rank comes
+      further training. Choose one more Kai Discipline to master before you set out.
+    offers:
+    - item: camouflage
+      spends: discipline choice
+      label: Camouflage
+      about: This Discipline enables a Kai Lord to blend in with his surroundings.
+        In the countryside, he can hide undetected among trees and rocks and pass
+        close to an enemy without being seen.
+    - item: hunting
+      spends: discipline choice
+      label: Hunting
+      about: This skill ensures that a Kai Lord will never starve in the wild. He
+        will always be able to hunt for food for himself except in areas of wasteland
+        and desert.
+    - item: sixth sense
+      spends: discipline choice
+      label: Sixth Sense
+      about: This skill may warn a Kai Lord of imminent danger. It may also reveal
+        the true purpose of a stranger or strange object encountered in your adventure.
+    - item: tracking
+      spends: discipline choice
+      label: Tracking
+      about: This skill enables a Kai Lord to make the correct choice of a path in
+        the wild, to discover the location of a person or object in a town or city
+        and to read the secrets of footprints or tracks.
+    - item: healing
+      spends: discipline choice
+      label: Healing
+      about: This Discipline can be used to restore ENDURANCE points lost in combat.
+        If you possess this skill you may restore 1 ENDURANCE point to your total
+        for every numbered section of the book you pass through in which you are not
+        involved in combat.
+    - item: mindshield
+      spends: discipline choice
+      label: Mindshield
+      about: The Darklords and many of the evil creatures in their command have the
+        ability to attack you using their Mindforce. The Kai Discipline of Mindshield
+        prevents you from losing any ENDURANCE points when subjected to this form
+        of attack.
+    - item: mindblast
+      spends: discipline choice
+      label: Mindblast
+      about: This enables a Kai Lord to attack an enemy using the force of his mind.
+        It can be used at the same time as normal combat weapons and adds two extra
+        points to your COMBAT SKILL. Not all the creatures encountered on this adventure
+        will be harmed by Mindblast.
+    - item: animal kinship
+      spends: discipline choice
+      label: Animal Kinship
+      about: This skill enables a Kai Lord to communicate with some animals and to
+        be able to guess the intentions of others.
+    - item: mind over matter
+      spends: discipline choice
+      label: Mind Over Matter
+      about: Mastery of this Discipline enables a Kai Lord to move small objects with
+        his powers of concentration.
+    choices:
+    - label: Weaponskill - master a weapon
+      to: weaponmaster
+      needs: discipline choice
+      without: weaponskill
+      quiet: true
+    - label: Done - on to your equipment
+      to: armoury
+  weaponmaster:
+    title: Weaponskill
+    text: Upon entering the Kai Monastery, each initiate is taught to master one type
+      of weapon.
+    offers:
+    - item: weaponskill in dagger
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the dagger
+    - item: weaponskill in spear
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the spear
+    - item: weaponskill in mace
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the mace
+    - item: weaponskill in short sword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the short sword
+    - item: weaponskill in warhammer
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the warhammer
+    - item: weaponskill in sword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the sword
+    - item: weaponskill in axe
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the axe
+    - item: weaponskill in quarterstaff
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the quarterstaff
+    - item: weaponskill in broadsword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the broadsword
+    choices:
+    - label: Back
+      to: newskill
 series: Lone Wolf
 volume: Book Five
 sequel_of:
@@ -5921,3 +6069,25 @@ disciplines:
     name: Mind Over Matter
     about: Mastery of this Discipline enables a Kai Lord to move small objects with
       his powers of concentration.
+story: |-
+  You are Lone Wolf—last of the Kai Lords of Sommerlund, and sole survivor of the massacre that destroyed them during a bitter war with your age-old enemies, the Darklords of Helgedad.
+
+  It is midwinter in your northern homeland and a mantle of snow lies knee-deep in the streets of Holmgard—the capital—when you are summoned from your monastery in the hills by a messenger bearing a scroll, signed and sealed by the hand of King Ulnar. You are surprised to read the King’s message, for it is a request for your help in solving an urgent problem of what he describes as ‘great diplomatic importance’. It seems a strange request to make of a warrior lord, whose skills are better suited to the field of battle than to parleying with foreign envoys. However, you obey the summons and upon your arrival at the capital, all is made clear.
+
+  The Zakhan of Vassagonia, the imperial ruler of this desert empire, has sent his most trusted envoy to seek a treaty of peace between your two countries, and you have been asked to sign the treaty on behalf of your country. The reason for this is easily apparent.
+
+  Less than a year ago, a renegade noble of Vassagonia called Barraka led his army of bandits in an attack upon the Sommlending province of Ruanon. This mining town and much of the surrounding land was overrun and destroyed. Many Sommlending lost their lives, and many more were enslaved and forced to labour in the mines of the Maaken Range. When the regular convoy from Ruanon failed to arrive at the capital, the king sent you to investigate. A great battle ensued in which you defeated Barraka in mortal combat. Without your courage and skill, the safety of Sommerlund and all of the Lastlands would have been placed in grave peril.
+
+  ‘Your majesty, the Zakhan is gravely embarrassed by Barraka’s foul treachery, and is most anxious that our friendship and trust be restored. He begs that you send the Kai warrior, Lone Wolf, to sign a treaty of peace with him at the Grand Palace in Barrakeesh,’ whimpers the Zakhan’s emissary, as he kneels at the feet of King Ulnar.
+
+  The king rises from his throne, barely able to conceal his distaste for the fawning envoy. He turns his gaze to you and bids you follow him to the privacy of an antechamber.
+
+  ‘I have no liking for this desert realm, Lone Wolf, but I like the prospect of war even less. The Zakhan is old and frail, and has no son to claim his throne when he dies. Barraka was but one of many ruthless nobles who wait like jackals for the chance to seize power, and I fear they grow too impatient to allow the Zakhan to die a natural death. The treaty may not guarantee peace with Vassagonia once the Zakhan is dead, but it will at least buy us precious time to strengthen our southern border.’
+
+  The king leads you to a window and points towards the harbour, barely visible through the falling snow. A Vassagonian galley lies anchored close to the harbour wall.
+
+  ‘Go to Vassagonia, Lone Wolf. Sign the treaty and return quickly. Even with the promise of peace, I fear the shadow of war will fall upon us before the year is out.’
+
+  You wave farewell to Holmgard on this bleak midwinter’s day, feeling sure you will return before the thaw. But as you watch the spires of Holmgard disappear in the falling snow, you have no inkling of the shadow that awaits you in Vassagonia.
+backpack: 8
+arc: The Kai

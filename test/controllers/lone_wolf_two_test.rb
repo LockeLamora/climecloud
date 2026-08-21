@@ -32,17 +32,23 @@ class LoneWolfTwoTest < ActionDispatch::IntegrationTest
     packed.split(',').to_h { |pair| pair.split(':').then { |k, v| [k, v.to_i] } }
   end
 
+  # The armoury sits one page past the lesson; a returning Kai Lord may take either
+  # branch off the title page, and this is the index of the equipment one.
+  ARMOURY_CHOICE = 1
+
   test 'a kai lord who finished book one walks in with everything and one new skill' do
     cookies['CYOA'] = { 'flight-from-the-dark' => VETERAN }.to_json
-    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
 
     assert_redirected_to "/games/#{BOOK}/armoury"
     _section, stats, items = entry.split('|')
     rolled = stats_of(stats)
-    assert_equal [17, 26], [rolled['skill'], rolled['endurance_max']],
-                 'the scores carry as they stood'
-    assert_equal 26, rolled['endurance'],
-                 'months of rest between adventures: the new book opens at full strength'
+    assert_equal 17, rolled['skill'], 'the combat skill carries as it stood'
+    # "You can carry your current scores of COMBAT SKILL and ENDURANCE points over",
+    # and "your ENDURANCE can never rise above the number you started with": no book
+    # heals the wounds of the last one, and the score walked in with is the new ceiling.
+    assert_equal [24, 24], [rolled['endurance'], rolled['endurance_max']],
+                 'the wounded score carries, and becomes the new ceiling'
     assert_includes 40..50, rolled['gold'], 'thirty carried plus a fresh pouch, pouch-capped'
 
     held = items.split(',')
@@ -52,11 +58,58 @@ class LoneWolfTwoTest < ActionDispatch::IntegrationTest
     assert_includes held, 'armoury choice:2'
     draw = Gamebooks.find(BOOK)['item_draw']['from']
     skills = held.count { |item| draw.include?(item) || item.start_with?('weaponskill in ') }
-    assert_equal 6, skills, 'five old disciplines and one learned on the road'
+    assert_equal 5, skills, 'the five disciplines carried over'
+    assert_includes held, 'discipline choice:1',
+                    'the sixth is the reader\'s to choose, not the engine\'s to roll'
+  end
+
+  # "You may choose one extra Kai Discipline" — a choice, and the reader makes it.
+  test 'the returning kai lord chooses the new discipline rather than being dealt one' do
+    cookies['CYOA'] = { 'flight-from-the-dark' => VETERAN }.to_json
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    assert_redirected_to "/games/#{BOOK}/newskill"
+
+    get "/games/#{BOOK}/newskill"
+    assert_response :success
+    assert_match 'Healing', @response.body, 'a discipline they lack is offered'
+    assert_no_match(/Take the camouflage/, @response.body, 'one they already have is not')
+
+    post '/games/take', params: { book: BOOK, item: 'healing' }
+    held = entry.split('|')[2].split(',')
+    assert_includes held, 'healing'
+    assert_not_includes held, 'discipline choice:1', 'the pick is spent'
+
+    get "/games/#{BOOK}/newskill"
+    assert_no_match(/Take the mindblast/, @response.body, 'and no second discipline follows')
+  end
+
+  test 'weaponskill is chosen with the weapon it is mastered in' do
+    bare = VETERAN.sub('weaponskill in sword,', '')
+    cookies['CYOA'] = { 'flight-from-the-dark' => bare }.to_json
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'newskill', choice: 0 }
+    assert_redirected_to "/games/#{BOOK}/weaponmaster"
+
+    post '/games/take', params: { book: BOOK, item: 'weaponskill in axe' }
+    held = entry.split('|')[2].split(',')
+    assert_includes held, 'weaponskill in axe'
+
+    get "/games/#{BOOK}/weaponmaster"
+    assert_no_match(/weaponskill in mace/, @response.body,
+                    'one weapon only: the rest close once the pick is spent')
+  end
+
+  test 'a fresh kai lord is never offered the returning lord\'s lesson' do
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
+    assert_redirected_to "/games/#{BOOK}/armoury"
+    assert_not_includes entry.split('|')[2].split(','), 'discipline choice:1'
+
+    get "/games/#{BOOK}/armoury"
+    assert_no_match(/Learn a new Kai Discipline/, @response.body)
   end
 
   test 'without a finished book one, a fresh kai lord is rolled by the book two rules' do
-    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
 
     _section, stats, items = entry.split('|')
     rolled = stats_of(stats)

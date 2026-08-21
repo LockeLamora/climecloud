@@ -62,6 +62,10 @@ sections:
 
       Either way, Captain D'Val hands you a fresh pouch of Gold Crowns, and the Royal Armoury offers you any two items from its table before you sail. Everything is tracked for you, as in Book One; the Sommerswerd, when you earn it, counts its own worth in combat.
     choices:
+    - label: Learn a new Kai Discipline
+      to: newskill
+      needs: discipline choice
+      quiet: true
     - label: Enter the Royal Armoury
       to: armoury
   '1':
@@ -5018,8 +5022,133 @@ sections:
       label: A Broadsword
       about: A heavy two-edged blade, the pride of the Durenese smithies.
     choices:
+    - label: Learn a new Kai Discipline
+      to: newskill
+      needs: discipline choice
+      quiet: true
     - label: Leave for the quay
       to: '1'
+  newskill:
+    title: A New Kai Discipline
+    text: Every adventure you survive raises your rank in the Kai, and with rank comes
+      further training. Choose one more Kai Discipline to master before you set out.
+    offers:
+    - item: camouflage
+      spends: discipline choice
+      label: Camouflage
+      about: This Discipline enables a Kai Lord to blend in with his surroundings.
+        In the countryside, he can hide undetected among trees and rocks and pass
+        close to an enemy without being seen.
+    - item: hunting
+      spends: discipline choice
+      label: Hunting
+      about: This skill ensures that a Kai Lord will never starve in the wild. He
+        will always be able to hunt for food for himself except in areas of wasteland
+        and desert. The skill also enables a Kai Lord to be able to move stealthily
+        when stalking his prey.
+    - item: sixth sense
+      spends: discipline choice
+      label: Sixth Sense
+      about: This skill may warn a Kai Lord of imminent danger. It may also reveal
+        the true purpose of a stranger or strange object encountered in your adventure.
+    - item: tracking
+      spends: discipline choice
+      label: Tracking
+      about: This skill enables a Kai Lord to make the correct choice of a path in
+        the wild, to discover the location of a person or object in a town or city
+        and to read the secrets of footprints or tracks.
+    - item: healing
+      spends: discipline choice
+      label: Healing
+      about: This Discipline can be used to restore ENDURANCE points lost in combat.
+        If you possess this skill you may restore 1 ENDURANCE point to your total
+        for every numbered section of the book you pass through in which you are not
+        involved in combat.
+    - item: mindshield
+      spends: discipline choice
+      label: Mindshield
+      about: The Darklords and many of the evil creatures in their command have the
+        ability to attack you using their Mindforce. The Kai Discipline of Mindshield
+        prevents you from losing any ENDURANCE points when subjected to this form
+        of attack.
+    - item: mindblast
+      spends: discipline choice
+      label: Mindblast
+      about: This enables a Kai Lord to attack an enemy using the force of his mind.
+        It can be used at the same time as normal combat weapons and adds two extra
+        points to your COMBAT SKILL. Not all the creatures encountered on this adventure
+        will be harmed by Mindblast.
+    - item: animal kinship
+      spends: discipline choice
+      label: Animal Kinship
+      about: This skill enables a Kai Lord to communicate with some animals and to
+        be able to guess the intentions of others.
+    - item: mind over matter
+      spends: discipline choice
+      label: Mind Over Matter
+      about: Mastery of this Discipline enables a Kai Lord to move small objects with
+        his powers of concentration.
+    choices:
+    - label: Weaponskill - master a weapon
+      to: weaponmaster
+      needs: discipline choice
+      without: weaponskill
+      quiet: true
+    - label: Done - on to your equipment
+      to: armoury
+  weaponmaster:
+    title: Weaponskill
+    text: Upon entering the Kai Monastery, each initiate is taught to master one type
+      of weapon.
+    offers:
+    - item: weaponskill in dagger
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the dagger
+    - item: weaponskill in spear
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the spear
+    - item: weaponskill in mace
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the mace
+    - item: weaponskill in short sword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the short sword
+    - item: weaponskill in warhammer
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the warhammer
+    - item: weaponskill in sword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the sword
+    - item: weaponskill in axe
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the axe
+    - item: weaponskill in quarterstaff
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the quarterstaff
+    - item: weaponskill in broadsword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the broadsword
+    choices:
+    - label: Back
+      to: newskill
 series: Lone Wolf
 volume: Book Two
 sequel_of:
@@ -5144,3 +5273,19 @@ disciplines:
     name: Mind Over Matter
     about: Mastery of this Discipline enables a Kai Lord to move small objects with
       his powers of concentration.
+story: |-
+  In the northern land of Sommerlund, it has been the custom for many centuries to send the children of the Warrior Lords to the monastery of Kai. There they are taught the skills and disciplines of their noble fathers.
+
+  In olden times, during the Age of the Black Moon, the Darklords waged war on Sommerlund. The conflict was a long and bitter trial of strength that ended in victory for the Sommlending at the great battle of Maakengorge. King Ulnar and the allies of Durenor broke the Darkland armies at the pass of Moytura and forced them back into the bottomless abyss of Maakengorge. Vashna, mightiest of the Darklords, was slain upon the sword of King Ulnar, called ‘Sommerswerd’, the sword of the sun. Since that age, the Darklords have vowed vengeance upon Sommerlund and the House of Ulnar.
+
+  You are Lone Wolf, a young Kai initiate who was learning the secret skills of the Kai Lords. Two days ago, your peaceful country was plunged into war when a vast Darklord army suddenly invaded Sommerlund and completely destroyed the Kai Monastery. All the Kai Lords were in attendance for the feast of Fehmarn, and all were killed as the monastery was surrounded and destroyed, the walls collapsing in on the assembled company. You, the only Kai Lord to survive the massacre, vowed then to avenge their deaths. You knew your first task had to be to warn the King, for without the Kai Lords to lead her armies, your country, Sommerlund, would be unable to mobilize in time to drive the Darklords back.
+
+  Your journey to the capital was perilous indeed. The enemy had overrun much of the country and were marching upon Holmgard, the capital itself. But despite the many dangers, you fought your way through to the capital and delivered your warning to the King’s court. There you were greatly praised for your skill and bravery but told your mission was not complete: with the Kai Lords dead, there remained only one power in all of Magnamund that could save your people from the Darklords—the Sommerswerd.
+
+  After the defeat of Vashna, the Sommerswerd had been bestowed upon the allies of Durenor as a mark of trust and allegiance that exists between the two kingdoms. In return, King Alin of Durenor gave Sommerlund a magnificent golden ring bearing the royal arms of Durenor. This ring is known as the Seal of Hammerdal. At that time, King Alin vowed that if ever the shadow of the west should rise again to threaten Sommerlund, Durenor would come to the aid of her ally.
+
+  The King has given you the Seal of Hammerdal. Your quest is to travel to Durenor to fetch the Sommerswerd back. But meanwhile the enemy have broken through the outer defences to the capital and are preparing to besiege the city wall. As Captain D’Val of the King’s Guard leads you to the Royal Armoury to equip you for your mission, the King’s words keep coming back to you:
+
+  ‘Forty days, Lone Wolf. We have strength to stand against them for only forty days.’
+backpack: 8
+arc: The Kai

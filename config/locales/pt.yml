@@ -258,6 +258,13 @@ pt:
     begin: "Começar"
     restart: "Começar de novo"
     the_end: "Fim"
+    story_so_far: "A história até aqui"
+    chart:
+      disciplines: "Disciplinas"
+      weapons: "Armas"
+      backpack: "Mochila"
+      specials: "Itens especiais"
+      none: "nenhum"
     make_character: "Escolha a sua personagem"
     make:
       skill_title: "Destreza de combate"

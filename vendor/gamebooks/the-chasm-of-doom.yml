@@ -62,6 +62,10 @@ sections:
 
       Before riding south you are given a Map of the Southlands, a Badge of Rank, a pouch of Gold Crowns, and your pick of six things from the armoury.
     choices:
+    - label: Learn a new Kai Discipline
+      to: newskill
+      needs: discipline choice
+      quiet: true
     - label: Take your pick of the armoury
       to: armoury
   '1':
@@ -4551,8 +4555,10 @@ sections:
     choices:
     - label: If you possess a Scroll, turn to 279.
       to: '279'
+      needs: scroll
     - label: If you do not possess a Scroll, turn to 57.
       to: '57'
+      without: scroll
     title: '318'
   '319':
     text: |-
@@ -4990,8 +4996,131 @@ sections:
       spends: armoury choice
       label: A Shield (skill +2 in combat)
     choices:
+    - label: Learn a new Kai Discipline
+      to: newskill
+      needs: discipline choice
+      quiet: true
     - label: Ride south for Ruanon
       to: '1'
+  newskill:
+    title: A New Kai Discipline
+    text: Every adventure you survive raises your rank in the Kai, and with rank comes
+      further training. Choose one more Kai Discipline to master before you set out.
+    offers:
+    - item: camouflage
+      spends: discipline choice
+      label: Camouflage
+      about: This Discipline enables a Kai Lord to blend in with his surroundings.
+        In the countryside, he can hide undetected among trees and rocks and pass
+        close to an enemy without being seen.
+    - item: hunting
+      spends: discipline choice
+      label: Hunting
+      about: This skill ensures that a Kai Lord will never starve in the wild. He
+        will always be able to hunt for food for himself except in areas of wasteland
+        and desert.
+    - item: sixth sense
+      spends: discipline choice
+      label: Sixth Sense
+      about: This skill may warn a Kai Lord of imminent danger. It may also reveal
+        the true purpose of a stranger or strange object encountered in your adventure.
+    - item: tracking
+      spends: discipline choice
+      label: Tracking
+      about: This skill enables a Kai Lord to make the correct choice of a path in
+        the wild, to discover the location of a person or object in a town or city
+        and to read the secrets of footprints or tracks.
+    - item: healing
+      spends: discipline choice
+      label: Healing
+      about: This Discipline can be used to restore ENDURANCE points lost in combat.
+        If you possess this skill, you may restore 1 ENDURANCE point to your total
+        for every numbered section of the book you pass through in which you are not
+        involved in combat.
+    - item: mindshield
+      spends: discipline choice
+      label: Mindshield
+      about: Some of the hostile creatures of Magnamund have the ability to attack
+        you using their Mindforce. The Kai Discipline of Mindshield prevents you from
+        losing any ENDURANCE points when subjected to this form of attack.
+    - item: mindblast
+      spends: discipline choice
+      label: Mindblast
+      about: This enables a Kai Lord to attack an enemy using the force of his mind.
+        It can be used at the same time as normal combat weapons and adds two extra
+        points to your COMBAT SKILL. Not all the creatures encountered on this adventure
+        will be harmed by Mindblast.
+    - item: animal kinship
+      spends: discipline choice
+      label: Animal Kinship
+      about: This skill enables a Kai Lord to communicate with some animals and to
+        be able to guess the intentions of others.
+    - item: mind over matter
+      spends: discipline choice
+      label: Mind Over Matter
+      about: Mastery of this Discipline enables a Kai Lord to move small objects with
+        his powers of concentration.
+    choices:
+    - label: Weaponskill - master a weapon
+      to: weaponmaster
+      needs: discipline choice
+      without: weaponskill
+      quiet: true
+    - label: Done - on to your equipment
+      to: armoury
+  weaponmaster:
+    title: Weaponskill
+    text: Upon entering the Kai Monastery, each initiate was taught to master one
+      type of weapon.
+    offers:
+    - item: weaponskill in dagger
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the dagger
+    - item: weaponskill in spear
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the spear
+    - item: weaponskill in mace
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the mace
+    - item: weaponskill in short sword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the short sword
+    - item: weaponskill in warhammer
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the warhammer
+    - item: weaponskill in sword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the sword
+    - item: weaponskill in axe
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the axe
+    - item: weaponskill in quarterstaff
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the quarterstaff
+    - item: weaponskill in broadsword
+      spends: discipline choice
+      unless:
+      - weaponskill
+      label: Weaponskill with the broadsword
+    choices:
+    - label: Back
+      to: newskill
 series: Lone Wolf
 volume: Book Four
 sequel_of:
@@ -5139,3 +5268,13 @@ disciplines:
     name: Mind Over Matter
     about: Mastery of this Discipline enables a Kai Lord to move small objects with
       his powers of concentration.
+story: |-
+  Ruanon is a remote mining province to the south of your homeland, Sommerlund. Nestling between the sullen peaks of the Durncrag and Maaken mountains, the people of this province have long prospered from their toil in the ore-rich mines, living and enjoying their wealth under the protection of their lord—Baron Vanalund.
+
+  The gold and gems that are mined at Ruanon yield an important source of revenue to your homeland. The heavily guarded convoy of wagons that leave the province and journey to the capital has become a regular monthly routine; a routine that had never been broken until one month ago when, suddenly, all contact with Ruanon ceased. A troop of one hundred cavalry from the King’s Guard were immediately dispatched to investigate the whereabouts of the missing convoy. Their commanding officer, Captain D’Val, was ordered to report back to the King as soon as contact was made, but he and his men have not returned: they too have disappeared without trace.
+
+  The King has summoned you, Lone Wolf, last of the Kai Lords, to his citadel at Holmgard. Your quest is to find Captain D’Val and his men, discover what has happened to the missing convoy, and to uncover the veil of mystery that now hangs over Ruanon. The King has gathered a company of Border Rangers, a unit of élite scouts, all of whom are skilled in horsemanship and outdoor survival. He has ordered these fifty men to accompany you in the hope that, with your leadership, they may succeed where the larger and more visible force failed.
+
+  As you and your men enter the Royal Armoury to equip yourselves for the long ride ahead, you glimpse a black crow perched on a window ledge high above. It flies away, but not before a shiver has run down your spine: in Holmgard, the crow is a bird of ill omen.
+backpack: 8
+arc: The Kai

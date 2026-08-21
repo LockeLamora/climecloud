@@ -258,6 +258,13 @@ ar:
     begin: "ابدأ"
     restart: "ابدأ من جديد"
     the_end: "النهاية"
+    story_so_far: "الحكاية حتى الآن"
+    chart:
+      disciplines: "المهارات"
+      weapons: "الأسلحة"
+      backpack: "الحقيبة"
+      specials: "الأغراض الخاصة"
+      none: "لا شيء"
     make_character: "اختر شخصيتك بنفسك"
     make:
       skill_title: "مهارة القتال"

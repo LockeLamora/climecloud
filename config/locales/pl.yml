@@ -258,6 +258,13 @@ pl:
     begin: "Rozpocznij"
     restart: "Zacznij od nowa"
     the_end: "Koniec"
+    story_so_far: "Historia dotychczas"
+    chart:
+      disciplines: "Dyscypliny"
+      weapons: "Broń"
+      backpack: "Plecak"
+      specials: "Przedmioty specjalne"
+      none: "brak"
     make_character: "Wybierz własną postać"
     make:
       skill_title: "Umiejętność walki"

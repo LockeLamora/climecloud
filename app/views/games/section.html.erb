@@ -7,10 +7,23 @@
 <%= glyph_text @stats.reject { |name, _| name.end_with?('_max') }.map { |name, value| "#{name.capitalize} #{value}" }.join(' - ') %><br />
 <%# sub, not tr: tr would truncate the replacement to a space and leave "meal 3", %>
 <%# which reads like a section number rather than a count. %>
-<%# Places the reader has been are remembered, not carried: they gate later books' %>
-<%# "if you have ever visited..." branches but never clutter the satchel. %>
-<% carried = Array(@items).reject { |held| held.start_with?('been to ') } %>
-<%= glyph_text "Carrying: #{carried.presence&.map { |held| held.sub(':', ' x') }&.join(', ') || 'nothing'}" %><br />
+<%# The Action Chart's own headings: disciplines are skills, not baggage; weapons %>
+<%# ride on the belt; Special Items are worn; only the Backpack has a limit, and %>
+<%# Meals count towards it. Places the reader has been are remembered, not carried. %>
+<%# The whole sheet stands down once blades are out — mid-fight the page wants the %>
+<%# numbers of the fight and nothing else. %>
+<% if @combat.nil? %>
+<% chart = action_chart(@book, Array(@items)) %>
+<% if chart[:disciplines].any? %>
+<%= glyph_text "#{t('games.chart.disciplines')}: #{chart[:disciplines].join(', ')}" %><br />
+<% end %>
+<%= glyph_text "#{t('games.chart.weapons')}: #{chart[:weapons].presence&.join(', ') || t('games.chart.none')}" %><br />
+<% room = @book['backpack'] ? " (#{packed(@book, Array(@items))}/#{@book['backpack']})" : '' %>
+<%= glyph_text "#{t('games.chart.backpack')}#{room}: #{chart[:backpack].presence&.join(', ') || t('games.chart.none')}" %><br />
+<% if chart[:specials].any? %>
+<%= glyph_text "#{t('games.chart.specials')}: #{chart[:specials].join(', ')}" %><br />
+<% end %>
+<% end %>
 <% if params[:rolled].present? %>
 <%= glyph_text "The Random Number Table gives #{params[:rolled].to_i}." %><br />
 <% end %>
@@ -147,7 +160,11 @@
 <% elsif choice['rank_below'] && rank_of(Array(@items)) >= choice['rank_below'] %>
 <%# A memory of somewhere the reader has never been is nothing they can go and %>
 <%# fetch, so that branch simply is not theirs: hidden, like a stat fork. %>
-<% elsif choice['needs'].to_s.start_with?('been to ') && !holds?(Array(@items), choice['needs']) %>
+<%# A quiet requirement is one the reader was never promised — a lesson already taken, %>
+<%# a memory they do not have — so it is simply not their branch, rather than a way %>
+<%# barred in red. %>
+<% elsif choice['needs'] && !holds?(Array(@items), choice['needs']) &&
+         (choice['quiet'] || choice['needs'].to_s.start_with?('been to ')) %>
 <% elsif choice['needs'] && !holds?(Array(@items), choice['needs']) %>
 <span class='error'><%= glyph_text "#{choice['label']} (needs the #{choice['needs']})", error: true %></span><br /><br />
 <% elsif choice['needs_any'] && choice['needs_any'].none? { |name| any_of(Array(@items), name) } %>

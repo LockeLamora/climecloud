@@ -26,6 +26,13 @@ class GamesController < ApplicationController
     end
   end
 
+  # The book's own "The Story So Far", on a page of its own: a reader opening the
+  # third volume should not have to remember the first two.
+  def story
+    @book = Gamebooks.find(params[:book])
+    redirect_to games_path if @book.nil? || @book['story'].blank?
+  end
+
   # A series' own page: its volumes in order, each led by its number in the series.
   def series
     books = Gamebooks.all.reject { |book| book['hidden'] }
@@ -223,15 +230,59 @@ class GamesController < ApplicationController
   helper_method :count_of
 
   # An offer stands while the thing is not yet held, nothing it is barred by is held,
-  # its price and its chits (see 'spends') can be met, and — for an exchange — there
-  # is a weapon to give for it.
+  # its price and its chits (see 'spends') can be met, the pack has room, and — for
+  # an exchange — there is a weapon to give for it.
   def offer_open?(book, offer, items, stats = {})
-    return false if offer_held?(offer, items) || Array(offer['unless']).any? { |other| items.include?(other) }
+    return false if offer_held?(offer, items) || Array(offer['unless']).any? { |other| holds?(items, other) }
     return false unless affordable?(offer, items, stats)
+    return false unless room_for?(book, offer, items)
 
     !offer['swap'] || (items & weapons_list(book)).any?
   end
   helper_method :offer_open?
+
+  # "You may keep a maximum of eight articles, including Meals, in your Backpack at
+  # any one time." Weapons ride on the belt and Special Items are worn, so neither
+  # counts; a counted pile counts once per item in it.
+  def room_for?(book, offer, items)
+    cap = book['backpack']
+    # Only what would ride in the pack can fill it: a weapon hangs on the belt, a
+    # Special Item is worn, and a Discipline is learned rather than carried.
+    return true if cap.nil? || backpack_items(book, [offer['item']]).empty?
+
+    wanted = offer['count'] || (offer['up_to'] ? offer['up_to'] - count_of(items, offer['item']) : 1)
+    packed(book, items) + wanted <= cap
+  end
+
+  # How full the pack is: everything that is not a weapon, a discipline, or worn.
+  def packed(book, items)
+    backpack_items(book, items).sum { |name| [count_of(items, name), 1].max }
+  end
+  helper_method :packed
+
+  # The Action Chart's own headings, in the books' order. Disciplines are skills, not
+  # baggage; Weapons ride on the belt; Special Items are worn or pocketed; only the
+  # Backpack has a limit, and Meals count towards it.
+  def action_chart(book, items)
+    kept = items.reject { |held| tally?(held) }
+    packs = backpack_items(book, kept)
+    {
+      disciplines: kept.select { |held| discipline?(book, held) },
+      weapons: kept & weapons_list(book),
+      backpack: packs.map { |name| entry_for(kept, name) },
+      specials: kept & Array(book['worn'])
+    }
+  end
+  helper_method :action_chart
+
+  def discipline?(book, held)
+    Array(book.dig('item_draw', 'from')).include?(held) || held.start_with?('weaponskill in ')
+  end
+
+  def entry_for(items, name)
+    count = count_of(items, name)
+    count > 1 ? "#{name} x#{count}" : name
+  end
 
   # A counted offer that spends a chit — the armoury's pick-any-two — never reads as
   # already held: the chits are what limits it. An 'up_to' offer stands until the
@@ -424,10 +475,20 @@ class GamesController < ApplicationController
     kit = Array(book['items']).dup
     kit += make['kai'].reject { |name| name == 'weaponskill' }
     kit << "weaponskill in #{make['weapon']}" if make['weapon']
+    kit += chosen_arms(book, kit)
     (book['consumables'] || {}).each do |name, item|
       kit << "#{name}:#{item['start']}" if item['start'].to_i.positive?
     end
     kit
+  end
+
+  # A reader who built their Kai Master picks the mastered weapons too, on the page
+  # the book gives them for it, so they walk in holding the ticks to spend.
+  def chosen_arms(book, kit)
+    mastery = book.dig('weapons', 'mastery')
+    return [] unless mastery && kit.include?(mastery['item'])
+
+    ["weapon choice:#{mastery.fetch('weapons', 3)}"]
   end
 
   # The choice carried out: kit checked, tolls paid, dice thrown or the Random Number
@@ -587,7 +648,21 @@ class GamesController < ApplicationController
       contest_settled?(book, from, stats, items, fight) ||
       on_wound?(book, from, stats, items, hurt) ||
       win_routed?(book, from, stats, items, fight) ||
+      faltered?(book, from, stats, items, fight) ||
       dragged_off?(book, from, stats, items, fight)
+  end
+
+  # An enemy the book breaks off before it dies: "if you reduce its ENDURANCE to 25 or
+  # less, do not continue the combat but turn to 310". Worn down, not killed.
+  def faltered?(book, from, stats, items, fight)
+    rule = from['combat']['faltering']
+    return false unless rule && stats.fetch(loss_stat(book), 0).positive?
+
+    _, left = standing(from, fight) || []
+    return false if left.nil? || left > rule['at_most']
+
+    travel(book, rule['to'], stats, items)
+    true
   end
 
   # The round's own number turning against the reader: fighting on a swaying plank,
@@ -754,10 +829,11 @@ class GamesController < ApplicationController
   def kit_ratio(book, combat, items, round = 0)
     # Books without a weapons table — the trial rigs — fight unarmed and unpenalised.
     bonus = (battle_arms(book, combat, items) || [nil, 0]).last
-    if items.include?('mindblast') && !Array(combat['immune']).include?('mindblast')
-      # A partially immune enemy states what the mind is worth against it.
-      bonus += combat.fetch('mindblast', 2)
-    end
+    # The mind as a weapon: Mindblast to a Kai Lord, Psi-surge to a Kai Master. The
+    # book names its own, and an enemy may be immune or only partly so.
+    mind = book['mind_weapon'] || 'mindblast'
+    bonus += combat.fetch('mindblast', 2) if items.include?(mind) &&
+                                             !Array(combat['immune']).include?(mind)
     bonus + hindrances(combat, items, round) + trinkets(book, items) + ailing(book, items)
   end
 
@@ -813,10 +889,13 @@ class GamesController < ApplicationController
 
   def ordinary(rules, items)
     held = (rules['list'] + (rules['kin'] || {}).keys) & items
+    # "A Bow cannot be used in hand-to-hand combat... if you enter combat armed only
+    # with a Bow, you must deduct 4 points and fight with your bare hands."
+    held -= Array(rules['ranged'])
     return ['bare hands', rules.fetch('unarmed', -4)] if held.empty?
 
     match = held.find { |arm| skill_match?(rules, items, arm) }
-    match ? [match, rules.fetch('bonus', 2)] : [held.first, 0]
+    match ? [match, weapon_bonus(rules, items, match)] : [held.first, 0]
   end
   helper_method :armament
 
@@ -824,17 +903,31 @@ class GamesController < ApplicationController
     (rules['special'] || {}).each do |name, art|
       next unless items.include?(name)
 
-      skilled = Array(art['skilled']).include?(skilled_in(items))
+      skilled = Array(art['skilled']).any? { |arm| arm == skilled_in(items) || mastered?(items, arm) }
       return [name, skilled ? art.fetch('skilled_bonus') : art.fetch('bonus')]
     end
     nil
   end
 
+  # Weaponskill is one weapon; Magnakai Weaponmastery is a list of them, each ticked
+  # on the Weapons List. Either way the entry names the weapon it answers for.
   def skill_match?(rules, items, arm)
-    skilled = skilled_in(items)
-    return false if skilled.nil?
+    kin = (rules['kin'] || {})[arm]
+    return true if mastered?(items, arm) || mastered?(items, kin)
 
-    arm == skilled || (rules['kin'] || {})[arm] == skilled
+    skilled = skilled_in(items)
+    !skilled.nil? && (arm == skilled || kin == skilled)
+  end
+
+  def mastered?(items, arm)
+    !arm.nil? && items.include?("weaponmastery in #{arm}")
+  end
+
+  def weapon_bonus(rules, items, arm)
+    return rules.dig('mastery', 'bonus') || 3 if mastered?(items, arm) ||
+                                                 mastered?(items, (rules['kin'] || {})[arm])
+
+    rules.fetch('bonus', 2)
   end
 
   # The fight's actual arms: the book may force them — 'bare hands' for a brawl the
@@ -1119,12 +1212,23 @@ class GamesController < ApplicationController
   def shed_weapons(book, items, rule, notices)
     return items.reject! { |held| weapons_list(book).include?(held) } if rule == true
 
-    held = items & weapons_list(book)
+    held = in_hand(book, items, rule)
     return if held.empty?
 
     broken = breakable(book, items, held, rule)
     items.delete(broken)
     notices[:lost] = broken
+  end
+
+  # "Remember to erase this Weapon or weapon-like Special Item": what is torn from your
+  # grasp is whatever you were actually fighting with, and that may be the Sommerswerd,
+  # which rides on no weapons list.
+  def in_hand(book, items, rule)
+    held = items & weapons_list(book)
+    return held unless rule == 'wielded'
+
+    wielded = (armament(book, items) || []).first
+    wielded && wielded != 'bare hands' ? held | [wielded] : held
   end
 
   def breakable(book, items, held, rule)
@@ -1157,7 +1261,8 @@ class GamesController < ApplicationController
   def eat(book, stats, items, rule)
     rule = {} unless rule.is_a?(Hash)
     return sit_down_meal(book, stats, items, rule) if rule['meals']
-    return 'hunting' if items.include?('hunting') && rule['hunting'] != false
+    # Hunting to a Kai Lord, Huntmastery to a Kai Master: the book names its forager.
+    return 'hunting' if items.include?(book['forager'] || 'hunting') && rule['hunting'] != false
     return 'meal' if spend(items, 'meal')
 
     eat_laumspur(book, stats, items, rule)
@@ -1197,13 +1302,21 @@ class GamesController < ApplicationController
   end
 
   # What rides in the backpack: everything that is not a weapon, a discipline, or
-  # worn. Counted entries answer to their bare name.
+  # worn. Counted entries answer to their bare name. Two kinds of entry are
+  # bookkeeping rather than baggage and weigh nothing: the chits counting a reader's
+  # remaining picks at an armoury table or a Kai lesson, and the memory of a place
+  # they have been.
   def backpack_items(book, items)
     keep = weapons_list(book) + Array(book['worn']) + Array(book.dig('item_draw', 'from'))
     items.filter_map do |held|
       name = held.split(':').first
-      name unless keep.include?(name) || held.start_with?('weaponskill in ')
+      name unless keep.include?(name) || held.start_with?('weaponskill in ') || tally?(held)
     end
+  end
+
+  # An entry that records something rather than carrying it.
+  def tally?(held)
+    held.start_with?('been to ', 'circle:') || held.split(':').first.end_with?(' choice')
   end
 
   # The whole pack, or — given a number — that many things crushed out of it.
@@ -1273,6 +1386,26 @@ class GamesController < ApplicationController
   # one go.
   def claim(book, offer, stats, items)
     levy(book, offer, stats, items)
+    gave = stow(book, offer, items)
+    close_circles(book, stats, items)
+    gave
+  end
+
+  # "By mastering all of the Magnakai Disciplines of a Lore-circle, you can gain an
+  # increase in your COMBAT SKILL and ENDURANCE points score." The bonus adds to the
+  # basic scores, so it lifts the ceiling too, and it is paid once: the closed circle
+  # is remembered rather than carried.
+  def close_circles(book, stats, items)
+    Array(book['lore_circles']).each do |circle|
+      mark = "circle:#{circle['name']}"
+      next if items.include?(mark) || Array(circle['needs']).any? { |skill| !items.include?(skill) }
+
+      items << mark
+      (circle['gain'] || {}).each { |stat, delta| boost(book, stats, stat, delta) }
+    end
+  end
+
+  def stow(book, offer, items)
     if offer['up_to']
       add_count(items, offer['item'], offer['up_to'] - count_of(items, offer['item']))
       return nil
@@ -1281,6 +1414,14 @@ class GamesController < ApplicationController
 
     gave = make_room(book, offer, items)
     items << offer['item']
+    # A find that arrives with a number of something else: a Quiver holds six Arrows,
+    # and Weaponmastery brings the weapons it is mastery of.
+    (offer['with_count'] || {}).each { |name, many| add_count(items, name, many) }
+    companions(book, offer, items) || gave
+  end
+
+  def companions(book, offer, items)
+    gave = nil
     Array(offer['with']).each do |extra|
       next if items.include?(extra)
 
@@ -1341,21 +1482,38 @@ class GamesController < ApplicationController
       stats, items = finished_legacy(book, legacy)
       next if stats.nil?
 
-      return [rested(book, stats, legacy),
-              items + [new_discipline(book, items)].compact + Array(book['items'])]
+      # A new arc keeps the scores and the kit but not the old skills: Book 6 carries
+      # over Combat Skill, Endurance, Weapons and Special Items only, and the Kai
+      # Disciplines give way to the Magnakai ones chosen in their place.
+      carried = superseded(items, Array(book['supersedes']))
+      # "You may choose one extra Kai Discipline" — a choice, so it is offered as one
+      # (see the book's own newskill section), not rolled behind the reader's back.
+      chits = "#{book['learns'] || 'discipline'} choice:#{legacy['learns'] || 1}"
+      return [rested(book, stats, legacy), carried + [chits] + Array(book['items'])]
     end
     nil
   end
 
-  # Months pass between adventures — the Kai Lord is feted, rested and healed — so a
-  # new book opens at the endurance carried over rather than at the wounds the last
-  # one ended on, with a fresh purse on top of whatever gold survived.
+  # "You can carry your current scores of COMBAT SKILL and ENDURANCE points over" —
+  # current, not the score the last adventure was begun on, and no book heals the
+  # wounds in between. "Your ENDURANCE points can never rise above the number you
+  # started with", so the score walked in with is also the new ceiling. A fresh purse
+  # comes on top of whatever gold survived, up to the belt pouch's fifty.
   def rested(book, stats, legacy)
     stats['gold_max'] = book.dig('stats', 'gold', 'cap') if book.dig('stats', 'gold', 'cap')
     credit(stats, 'gold', Dice.roll(legacy['purse'] || '1d10+9')) if legacy['purse']
-    ceiling = stats["#{loss_stat(book)}_max"]
-    stats[loss_stat(book)] = ceiling if ceiling
+    stats["#{loss_stat(book)}_max"] = stats[loss_stat(book)] if stats[loss_stat(book)]
     stats
+  end
+
+  # Skills a new arc replaces rather than keeps. Weaponskill rides as the weapon it
+  # was learned in, so it answers to its bare name here.
+  def superseded(items, names)
+    return items if names.empty?
+
+    items.reject do |held|
+      names.include?(held) || (names.include?('weaponskill') && held.start_with?('weaponskill in '))
+    end
   end
 
   # The previous book's character, if its bookmark stands on the named final page
@@ -1369,29 +1527,29 @@ class GamesController < ApplicationController
     [stats.dup, items]
   end
 
-  def new_discipline(book, items)
-    pool = book['item_draw']['from'].reject do |discipline|
-      items.include?(discipline) ||
-        (discipline == 'weaponskill' && items.any? { |held| held.start_with?('weaponskill in ') })
-    end
-    drawn = pool.sample
-    return drawn unless drawn == 'weaponskill' && (table = book.dig('weapons', 'skill_table'))
-
-    "weaponskill in #{table.sample}"
-  end
-
   def outfit(book)
     kit = Array(book['items']).dup
     if (draw = book['item_draw'])
       kit += draw['from'].sample(draw['count'])
     end
-    if kit.delete('weaponskill') && (table = book.dig('weapons', 'skill_table'))
-      kit << "weaponskill in #{table.sample}"
-    end
+    kit += drawn_arms(book, kit)
     (book['consumables'] || {}).each do |name, item|
       kit << "#{name}:#{item['start']}" if item['start'].to_i.positive?
     end
     kit
+  end
+
+  # The weapons a rolled character's skill answers for: one for Weaponskill, and for
+  # Magnakai Weaponmastery the several it is mastery of, drawn as his skills were.
+  def drawn_arms(book, kit)
+    table = book.dig('weapons', 'skill_table')
+    return [] if table.nil?
+
+    mastery = book.dig('weapons', 'mastery')
+    return table.uniq.sample(mastery.fetch('weapons', 3)).map { |arm| "weaponmastery in #{arm}" } if
+      mastery && kit.include?(mastery['item'])
+
+    kit.delete('weaponskill') ? ["weaponskill in #{table.sample}"] : []
   end
 
   # The starting equipment table: one throw, one grant — an item, a handful of

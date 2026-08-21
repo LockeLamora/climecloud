@@ -12,7 +12,7 @@ require 'gamebooks'
 class GamebookIntegrityTest < ActiveSupport::TestCase
   # In series order: an item found in an earlier book may be asked for in a later one.
   SERIES = %w[flight-from-the-dark fire-on-the-water the-caverns-of-kalte
-              the-chasm-of-doom shadow-on-the-sand].freeze
+              the-chasm-of-doom shadow-on-the-sand the-kingdoms-of-terror].freeze
 
   # Everything a reader can come to hold in this book.
   def obtainable(book)
@@ -60,7 +60,9 @@ class GamebookIntegrityTest < ActiveSupport::TestCase
       here = obtainable(book) + carried
 
       missing = demanded(book).reject do |_, item|
-        here.include?(item) || item.start_with?('been to ')
+        # A chit is the engine's own bookkeeping of picks owed, handed out on
+        # carry-over rather than found in the story.
+        here.include?(item) || item.start_with?('been to ', 'circle:') || item.end_with?(' choice')
       end.uniq
 
       assert_empty missing,
@@ -83,6 +85,55 @@ class GamebookIntegrityTest < ActiveSupport::TestCase
     end
   end
 
+  # "If you possess the Sommerswerd, turn to 304" was being offered to readers who
+  # possessed no such thing, because the choice carried no gate. Every choice that
+  # asks after something the reader might hold must actually check for it.
+  ASKS = /\bif you (possess|have|are wearing|are carrying|still have|have ever been given)\b/i
+  GATES = %w[needs without needs_any without_any rank rank_below when cost].freeze
+
+  test 'a choice that asks what the reader carries actually checks for it' do
+    Gamebooks.all.each do |book|
+      known = catalogue(book)
+      next if known.empty?
+
+      ungated = book['sections'].flat_map do |id, section|
+        (section['choices'] || []).filter_map do |choice|
+          next if choice.keys.intersect?(GATES)
+          next unless choice['label'].to_s.match?(ASKS)
+
+          item = named_in(choice['label'], known)
+          "#{id}: #{choice['label'][0, 60]}" if item
+        end
+      end
+
+      assert_empty ungated, "#{book['id']}: possession asked about but never checked — #{ungated.inspect}"
+    end
+  end
+
+  # Every sequel owes its returning reader the training the front matter promises —
+  # "you may choose one extra Kai Discipline", and three Magnakai ones at the start of
+  # the new arc. The engine used to deal that skill from the deck instead, and nothing
+  # noticed, because the rule lives in the front matter rather than in any section.
+  test 'every sequel lets the returning reader choose the skills the book grants them' do
+    SERIES.each do |id|
+      book = Gamebooks.find(id)
+      next if book['sequel_of'].nil?
+
+      chit = "#{book['learns'] || 'discipline'} choice"
+      lesson = book['sections'].find { |_, section| Array(section['offers']).any? { |o| o['spends'] == chit } }
+      assert lesson, "#{id}: nowhere to spend a #{chit}"
+
+      offered = lesson.last['offers'].map { |offer| offer['item'] }
+      teachable = Array(book.dig('item_draw', 'from')) - ['weaponskill']
+      assert_empty teachable - offered, "#{id}: #{(teachable - offered).inspect} can never be learned"
+
+      reachable = book['sections'].any? do |_, section|
+        Array(section['choices']).any? { |choice| choice['to'] == lesson.first }
+      end
+      assert reachable, "#{id}: the #{lesson.first} page has no way in"
+    end
+  end
+
   # Nothing may still be waiting on the reader to roll their own dice: every throw
   # the books make is the server's.
   test 'no book leaves a random number for the reader to pick' do
@@ -93,6 +144,20 @@ class GamebookIntegrityTest < ActiveSupport::TestCase
   end
 
   private
+
+  # Everything this book has a name for and a reader might be holding.
+  def catalogue(book)
+    weapons = book['weapons'] || {}
+    (Array(weapons['list']) + Array(weapons['kin']&.keys) + Array(weapons['special']&.keys) +
+      (book['consumables'] || {}).keys + Array(book['worn']) +
+      Array(book.dig('item_draw', 'from'))).uniq
+  end
+
+  # Whole words only, longest first: "axe" must not match inside "vaxeler".
+  def named_in(label, known)
+    known.sort_by { |name| -name.length }
+         .find { |name| label.downcase.match?(/(?<![a-z])#{Regexp.escape(name)}(?![a-z])/) }
+  end
 
   def assert_pick(book, sections, pick, where)
     if (compare = pick['compare'])
@@ -114,6 +179,7 @@ class GamebookIntegrityTest < ActiveSupport::TestCase
     targets = [combat['on_wound'], combat.dig('evade', 'to'), combat.dig('overtime', 'to'),
                combat.dig('win_within', 'to'), combat.dig('win_within', 'else'),
                combat.dig('contest', 'win'), combat.dig('contest', 'lose'),
+               combat.dig('faltering', 'to'),
                combat.dig('duel', 'more'), combat.dig('duel', 'less'),
                combat.dig('duel', 'same')].compact
     targets.each { |to| assert sections.key?(to), "#{book['id']} #{id}: combat leads to #{to}" }

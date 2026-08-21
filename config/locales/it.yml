@@ -258,6 +258,13 @@ it:
     begin: "Inizia"
     restart: "Ricomincia"
     the_end: "Fine"
+    story_so_far: "La storia fin qui"
+    chart:
+      disciplines: "Discipline"
+      weapons: "Armi"
+      backpack: "Zaino"
+      specials: "Oggetti speciali"
+      none: "nessuno"
     make_character: "Scegli il tuo personaggio"
     make:
       skill_title: "Abilità nel combattimento"

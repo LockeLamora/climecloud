@@ -258,6 +258,13 @@ hi:
     begin: "शुरू करें"
     restart: "फिर से शुरू करें"
     the_end: "समाप्त"
+    story_so_far: "अब तक की कथा"
+    chart:
+      disciplines: "विद्याएँ"
+      weapons: "शस्त्र"
+      backpack: "बस्ता"
+      specials: "विशेष वस्तुएँ"
+      none: "कुछ नहीं"
     make_character: "अपना पात्र स्वयं चुनें"
     make:
       skill_title: "युद्ध कौशल"

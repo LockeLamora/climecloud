@@ -14,6 +14,9 @@ class LoneWolfFourTest < ActionDispatch::IntegrationTest
                   'camouflage,hunting,sixth sense,tracking,mindshield,healing,' \
                   'weaponskill in sword,sommerswerd,sword,meal:2,firesphere|'
 
+  # The armoury sits one page past the new-discipline lesson.
+  ARMOURY_CHOICE = 1
+
   def pack(section, stats: 'skill:18,endurance:26,endurance_max:26,gold:20,gold_max:50',
            items: 'sword', fight: '')
     cookies['CYOA'] = { BOOK => "#{section}|#{stats}|#{items}|#{fight}" }.to_json
@@ -37,13 +40,14 @@ class LoneWolfFourTest < ActionDispatch::IntegrationTest
 
   test 'a kai lord out of kalte rides south with everything and an eighth discipline' do
     cookies['CYOA'] = { 'the-caverns-of-kalte' => KALTE_VETERAN }.to_json
-    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
 
     assert_redirected_to "/games/#{BOOK}/armoury"
     _section, stats, items = entry.split('|')
     rolled = stats_of(stats)
     assert_equal 20, rolled['skill']
-    assert_equal 30, rolled['endurance'], 'rested to the ceiling between adventures'
+    assert_equal [28, 28], [rolled['endurance'], rolled['endurance_max']],
+                 'the current score carries, and is the new ceiling'
     assert_equal 50, rolled['gold'], 'forty carried plus a fresh purse, pouch-capped'
 
     held = items.split(',')
@@ -54,7 +58,8 @@ class LoneWolfFourTest < ActionDispatch::IntegrationTest
     assert_includes held, 'armoury choice:6'
     draw = Gamebooks.find(BOOK)['item_draw']['from']
     skills = held.count { |i| draw.include?(i) || i.start_with?('weaponskill in ') }
-    assert_equal 8, skills, 'seven carried, one more learned'
+    assert_equal 7, skills, 'the seven carried over'
+    assert_includes held, 'discipline choice:1', 'the eighth is the reader\'s to choose'
   end
 
   test 'finishing only the first book still carries that kai lord south' do
@@ -62,14 +67,15 @@ class LoneWolfFourTest < ActionDispatch::IntegrationTest
       'flight-from-the-dark' => '350|skill:16,endurance:24,endurance_max:24,gold:8,gold_max:50|' \
                                 'camouflage,healing,sixth sense,tracking,mindblast,axe|'
     }.to_json
-    post '/games/turn', params: { book: BOOK, from: 'start', choice: 0 }
+    post '/games/turn', params: { book: BOOK, from: 'start', choice: ARMOURY_CHOICE }
 
     rolled = stats_of(entry.split('|')[1])
     assert_equal 16, rolled['skill'], 'the earliest finished book is the fallback'
     draw = Gamebooks.find(BOOK)['item_draw']['from']
     held = entry.split('|')[2].split(',')
     skills = held.count { |i| draw.include?(i) || i.start_with?('weaponskill in ') }
-    assert_equal 6, skills, 'five carried, one learned'
+    assert_equal 5, skills, 'the five carried over'
+    assert_includes held, 'discipline choice:1', 'and one more to choose'
   end
 
   test 'the armoury allows six picks and no more' do

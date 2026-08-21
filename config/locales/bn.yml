@@ -258,6 +258,13 @@ bn:
     begin: "শুরু করুন"
     restart: "আবার শুরু করুন"
     the_end: "সমাপ্ত"
+    story_so_far: "এ পর্যন্ত কাহিনি"
+    chart:
+      disciplines: "বিদ্যা"
+      weapons: "অস্ত্র"
+      backpack: "ঝোলা"
+      specials: "বিশেষ জিনিস"
+      none: "কিছু নেই"
     make_character: "নিজের চরিত্র বেছে নিন"
     make:
       skill_title: "যুদ্ধ দক্ষতা"

@@ -191,7 +191,8 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     get '/games/flight-from-the-dark/1'
     assert_match(/Eat a Meal \(endurance \+3\) \(2 left\)/, @response.body)
-    assert_match 'Carrying: axe, meal x2', @response.body, 'a count reads as a count'
+    assert_match 'Weapons: axe', @response.body, 'the belt and the pack are kept apart'
+    assert_match 'Backpack (2/8): meal x2', @response.body, 'a count reads as a count'
 
     post '/games/use', params: { book: 'flight-from-the-dark', item: 'meal' }
     assert_redirected_to '/games/flight-from-the-dark/1?used=meal'
@@ -244,7 +245,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     get '/games/engine-trial/start'
     assert_match 'Skill 8', @response.body
-    assert_match 'Carrying: lamp', @response.body
+    assert_match 'Backpack: lamp', @response.body
     assert_match 'needs the rope', @response.body
 
     post '/games/turn', params: { book: 'engine-trial', from: 'start', choice: 2 }

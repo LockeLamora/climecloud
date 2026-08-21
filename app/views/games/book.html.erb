@@ -7,6 +7,11 @@
 <br />
 <% end %>
 <%= simple_format(@book['about']) %>
+<%# Why this quest, in the book's own words. A reader picking up the third volume %>
+<%# should not have to remember the first two. %>
+<% if @book['story'].present? %>
+<%= link_to "#{t('games.story_so_far')} >", games_story_path(book: @book['id']) %><br /><br />
+<% end %>
 <%# A book already under way opens where it was left, or from the top; a fresh one %>
 <%# just begins. Either way the first option is the one a reader almost always wants. %>
 <% if @bookmark %>
