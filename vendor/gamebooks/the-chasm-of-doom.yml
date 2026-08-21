@@ -224,7 +224,7 @@ sections:
     text: |-
       Fifty miles south of Ruanon, the ruined city of Maaken teeters on the brink of Maakengorge. A cold sweat breaks out upon your brow as you contemplate the difficulty of your mission, for you are separated from your goal by fifty miles of enemy-held territory. But there is still a flicker of hope; with the enemy in confusion and retreat, your chances of success will be far higher now than before battle.
 
-      Before you set off on your perilous mission, Captain D’Val offers you the choice of the following equipment and provisions: 1
+      Before you set off on your perilous mission, Captain D’Val offers you the choice of the following equipment and provisions:
     choices:
     - label: Make the necessary adjustments to your Action Chart before turning to
         140.
@@ -1180,7 +1180,7 @@ sections:
     text: |-
       Struggling to your feet, you stagger along the forest track as it ascends into the darkening foothills of the Maaken Range. The track comes to an abrupt end at the entrance of a mine tunnel, partially obscured by foliage. You realize this must be a disused route into the Maaken Mines, for they honeycomb the foothills and mountains of this region. You know that if you can locate one of the major shafts, you should be able to trace your way through the mines to Ruanon itself.
 
-      Just inside the tunnel entrance, you find a broken crate containing five Torches and a Tinderbox. The tunnel is pitch black and you will need at least one torch to light your way. You may take as many additional Torches as you wish before continuing, but each Torch takes up one space in your Backpack. 2
+      Just inside the tunnel entrance, you find a broken crate containing five Torches and a Tinderbox. The tunnel is pitch black and you will need at least one torch to light your way. You may take as many additional Torches as you wish before continuing, but each Torch takes up one space in your Backpack.
 
       The tunnel is cold and forbidding. You explore for over a mile before arriving at a junction. Here, another tunnel branches off towards the south. It appears to be a recent excavation, and you follow it in the hope of finding a major shaft.
     choices:
@@ -1817,7 +1817,7 @@ sections:
 
       It is nearly dusk when you chance upon a narrow steep-sided valley, carved from the hillside to afford access to a mine tunnel. For hundreds of years, the ore of the Maaken Range has been the blessing and the bane of many who have ventured here to seek their fortune: men have found wealth beyond their wildest dreams, but also men have perished without trace in its labyrinth of cold dark tunnels.
 
-      You examine the mine entrance. You know that if you can find a major passage, you could trace your way to Ruanon itself. At the entrance, you find a discarded wooden crate, containing six Torches and a Tinderbox. The mines are dark and you will need to use at least one torch to light your way. You can take as many additional Torches as you wish, but remember each one counts as a Backpack Item, so be sure to make the appropriate changes to your Action Chart. 3
+      You examine the mine entrance. You know that if you can find a major passage, you could trace your way to Ruanon itself. At the entrance, you find a discarded wooden crate, containing six Torches and a Tinderbox. The mines are dark and you will need to use at least one torch to light your way. You can take as many additional Torches as you wish, but remember each one counts as a Backpack Item, so be sure to make the appropriate changes to your Action Chart.
     choices:
     - label: Enter the mines by turning to 315.
       to: '315'

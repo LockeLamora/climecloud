@@ -163,8 +163,10 @@ class GamesController < ApplicationController
 
     spend(items, params[:item])
     provision['effects'].each { |stat, delta| credit(stats, stat, delta) }
+    cured = cure(book, items, params[:item])
     remember(book, section, stats, items, fight)
-    redirect_to games_section_path(book: book['id'], section: section, used: params[:item])
+    redirect_to games_section_path(book: book['id'], section: section,
+                                   used: params[:item], cured: cured)
   end
 
   # A standing offer: something the page says the reader may take. Taking it is a POST
@@ -190,6 +192,17 @@ class GamesController < ApplicationController
     redirect_to games_section_path(book: book['id'], section: section,
                                    took: offer['item'], gave: gave)
   end
+
+  # The draught that answers a wound: swallowing it lifts the affliction the book
+  # says it cures, and the page says so.
+  def cure(book, items, draught)
+    healed = afflictions(book, items).select do |_, rule|
+      Array(rule['cured_by']).include?(draught)
+    end.keys
+    healed.each { |name| items.delete(name) }
+    healed.join(', ').presence
+  end
+  private :cure
 
   # A provision is usable by the living, mid-story, with one in the satchel.
   def usable?(book, section, stats, items)
@@ -457,6 +470,8 @@ class GamesController < ApplicationController
   # it ('plus', 'sway') — a route may carry effects, chain into another pick (the bog
   # that takes three throws to escape), or simply be the end.
   def run_pick(book, pick, stats, items, luck = [])
+    return compare_throws(book, pick['compare'], stats, items, luck) if pick['compare']
+
     rolled = pick_number(book, pick, stats, items)
     route = pick['routes'].find { |r| rolled >= r.fetch('min', rolled) && rolled <= r.fetch('max', rolled) }
     luck << route['effects'] if route['effects']
@@ -464,6 +479,17 @@ class GamesController < ApplicationController
     return run_pick(book, route['pick'], stats, items, luck) if route['pick']
 
     [rolled, route['to'], luck]
+  end
+
+  # Two throws set against each other — quickness against quickness on a dark stair.
+  def compare_throws(book, rule, stats, items, luck)
+    mine = pick_number(book, rule, stats, items)
+    theirs = Dice.roll(rule['roll'] || '1d10-1')
+    to = if theirs < mine then rule['less']
+         elsif theirs > mine then rule['more']
+         else rule['same']
+         end
+    [mine, to, luck]
   end
 
   def pick_number(book, pick, stats, items)
@@ -486,6 +512,8 @@ class GamesController < ApplicationController
   end
 
   def earned?(plus, items)
+    return plus['all'].all? { |name| holds?(items, name) } if plus['all']
+
     Array(plus['any'] || plus['item']).any? { |name| holds?(items, name) } ||
       (plus['rank'] && rank_of(items) >= plus['rank'])
   end
@@ -532,12 +560,8 @@ class GamesController < ApplicationController
     foe, = standing(from, fight)
     return redirect_to games_section_path(book: book['id'], section: params[:from]) if foe.nil?
 
+    fight = opened(book, from, stats, items, fight) if fight.blank?
     _, _, round, buff, mark, clock = fight_parts(fight)
-    if fight.blank?
-      mark = stats.fetch(loss_stat(book), 0)
-      clock = breath(from['combat'], items)
-      fight = "0:#{standing(from, fight).last}:0:0:#{mark}:#{clock}" if clock
-    end
     number, foe_loss, hurt, remaining = strike_outcome(book, from, stats, items, fight)
     stats[loss_stat(book)] = [stats.fetch(loss_stat(book), 0) - hurt, 0].max
 
@@ -548,6 +572,7 @@ class GamesController < ApplicationController
             else
               "#{index + 1}:next:#{round + 1}:#{tail}"
             end
+    return if mishap?(book, from, stats, items, number)
     return if aftermath?(book, from, stats, items, fight, hurt: hurt, foe_loss: foe_loss)
 
     remember(book, params[:from], stats, items, fight)
@@ -563,6 +588,16 @@ class GamesController < ApplicationController
       on_wound?(book, from, stats, items, hurt) ||
       win_routed?(book, from, stats, items, fight) ||
       dragged_off?(book, from, stats, items, fight)
+  end
+
+  # The round's own number turning against the reader: fighting on a swaying plank,
+  # a single unlucky throw and you are over the edge.
+  def mishap?(book, from, stats, items, number)
+    rule = from['combat']['mishap']
+    return false unless rule && number == rule['on']
+
+    travel(book, rule['to'], stats, items)
+    true
   end
 
   # A passing duel — a scout on skis whose momentum carries him by — decided by one
@@ -600,6 +635,15 @@ class GamesController < ApplicationController
     _, _, round, = fight_parts(fight)
     travel(book, round <= rule['rounds'] ? rule['to'] : rule['else'], stats, items)
     true
+  end
+
+  # The first round of a fight settles what the whole fight remembers: the health it
+  # was entered on, for the contests that give it back, and — underwater — the breath
+  # thrown once and never re-thrown.
+  def opened(book, from, stats, items, fight)
+    mark = stats.fetch(loss_stat(book), 0)
+    clock = breath(from['combat'], items)
+    "0:#{standing(from, fight).last}:0:0:#{mark}#{":#{clock}" if clock}"
   end
 
   # One throw of the table, with everything the book lays on the wounds: the bane of
@@ -714,23 +758,42 @@ class GamesController < ApplicationController
       # A partially immune enemy states what the mind is worth against it.
       bonus += combat.fetch('mindblast', 2)
     end
-    bonus + hindrances(combat, items, round) + trinkets(book, items)
+    bonus + hindrances(combat, items, round) + trinkets(book, items) + ailing(book, items)
+  end
+
+  # A wound or sickness the reader is carrying: a numbed arm that costs Combat Skill
+  # for as long as it lasts, and stops a shield being any use at all.
+  def ailing(book, items)
+    afflictions(book, items).sum { |_, rule| rule['skill'].to_i }
+  end
+
+  def afflictions(book, items)
+    (book['afflictions'] || {}).select { |name, _| items.include?(name) }
   end
 
   # A penalty that applies only over part of a fight — the Mindforce that starts once
   # the surprise of the first blow has passed, or the disadvantage of fighting from
   # the ground until you can regain your feet.
   def hindrances(combat, items, round)
-    Array(combat['without']).sum do |rule|
-      next 0 if items.include?(rule['item'])
-      next 0 if round < rule.fetch('from_round', 0) || round >= rule.fetch('until_round', round + 1)
+    held = Array(combat['with']).sum do |rule|
+      items.include?(rule['item']) && in_window?(rule, round) ? rule['modifier'] : 0
+    end
+    held + Array(combat['without']).sum do |rule|
+      next 0 if items.include?(rule['item']) || !in_window?(rule, round)
 
       rule['modifier']
     end
   end
 
+  def in_window?(rule, round)
+    round >= rule.fetch('from_round', 0) && round < rule.fetch('until_round', round + 1)
+  end
+
   def trinkets(book, items)
-    (book['combat_items'] || {}).sum { |item, plus| items.include?(item) ? plus : 0 }
+    blocked = afflictions(book, items).values.flat_map { |rule| Array(rule['blocks']) }
+    (book['combat_items'] || {}).sum do |item, plus|
+      items.include?(item) && blocked.exclude?(item) ? plus : 0
+    end
   end
 
   # What the fight is fought with, and what that is worth — for the ratio and for the
@@ -738,13 +801,17 @@ class GamesController < ApplicationController
   # a special weapon (the Sommerswerd) outranks everything, then the skilled weapon
   # counts whenever it is held. 'kin' names the weapon-like Special Items — a Magic
   # Spear is a spear to Weaponskill, but no thief or river takes it.
-  def armament(book, items)
+  def armament(book, items, plain: [])
     rules = book['weapons']
     return nil if rules.nil?
 
-    special = special_arm(rules, items)
+    special = special_arm(rules, items.reject { |held| plain.include?(held) })
     return special if special
 
+    ordinary(rules, items)
+  end
+
+  def ordinary(rules, items)
     held = (rules['list'] + (rules['kin'] || {}).keys) & items
     return ['bare hands', rules.fetch('unarmed', -4)] if held.empty?
 
@@ -774,8 +841,12 @@ class GamesController < ApplicationController
   # blades cannot join, 'level' for a contest of strength, or a named weapon that is
   # the only thing that bites. Otherwise the armament speaks for itself.
   def battle_arms(book, combat, items)
+    # Some fights rob a weapon of what makes it special — the sword of the sun is no
+    # more than a sword in a chamber the sun never reaches. It is still a sword: the
+    # book's `kin` says what an unpowered one counts as.
+    plain = Array(combat['suppress'])
     forced = combat['arms']
-    return armament(book, items) if forced.nil?
+    return armament(book, items, plain: plain) if forced.nil?
     # A contest of strength — an arm-wrestle — is not fought bare-handed; it is
     # fought with no weapon counting for either side.
     return ['level', 0] if forced == 'level'
@@ -916,7 +987,29 @@ class GamesController < ApplicationController
   # is a stat and its delta — a plain number, or a dice string ('3d10', '-1d10') the
   # server throws on arrival.
   KIT_EFFECTS = %w[take drop gain steal drop_weapons drop_backpack drop_specials
-                   must_eat risk unless boon recover].freeze
+                   must_eat risk unless boon recover impound release].freeze
+
+  # Gaolers take everything and put it somewhere; a reader who gets out may be handed
+  # it all back. Impounded things keep their names behind a marker, so they satisfy
+  # nothing and arm nobody until they are released.
+  HELD = 'impounded '
+
+  def impound(stats, items)
+    items.map! { |held| held.start_with?(HELD) ? held : "#{HELD}#{held}" }
+    return unless stats['gold']&.positive?
+
+    items << "#{HELD}gold:#{stats['gold']}"
+    stats['gold'] = 0
+  end
+
+  def release(stats, items)
+    purse = items.find { |held| held.start_with?("#{HELD}gold:") }
+    if purse
+      items.delete(purse)
+      credit(stats, 'gold', purse.split(':').last.to_i)
+    end
+    items.map! { |held| held.delete_prefix(HELD) }
+  end
 
   def apply_effect_hash(effects, book, stats, items)
     notices = shift_kit(effects, book, items)
@@ -935,11 +1028,17 @@ class GamesController < ApplicationController
   end
 
   def upkeep(effects, book, stats, items, notices)
+    gaol(effects, stats, items)
     notices[:ate] = eat(book, stats, items, effects['must_eat']) if effects['must_eat']
     risk(effects['risk'], book, stats, items, notices) if effects['risk']
     spare(effects['unless'], book, stats, items, notices) if effects['unless']
     boon(effects['boon'], book, stats, items, notices) if effects['boon']
     recover(book, stats, items, effects['recover']) if effects['recover']
+  end
+
+  def gaol(effects, stats, items)
+    impound(stats, items) if effects['impound']
+    release(stats, items) if effects['release']
   end
 
   # A delta stated as dice is thrown here: '3d10' gold off a card table, '-1d10'
@@ -966,12 +1065,13 @@ class GamesController < ApplicationController
   end
 
   # A healer's ministrations: everything back with the named skill, half the losses
-  # without it.
-  def recover(book, stats, items, skill)
+  # without it — or plain 'half', where the book gives half to everyone.
+  def recover(book, stats, items, rule)
     stat = loss_stat(book)
     ceiling = stats.fetch("#{stat}_max", stats.fetch(stat, 0))
     lost = ceiling - stats.fetch(stat, 0)
-    credit(stats, stat, items.include?(skill) ? lost : lost / 2)
+    whole = rule != 'half' && items.include?(rule)
+    credit(stats, stat, whole ? lost : lost / 2)
   end
 
   # Notices folded together without losing news: the fx ledgers concatenate where
@@ -1129,12 +1229,20 @@ class GamesController < ApplicationController
   end
 
   # The Kai Discipline of Healing, or whatever a book calls it: each page turned
-  # while no fight is on mends a point, up to the rolled maximum.
+  # while no fight is on mends a point, up to the rolled maximum. An untreated wound
+  # works the other way, and does not wait for a quiet page.
   def mend(book, stats, items, section)
+    fester(book, stats, items)
     rule = book['healing']
     return if rule.nil? || section.nil? || section['combat'] || !items.include?(rule['item'])
 
     credit(stats, rule['stat'], rule['delta'])
+  end
+
+  def fester(book, stats, items)
+    afflictions(book, items).each_value do |rule|
+      (rule['per_section'] || {}).each { |stat, delta| credit(stats, stat, delta) }
+    end
   end
 
   # One counted item off the string: "meal:4" becomes "meal:3", and the last one

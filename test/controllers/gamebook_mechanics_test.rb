@@ -134,6 +134,37 @@ class GamebookMechanicsTest < ActionDispatch::IntegrationTest
     assert_match(/endurance:23/, entry(book), 'the meal alone: three, not four')
   end
 
+  # The set-up reads once. It stayed hidden while blades were out, but came back the
+  # moment the last enemy fell — which in a long fight is every few turns — so a
+  # reader saw the whole chapter again and again. It now stays away until the reader
+  # arrives afresh.
+  test 'a fight shows its numbers only, from the first round to after the last' do
+    book = 'the-chasm-of-doom'
+    section = '208' # three tunnel guards, so the fight runs on
+    opening = Gamebooks.find(book)['sections'][section]['text'][0, 40]
+    kit = 'skill:19,endurance:90,endurance_max:90,gold:5,gold_max:50'
+
+    pack(book, section, stats: kit, items: 'sword')
+    get "/games/#{book}/#{section}"
+    assert_match opening, @response.body, 'the set-up shows on arrival'
+
+    won = false
+    12.times do
+      fight(book, section)
+      break unless URI(@response.headers['Location']).path.end_with?("/#{section}")
+
+      follow_redirect!
+      assert_no_match(/#{Regexp.escape(opening)}/, @response.body,
+                      'the prose must not come back mid-fight')
+      won = @response.body.include?('The fight is won')
+      break if won
+    end
+
+    assert won, 'the fight should have been won inside twelve rounds'
+    assert_no_match(/#{Regexp.escape(opening)}/, @response.body,
+                    'nor when the last enemy falls')
+  end
+
   # Kalte's section 16: "two separate items have been crushed and must be discarded
   # here." Proven on the rig, where the pack's contents are known exactly.
   test 'a crushing door takes exactly two things out of the pack' do

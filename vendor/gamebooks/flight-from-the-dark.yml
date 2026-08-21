@@ -1410,7 +1410,7 @@ sections:
     text: |-
       You have been walking for over half an hour when your eye is caught by some bright red flowers growing near to a mossy bank. You recognize the plants to be Laumspur, a rare and beautiful herb much prized for its healing properties.
 
-      Kneeling down, you pick a handful of Laumspur and place it in your Backpack. You may eat this herb to regain lost ENDURANCE points. Each Meal of Laumspur will restore 3 ENDURANCE points, and you have gathered enough for two such Meals. 1 Closing your pack, you continue your mission.
+      Kneeling down, you pick a handful of Laumspur and place it in your Backpack. You may eat this herb to regain lost ENDURANCE points. Each Meal of Laumspur will restore 3 ENDURANCE points, and you have gathered enough for two such Meals. Closing your pack, you continue your mission.
     choices:
     - label: If you wish to head northeast, turn to 347.
       to: '347'
@@ -1838,7 +1838,7 @@ sections:
   '147':
     text: After a few minutes walking, you find a mossy hut set back from the path.
       You are hungry and must eat a Meal here or lose 3 ENDURANCE points. As you eat
-      you notice that the path starts to curve towards the east. 2
+      you notice that the path starts to curve towards the east.
     choices:
     - label: If you wish to follow it, turn to 42.
       to: '42'
@@ -4253,7 +4253,7 @@ sections:
     - item: spear
   '347':
     text: |-
-      The trees start to thin out, and just ahead you can make out the silhouette of an old log cabin beneath an oak tree. This hut seems to have been abandoned and there is little of apparent value left behind. Opening a small chest near the main door, you discover bunches of twigs that have been tied together with strong twine. One end of each bundle has been coated with pitch. They are Torches. Next to the chest are a Short Sword and a Tinderbox. You may take them and a Torch if you wish but make sure that you mark them on your Action Chart. 3
+      The trees start to thin out, and just ahead you can make out the silhouette of an old log cabin beneath an oak tree. This hut seems to have been abandoned and there is little of apparent value left behind. Opening a small chest near the main door, you discover bunches of twigs that have been tied together with strong twine. One end of each bundle has been coated with pitch. They are Torches. Next to the chest are a Short Sword and a Tinderbox. You may take them and a Torch if you wish but make sure that you mark them on your Action Chart.
 
       Closing the door of the cabin, you head off along an overgrown path towards the northeast.
     choices:
@@ -4294,7 +4294,7 @@ sections:
 
       You tell Banedon what has happened at the monastery, and of your mission to warn the King. Silently, he removes a gold chain from around his neck and hands it to you. On the chain is a small Crystal Star Pendant. ‘It is the symbol of my Brotherhood, and we are both truly brothers in this hour of darkness. It is a talisman of good fortune—may it protect you on your road ahead.’
 
-      You thank him, place the chain around your neck, and slip the Crystal Star 4 inside your shirt. (Remember to mark this on your Action Chart.)
+      You thank him, place the chain around your neck, and slip the Crystal Star inside your shirt. (Remember to mark this on your Action Chart.)
 
       Banedon bids you farewell. ‘We must leave this place lest the Giaks return with more of their loathsome kind to put an end to us. I must return to my Guild. I bid you farewell, my brother. May the luck of the gods go with you.’
     choices:

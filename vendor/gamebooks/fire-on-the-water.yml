@@ -539,7 +539,7 @@ sections:
 
       Born of a Sommlending father and a Durenese mother, he has become something of a legend in this city. In the last decade, he has led an alliance of the nations to victory against the invading Ice Barbarians of Kalte. Wise in peace, fierce in war, you could not have wished for better company on your quest for the Sommerswerd.
 
-      Rhygar orders that a sumptuous meal be served. It is by far the best food you have tasted since the war began. During the feast, you recall the events that have brought you to Port Bax, and reflect on the daunting challenge that still lies before you. After the meal, Rhygar sends for his physician who attends to your wounds. His potions restore 6 ENDURANCE points. Then he advises you to sleep, for you are to leave with the Lord-lieutenant for Hammerdal in the morning. 1
+      Rhygar orders that a sumptuous meal be served. It is by far the best food you have tasted since the war began. During the feast, you recall the events that have brought you to Port Bax, and reflect on the daunting challenge that still lies before you. After the meal, Rhygar sends for his physician who attends to your wounds. His potions restore 6 ENDURANCE points. Then he advises you to sleep, for you are to leave with the Lord-lieutenant for Hammerdal in the morning.
 
       Early next day, you are taken to an enclosed garden at the rear of the consulate where Rhygar and three of his best soldiers await you on horseback. They are to be your bodyguard and guides on the 230 mile ride to Hammerdal. The streets of Port Bax are just beginning to come to life as you ride through the town. Passing under the moss-covered city gate, you now feel confident that your mission will succeed.
 
@@ -771,7 +771,7 @@ sections:
     title: '46'
   '47':
     text: The soldiers quickly descend from the roof of the hut and grab their spears.
-      They advance towards you and one of them shouts, ‘Password, stranger!’ 2
+      They advance towards you and one of them shouts, ‘Password, stranger!’
     choices:
     - label: If you know the correct password for this bridge, turn to 111.
       to: '111'
@@ -1205,7 +1205,7 @@ sections:
 
       You sheathe the Sommerswerd in its jewelled scabbard and follow Lord Axim as he leaves the King’s chamber.
 
-      Make the necessary adjustments to your COMBAT SKILL total now that you possess the Sommerswerd. 3 Note the powers of the sword under the Special Items section of your Action Chart.
+      Make the necessary adjustments to your COMBAT SKILL total now that you possess the Sommerswerd. Note the powers of the sword under the Special Items section of your Action Chart.
     choices:
     - label: Turn to 40.
       to: '40'
@@ -1509,7 +1509,7 @@ sections:
   '103':
     text: Laumspur is a delicious herb, much sought after in the Lastlands for its
       healing properties. You have picked enough for one Meal. Eating this meal will
-      restore 3 ENDURANCE points to your total. 4 (Remember to add this to your Action
+      restore 3 ENDURANCE points to your total. (Remember to add this to your Action
       Chart if you possess a Backpack. Otherwise you must consume it now or abandon
       it.) You wrap the herb up, and return to the coach with the other passengers.
     choices:
@@ -1654,7 +1654,7 @@ sections:
       the Darklords themselves have given him. It was his agents who tried to assassinate
       you during your quest, and it is he who commands the death-hulk fleet. Destroy
       Vonotar and you will destroy the evil force that gives power to the death-hulks
-      and their crews. 5
+      and their crews.
     choices:
     - label: You may climb the tower and attack Vonotar by turning to 73.
       to: '73'
@@ -1697,7 +1697,7 @@ sections:
     title: '115'
   '116':
     text: |-
-      Using your Kai Discipline, you can tell which cup hides the marble, for to you, the clay is as transparent as glass itself. 6
+      Using your Kai Discipline, you can tell which cup hides the marble, for to you, the clay is as transparent as glass itself.
 
       Pick a number from the Random Number Table and add 5 to it. This equals the number of Gold Crowns that you win before the rogue suspects something is wrong and ends the game.
 
@@ -2785,7 +2785,7 @@ sections:
     title: '193'
   '194':
     text: |-
-      When you awake, you are shocked to find yourself lying beneath a wooden jetty, and the shallow water surrounding you fills your nostrils with a foul stench. As you stand, your head throbs violently as if you had been knocked unconscious. This is exactly what has happened to you, and your Gold, your Backpack, your Weapons, and all your Special Items (including the Seal of Hammerdal) have been stolen by the fishermen. 8
+      When you awake, you are shocked to find yourself lying beneath a wooden jetty, and the shallow water surrounding you fills your nostrils with a foul stench. As you stand, your head throbs violently as if you had been knocked unconscious. This is exactly what has happened to you, and your Gold, your Backpack, your Weapons, and all your Special Items (including the Seal of Hammerdal) have been stolen by the fishermen.
 
       With a groan of despair, you climb out of the slimy water and pull yourself onto the jetty. Looking up you see a faded sign.
 
@@ -3464,7 +3464,7 @@ sections:
     text: |-
       Much of your time at Hammerdal is taken up by training with the Sommerswerd. Day by day your skill with the wondrous blade improves, and as you progress, so you learn more of its marvellous properties.
 
-      When you use the sword in combat it will add 8 points to your COMBAT SKILL total (10 points if you possess the Kai Discipline of Weaponskill with any sword). It has the ability to absorb any magic used against you and doubles the total of all ENDURANCE points lost by undead enemies (e.g. Helghast) during combat. 9
+      When you use the sword in combat it will add 8 points to your COMBAT SKILL total (10 points if you possess the Kai Discipline of Weaponskill with any sword). It has the ability to absorb any magic used against you and doubles the total of all ENDURANCE points lost by undead enemies (e.g. Helghast) during combat.
 
       You also come to realize that it is the only weapon in all of Magnamund that can kill a Darklord, and for this reason above all others the Darklords are bent on thwarting your quest.
     choices:
@@ -3696,7 +3696,7 @@ sections:
     text: |-
       The guard roughly pushes you aside and runs out of the watchtower towards Tomb Square. There is a small room off the staircase and you decide to enter and search it before he returns. In it you discover:
 
-      If you wish to take any of these items, mark them on your Action Chart. 10
+      If you wish to take any of these items, mark them on your Action Chart.
 
       As you are leaving, you collide with another guard and you both tumble down the stairs, but before he can gather his senses, you have sprinted off into the night.
     choices:
@@ -4088,7 +4088,7 @@ sections:
     title: '288'
   '289':
     text: |-
-      You are welcomed by an old woman dressed from head to toe in white. She smiles and offers you a delicious cup of jala. Your experience of Ragadorn so far makes you suspicious of the dark liquid and you politely refuse her offer. 11 As you push the steaming mug away, she notices the Seal on your finger.
+      You are welcomed by an old woman dressed from head to toe in white. She smiles and offers you a delicious cup of jala. Your experience of Ragadorn so far makes you suspicious of the dark liquid and you politely refuse her offer. As you push the steaming mug away, she notices the Seal on your finger.
 
       ‘What a magnificent ring! Is it for sale?’ she asks, her eyes lighting up with excitement. You tell her firmly that it is not but she will not accept your refusal. She offers you any choice of the hundreds of potions that fill the glass cabinets behind her counter. As you turn to leave, she offers you 40 Gold Crowns.
     choices:
@@ -4104,7 +4104,7 @@ sections:
       is sticky. You recognize it as sap from the gnadurn tree, a deadly poison used
       by assassins because of its lack of flavour or scent. The shock of your discovery
       soon turns to anger and you race out of the room, intent on discovering the
-      identity of your enemy. 12
+      identity of your enemy.
     choices:
     - label: Turn to 200.
       to: '200'
@@ -4228,7 +4228,7 @@ sections:
 
       Rhygar sits beside you and takes some bread and meat from his pack. ‘Eat this, Lone Wolf. You must sustain your strength for the journey to Hammerdal, for from here you must venture alone through the Tarnalin. I shall remain here and hold the enemy back for as long as I have the strength to fight. Do not argue—that your mission should succeed is the only thing that matters.’
 
-      If Rhygar is to hold off the Helghast, he will need a magic weapon as his own sword is of no use against the creatures. 13
+      If Rhygar is to hold off the Helghast, he will need a magic weapon as his own sword is of no use against the creatures.
     choices:
     - label: If you wish to give him your Magic Spear so that he can defend the tunnel
         entrance, or if you do not possess a Magic Spear, turn to 118.
@@ -4401,7 +4401,7 @@ sections:
     text: |-
       You come to rest face downwards in a tangle of thick bracken. The ringing of steel and the horrible cries of the Helghast echo through the trees around you. You are stunned and cannot move until a hand grabs your arm and pulls you upright. It is Rhygar. His face is bloodied and his armour is battered and charred.
 
-      ‘We must flee these demons, Lone Wolf. 14 Strength and steel will not avail us here.’
+      ‘We must flee these demons, Lone Wolf. Strength and steel will not avail us here.’
 
       You glimpse the silhouette of six Helghast on the forest road above. Their minds bent on the slaughter of Rhygar’s men, they fail to see you both slip away under cover of the wooded hillside.
     choices:
@@ -4615,7 +4615,7 @@ sections:
     text: |-
       You are slowly walking back along the cobbled street, trying to think of the best course of action, when a young boy approaches you. ‘I can get you into the harbour, mister,’ he says, ‘but it’ll cost you.’
 
-      He produces an envelope containing a sheaf of official-looking papers. ‘These’ll get you a red pass at the port watchtower. All yours for only 6 Gold Crowns.’ 15
+      He produces an envelope containing a sheaf of official-looking papers. ‘These’ll get you a red pass at the port watchtower. All yours for only 6 Gold Crowns.’
 
       If you wish to buy the documents, pay the boy 6 Gold Crowns. If you refuse them, he will soon lose interest in you and will disappear. When you have made your decision, you return to the port watchtower.
     choices:

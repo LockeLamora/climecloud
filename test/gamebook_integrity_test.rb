@@ -12,7 +12,7 @@ require 'gamebooks'
 class GamebookIntegrityTest < ActiveSupport::TestCase
   # In series order: an item found in an earlier book may be asked for in a later one.
   SERIES = %w[flight-from-the-dark fire-on-the-water the-caverns-of-kalte
-              the-chasm-of-doom].freeze
+              the-chasm-of-doom shadow-on-the-sand].freeze
 
   # Everything a reader can come to hold in this book.
   def obtainable(book)
@@ -95,6 +95,14 @@ class GamebookIntegrityTest < ActiveSupport::TestCase
   private
 
   def assert_pick(book, sections, pick, where)
+    if (compare = pick['compare'])
+      %w[less more same].each do |branch|
+        to = compare[branch]
+        assert sections.key?(to), "#{book['id']} #{where}: compare #{branch} -> #{to}"
+      end
+      return
+    end
+
     pick['routes'].each do |route|
       landable = route['die'] || route['pick'] || sections.key?(route['to'])
       assert landable, "#{book['id']} #{where}: a pick route leads nowhere"

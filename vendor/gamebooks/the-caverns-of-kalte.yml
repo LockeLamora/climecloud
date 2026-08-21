@@ -116,8 +116,8 @@ sections:
   '4':
     text: You hide the body under the staircase and quickly search it. You discover
       a Bone Sword and a Blue Stone Disc. If you wish to keep either or both of these
-      items, mark them on your Action Chart as Special Items 1 . You leave the body
-      and run quickly up the stairs.
+      items, mark them on your Action Chart as Special Items. You leave the body and
+      run quickly up the stairs.
     choices:
     - label: Turn to 332.
       to: '332'
@@ -1907,7 +1907,7 @@ sections:
     title: '131'
   '132':
     text: |-
-      Unless you have just eaten, you lose 3 ENDURANCE points from hunger. 3 You continue along the tunnel for over a mile, but you soon become tired and stop to sleep. You awake feeling refreshed, but have no idea just how long you have been sleeping—the light of these caverns never changes, be it day or night.
+      Unless you have just eaten, you lose 3 ENDURANCE points from hunger. You continue along the tunnel for over a mile, but you soon become tired and stop to sleep. You awake feeling refreshed, but have no idea just how long you have been sleeping—the light of these caverns never changes, be it day or night.
 
       You continue onwards, mile after mile, passing through a series of huge ice halls containing towering pillars of crystal. In one vast chamber, you are mesmerized by the beautiful sight of a shimmering crystal ceiling. But beyond this chamber lies an even greater spectacle. A narrow passage leads on to a ledge running around the brink of a huge chasm, over half a mile wide. As you edge your way around this awesome void, you try not to look down into its windswept depths, many miles below.
 
@@ -4972,7 +4972,7 @@ sections:
 
       Your journey to Anskaven is swift, but you are saddened by your memories of the brave guides that were left behind. Your arrival in the port is greeted by an anxious crowd. They fear that your early return is a sign of your mission’s failure. When the news of Vonotar’s capture becomes known, your warrior skills are required once again; this time in the defence of your enemy against the seething mob of outraged Sommlending that assault Anskaven gaol. Safe passage is eventually secured to Toran, where trial awaits the traitor.
 
-      Upon the dawn of the feast of Maesmarn, in the depths of the Guildhall of the Crystal Star, Vonotar the Traitor is tried by his brotherhood and found guilty of his terrible crimes. He is led away in silence to the deepest chamber of the Guildhall, wherein lies the Daziarn: a portal of total darkness, the door of an eternal prison from which there can be no escape. 5
+      Upon the dawn of the feast of Maesmarn, in the depths of the Guildhall of the Crystal Star, Vonotar the Traitor is tried by his brotherhood and found guilty of his terrible crimes. He is led away in silence to the deepest chamber of the Guildhall, wherein lies the Daziarn: a portal of total darkness, the door of an eternal prison from which there can be no escape.
 
       You are the avenger of his crimes, and it is you who cast the wretched traitor into the limbo of Daziarn. Your mission is now completed. You have survived the caverns of Kalte and freed Sommerlund from the menace of Vonotar.
 

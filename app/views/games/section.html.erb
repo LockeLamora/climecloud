@@ -65,7 +65,9 @@
 <% else %>
 <%# The prose reads once: from the first fought round the page keeps to the numbers %>
 <%# — the roll, what each side lost, both endurances — with nothing to re-scroll. %>
-<% if @section['text'].present? && (@combat.nil? || @round.to_i.zero?) %>
+<%# That holds after the last enemy falls too: a won fight wants its choices, not %>
+<%# the whole set-up again. Only arriving afresh brings the prose back. %>
+<% if @section['text'].present? && (@section['combat'].nil? || @round.to_i.zero?) %>
 <%= simple_format(@section['text']) %>
 <% end %>
 <% if @section['rnt'] %>
