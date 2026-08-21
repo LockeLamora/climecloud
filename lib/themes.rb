@@ -58,6 +58,8 @@ module Themes
   #   quiet      the attribution line
   #   emphasis   headings and bold
   #   error      a line that says something went wrong
+  #   good       a standing offer — eating a meal, drinking a draught — kept apart
+  #              from the pressable things around it
   BASE_PALETTE = {
     paper: '#ffffff',
     ink: '#111111',
@@ -65,7 +67,7 @@ module Themes
     press_bg: 'blue',
     press_ink: '#ffffff',
     quiet: '#767676', emphasis: '#000000',
-    error: 'red'
+    error: 'red', good: 'green'
   }.freeze
 
   # Each theme states only what it changes; the rest comes from BASE_PALETTE. Typography
@@ -79,28 +81,36 @@ module Themes
     # since on the bench the bloom is what separates a lit stroke from the ground and the
     # text is one colour throughout. components/themes.css leaves the underline on to mark
     # a link, the bench having no links to mark.
+    # A screen that is already green writes its good news in yellow instead.
     'crt-green' => { paper: '#060D07', ink: '#52FF8F', link: '#52FF8F',
-                     press_bg: '#52FF8F', press_ink: '#041006', quiet: '#2C8A50', emphasis: '#52FF8F' },
+                     press_bg: '#52FF8F', press_ink: '#041006', quiet: '#2C8A50', emphasis: '#52FF8F',
+                     good: '#EAFF52' },
 
     # The amber is cool-retro-term's own preset value, warmer and easier over a read
     # than the paler bench amber.
     'crt-amber' => { paper: '#0C0803', ink: '#FF8100', link: '#FF8100',
-                     press_bg: '#FF8100', press_ink: '#140C02', quiet: '#9A6A22', emphasis: '#FF8100' },
+                     press_bg: '#FF8100', press_ink: '#140C02', quiet: '#9A6A22', emphasis: '#FF8100',
+                     good: '#54E354' },
 
     'plasma' => { paper: '#0A0402', ink: '#FF6B18', link: '#FF6B18',
-                  press_bg: '#FF6B18', press_ink: '#0A0402', quiet: '#8E3A0C', emphasis: '#FF6B18' },
+                  press_bg: '#FF6B18', press_ink: '#0A0402', quiet: '#8E3A0C', emphasis: '#FF6B18',
+                  good: '#54E354' },
 
+    # good is the set's own green primary, straight off the Ceefax palette.
     'teletext' => { paper: '#000000', ink: '#FFFFFF', link: '#00FFFF', press_bg: '#00FFFF',
-                    press_ink: '#000000', quiet: '#FF00FF', emphasis: '#FFFF00' },
+                    press_ink: '#000000', quiet: '#FF00FF', emphasis: '#FFFF00',
+                    good: '#00FF00' },
 
     'flap' => { paper: '#0B0B0C', ink: '#D9A62A', link: '#FFC533', press_bg: '#FFC533',
-                press_ink: '#0B0B0C', quiet: '#6E5518', emphasis: '#FFC533' },
+                press_ink: '#0B0B0C', quiet: '#6E5518', emphasis: '#FFC533',
+                good: '#54E354' },
 
     'dmg' => { paper: '#9BBC0F', ink: '#0F380F', link: '#0F380F', press_bg: '#0F380F',
                press_ink: '#9BBC0F', quiet: '#306230', emphasis: '#0F380F' },
 
     'stn' => { paper: '#12305E', ink: '#BFE9FF', link: '#7FD0F5', press_bg: '#BFE9FF',
-               press_ink: '#12305E', quiet: '#6B93B8', emphasis: '#FFFFFF' },
+               press_ink: '#12305E', quiet: '#6B93B8', emphasis: '#FFFFFF',
+               good: '#66E08A' },
 
     'nokia' => { paper: '#C7D66B', ink: '#1B2410', link: '#1B2410', press_bg: '#1B2410',
                  press_ink: '#C7D66B', quiet: '#4A5330', emphasis: '#1B2410' },
@@ -109,7 +119,8 @@ module Themes
                 press_ink: '#F4F2ED', quiet: '#7C7973', emphasis: '#000000' },
 
     'oled' => { paper: '#000000', ink: '#F2F4F7', link: '#6FA8FF', press_bg: '#6FA8FF',
-                press_ink: '#000000', quiet: '#4A505A', emphasis: '#FFFFFF' },
+                press_ink: '#000000', quiet: '#4A505A', emphasis: '#FFFFFF',
+                good: '#4CD964' },
 
     'workbench' => { paper: '#A8A8A8', ink: '#000000', link: '#000000', press_bg: '#0055AA',
                      press_ink: '#FFFFFF', quiet: '#4A4A4A', emphasis: '#000000' },
@@ -117,17 +128,20 @@ module Themes
     # Links take VIC-II white — one keystroke away on the machine, and the only thing
     # marking a link here — while headings keep the text's own light blue, as the boot
     # screen kept everything.
+    # good is VIC-II green, colour key 5 on the machine itself.
     'c64' => { paper: '#352879', ink: '#8578CF', link: '#FFFFFF', press_bg: '#FFFFFF',
-               press_ink: '#352879', quiet: '#6C5EB5', emphasis: '#8578CF' },
+               press_ink: '#352879', quiet: '#6C5EB5', emphasis: '#8578CF',
+               good: '#5CAB5E' },
 
     # Red sits too close to this theme's paper to read as an error, so error takes the
-    # darkest value in the palette instead.
+    # darkest value in the palette instead; good goes dark for the same reason.
     'barbie' => { paper: '#F92E8C', ink: '#FFFFFF', link: '#FFE300', press_bg: '#FFE300',
                   press_ink: '#A8005A', quiet: '#FFB3D8', emphasis: '#FFE300',
-                  error: '#2E0014' },
+                  error: '#2E0014', good: '#0B4F22' },
 
     'barbie-dark' => { paper: '#0C0209', ink: '#B01A67', link: '#FF2E9A', press_bg: '#FF2E9A',
-                       press_ink: '#0C0209', quiet: '#6E1141', emphasis: '#FFFFFF' }
+                       press_ink: '#0C0209', quiet: '#6E1141', emphasis: '#FFFFFF',
+                       good: '#3BD16F' }
   }.freeze
 
   # Always a full palette, so the caller never has to know which values a theme chose to

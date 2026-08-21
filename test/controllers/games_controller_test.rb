@@ -142,6 +142,37 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     assert_equal({ 'treasure-hunt' => '5' }, JSON.parse(cookies['CYOA']))
   end
 
+  # The 2026-08-21 audit moved every piece of paper bookkeeping in Flight from the
+  # Dark into machine-readable fields. This guards the data: every Random Number
+  # Table pick routes to a real section (or an ending), and the landmarks hold.
+  test 'the lone wolf book keeps its bookkeeping machine-readable' do
+    book = Gamebooks.find('flight-from-the-dark')
+    sections = book['sections']
+
+    assert_equal 0, sections.count { |_, s| s['rnt'] }, 'every table throw is now the server\'s'
+    assert_equal ['mindblast'], sections['255']['combat']['immune'], 'the Gourgaz shrugs the mind'
+    assert sections['147']['effects']['must_eat'], 'the mossy hut demands its meal'
+    assert_equal 'sword', sections['255']['offers'].first['item'], 'the Prince\'s Sword lies at your feet'
+
+    check_pick = lambda do |pick, where|
+      pick['routes'].each do |route|
+        landable = route['die'] || route['pick'] || sections.key?(route['to'])
+        assert landable, "#{where}: a pick route leads nowhere"
+        check_pick.call(route['pick'], where) if route['pick']
+      end
+    end
+    sections.each do |id, section|
+      (section['choices'] || []).each { |c| check_pick.call(c['pick'], id) if c['pick'] }
+      %w[evade overtime].each do |rule|
+        to = section.dig('combat', rule, 'to')
+        assert sections.key?(to), "#{id}: #{rule} leads nowhere" unless to.nil?
+      end
+      Array(section['offers']).each do |offer|
+        assert offer['item'].to_s.match?(/\A[a-z ]+\z/), "#{id}: a malformed offer"
+      end
+    end
+  end
+
   # The stats layer, exercised on the fixture rig the test environment adds to the
   # shelf: rolled characters, kit, tolls, dice tests and effects. See engine-trial.yml.
   test 'a first turn out of a stat book rolls the character by its own dice' do
@@ -217,7 +248,8 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     assert_match %r{/games/engine-trial/arena\?}, @response.headers['Location']
     fight = JSON.parse(cookies['CYOA'])['engine-trial'].split('|', 4).last
-    assert_equal '1:next', fight, 'a ratio of eleven or more fells five endurance in one round'
+    assert_equal '1:next:1:0', fight,
+                 'a ratio of eleven or more fells five endurance in the first round'
 
     get '/games/engine-trial/arena'
     assert_match 'The fight is won', @response.body
@@ -248,13 +280,19 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     rolled = stats.split(',').to_h { |pair| pair.split(':').then { |k, v| [k, v.to_i] } }
 
     assert_includes 10..19, rolled['skill']
-    assert_includes 20..29, rolled['endurance']
+    assert_includes 20..31, rolled['endurance'], 'a helmet or waistcoat can raise the roll'
     assert_equal rolled['endurance'], rolled['endurance_max'],
-                 'the endurance rolled is the ceiling meals mend towards'
+                 'the endurance rolled is the ceiling healing mends towards'
+    assert_includes 0..21, rolled['gold'], 'a pouch throw, or twelve crowns more'
+    assert_equal 50, rolled['gold_max'], 'the belt pouch holds fifty'
+
     held = items.split(',')
-    assert_equal 7, held.length, 'five disciplines, the meals and the potion'
-    assert_includes held, 'meal:5'
-    assert_includes held, 'laumspur:1'
+    draw = Gamebooks.find('flight-from-the-dark')['item_draw']['from']
+    drawn = held.count { |item| draw.include?(item) || item.start_with?('weaponskill in ') }
+    assert_equal 5, drawn, 'five disciplines, weaponskill named with its weapon'
+    assert_includes held, 'axe', 'the monastery axe'
+    assert_includes held, 'map', 'the map of Sommerlund'
+    assert(held.any? { |item| item.start_with?('meal:') }, 'at least the one meal')
   end
 
   # Provisions stand apart from the page: offered wherever the reader is, spending
@@ -281,6 +319,31 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
 
     post '/games/use', params: { book: 'engine-trial', item: 'ration' }
     assert_redirected_to '/games/engine-trial', 'an empty satchel has nothing to use'
+  end
+
+  # Each theme names its own good and error colours (see Themes::PALETTES). Buttons stay
+  # plain text everywhere — the handset's cursor gives an image inside a button a second
+  # stop — so the provision colour comes from the theme's style block; barred lines are
+  # not pressable, so those are drawn as glyphs in the error colour.
+  test 'provisions and barred choices carry their colour roles on a drawn theme' do
+    cookies['CYOA'] = { 'engine-trial' => 'start|skill:8,stamina:14,gold:5|lamp,ration:2' }.to_json
+    cookies['theme'] = 'teletext'
+    get '/games/engine-trial/start'
+
+    assert_match(/button[^>]*class="provision">[^<]*Eat a ration/, @response.body,
+                 'a provision is a one-stop text button in the good colour')
+    assert_no_match(/<button[^>]*><img/, @response.body,
+                    'no button may hold an image: each would cost the cursor a stop')
+    assert_match(%r{<span class='error'><img src="/glyph\?r=1[^"]*t=Try\+the\+locked\+door},
+                 @response.body, 'a barred choice is drawn in the error colour')
+  end
+
+  test 'a barred choice reads barred on the written themes too' do
+    cookies['CYOA'] = { 'engine-trial' => 'start|skill:8,stamina:14,gold:5|lamp' }.to_json
+    get '/games/engine-trial/start'
+
+    assert_match(%r{<span class='error'>Try the locked door \(needs the rope\)</span>},
+                 @response.body)
   end
 
   test 'provisions are not offered over a drawn blade or to the dead' do

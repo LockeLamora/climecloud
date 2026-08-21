@@ -4,6 +4,11 @@ module ApplicationHelper
   # CellGlyph.
   PHOSPHOR_THEMES = %w[crt-green crt-amber plasma].freeze
 
+  # The colour roles a glyph can be drawn in, each with the URL flag that names it: the
+  # colour is baked into the cached image, so it must ride in the URL the cache is keyed
+  # by. What colour each role actually is belongs to the theme — see Themes::PALETTES.
+  GLYPH_ROLES = { link: :l, emphasis: :e, good: :g, error: :r }.freeze
+
   # On the glyph styles every text link is drawn as an image: the label goes to the SVG
   # endpoint and comes back with the style baked in — the bloom and the raster, or the
   # machine's pixels — inside the same anchor, so the keypad and the access keys reach it
@@ -15,54 +20,52 @@ module ApplicationHelper
   def link_to(name = nil, options = nil, html_options = nil, &)
     return super if block_given? || !name.is_a?(String) || glyph_theme.nil?
 
-    super(options, html_options) { glyph_image(name, link: true) }
+    super(options, html_options) { glyph_image(name, role: :link) }
   end
 
-  # The one-button forms take the same treatment, or saving a stop and forgetting one sit
-  # untreated between drawn links. The image inside the button costs the handset's
-  # cursor a second stop, so anything pressed while scrolling a list uses choice_button
-  # below instead; what remains here is the lone forget-style button a page holds once.
-  def button_to(name = nil, options = nil, html_options = nil, &)
-    return super if block_given? || !name.is_a?(String) || glyph_theme.nil?
-
-    super(options, html_options) { glyph_image(name, link: true) }
-  end
+  # button_to is left alone on every theme: any element inside a button costs the
+  # handset's cursor a second stop, so buttons carry plain text — the theme's style
+  # block colours it — and only anchors carry glyph images.
 
   # For text that is not a link: headings and titles, drawn in place by the views. A
   # heading is marked as one, for the styles that write their headings in a colour of
-  # their own. Anything else, or any other theme, comes back as it went in.
-  def glyph_text(text, heading: false)
-    glyph_theme ? glyph_image(text, heading: heading) : text
+  # their own; a barred line — a choice whose kit or toll is missing — takes the error
+  # colour the same way. Anything else, or any other theme, comes back as it went in.
+  def glyph_text(text, heading: false, error: false)
+    return text unless glyph_theme
+
+    glyph_image(text, role: (:emphasis if heading) || (:error if error))
   end
 
   # The alt is the label, so a failed image degrades to the plain text link it replaced.
   # The theme rides in the URL because the response is cached long and per-hue, and the
-  # link and heading flags ride with it: the C64 writes its links and teletext its
-  # headings in colours of their own, baked into the image.
-  def glyph_image(text, keep_case: false, quiet: false, link: false, heading: false)
+  # role flag rides with it: the C64 writes its links and teletext its headings in
+  # colours of their own, baked into the image.
+  def glyph_image(text, keep_case: false, quiet: false, role: nil)
     renderer = glyph_renderer
     lines = renderer.lines(text, keep_case: keep_case, quiet: quiet)
 
-    tag.img(src: glyph_path(t: text, s: glyph_theme, c: keep_case ? '1' : nil,
-                            q: quiet ? '1' : nil, l: link ? '1' : nil,
-                            e: heading ? '1' : nil),
+    query = { t: text, s: glyph_theme, c: keep_case ? '1' : nil, q: quiet ? '1' : nil }
+    query[GLYPH_ROLES.fetch(role)] = '1' if role
+    tag.img(src: glyph_path(query),
             alt: text,
             width: renderer.width(lines, quiet: quiet),
             height: renderer.height(lines, quiet: quiet))
   end
 
-  # A pressable choice in a list: a button in a small form of its own, drawn like the
-  # links around it. A form is the one thing the handset's prefetcher never fires, so
-  # these carry the choices whose GET would spend something — saving a stop or a place,
-  # turning a page. The handset's cursor gives the glyph image inside the button a stop
-  # of its own; that cost is accepted on these short lists, and nothing tried avoids it
-  # (a CSS background glyph is not painted at all, and an image input double-stops and
-  # does not submit). Long lists that must scroll in one stop per entry are links.
+  # A pressable choice in a list: a button in a small form of its own. A form is the one
+  # thing the handset's prefetcher never fires, so these carry the choices whose GET
+  # would spend something — saving a stop or a place, turning a page. The label stays
+  # plain text on every style, the drawn ones included: the handset's cursor gives any
+  # element inside a button a stop of its own, so a glyph image here made every list
+  # entry two stops (and nothing tried avoids it — a CSS background glyph is not painted
+  # at all, and an image input double-stops and does not submit). The theme's style
+  # block colours the text instead: the link colour, or the good colour for the
+  # provision class.
   def choice_button(label, url, params, token: true, accesskey: nil, css: nil)
     form_with url: url, authenticity_token: token, class: 'inline-action' do
       controls = params.map { |name, value| hidden_field_tag(name, value, id: nil) }
-      controls << tag.button(glyph_theme ? glyph_image(label, link: true) : label,
-                             type: 'submit', accesskey: accesskey, class: css)
+      controls << tag.button(label, type: 'submit', accesskey: accesskey, class: css)
       safe_join(controls)
     end
   end
@@ -121,6 +124,7 @@ module ApplicationHelper
     css = <<~CSS
       body{#{tokens};background:#{palette[:paper]};color:#{palette[:ink]}}
       a,a:visited,a.change-settings,form.inline-action button{color:#{palette[:link]}}
+      form.inline-action button.provision{color:#{palette[:good]}}
       .error{color:#{palette[:error]}}
       .credit,.credit a,.credit a:visited{color:#{palette[:quiet]}}
       input[type="text"],input[type="submit"],select{background:#{palette[:paper]};color:#{palette[:ink]};border:1px solid #{palette[:quiet]}}

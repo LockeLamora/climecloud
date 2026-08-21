@@ -48,10 +48,10 @@ form.inline-action button {
 }
 
 /* A provision — eating a meal, drinking a draught — is not a page turn: it stands
-   apart in green wherever it is offered, so the book's own choices keep their colour.
-   The class outweighs the palette block's plain button selector on specificity, so
-   the green survives every written style; the drawn styles bake their colours into
-   the glyph images and keep them. */
+   apart wherever it is offered, so the book's own choices keep their colour. Green
+   here is only the no-theme fallback: each theme names its own value as the palette's
+   good token, which ApplicationHelper#theme_style_tag writes over this for the written
+   styles and GlyphController bakes into the image for the drawn ones. */
 form.inline-action button.provision {
   color: green;
 }

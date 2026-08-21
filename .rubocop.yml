@@ -30,7 +30,12 @@ Metrics/ModuleLength:
     - 'lib/scraper.rb'
 
 Metrics/AbcSize:
-  Enabled: false  
+  Enabled: false
+
+# A keyword argument is self-naming at the call site, which is the confusion the cop
+# guards against; only the positional count is held to the limit.
+Metrics/ParameterLists:
+  CountKeywordArgs: false
 
 AllCops:
   Exclude:

@@ -77,6 +77,7 @@ Rails.application.routes.draw do
   post 'games/turn' => 'games#turn'
   post 'games/restart' => 'games#restart'
   post 'games/use' => 'games#use'
+  post 'games/take' => 'games#take'
   get 'games/:book/:section' => 'games#section', as: :games_section
 
   get 'news' => 'news#news'

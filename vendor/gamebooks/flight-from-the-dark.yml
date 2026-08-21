@@ -15,6 +15,9 @@ stats:
   endurance:
     start: 1d10+19
     max: true
+  gold:
+    start: 1d10-1
+    cap: 50
 item_draw:
   count: 5
   from:
@@ -34,11 +37,9 @@ sections:
   start:
     title: Flight from the Dark
     text: |-
-      The first book of the Lone Wolf series. Your Combat Skill and Endurance have been drawn from the Random Number Table, and five Kai Disciplines are yours - they are listed above, and the story will ask for them by name. Combat is fought a round at a time from the Combat Results Table; if your Endurance ever falls to zero, the story ends.
+      The first book of the Lone Wolf series. Your Combat Skill, Endurance and Gold Crowns are drawn from the Random Number Table, five Kai Disciplines are yours, and the monastery's ruins yield an Axe, a Map, a Meal and one find from the equipment list.
 
-      Items, weapons and gold are yours to keep track of on your honour, as they are in the paper book.
-
-      Meals and the healing potion are tracked for you: while any remain, taking one is always offered above, and no meal restores you past the Endurance you set out with.
+      Everything is tracked for you: weapons and the satchel, gold found and spent, meals eaten when the story demands one, and potions offered in green when they can help. Combat is fought a round at a time from the Combat Results Table - fighting bare-handed is harder, and the weapon your Weaponskill was learned in earns its bonus while you hold it. If your Endurance ever falls to zero, the story ends.
     choices:
     - label: Begin at section 1
       to: '1'
@@ -52,6 +53,7 @@ sections:
     choices:
     - label: If you wish to use your Kai Discipline of Sixth Sense, turn to 141.
       to: '141'
+      needs: sixth sense
     - label: If you wish to take the right path into the wood, turn to 85.
       to: '85'
     - label: If you wish to follow the left track, turn to 275.
@@ -63,11 +65,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you have picked a number 0–4, turn to 343.
-      to: '343'
-    - label: If you have picked a number 5–9, turn to 276.
-      to: '276'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '343'
+        - min: 5
+          max: 9
+          to: '276'
     title: '2'
   '3':
     text: |-
@@ -89,6 +95,7 @@ sections:
     choices:
     - label: If you wish to use the Kai Discipline of Sixth Sense, turn to 218.
       to: '218'
+      needs: sixth sense
     - label: If you wish to hide in the bottom of the canoe, turn to 75.
       to: '75'
     - label: If you wish to try to attract their attention, turn to 175.
@@ -129,11 +136,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you have picked a number that is 0–2, turn to 108.
-      to: '108'
-    - label: If the number is 3–9, turn to 25.
-      to: '25'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 2
+          to: '108'
+        - min: 3
+          max: 9
+          to: '25'
     title: '7'
   '8':
     text: Your Kai Sixth Sense warns there is a fierce battle raging in the south.
@@ -153,8 +164,10 @@ sections:
     choices:
     - label: If you possess a Vordak Gem, turn to 236.
       to: '236'
+      needs: vordak gem
     - label: If you do not, turn to 292.
       to: '292'
+      without: vordak gem
     title: '9'
   '10':
     text: You are sweating and your legs ache. In the middle distance you can see
@@ -182,6 +195,8 @@ sections:
     choices:
     - label: If you have 10 Gold Crowns and wish to pay him, turn to 262.
       to: '262'
+      cost:
+        gold: 10
     - label: If you do not have enough Gold Crowns or do not wish to pay him, turn
         to 247.
       to: '247'
@@ -223,6 +238,8 @@ sections:
     - label: If you decide to go south, turn to 35.
       to: '35'
     title: '15'
+    offers:
+    - item: sword
   '16':
     text: |-
       You manage to free a horse from the straps securing it to the caravan. It is frightened by the scent of the approaching Doomwolves, and the cries of their evil riders—the Giaks.
@@ -242,18 +259,24 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you pick 0, turn to 53.
-      to: '53'
-    - label: If you pick 1–2, turn to 274.
-      to: '274'
-    - label: If you pick 3–9, turn to 316.
-      to: '316'
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 0
+          to: '53'
+        - min: 1
+          max: 2
+          to: '274'
+        - min: 3
+          max: 9
+          to: '316'
     combat:
       enemies:
       - name: Kraan
         skill: 16
         endurance: 24
-    rnt: true
+      modifier: -1
     title: '17'
   '18':
     text: |-
@@ -263,6 +286,7 @@ sections:
     choices:
     - label: If you wish to use the Kai Discipline of Camouflage, turn to 114.
       to: '114'
+      needs: camouflage
     - label: If you wish to ride deeper in the forest, turn to 239.
       to: '239'
     - label: If you wish to fight the creature, turn to 29.
@@ -276,6 +300,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Tracking, turn to 69.
       to: '69'
+      needs: tracking
     - label: You can avoid the Sleeptooth by returning to the track. Turn to 272.
       to: '272'
     - label: Or you can push on through the briars, deeper into the forest, by turning
@@ -293,27 +318,40 @@ sections:
     - label: Turn to 273.
       to: '273'
     title: '20'
+    effects:
+      gain:
+        meal: 2
+    offers:
+    - item: dagger
   '21':
     text: |-
       You have ridden about two miles into the tangle of trees when the ground becomes very marshy.
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If it is below 5, your horse has suddenly plunged into thick mud up to
-        its belly. If the number is 5 or above, you manage to steer clear of the morass
-        and may now turn to 189.
-      to: '189'
-    - label: If you are stuck, pick another number from the Random Number Table. If
-        this time the number is 7 or less, the mud engulfs you up to your armpits.
-        Your horse gives one last despairing scream as its muzzle disappears into
-        the bubbling mud. If you scored above 7, you drag yourself onto firm ground
-        and turn to 189.
-      to: '189'
-    - label: If not, then this is your last chance! If you pick any number except
-        a 9, the foul-smelling bog sucks you under and claims another victim. Your
-        life and your mission end here. But if you have picked a 9, turn to 312.
-      to: '312'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 5
+          max: 9
+          to: '189'
+        - min: 0
+          max: 4
+          pick:
+            routes:
+            - min: 8
+              max: 9
+              to: '189'
+            - min: 0
+              max: 7
+              pick:
+                routes:
+                - min: 9
+                  max: 9
+                  to: '312'
+                - min: 0
+                  max: 8
+                  die: true
     title: '21'
   '22':
     text: |-
@@ -321,11 +359,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you have picked a number 0–4, turn to 181.
-      to: '181'
-    - label: If you have picked a number 5–9, turn to 145.
-      to: '145'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '181'
+        - min: 5
+          max: 9
+          to: '145'
     title: '22'
   '23':
     text: |-
@@ -337,6 +379,7 @@ sections:
       to: '326'
     - label: If you have the Kai Discipline of Mind Over Matter, turn to 151.
       to: '151'
+      needs: mind over matter
     - label: If you wish to remove the pin, turn to 337.
       to: '337'
     title: '23'
@@ -404,6 +447,9 @@ sections:
       - name: Vordak
         skill: 17
         endurance: 25
+      without:
+      - item: mindshield
+        modifier: -2
     title: '29'
   '30':
     text: |-
@@ -449,6 +495,8 @@ sections:
     - label: Turn to 248.
       to: '248'
     title: '33'
+    effects:
+      gold: 3
   '34':
     text: |-
       Without warning, a terrible apparition in red robes swoops down from the sky on the back of a Kraan. Its cry freezes your blood. The beast is a Vordak, a fierce lieutenant of the Darklords.
@@ -464,6 +512,9 @@ sections:
       - name: Vordak
         skill: 17
         endurance: 25
+      without:
+      - item: mindshield
+        modifier: -2
     title: '34'
   '35':
     text: The forest is becoming denser, and the path more tangled with thorny briars.
@@ -478,12 +529,17 @@ sections:
     text: The old watchtower ladder is rotten and several rungs break as you climb.
       Pick a number from the Random Number Table.
     choices:
-    - label: If the number is 4 or lower, you have fallen. Lose 2 ENDURANCE points
-        and turn to 140.
-      to: '140'
-    - label: If the number is 5 or higher, you do not fall. Turn to 323.
-      to: '323'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '140'
+          effects:
+            endurance: -2
+        - min: 5
+          max: 9
+          to: '323'
     title: '36'
   '37':
     text: |-
@@ -493,6 +549,7 @@ sections:
     choices:
     - label: If you wish to use the Kai Discipline of Camouflage, turn to 282.
       to: '282'
+      needs: camouflage
     - label: If you wish to approach them and tell your story, turn to 289.
       to: '289'
     title: '37'
@@ -572,11 +629,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you have picked a number that is 0–4, turn to 277.
-      to: '277'
-    - label: If the number is 5–9, turn to 338.
-      to: '338'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '277'
+        - min: 5
+          max: 9
+          to: '338'
     title: '44'
   '45':
     text: |-
@@ -594,8 +655,11 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Sixth Sense, turn to 296.
       to: '296'
+      needs: sixth sense
     - label: If you accept the offer, turn to 246.
       to: '246'
+      cost:
+        gold: 2
     - label: If you refuse and try to ride around the lake, turn to 90.
       to: '90'
     title: '46'
@@ -624,11 +688,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you have chosen a number that is 0–4, turn to 339.
-      to: '339'
-    - label: If the number is 5–9, turn to 60.
-      to: '60'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '339'
+        - min: 5
+          max: 9
+          to: '60'
     title: '49'
   '50':
     text: The sound of fighting can be heard in the distance.
@@ -658,6 +726,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Animal Kinship, turn to 225.
       to: '225'
+      needs: animal kinship
     - label: If not, you must climb over the tree and face whatever lurks on the other
         side. Turn to 250.
       to: '250'
@@ -695,6 +764,7 @@ sections:
       - name: Giak
         skill: 9
         endurance: 9
+      modifier: 4
     title: '55'
   '56':
     text: You hear the scream of a large winged beast above the trees. It is a Kraan,
@@ -769,6 +839,12 @@ sections:
     - label: Turn to 288.
       to: '288'
     title: '62'
+    effects:
+      gold: 28
+      gain:
+        meal: 3
+    offers:
+    - item: sword
   '63':
     text: The wild old man is screaming at you. He blames you for the war and curses
       the Kai Lords as agents of the Darklords. He will not listen to reason and you
@@ -845,6 +921,7 @@ sections:
     choices:
     - label: If you wish to use the Kai Discipline of Sixth Sense, turn to 8.
       to: '8'
+      needs: sixth sense
     - label: If you wish to go east, turn to 28.
       to: '28'
     - label: If you wish to go south, turn to 157.
@@ -858,6 +935,7 @@ sections:
     choices:
     - label: If you wish to use the Kai Discipline of Sixth Sense, turn to 65.
       to: '65'
+      needs: sixth sense
     - label: If you wish to open the sarcophagus to see if it contains any treasure,
         turn to 242.
       to: '242'
@@ -916,6 +994,9 @@ sections:
     - label: Turn to 118.
       to: '118'
     title: '76'
+    effects:
+      endurance: -2
+      take: vordak gem
   '77':
     text: |-
       The Mountain Giaks are unaccustomed to pursuing their prey through forests and you soon outdistance them, until finally the sound of their grunts and curses disappears completely.
@@ -989,6 +1070,7 @@ sections:
     choices:
     - label: If you possess the Kai Discipline of Sixth Sense, turn to 45.
       to: '45'
+      needs: sixth sense
     - label: If you wish to do as they say, turn to 205.
       to: '205'
     - label: If you wish to prepare to fight them, turn to 180.
@@ -1051,6 +1133,7 @@ sections:
     - label: If you possess and wish to use the Kai Discipline of Healing on this
         man, turn to 216.
       to: '216'
+      needs: healing
     - label: If you do not possess the skill, or if you do not want to use it, then
         turn to 31.
       to: '31'
@@ -1061,13 +1144,18 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you have picked 0–1, turn to 53.
-      to: '53'
-    - label: If it is 2–4, turn to 274.
-      to: '274'
-    - label: If it is 5–9, turn to 316.
-      to: '316'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 1
+          to: '53'
+        - min: 2
+          max: 4
+          to: '274'
+        - min: 5
+          max: 9
+          to: '316'
     title: '89'
   '90':
     text: Night falls and you are soon engulfed in total darkness. To press on would
@@ -1086,6 +1174,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Sixth Sense, turn to 198.
       to: '198'
+      needs: sixth sense
     - label: If you wish to look at his wares, turn to 152.
       to: '152'
     - label: If you would rather decline his offer and return to the street, turn
@@ -1125,6 +1214,8 @@ sections:
     - label: Turn to 7.
       to: '7'
     title: '94'
+    effects:
+      gold: 16
   '95':
     text: You soon stumble upon a narrow forest track running from north to south.
     choices:
@@ -1234,6 +1325,7 @@ sections:
     - label: If you have the Kai Discipline of Animal Kinship, you may call to this
         bird by turning to 298.
       to: '298'
+      needs: animal kinship
     - label: If you do not possess this skill, or if you do not wish to use it, turn
         to 335.
       to: '335'
@@ -1319,6 +1411,9 @@ sections:
     - label: If you wish to head east, turn to 295.
       to: '295'
     title: '113'
+    effects:
+      gain:
+        laumspur: 2
   '114':
     text: |-
       You coax the horse to lie down and begin to cover him and yourself with branches and dead leaves. You hear the wings of the Kraan as it passes over the trees. It returns and circles above you, but soon retreats back across the lake.
@@ -1387,6 +1482,8 @@ sections:
         to 38.
       to: '38'
     title: '119'
+    effects:
+      endurance: -2
   '120':
     text: Behind you can hear the blood-crazy Giaks killing the caravan horses. You
       risk a quick glance over your shoulder and see a Kraan start to climb high into
@@ -1445,6 +1542,10 @@ sections:
     - label: Or you may leave and descend the hill by turning to 106.
       to: '106'
     title: '124'
+    effects:
+      gold: 15
+    offers:
+    - item: silver key
   '125':
     text: |-
       The path opens out into a large clearing. You notice strange claw prints in the earth. Kraan have landed here. By the number of prints and by the size of the area disturbed, you judge that at least five of the foul creatures landed here in the last twelve hours.
@@ -1453,6 +1554,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Tracking, turn to 301.
       to: '301'
+      needs: tracking
     - label: If you wish to take the south path, turn to 27.
       to: '27'
     - label: If you wish to take the west path, turn to 214.
@@ -1487,6 +1589,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Hunting, turn to 297.
       to: '297'
+      needs: hunting
     - label: If you do not, you must attack the Giaks now in order to save the ranger’s
         life. Turn to 336.
       to: '336'
@@ -1517,6 +1620,8 @@ sections:
         turn to 201.
       to: '201'
     title: '130'
+    effects:
+      must_eat: true
   '131':
     text: |-
       You have covered about a quarter of a mile when you hear shouting and a noise like thunderclaps ahead. Edging nearer, you soon make out a clearing that you recognize to be the site of the ruins of Raumas, an ancient forest temple.
@@ -1563,6 +1668,8 @@ sections:
       - name: Winged Serpent
         skill: 16
         endurance: 18
+      immune:
+      - mindblast
     title: '133'
   '134':
     text: Using your skills, you detect Giak tracks around the perimeter of the clearing.
@@ -1601,6 +1708,7 @@ sections:
       - name: Giak 2
         skill: 12
         endurance: 10
+      modifier: 1
     title: '136'
   '137':
     text: |-
@@ -1697,6 +1805,9 @@ sections:
     - label: If you wish to evade a fight, turn to 217.
       to: '217'
     title: '144'
+    effects:
+      endurance: -2
+      steal: true
   '145':
     text: You feel as if you have been run down by a cart or wagon. As you fall forward
       the last thing that you remember before the darkness overcomes you, is the taste
@@ -1714,6 +1825,8 @@ sections:
     - label: Turn to 154.
       to: '154'
     title: '146'
+    effects:
+      endurance: -3
   '147':
     text: After a few minutes walking, you find a mossy hut set back from the path.
       You are hungry and must eat a Meal here or lose 3 ENDURANCE points. As you eat
@@ -1724,6 +1837,8 @@ sections:
     - label: If you wish to return the way you have come, turn to 28.
       to: '28'
     title: '147'
+    effects:
+      must_eat: true
   '148':
     text: Kicking open the door, you dive into the farmhouse. A Kraan soars overhead,
       letting out a shriek of victory, a victim hanging in its claws. Getting to your
@@ -1738,6 +1853,8 @@ sections:
     - label: If you wish to search the room further, turn to 199.
       to: '199'
     title: '148'
+    offers:
+    - item: warhammer
   '149':
     text: |-
       As you ride along the highway, you notice that light is getting worse. It will soon be completely dark—and impossible to see any dangers that may lurk ahead. You decide to hide and rest at the wood’s edge until morning.
@@ -1763,6 +1880,7 @@ sections:
     - label: If you wish to use your Kai Discipline of Mind Over Matter to open this
         lock and levitate the pin, turn to 87.
       to: '87'
+      needs: mind over matter
     - label: If you wish to remove the pin, turn to 337.
       to: '337'
     title: '151'
@@ -1852,8 +1970,13 @@ sections:
     choices:
     - label: Turn to 106.
       to: '106'
-    rnt: true
     title: '158'
+    effects:
+      endurance: -6
+      risk:
+        at_least: 6
+        then:
+          endurance: -4
   '159':
     text: Your ploy does not work, for the merchant will not allow you to enter his
       caravan. Suddenly he clicks his fingers and the bodyguard grasps the hilt of
@@ -1867,12 +1990,15 @@ sections:
   '160':
     text: Pick a number from the Random Number Table.
     choices:
-    - label: If it is 0–4, you have been seen. Turn to 286.
-      to: '286'
-    - label: If it is 5–9, they do not spot you and they slowly file away along the
-        far side of the ridge. Turn to 10.
-      to: '10'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '286'
+        - min: 5
+          max: 9
+          to: '10'
     title: '160'
   '161':
     text: |-
@@ -1894,9 +2020,13 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Mind Over Matter, turn to 258.
       to: '258'
+      needs: mind over matter
     - label: If you do not have this skill, turn to 127.
       to: '127'
     title: '162'
+    effects:
+      drop_weapons: true
+      drop_backpack: true
   '163':
     text: After nearly half an hour you feel the current getting stronger. Looking
       out across the surface you can see that you are approaching a whirlpool in the
@@ -1916,6 +2046,10 @@ sections:
     - label: You now decide to investigate the stable by turning to 308.
       to: '308'
     title: '164'
+    offers:
+    - item: alether
+      count: 1
+      label: Take the Potion of Alether
   '165':
     text: You awake in a fever. Images swim before your eyes and then fade completely.
       The pain in your back is intense and you cry out for relief. You feel a cool,
@@ -1937,6 +2071,8 @@ sections:
     - label: Turn to 104.
       to: '104'
     title: '166'
+    effects:
+      endurance: -4
   '167':
     text: You have been travelling for about a mile when you notice two legs sticking
       out from behind a large boulder.
@@ -1944,6 +2080,7 @@ sections:
     - label: If you possess and wish to use the Kai Discipline of Sixth Sense, turn
         to 178.
       to: '178'
+      needs: sixth sense
     - label: If you wish to take a closer look, turn to 88.
       to: '88'
     - label: If you would rather avoid meeting their owner and press on into the forest,
@@ -1991,6 +2128,11 @@ sections:
       - name: Burrowcrawler
         skill: 17
         endurance: 7
+      immune:
+      - mindblast
+      without:
+      - item: torch
+        modifier: -3
     title: '170'
   '171':
     text: You are at the very edge of the wood when your horse rears up in agony.
@@ -2011,6 +2153,7 @@ sections:
     - label: If you wish to use the Kai Discipline of Camouflage to hide yourself
         and your horse, turn to 114.
       to: '114'
+      needs: camouflage
     - label: If you wish to ride deeper into the forest to escape the Kraan, turn
         to 239.
       to: '239'
@@ -2024,8 +2167,10 @@ sections:
     - label: If you have a Silver Key, you may try to open the door by turning to
         158.
       to: '158'
+      needs: silver key
     - label: If you do not possess a Silver Key, turn to 259.
       to: '259'
+      without: silver key
     title: '173'
   '174':
     text: After nearly an hour of drifting downstream, the water current becomes quite
@@ -2039,6 +2184,9 @@ sections:
     - label: Turn to 190.
       to: '190'
     title: '174'
+    effects:
+      drop_weapons: true
+      drop_backpack: true
   '175':
     text: Waving your arms at the approaching cavalry, you recognize them to be Border
       Rangers of the King’s army, tough woodsmen who police the troubled western frontier
@@ -2049,6 +2197,7 @@ sections:
     choices:
     - label: If you possess the Kai Discipline of Camouflage, turn to 182.
       to: '182'
+      needs: camouflage
     - label: If you wish to take cover and hide, turn to 41.
       to: '41'
     - label: If you wish to make for the other bank, turn to 116.
@@ -2155,6 +2304,11 @@ sections:
     - label: Turn to 64.
       to: '64'
     title: '184'
+    effects:
+      gold: 40
+      gain:
+        meal: 4
+      must_eat: true
   '185':
     text: |-
       You narrow your eyes and scan the trees for some sign of the hidden archer. Your wait is not a long one, for a moment later a sharp pain tears through your chest and you are thrown back by the force of three arrows. Two of the black shafts have sunk deep into your rib cage, and the third has pierced your thigh.
@@ -2194,8 +2348,14 @@ sections:
     choices:
     - label: Now turn to 303.
       to: '303'
-    rnt: true
     title: '188'
+    effects:
+      risk:
+        at_most: 6
+        then:
+          drop_backpack: true
+        else:
+          endurance: -3
   '189':
     text: |-
       You thank your Kai training and your quick thinking, for that bog could have proved as deadly as any Drakkarim or Kraan.
@@ -2251,6 +2411,8 @@ sections:
     - label: If you wish to escape into the woods, turn to 126.
       to: '126'
     title: '193'
+    offers:
+    - item: scroll
   '194':
     text: You sprint towards the wagon. People are running everywhere in panic as
       the Kraan make their attack, carrying their poor victims off into the darkening
@@ -2292,6 +2454,10 @@ sections:
     - label: Turn to 172.
       to: '172'
     title: '197'
+    effects:
+      gold: 6
+    offers:
+    - item: short sword
   '198':
     text: You can sense that there is someone else behind the screen. There is a lingering
       aura of wickedness around this shop. Be on your guard—something is wrong here.
@@ -2320,6 +2486,7 @@ sections:
     - label: If you wish to use the Kai Discipline of Camouflage to hide in among
         the packing cases strapped to the roof, turn to 168.
       to: '168'
+      needs: camouflage
     - label: If you wish to jump onto the caravan, turn to 78.
       to: '78'
     title: '200'
@@ -2353,9 +2520,17 @@ sections:
     choices:
     - label: If you have 10 or more ENDURANCE points left, turn to 80.
       to: '80'
+      when:
+        stat: endurance
+        at_least: 10
     - label: If you now have less than 10 ENDURANCE points, turn to 344.
       to: '344'
+      when:
+        stat: endurance
+        at_most: 9
     title: '203'
+    effects:
+      endurance: -10
   '204':
     text: After an hour of walking you arrive at a junction. The path continues south
       and another path joins it from the west. You realize that the west path will
@@ -2372,12 +2547,19 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If the number you have picked is 0–4, turn to 181.
-      to: '181'
-    - label: If the number is 5–9, turn to 145.
-      to: '145'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '181'
+        - min: 5
+          max: 9
+          to: '145'
     title: '205'
+    effects:
+      drop_weapons: true
+      drop_backpack: true
   '206':
     text: The path soon joins a highway where a signpost indicates Toran to the north
       and Holmgard to the south. You turn south towards the capital.
@@ -2436,6 +2618,7 @@ sections:
     choices:
     - label: If you possess the Kai Discipline of Sixth Sense turn to 244.
       to: '244'
+      needs: sixth sense
     - label: If you wish to walk across to the door, turn to 173.
       to: '173'
     - label: If you would prefer to return to the surface and continue your journey,
@@ -2553,6 +2736,7 @@ sections:
     choices:
     - label: If you wish to use your Kai Discipline of Tracking, turn to 67.
       to: '67'
+      needs: tracking
     - label: If you wish to take the south fork, turn to 140.
       to: '140'
     - label: If you wish to take the east fork, turn to 252.
@@ -2598,11 +2782,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If the number you have picked is 0–4, turn to 277.
-      to: '277'
-    - label: If the number is 5–9, turn to 338.
-      to: '338'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '277'
+        - min: 5
+          max: 9
+          to: '338'
     title: '226'
   '227':
     text: You are now up to your waist in slimy water. The air is thick with small
@@ -2664,16 +2852,18 @@ sections:
     choices:
     - label: If you kill him within 4 rounds of combat, turn to 94.
       to: '94'
-    - label: If you are still fighting after 4 rounds of combat, turn to 203.
-      to: '203'
-    - label: You may evade more fighting after 2 rounds of combat by dashing through
-        the front door. If you wish to do this, turn to 7.
-      to: '7'
     combat:
       enemies:
       - name: Robber
         skill: 13
         endurance: 20
+      overtime:
+        rounds: 4
+        to: '203'
+      evade:
+        after: 2
+        to: '7'
+        label: Dash for the front door
     title: '231'
   '232':
     text: The rough-looking leader approaches you and says, ‘Our needs are simple,
@@ -2712,11 +2902,14 @@ sections:
     choices:
     - label: If you wish to use your Kai Discipline of Tracking, turn to 254.
       to: '254'
+      needs: tracking
     - label: If you wish to turn left, go to 32.
       to: '32'
     - label: If you wish to turn right, go to 146.
       to: '146'
     title: '235'
+    effects:
+      must_eat: true
   '236':
     text: |-
       The Gem hovers above the mouth of the skeleton king, glowing a fierce red. Suddenly, an explosion of searing crimson flame lashes upwards from the sarcophagus, destroying the Gem completely. You are thrown against the far wall and knocked unconscious.
@@ -2728,18 +2921,25 @@ sections:
     - label: Turn to 104.
       to: '104'
     title: '236'
+    effects:
+      endurance: -6
+      skill: -1
+      drop: vordak gem
   '237':
     text: |-
       You make full use of your Kai Discipline and quickly burrow deep into the loose earth of the wooded hillside. Covering yourself with your cloak, you pull a loose branch across your hastily dug shelter.
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you have picked a number 0–4, then you have passed undetected. Turn
-        to 265.
-      to: '265'
-    - label: If you have picked a number 5–9, then you are not so lucky! Turn to 72.
-      to: '72'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '265'
+        - min: 5
+          max: 9
+          to: '72'
     title: '237'
   '238':
     text: The path meanders between several small, wooded hills and eventually leads
@@ -2788,6 +2988,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Mindshield, turn to 166.
       to: '166'
+      needs: mindshield
     - label: If you do not, turn to 9.
       to: '9'
     title: '242'
@@ -2806,6 +3007,8 @@ sections:
     - label: Continue along the hidden path by turning to 97.
       to: '97'
     title: '243'
+    offers:
+    - item: mace
   '244':
     text: Your senses tell you that you are not alone. You are in very great danger.
       Return to the surface as quickly as you can.
@@ -2947,7 +3150,12 @@ sections:
       - name: Gourgaz
         skill: 20
         endurance: 30
+      immune:
+      - mindblast
     title: '255'
+    offers:
+    - item: sword
+      label: Pick up the Prince's Sword
   '256':
     text: |-
       You are awoken by the cries of Kraan high above you in the clear morning sky. Rubbing your eyes, you peer upwards through the canopy of branches to see three of the loathsome creatures fly off towards the north.
@@ -3036,6 +3244,8 @@ sections:
         hills to the south by turning to 157.
       to: '157'
     title: '263'
+    effects:
+      gold: 3
   '264':
     text: You have not gone far when you hear the sound of battle to the west.
     choices:
@@ -3072,6 +3282,9 @@ sections:
     - label: Turn to 125.
       to: '125'
     title: '267'
+    offers:
+    - item: message
+    - item: dagger
   '268':
     text: You black out for only a few minutes before you are revived with a measure
       of strong spirit. Feeling weary but thankful to be alive, you lean on the shoulders
@@ -3091,6 +3304,8 @@ sections:
     - label: If you would prefer to trust your own sense of direction, turn to 7.
       to: '7'
     title: '269'
+    effects:
+      gold: 10
   '270':
     text: You hear the angry cries of the enemy drift across the lake. You must leave
       here before more Kraan appear. You mount your steed and push on further into
@@ -3116,6 +3331,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Tracking, you may turn to 134.
       to: '134'
+      needs: tracking
     - label: If you do not possess this skill, you prepare your weapon and stealthily
         approach the huts. Turn to 305.
       to: '305'
@@ -3153,11 +3369,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If the number you have picked is 0–4, turn to 345.
-      to: '345'
-    - label: If the number is 5–9, turn to 74.
-      to: '74'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '345'
+        - min: 5
+          max: 9
+          to: '74'
     title: '275'
   '276':
     text: Reaching for your weapon you manage to hack your way through the tangle
@@ -3193,11 +3413,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If the number you have picked is 0–6, turn to 112.
-      to: '112'
-    - label: If the number is 7–9, turn to 96.
-      to: '96'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 6
+          to: '112'
+        - min: 7
+          max: 9
+          to: '96'
     title: '279'
   '280':
     text: As you begin your climb, you hear the beat of wings approaching from the
@@ -3250,6 +3474,10 @@ sections:
       - name: Vordak
         skill: 17
         endurance: 25
+      surprise: 4
+      without:
+      - item: mindshield
+        modifier: -2
     title: '283'
   '284':
     text: |-
@@ -3315,6 +3543,8 @@ sections:
     - label: Turn to 140.
       to: '140'
     title: '290'
+    offers:
+    - item: quarterstaff
   '291':
     text: |-
       The two Giaks lie at your feet, their bodies twisted and lifeless. A quick search reveals 6 Gold Crowns, 2 Spears, and a Dagger.
@@ -3326,6 +3556,15 @@ sections:
     - label: Turn to 272.
       to: '272'
     title: '291'
+    effects:
+      gold: 6
+    offers:
+    - item: dagger
+      unless:
+      - spear
+    - item: spear
+      unless:
+      - dagger
   '292':
     text: |-
       The last thing that you experience of this life is the feeling of being sucked into the void of darkness. No trace of you remains in this world, for you have passed into a realm of timeless existence. You have become a slave of an ancient evil.
@@ -3351,14 +3590,22 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If the number you pick is 0–2, turn to 230.
-      to: '230'
-    - label: If the number is 3–6, turn to 190.
-      to: '190'
-    - label: If the number is 7–9, turn to 321.
-      to: '321'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 2
+          to: '230'
+        - min: 3
+          max: 6
+          to: '190'
+        - min: 7
+          max: 9
+          to: '321'
     title: '294'
+    effects:
+      drop_weapons: true
+      drop_backpack: true
   '295':
     text: You have continued your journey for about fifteen minutes when suddenly
       a black arrow whistles past your head and embeds itself in a tree. Instinctively
@@ -3423,6 +3670,8 @@ sections:
     - label: You may now continue on your journey by turning to 13.
       to: '13'
     title: '300'
+    effects:
+      must_eat: true
   '301':
     text: Your Kai Discipline reveals that the west path is a dead end.
     choices:
@@ -3432,11 +3681,15 @@ sections:
   '302':
     text: Pick a number from the Random Number Table.
     choices:
-    - label: If the number you have picked is 0–2, turn to 110.
-      to: '110'
-    - label: If the number is 3–9, turn to 285.
-      to: '285'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 2
+          to: '110'
+        - min: 3
+          max: 9
+          to: '285'
     title: '302'
   '303':
     text: The forest here is sparse and hilly. It does not give much cover from an
@@ -3445,6 +3698,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Camouflage, turn to 237.
       to: '237'
+      needs: camouflage
     - label: If you do not, turn to 72.
       to: '72'
     title: '303'
@@ -3457,6 +3711,9 @@ sections:
     - label: Turn to 2.
       to: '2'
     title: '304'
+    effects:
+      endurance: -2
+      take: vordak gem
   '305':
     text: |-
       Through the open doorway of the first hut, you can see the body of a charcoal burner lying face down on the rough stone floor. He has been murdered, stabbed in the back by a spear. All his furniture and belongings have been smashed and broken and not one piece remains intact.
@@ -3468,6 +3725,9 @@ sections:
     - label: Turn to 105.
       to: '105'
     title: '305'
+    offers:
+    - item: spear
+      label: Take the Giak Spear
   '306':
     text: |-
       The sound of battle gradually fades behind you. Suddenly, you are pulled to the ground. Three Drakkarim have dropped from a tree above. You struggle but it is useless for there are too many of them for you and they are very strong.
@@ -3492,6 +3752,13 @@ sections:
     - label: Turn to 213.
       to: '213'
     title: '307'
+    effects:
+      gain:
+        meal: 1
+    offers:
+    - item: warhammer
+      swap: true
+      label: Exchange a weapon for the Warhammer
   '308':
     text: The stable door is open and you can hear the breathing of a horse from inside
       the darkened interior. Suddenly, the horse senses your presence and rushes past,
@@ -3499,6 +3766,7 @@ sections:
     choices:
     - label: If you wish to use the Kai Discipline of Animal Kinship, turn to 122.
       to: '122'
+      needs: animal kinship
     - label: If you wish to chase after the runaway horse, turn to 233.
       to: '233'
     title: '308'
@@ -3528,6 +3796,7 @@ sections:
     choices:
     - label: If you have the Kai Discipline of Camouflage, turn to 324.
       to: '324'
+      needs: camouflage
     - label: If you wish to hide in the cave, turn to 279.
       to: '279'
     - label: If you wish to avoid the cave and continue your climb to the peak, turn
@@ -3552,17 +3821,23 @@ sections:
     - label: Turn to 248.
       to: '248'
     title: '313'
+    effects:
+      endurance: -1
   '314':
     text: |-
       It takes you nearly an hour to reach the citadel. When you arrive you find that the citizens of Holmgard are in panic and confusion. Your escort approaches the armoured guards at the main entrance and tells them of your urgent message for the King.
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If you have picked a number that is 0–6, turn to 341.
-      to: '341'
-    - label: If the number is 7–9, turn to 98.
-      to: '98'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 6
+          to: '341'
+        - min: 7
+          max: 9
+          to: '98'
     title: '314'
   '315':
     text: Wrapped in a bundle of women’s clothing is a small velvet purse containing
@@ -3572,6 +3847,9 @@ sections:
     - label: Turn to 213.
       to: '213'
     title: '315'
+    effects:
+      gold: 6
+      take: soap
   '316':
     text: |-
       In your haste to avoid the enemy, you catch your foot in a tree root and you are pitched head over heels in a tumble of dust and leaves. Crashing through the undergrowth at the base of the hill, you quickly pick up your weapon and run into the thick forest. The Kraan is no longer circling above, but you can make out the silhouette of two Giaks on the peak of the hill behind.
@@ -3612,6 +3890,10 @@ sections:
     - label: Turn to 157.
       to: '157'
     title: '319'
+    effects:
+      gold: 20
+    offers:
+    - item: dagger
   '320':
     text: |-
       As you race across the open field towards the wood, a Kraan dives at you and claws your arm. Before you can fight back, it has flown off again, shrieking with cold malice.
@@ -3765,9 +4047,11 @@ sections:
     choices:
     - label: If you wish to use the Kai Discipline of Sixth Sense, turn to 48.
       to: '48'
+      needs: sixth sense
     - label: If you wish to use the Kai Discipline of Camouflage and wait for them
         to pass, turn to 73.
       to: '73'
+      needs: camouflage
     - label: If you wish to approach them, turn to 162.
       to: '162'
     title: '334'
@@ -3802,11 +4086,15 @@ sections:
 
       Pick a number from the Random Number Table.
     choices:
-    - label: If the number picked is 0–4, turn to 219.
-      to: '219'
-    - label: If the number is 5–9, turn to 317.
-      to: '317'
-    rnt: true
+    - label: Pick a number from the Random Number Table
+      pick:
+        routes:
+        - min: 0
+          max: 4
+          to: '219'
+        - min: 5
+          max: 9
+          to: '317'
     title: '337'
   '338':
     text: When you awake, you find yourself lying at the foot of a steep slope in
@@ -3825,16 +4113,18 @@ sections:
     choices:
     - label: If you kill him within 4 rounds of Combat, turn to 94.
       to: '94'
-    - label: If you are still fighting after 4 rounds of Combat, turn to 203.
-      to: '203'
-    - label: You may evade combat by escaping through the front door at any stage
-        of the fight, by turning to 7.
-      to: '7'
     combat:
       enemies:
       - name: Robber
         skill: 13
         endurance: 20
+      overtime:
+        rounds: 4
+        to: '203'
+      evade:
+        after: 0
+        to: '7'
+        label: Escape through the front door
     title: '339'
   '340':
     text: You gallop forward to meet the oncoming Doomwolf and rider, your Weapon
@@ -3857,6 +4147,7 @@ sections:
     choices:
     - label: If you wish to use the Kai Discipline of Tracking, turn to 310.
       to: '310'
+      needs: tracking
     - label: If you wish to enter the Guildhall, turn to 210.
       to: '210'
     - label: If you wish to search for another route into the citadel, turn to 37.
@@ -3875,6 +4166,11 @@ sections:
       - name: Vordak
         skill: 18
         endurance: 26
+      immune:
+      - mindblast
+      without:
+      - item: mindshield
+        modifier: -2
     title: '342'
   '343':
     text: You are held by the mass of tangled branches and roots. Eventually you free
@@ -3911,6 +4207,8 @@ sections:
     - label: To leave the clearing, turn to 14.
       to: '14'
     title: '346'
+    offers:
+    - item: spear
   '347':
     text: |-
       The trees start to thin out, and just ahead you can make out the silhouette of an old log cabin beneath an oak tree. This hut seems to have been abandoned and there is little of apparent value left behind. Opening a small chest near the main door, you discover bunches of twigs that have been tied together with strong twine. One end of each bundle has been coated with pitch. They are Torches. Next to the chest are a Short Sword and a Tinderbox. You may take them and a Torch if you wish but make sure that you mark them on your Action Chart. 3
@@ -3920,6 +4218,10 @@ sections:
     - label: Turn to 103.
       to: '103'
     title: '347'
+    offers:
+    - item: torch
+    - item: tinderbox
+    - item: short sword
   '348':
     text: Raising your boot to kick away the dead snake, your heart skips a beat as
       you realize that it was a Red Marshviper. There is no known cure for its venomous
@@ -3971,13 +4273,69 @@ sections:
     choices: []
     title: '350'
 consumables:
-  meal:
-    start: 5
-    label: Eat a Meal (endurance +3)
-    effects:
-      endurance: 3
-  laumspur:
-    start: 1
-    label: Drink the Potion of Laumspur (endurance +4)
+  potion:
+    start: 0
+    label: Drink the Healing Potion (endurance +4)
     effects:
       endurance: 4
+  laumspur:
+    start: 0
+    label: Eat a Meal of Laumspur (endurance +3)
+    effects:
+      endurance: 3
+  alether:
+    start: 0
+    label: Drink the Potion of Alether (skill +2 this fight)
+    battle:
+      skill: 2
+items:
+- axe
+- map
+- meal:1
+worn:
+- map
+- helmet
+- chainmail waistcoat
+weapons:
+  list:
+  - dagger
+  - spear
+  - mace
+  - short sword
+  - warhammer
+  - sword
+  - axe
+  - quarterstaff
+  - broadsword
+  unarmed: -4
+  bonus: 2
+  skill_table:
+  - dagger
+  - spear
+  - mace
+  - short sword
+  - warhammer
+  - sword
+  - axe
+  - sword
+  - quarterstaff
+  - broadsword
+equipment_draw:
+- item: broadsword
+- item: sword
+- item: helmet
+  endurance: 2
+- gain:
+    meal: 2
+- item: chainmail waistcoat
+  endurance: 4
+- item: mace
+- gain:
+    potion: 1
+- item: quarterstaff
+- item: spear
+- gold: 12
+healing:
+  item: healing
+  stat: endurance
+  delta: 1

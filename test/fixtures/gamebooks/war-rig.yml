@@ -1,0 +1,132 @@
+# A second engineering rig, for the combat and bookkeeping layers the Lone Wolf books
+# use: weapons and Weaponskill, combat modifiers and immunities, evasion and overtime,
+# server-rolled Random Number Table picks, forced meals, theft, offers and battle
+# draughts. Every roll a test relies on is pinned ('10', '1d1', a one-entry table) so
+# nothing here is luck. Loaded only under test; see Gamebooks.paths.
+id: war-rig
+order: 98
+title: War Rig
+author: Fixture
+year: 2026
+about: The rig that proves the combat and bookkeeping layers.
+start: camp
+stats:
+  skill: { start: '10' }
+  stamina: { start: '20', max: true }
+  gold: { start: '5', cap: 50 }
+dies_at_zero: stamina
+items: ['weaponskill', 'salve', 'meal:1']
+worn: [charm]
+weapons:
+  list: [club, sabre, pike]
+  unarmed: -4
+  bonus: 2
+  skill_table: [sabre]
+equipment_draw:
+  - { item: club, stamina: 2 }
+healing: { item: salve, stat: stamina, delta: 1 }
+consumables:
+  tonic: { start: 1, label: 'Drink the tonic (skill +4 this fight)', battle: { skill: 4 } }
+  laumspur: { start: 0, label: 'Eat laumspur (stamina +3)', effects: { stamina: 3 } }
+sections:
+  camp:
+    title: The camp
+    text: A crossroads of trials.
+    choices:
+      - label: March to the field
+        to: field
+      - label: Ford the river
+        pick: { roll: '1d1', routes: [{ min: 0, max: 1, to: field, effects: { stamina: -2 } }] }
+      - label: Enter the bog
+        pick:
+          roll: '1d1'
+          routes:
+            - min: 0
+              max: 1
+              pick: { roll: '1d1', routes: [{ min: 0, max: 1, die: true }] }
+      - label: Take the rich road
+        when: { stat: gold, at_least: 10 }
+        to: field
+      - label: Take the poor road
+        when: { stat: gold, at_most: 9 }
+        to: field
+      - label: Bury the charm
+        without: charm
+        to: field
+      - label: Face the ogre
+        to: pit
+      - label: Meet the shade
+        to: shade
+      - label: Walk the gauntlet
+        to: gauntlet
+      - label: Visit the armoury
+        to: armoury
+      - label: Call at the smithy
+        to: smithy
+      - label: Loot the hoard
+        to: hoard
+  field:
+    title: The field
+    text: Supper time.
+    effects: { must_eat: true }
+    choices:
+      - label: Back to camp
+        to: camp
+  pit:
+    title: The pit
+    text: An ogre, unimpressed by clever minds, hard to see in the dark.
+    combat:
+      enemies: [{ name: Ogre, skill: 10, endurance: 60 }]
+      immune: [mindblast]
+      modifier: 1
+      surprise: 2
+      without: [{ item: torch, modifier: -3 }]
+      evade: { after: 1, to: camp, label: Flee the pit }
+      overtime: { rounds: 3, to: field }
+    offers:
+      - { item: sabre, label: Snatch the sabre from the rack }
+    choices:
+      - label: Climb out victorious
+        to: camp
+  shade:
+    title: The shade
+    text: A plain duel with no tricks about it.
+    combat:
+      enemies: [{ name: Shade, skill: 10, endurance: 99 }]
+    choices:
+      - label: Walk away from the ashes
+        to: camp
+  gauntlet:
+    title: The gauntlet
+    text: Thieves and thrown stones.
+    effects:
+      steal: true
+      risk: { roll: '1d1', at_least: 1, then: { stamina: -4 } }
+    choices:
+      - label: Back to camp
+        to: camp
+  armoury:
+    title: The armoury
+    text: A rack of arms free for the taking.
+    offers:
+      - { item: sabre }
+      - { item: pike }
+      - { item: torch, unless: [sabre] }
+    choices:
+      - label: Back to camp
+        to: camp
+  smithy:
+    title: The smithy
+    text: The smith trades blade for blade.
+    offers:
+      - { item: sabre, swap: true, label: Exchange a weapon for the sabre }
+    choices:
+      - label: Back to camp
+        to: camp
+  hoard:
+    title: The hoard
+    text: More gold than the pouch will hold.
+    effects: { gold: 100 }
+    choices:
+      - label: Back to camp
+        to: camp

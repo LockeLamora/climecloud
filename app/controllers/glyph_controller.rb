@@ -30,15 +30,14 @@ class GlyphController < ApplicationController
     theme = Themes.resolve(params[:s].presence || cookies[:theme])
     # c=1 keeps the label's own case, for prose; q=1 is the quiet size and dim tone, for
     # the attribution lines; l=1 is a link and e=1 a heading, drawn in the palette's link
-    # and emphasis colours — some styles write those in colours of their own, and a colour
-    # baked into the image has to be named in the URL the cache is keyed by. Anything else
-    # is a label in the body ink, set in capitals.
+    # and emphasis colours; g=1 is a standing offer (the gamebooks' provisions) in the
+    # palette's good colour and r=1 a barred line in its error colour — every style
+    # writes some of these in colours of its own, and a colour baked into the image has
+    # to be named in the URL the cache is keyed by. Anything else is a label in the body
+    # ink, set in capitals.
     quiet = params[:q] == '1'
     keep_case = params[:c] == '1'
-    role = if params[:l] == '1' then :link
-           elsif params[:e] == '1' then :emphasis
-           else :ink
-           end
+    role = role_param
 
     # Cached on our side as well as at the proxy: the fixed labels — menu entries, section
     # names, headings — are the same picture on every page that carries them, so they are
@@ -52,7 +51,7 @@ class GlyphController < ApplicationController
         charset_svg(renderer, lines, palette, quiet: quiet, role: role)
       else
         lines = PhosphorGlyph.lines(params[:t], keep_case: keep_case, quiet: quiet)
-        phosphor_svg(lines, palette, quiet: quiet)
+        phosphor_svg(lines, palette, quiet: quiet, role: role)
       end
     end
 
@@ -60,16 +59,28 @@ class GlyphController < ApplicationController
     render plain: body, content_type: 'image/svg+xml'
   end
 
+  # Each flag with the palette role it picks, checked in this order: the good and error
+  # roles outrank link and emphasis, so a provision drawn inside a button stays in the
+  # good colour rather than the link's.
+  ROLES = { g: :good, r: :error, l: :link, e: :emphasis }.freeze
+
   private
+
+  def role_param
+    ROLES.find { |flag, _| params[flag] == '1' }&.last || :ink
+  end
 
   def glyph_cache_key(theme, quiet, keep_case, role)
     ['glyph', theme, quiet, keep_case, role, Digest::SHA256.hexdigest(params[:t].to_s)]
   end
 
-  def phosphor_svg(lines, palette, quiet: false)
+  # The phosphor styles write their links and headings in the body colour — one hue is
+  # the whole conceit — but the good and error roles keep their own: a green screen's
+  # provisions come out yellow (see Themes) rather than invisible.
+  def phosphor_svg(lines, palette, quiet: false, role: :ink)
     width = PhosphorGlyph.width(lines, quiet: quiet)
     height = PhosphorGlyph.height(lines, quiet: quiet)
-    ink = quiet ? palette[:quiet] : palette[:ink]
+    ink = quiet ? palette[:quiet] : palette.fetch(role)
     font = quiet ? PhosphorGlyph::QUIET_FONT_SIZE : PhosphorGlyph::FONT_SIZE
     line_height = quiet ? PhosphorGlyph::QUIET_LINE_HEIGHT : PhosphorGlyph::LINE_HEIGHT
 

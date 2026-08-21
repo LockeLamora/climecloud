@@ -72,6 +72,20 @@ class GlyphControllerTest < ActionDispatch::IntegrationTest
     assert_no_match(/FF8100/, @response.body)
   end
 
+  # The good and error roles take each theme's own values — see Themes::PALETTES —
+  # on both renderers: the character-set styles and the phosphor screens alike. On a
+  # screen that is already green, good comes out yellow rather than invisible.
+  test 'the good and error roles take their colours from the theme palette' do
+    get glyph_url, params: { t: 'Eat a meal', s: 'teletext', g: '1' }
+    assert_match 'fill="#00FF00"', @response.body
+
+    get glyph_url, params: { t: 'Needs the rope', s: 'teletext', r: '1' }
+    assert_match 'fill="red"', @response.body
+
+    get glyph_url, params: { t: 'Eat a meal', s: 'crt-green', g: '1' }
+    assert_match 'fill="#EAFF52"', @response.body
+  end
+
   test 'headings and one-button forms are glyphed alongside the links' do
     get root_url, headers: { 'HTTP_COOKIE' => 'theme=crt-green;lat=51.5;city=Testville' }
 
