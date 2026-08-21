@@ -178,7 +178,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
   test 'a first turn out of a stat book rolls the character by its own dice' do
     post '/games/turn', params: { book: 'engine-trial', from: 'start', choice: 0 }
 
-    assert_redirected_to '/games/engine-trial/store'
+    assert_redirected_to '/games/engine-trial/store?got=rope'
     section, stats, items = JSON.parse(cookies['CYOA'])['engine-trial'].split('|')
     rolled = stats.split(',').to_h { |pair| pair.split(':').then { |k, v| [k, v.to_i] } }
 

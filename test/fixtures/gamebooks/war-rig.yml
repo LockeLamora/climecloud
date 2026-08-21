@@ -65,6 +65,10 @@ sections:
         to: smithy
       - label: Loot the hoard
         to: hoard
+      - label: Pray at the shrine
+        to: shrine
+      - label: Spring the trap
+        to: trap
   field:
     title: The field
     text: Supper time.
@@ -128,6 +132,20 @@ sections:
     title: The hoard
     text: More gold than the pouch will hold.
     effects: { gold: 100 }
+    choices:
+      - label: Back to camp
+        to: camp
+  shrine:
+    title: The shrine
+    text: A keeper presses gifts on you.
+    effects: { take: relic, gain: { meal: 2 } }
+    choices:
+      - label: Back to camp
+        to: camp
+  trap:
+    title: The trap
+    text: A snare that snaps one weapon in two.
+    effects: { drop_weapons: one }
     choices:
       - label: Back to camp
         to: camp

@@ -1719,6 +1719,8 @@ sections:
     - label: Turn to 23.
       to: '23'
     title: '137'
+    effects:
+      take: tomb guardian gems
   '138':
     text: You prepare your weapon and advance to meet the enemy. There are two Mountain
       Giaks and you must fight them one at a time.
@@ -2475,6 +2477,9 @@ sections:
     - label: Turn to 81.
       to: '81'
     title: '199'
+    effects:
+      gain:
+        meal: 1
   '200':
     text: Night is starting to close in. The shadows of the forest are growing longer
       and darker. Just as you are about to stop and rest, you see through the trees
@@ -3398,6 +3403,8 @@ sections:
     - label: Turn to 113.
       to: '113'
     title: '277'
+    effects:
+      drop_weapons: one
   '278':
     text: You quickly leave the path and gallop off along the track heading towards
       the capital. When you reach the point where the Doomwolves stopped, you can
@@ -4261,6 +4268,8 @@ sections:
     - label: Turn to 293.
       to: '293'
     title: '349'
+    effects:
+      take: crystal star pendant
   '350':
     text: |-
       You enter the Chamber of State, a magnificent hall decorated lavishly in white and gold. The King and his closest advisers are studying a large map spread upon a marble plinth in the centre of the chamber. Their faces are lined with worry and concentration. A silence fills the hall as you tell of the death of your kinsmen and of your perilous journey to the citadel. As you finish your story, the King approaches and takes your right hand in his.
@@ -4300,6 +4309,7 @@ worn:
 - map
 - helmet
 - chainmail waistcoat
+- crystal star pendant
 weapons:
   list:
   - dagger

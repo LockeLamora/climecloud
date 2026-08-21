@@ -352,7 +352,7 @@ class GamesController < ApplicationController
     held = rules['list'] & items
     return ['bare hands', rules.fetch('unarmed', -4)] if held.empty?
 
-    skilled = items.filter_map { |entry| entry[/\Aweaponskill in (.+)\z/, 1] }.first
+    skilled = skilled_in(items)
     held.include?(skilled) ? [skilled, rules.fetch('bonus', 2)] : [held.first, 0]
   end
   helper_method :armament
@@ -451,20 +451,47 @@ class GamesController < ApplicationController
   end
 
   # The satchel side of an effects hash: things taken, dropped, gained by the
-  # handful, stolen, or lost wholesale.
+  # handful, stolen, or lost wholesale — each reported, so nothing happens silently.
   def shift_kit(effects, book, items)
-    swap_kit(effects, items)
-    notices = {}
+    notices = swap_kit(effects, items)
     notices[:lost] = steal(book, items) if effects['steal']
-    items.reject! { |held| weapons_list(book).include?(held) } if effects['drop_weapons']
+    shed_weapons(book, items, effects['drop_weapons'], notices) if effects['drop_weapons']
     strip_backpack(book, items) if effects['drop_backpack']
     notices
   end
 
   def swap_kit(effects, items)
-    items << effects['take'] if effects['take'] && !items.include?(effects['take'])
+    notices = {}
+    notices[:got] = take_item(effects['take'], items)
     items.delete(effects['drop']) if effects['drop']
-    (effects['gain'] || {}).each { |name, extra| add_count(items, name, extra) }
+    gains = (effects['gain'] || {}).map { |name, extra| add_count(items, name, extra) && "#{name}+#{extra}" }
+    notices[:fx] = gains.join(',') if gains.any?
+    notices.compact
+  end
+
+  def take_item(item, items)
+    return nil if item.nil? || items.include?(item)
+
+    items << item
+    item
+  end
+
+  # All the weapons, or — for 'one' — just the plainest of them: the skilled arm is
+  # spared, as any reader given the choice would spare it.
+  def shed_weapons(book, items, rule, notices)
+    return items.reject! { |held| weapons_list(book).include?(held) } unless rule == 'one'
+
+    held = items & weapons_list(book)
+    return if held.empty?
+
+    broken = (held - [skilled_in(items)]).first || held.first
+    items.delete(broken)
+    notices[:lost] = broken
+  end
+
+  # The weapon Weaponskill was learned in, off the satchel's own entry.
+  def skilled_in(items)
+    items.filter_map { |entry| entry[/\Aweaponskill in (.+)\z/, 1] }.first
   end
 
   # A throw of the Random Number Table inside an effects hash: the bolt that may or
@@ -585,8 +612,7 @@ class GamesController < ApplicationController
     return nil unless weapons_list(book).include?(offer['item'])
     return nil if held.empty? || (held.length < 2 && !offer['swap'])
 
-    skilled = items.filter_map { |entry| entry[/\Aweaponskill in (.+)\z/, 1] }.first
-    discard = (held - [skilled]).first || held.first
+    discard = (held - [skilled_in(items)]).first || held.first
     items.delete(discard)
     discard
   end

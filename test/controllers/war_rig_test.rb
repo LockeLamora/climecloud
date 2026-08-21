@@ -228,6 +228,34 @@ class WarRigTest < ActionDispatch::IntegrationTest
     assert_not_includes held, 'club'
   end
 
+  test 'a gift and a handful of meals are both taken with their own notices' do
+    pack 'camp', items: 'club,meal:1'
+    post '/games/turn', params: { book: BOOK, from: 'camp', choice: 12 }
+
+    assert_equal 'relic', landing.last['got'], 'the gift names itself on the page'
+    assert_equal 'meal+2', landing.last['fx'], 'the meals join the ledger'
+    held = entry.split('|')[2].split(',')
+    assert_includes held, 'relic'
+    assert_includes held, 'meal:3'
+
+    get "/games/#{BOOK}/shrine", params: { got: 'relic' }
+    assert_match 'Taken: the relic.', @response.body
+  end
+
+  test 'a snare breaks one weapon and spares the skilled arm' do
+    pack 'camp', items: 'club,sabre,weaponskill in sabre'
+    post '/games/turn', params: { book: BOOK, from: 'camp', choice: 13 }
+
+    assert_equal 'club', landing.last['lost'], 'the plainest arm is the one that snaps'
+    held = entry.split('|')[2].split(',')
+    assert_includes held, 'sabre'
+    assert_not_includes held, 'club'
+
+    pack 'camp', items: 'sabre,weaponskill in sabre'
+    post '/games/turn', params: { book: BOOK, from: 'camp', choice: 13 }
+    assert_equal 'sabre', landing.last['lost'], 'the only weapon has no understudy'
+  end
+
   test 'a bundled offer hands over its companions in the same press' do
     pack 'armoury', items: 'club'
     post '/games/take', params: { book: BOOK, item: 'flint' }

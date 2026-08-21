@@ -15,6 +15,9 @@
 <% if params[:took].present? %>
 <%= glyph_text "Taken: the #{params[:took]}#{params[:gave].present? ? ", given up: the #{params[:gave]}" : ''}." %><br />
 <% end %>
+<% if params[:got].present? %>
+<%= glyph_text "Taken: the #{params[:got]}." %><br />
+<% end %>
 <% case params[:ate] %>
 <% when 'meal' %><%= glyph_text 'You eat a Meal from your pack.' %><br />
 <% when 'laumspur' %><%= glyph_text 'You eat a Meal of Laumspur.' %><br />
