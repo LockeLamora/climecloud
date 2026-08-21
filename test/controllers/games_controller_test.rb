@@ -21,6 +21,7 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     get '/games/series/lone-wolf'
     assert_match 'Book One - Flight from the Dark', @response.body
     assert_match 'Book Two - Fire on the Water', @response.body
+    assert_match 'Book Three - The Caverns of Kalte', @response.body
 
     get '/games/treasure-hunt'
     assert_response :success
