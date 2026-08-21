@@ -210,6 +210,8 @@ ru:
     article_unavailable: "Не удалось открыть эту статью, попробуйте другую"
     source_link: "Читать оригинал здесь"
     back_to_headlines: "Назад к заголовкам"
+    more_stories: "Ещё новости"
+    previous_stories: "Предыдущие новости"
     section:
       headlines: "Главное"
       world: "Мир"

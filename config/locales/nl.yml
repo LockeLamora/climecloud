@@ -210,6 +210,8 @@ nl:
     article_unavailable: "Kon dit artikel niet openen, probeer een ander"
     source_link: "Lees hier de originele bron"
     back_to_headlines: "Terug naar koppen"
+    more_stories: "Meer berichten"
+    previous_stories: "Vorige berichten"
     section:
       headlines: "Voorpagina"
       world: "Wereld"

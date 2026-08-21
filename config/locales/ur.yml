@@ -210,6 +210,8 @@ ur:
     article_unavailable: "یہ مضمون نہیں کھل سکا، کوئی اور آزمائیں"
     source_link: "اصل ماخذ یہاں پڑھیں"
     back_to_headlines: "اہم خبروں پر واپس"
+    more_stories: "مزید خبریں"
+    previous_stories: "پچھلی خبریں"
     section:
       headlines: "اہم خبریں"
       world: "دنیا"

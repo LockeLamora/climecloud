@@ -210,6 +210,8 @@ it:
     article_unavailable: "Impossibile aprire questo articolo, provane un altro"
     source_link: "Leggi qui la fonte originale"
     back_to_headlines: "Torna ai titoli"
+    more_stories: "Altre notizie"
+    previous_stories: "Notizie precedenti"
     section:
       headlines: "In primo piano"
       world: "Mondo"

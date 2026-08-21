@@ -2,12 +2,7 @@
 <div class='news_topics'>
 <%= @error ? "<span class='error'>#{@error}</span><br />".html_safe : nil %>
 <%= glyph_text @title.to_s %><br /><br />
-<%# Nine sections, nine digits, in the reader's own language, so none of them needs %>
-<%# scrolling past on a keypad. Zero stays free for the menu, as everywhere else. %>
-<% Gnews::SECTIONS.each_with_index do |section, index| %>
-<%= link_to "#{index + 1} #{t("news.section.#{section.downcase}")}",
-            news_path(section: section), accesskey: (index + 1).to_s %><br />
-<% end %>
+<%= render 'sections', keyed: true %>
 </div>
 <br />
 <div class='news_search'>
@@ -55,4 +50,21 @@
             </ul>
             <br />
     <% end %>
+<%# The feed's tail, a page at a time. No digits of their own — the sections hold all %>
+<%# nine — so these are unnumbered, like the change-postcode link on the stops page. %>
+<% pager = @search_query.present? ? ->(page) { news_search_path(search_query: @search_query, page: page) } : ->(page) { news_path(section: @section, page: page) } %>
+<% if @more %>
+<%= link_to "(#{t('news.more_stories')})", pager.call(@page + 1) %><br />
+<% end %>
+<% if @page.positive? %>
+<%= link_to "(#{t('news.previous_stories')})", pager.call(@page - 1) %><br />
+<% end %>
+</div>
+<br />
+<div class='news_topics'>
+<%# The sections again at the foot: a reader who has read a whole category down is at %>
+<%# the bottom, and reaching the next one — or the menu — should not cost a screenful %>
+<%# of scrolling back up. %>
+<%= render 'sections', keyed: false %>
+<%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>
 </div>

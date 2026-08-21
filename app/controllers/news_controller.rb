@@ -122,7 +122,15 @@ class NewsController < ApplicationController
   STORIES = 12
 
   def prepare_articles
-    @news_items = @articles.first(STORIES).filter_map do |item|
+    # A screenful of stories at a time, the feed's tail a link away rather than
+    # discarded: the whole feed on one page was ninety-seven kilobytes, which the
+    # handset gives up on. Paging costs no extra fetches — the feed is already cached
+    # for everyone for ten minutes, and each page is a different slice of it.
+    @page = [params[:page].to_i, 0].max
+    window = @articles.drop(@page * STORIES)
+    @more = window.length > STORIES
+
+    @news_items = window.first(STORIES).filter_map do |item|
       # One link per outlet: Google lists an outlet's follow-up pieces as separate entries,
       # and a multi-source story offers its links as outlet names alone, so two entries
       # from one outlet would read as the same link twice. Outlets without a name stay

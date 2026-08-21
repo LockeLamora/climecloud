@@ -210,6 +210,8 @@ tr:
     article_unavailable: "Bu makale açılamadı, başka birini deneyin"
     source_link: "Orijinal kaynağı burada okuyun"
     back_to_headlines: "Manşetlere dön"
+    more_stories: "Daha fazla haber"
+    previous_stories: "Önceki haberler"
     section:
       headlines: "Manşetler"
       world: "Dünya"

@@ -49,8 +49,48 @@ class NewsControllerTest < ActionDispatch::IntegrationTest
     assert_operator @response.body.bytesize, :<, 25_000,
                     'this is heavy enough that the handset may be told it cannot be opened'
     assert_operator @response.body.scan(/<a /).size, :<=,
-                    Gnews::SECTIONS.length + (NewsController::STORIES * NewsController::SOURCES_PER_STORY) + 4,
-                    'more links than the sections, the stories and the furniture around them'
+                    (Gnews::SECTIONS.length * 2) + (NewsController::STORIES * NewsController::SOURCES_PER_STORY) + 7,
+                    'more links than the sections twice, the stories, the pager and the furniture'
+  end
+
+  # The feed's tail is a page away rather than discarded, and paging is a different
+  # slice of the same cached feed: the second page must not cost Google a second visit.
+  test 'more stories pages through the feed without refetching it' do
+    original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    feed = stub_request(:get, /news.google.com/)
+           .to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+    first_page = @response.body
+
+    assert_match "(#{I18n.t('news.more_stories')})", first_page
+    assert_no_match(/#{Regexp.escape(I18n.t('news.previous_stories'))}/, first_page,
+                    'there is nothing before the first page')
+
+    get news_url, params: { page: 1 }, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_match "(#{I18n.t('news.previous_stories')})", @response.body
+    assert_requested feed, times: 1
+  ensure
+    Rails.cache = original_cache
+  end
+
+  # The sections again at the foot with the way back to the menu: a reader who has read
+  # a category down to the bottom should not scroll a screenful back up to leave it.
+  test 'the sections and the menu are reachable from the foot of the list' do
+    stub_request(:get, /news.google.com/).to_return(body: file_fixture('news_response.xml').read)
+
+    get news_url, headers: { 'COOKIE' => COOKIES }
+
+    assert_response :success
+    assert_equal 2, @response.body.scan(">1 #{I18n.t('news.section.headlines')}<").size,
+                 'the section digits belong at the head and the foot alike'
+    assert_match(/0 #{I18n.t('common.back_to_menu')}/, @response.body)
+    # One access key per digit, kept with the head's set: a key on two elements leaves
+    # it to the browser which one answers.
+    assert_equal 1, @response.body.scan('accesskey="1"').size
   end
 
   # The feed double-escapes its entities, so a headline arrives carrying literal "&nbsp;"

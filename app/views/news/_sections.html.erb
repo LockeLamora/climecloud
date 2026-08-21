@@ -1,0 +1,8 @@
+<%# Nine sections, nine digits, in the reader's own language, so none of them needs %>
+<%# scrolling past on a keypad. Zero stays free for the menu, as everywhere else. %>
+<%# Rendered at the head and again at the foot of the list; the access keys stay with %>
+<%# the head's set, since a key on two elements leaves it to the browser which answers. %>
+<% Gnews::SECTIONS.each_with_index do |section, index| %>
+<%= link_to "#{index + 1} #{t("news.section.#{section.downcase}")}",
+            news_path(section: section), accesskey: (keyed ? (index + 1).to_s : nil) %><br />
+<% end %>

@@ -210,6 +210,8 @@ sw:
     article_unavailable: "Haikuweza kufungua makala hii, jaribu nyingine"
     source_link: "Soma chanzo halisi hapa"
     back_to_headlines: "Rudi kwa habari kuu"
+    more_stories: "Habari zaidi"
+    previous_stories: "Habari zilizopita"
     section:
       headlines: "Habari kuu"
       world: "Dunia"

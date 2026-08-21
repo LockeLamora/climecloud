@@ -210,6 +210,8 @@ id:
     article_unavailable: "Artikel ini tidak bisa dibuka, coba yang lain"
     source_link: "Baca sumber aslinya di sini"
     back_to_headlines: "Kembali ke berita utama"
+    more_stories: "Berita lainnya"
+    previous_stories: "Berita sebelumnya"
     section:
       headlines: "Utama"
       world: "Dunia"

@@ -210,6 +210,8 @@ bn:
     article_unavailable: "এই নিবন্ধটি খোলা যায়নি, অন্যটি দেখুন"
     source_link: "মূল উৎস এখানে পড়ুন"
     back_to_headlines: "প্রধান খবরে ফিরুন"
+    more_stories: "আরও খবর"
+    previous_stories: "আগের খবর"
     section:
       headlines: "প্রধান খবর"
       world: "বিশ্ব"

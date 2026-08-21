@@ -209,6 +209,8 @@ en:
     article_unavailable: "Could not open this article, please try another"
     source_link: "Read the original source here"
     back_to_headlines: "Back to headlines"
+    more_stories: "More stories"
+    previous_stories: "Previous stories"
     section:
       headlines: "Headlines"
       world: "World"

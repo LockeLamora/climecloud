@@ -29,7 +29,9 @@ class NewsTest < ApplicationSystemTestCase
     stub_request(:get, /news.google.com/).to_return(body: file_fixture('science-news.xml').read)
     # Scoped to the topic list: the headlines below it are published by Science@NASA and
     # Science News Magazine, so an unscoped link name matches three things.
-    within('.news_topics') { click_link('Science') }
+    # The section digits appear at the head and the foot alike, so the head's set is
+    # named explicitly.
+    within(first('.news_topics')) { click_link('Science') }
     assert_text "'Nightmarish' sea lizard that roamed the seas 66"
   end
 

@@ -210,6 +210,8 @@ hi:
     article_unavailable: "यह लेख नहीं खुला, दूसरा आज़माएँ"
     source_link: "मूल स्रोत यहाँ पढ़ें"
     back_to_headlines: "मुख्य समाचार पर लौटें"
+    more_stories: "और समाचार"
+    previous_stories: "पिछले समाचार"
     section:
       headlines: "मुख्य समाचार"
       world: "विश्व"
