@@ -204,7 +204,7 @@ class LoneWolfThreeTest < ActionDispatch::IntegrationTest
     assert_operator landing.last['rolled'].to_i, :<=, 7, 'weakness costs two from the throw'
   end
 
-  test 'the sledge stores are taken as one press each, food by the handful' do
+  test 'the sledge stores are taken as one press each, food up to a full load' do
     pack '119', items: 'sword'
     get "/games/#{BOOK}/119"
     assert_match 'Pack food for five Meals', @response.body
@@ -214,6 +214,21 @@ class LoneWolfThreeTest < ActionDispatch::IntegrationTest
     held = entry.split('|')[2].split(',')
     assert_includes held, 'meal:5'
     assert_includes held, 'rope'
+
+    # A second press cannot conjure a second load, and the offer withdraws.
+    post '/games/take', params: { book: BOOK, item: 'meal' }
+    assert_includes entry.split('|')[2].split(','), 'meal:5'
+    get "/games/#{BOOK}/119"
+    assert_no_match(/Pack food for five Meals/, @response.body)
+  end
+
+  test 'a sledge shows its food to a reader already carrying some' do
+    pack '119', items: 'sword,meal:2'
+    get "/games/#{BOOK}/119"
+    assert_match 'Pack food for five Meals', @response.body, 'two meals is not a full load'
+
+    post '/games/take', params: { book: BOOK, item: 'meal' }
+    assert_includes entry.split('|')[2].split(','), 'meal:5', 'topped up to five, not seven'
   end
 
   test 'every route in the third book leads somewhere real' do

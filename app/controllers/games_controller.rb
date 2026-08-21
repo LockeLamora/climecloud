@@ -177,8 +177,11 @@ class GamesController < ApplicationController
   helper_method :offer_open?
 
   # A counted offer that spends a chit — the armoury's pick-any-two — never reads as
-  # already held: the chits are what limits it.
+  # already held: the chits are what limits it. An 'up_to' offer stands until the
+  # pile reaches its number, so a sledge's stores show even to a reader already
+  # carrying food, and pressing it twice cannot conjure a second load.
   def offer_held?(offer, items)
+    return count_of(items, offer['item']) >= offer['up_to'] if offer['up_to']
     return false if offer['count'] && offer['spends']
 
     offer['count'] ? count_of(items, offer['item']).positive? : items.include?(offer['item'])
@@ -887,6 +890,10 @@ class GamesController < ApplicationController
   # one go.
   def claim(book, offer, stats, items)
     levy(book, offer, stats, items)
+    if offer['up_to']
+      add_count(items, offer['item'], offer['up_to'] - count_of(items, offer['item']))
+      return nil
+    end
     return add_count(items, offer['item'], offer['count']) && nil if offer['count']
 
     gave = make_room(book, offer, items)

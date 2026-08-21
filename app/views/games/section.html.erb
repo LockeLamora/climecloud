@@ -5,7 +5,9 @@
 <%# The rolled maximums are bookkeeping, not news, and stay off the line. %>
 <% if @stats.present? %>
 <%= glyph_text @stats.reject { |name, _| name.end_with?('_max') }.map { |name, value| "#{name.capitalize} #{value}" }.join(' - ') %><br />
-<%= glyph_text "Carrying: #{@items.presence&.map { |held| held.tr(':', ' x') }&.join(', ') || 'nothing'}" %><br />
+<%# sub, not tr: tr would truncate the replacement to a space and leave "meal 3", %>
+<%# which reads like a section number rather than a count. %>
+<%= glyph_text "Carrying: #{@items.presence&.map { |held| held.sub(':', ' x') }&.join(', ') || 'nothing'}" %><br />
 <% if params[:rolled].present? %>
 <%= glyph_text "The Random Number Table gives #{params[:rolled].to_i}." %><br />
 <% end %>

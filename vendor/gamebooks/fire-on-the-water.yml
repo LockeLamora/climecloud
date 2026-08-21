@@ -19,6 +19,11 @@ stats:
     start: 1d10+9
     cap: 50
 consumables:
+  meal:
+    start: 0
+    label: Eat a Meal (endurance +3)
+    effects:
+      endurance: 3
   potion:
     start: 0
     label: Drink the Healing Potion (endurance +4)

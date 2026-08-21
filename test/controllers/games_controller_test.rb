@@ -180,6 +180,45 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  # A Meal is worth three points either way it is spent: it staves off the three that
+  # hunger takes, or mends three when eaten by choice. Every book offers it.
+  test 'a meal can be eaten wherever the reader stands' do
+    cookies['CYOA'] = { 'flight-from-the-dark' =>
+      '1|skill:15,endurance:20,endurance_max:25,gold:5,gold_max:50|axe,meal:2|' }.to_json
+
+    get '/games/flight-from-the-dark/1'
+    assert_match(/Eat a Meal \(endurance \+3\) \(2 left\)/, @response.body)
+    assert_match 'Carrying: axe, meal x2', @response.body, 'a count reads as a count'
+
+    post '/games/use', params: { book: 'flight-from-the-dark', item: 'meal' }
+    assert_redirected_to '/games/flight-from-the-dark/1?used=meal'
+    assert_match(/endurance:23/, JSON.parse(cookies['CYOA'])['flight-from-the-dark'])
+    assert_match(/meal:1/, JSON.parse(cookies['CYOA'])['flight-from-the-dark'])
+  end
+
+  # Every penalty the text lays on a fight is per-fight: only the two the books call
+  # permanent ever touch the character sheet.
+  test 'combat penalties are spent on the fight, not on the character' do
+    before = 'start|skill:15,endurance:25,endurance_max:25,gold:5,gold_max:50|axe|'
+    cookies['CYOA'] = { 'flight-from-the-dark' => before.sub('start', '229') }.to_json
+
+    get '/games/flight-from-the-dark/229'
+    assert_match 'Attack ratio -2.', @response.body, 'skill 15, Kraan 16, and a point of dust'
+
+    post '/games/turn', params: { book: 'flight-from-the-dark', from: '229', choice: 'fight' }
+    assert_match(/skill:15/, JSON.parse(cookies['CYOA'])['flight-from-the-dark'],
+                 'the dust never reaches the character sheet')
+  end
+
+  test 'a fight the book says is bare-handed is fought bare-handed, armed or not' do
+    cookies['CYOA'] = { 'flight-from-the-dark' =>
+      '260|skill:15,endurance:25,endurance_max:25,gold:5,gold_max:50|axe,weaponskill in axe|' }.to_json
+
+    get '/games/flight-from-the-dark/260'
+    assert_match 'Fighting bare-handed (skill -4).', @response.body
+    assert_match 'Attack ratio +0.', @response.body, 'skill 15, Giak 11, less the four'
+  end
+
   # The stats layer, exercised on the fixture rig the test environment adds to the
   # shelf: rolled characters, kit, tolls, dice tests and effects. See engine-trial.yml.
   test 'a first turn out of a stat book rolls the character by its own dice' do

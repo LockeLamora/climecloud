@@ -2839,6 +2839,7 @@ sections:
       - name: Kraan
         skill: 16
         endurance: 25
+      modifier: -1
     title: '229'
   '230':
     text: |-
@@ -3215,6 +3216,7 @@ sections:
       - name: Giak 2
         skill: 12
         endurance: 17
+      arms: bare hands
     title: '260'
   '261':
     text: Sweating, and out of breath, you part the dense undergrowth to see a Kraan
@@ -4286,6 +4288,11 @@ sections:
     choices: []
     title: '350'
 consumables:
+  meal:
+    start: 0
+    label: Eat a Meal (endurance +3)
+    effects:
+      endurance: 3
   potion:
     start: 0
     label: Drink the Healing Potion (endurance +4)
