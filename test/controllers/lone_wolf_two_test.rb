@@ -39,8 +39,10 @@ class LoneWolfTwoTest < ActionDispatch::IntegrationTest
     assert_redirected_to "/games/#{BOOK}/armoury"
     _section, stats, items = entry.split('|')
     rolled = stats_of(stats)
-    assert_equal [17, 24, 26], [rolled['skill'], rolled['endurance'], rolled['endurance_max']],
+    assert_equal [17, 26], [rolled['skill'], rolled['endurance_max']],
                  'the scores carry as they stood'
+    assert_includes 24..25, rolled['endurance'],
+                    'as carried - or one better, if the new discipline drawn is Healing'
     assert_includes 40..50, rolled['gold'], 'thirty carried plus a fresh pouch, pouch-capped'
 
     held = items.split(',')

@@ -65,6 +65,7 @@ class GamesController < ApplicationController
     return unless @section['combat']
 
     @combat = standing(@section, fight)
+    @fight = fight
     _, _, @round, = fight_parts(fight)
   end
 
@@ -227,7 +228,7 @@ class GamesController < ApplicationController
 
     (choice['cost'] || {}).each { |stat, price| stats[stat] -= price }
     notices = choice['effects'] ? apply_effect_hash(choice['effects'], book, stats, items) : {}
-    rolled, destination, luck = route_of(choice, stats, items)
+    rolled, destination, luck = route_of(book, choice, stats, items)
     if destination == :death
       perish(book, stats, items)
       return
@@ -240,8 +241,8 @@ class GamesController < ApplicationController
   # Where the choice leads: straight on, through a stat test, or through the Random
   # Number Table. Returns the number shown to the reader, the destination, and any
   # effects the picked route carries with it.
-  def route_of(choice, stats, items)
-    return run_pick(choice['pick'], items) if choice['pick']
+  def route_of(book, choice, stats, items)
+    return run_pick(book, choice['pick'], stats, items) if choice['pick']
 
     test = choice['test']
     return [nil, choice['to'], []] if test.nil?
@@ -251,23 +252,37 @@ class GamesController < ApplicationController
   end
 
   # The Random Number Table, picked by the server so a reload cannot repick it: the
-  # roll finds its route by range — a discipline may sweeten it ('plus') — a route may
-  # carry effects, chain into another pick (the bog that takes three throws to
-  # escape), or simply be the end.
-  def run_pick(pick, items, luck = [])
-    rolled = pick_number(pick, items)
+  # roll finds its route by range — a discipline or the state of the reader may sway
+  # it ('plus', 'sway') — a route may carry effects, chain into another pick (the bog
+  # that takes three throws to escape), or simply be the end.
+  def run_pick(book, pick, stats, items, luck = [])
+    rolled = pick_number(book, pick, stats, items)
     route = pick['routes'].find { |r| rolled >= r.fetch('min', rolled) && rolled <= r.fetch('max', rolled) }
     luck << route['effects'] if route['effects']
     return [rolled, :death, luck] if route['die']
-    return run_pick(route['pick'], items, luck) if route['pick']
+    return run_pick(book, route['pick'], stats, items, luck) if route['pick']
 
     [rolled, route['to'], luck]
   end
 
-  def pick_number(pick, items)
+  def pick_number(book, pick, stats, items)
     rolled = Dice.roll(pick['roll'] || '1d10-1')
-    rolled += pick.dig('plus', 'add').to_i if pick['plus'] && items.include?(pick.dig('plus', 'item'))
+    rolled += pick_bonus(book, pick['plus'], items)
+    Array(pick['sway']).each { |rule| rolled += rule['add'] if within?(rule, stats) }
     rolled
+  end
+
+  # What sweetens a throw: a named discipline or item held ('item'/'any'), or —
+  # 'skilled' — fighting form, when the weapon in hand earns its Weaponskill bonus.
+  def pick_bonus(book, plus, items)
+    return 0 if plus.nil?
+    return skilled_pick(book, plus, items) if plus['skilled']
+
+    Array(plus['any'] || plus['item']).any? { |name| holds?(items, name) } ? plus['add'] : 0
+  end
+
+  def skilled_pick(book, plus, items)
+    (armament(book, items) || [nil, 0]).last.positive? ? plus['add'] : 0
   end
 
   # A death written by the book rather than by wounds: the stat that measures life is
@@ -319,12 +334,41 @@ class GamesController < ApplicationController
             else
               "#{index + 1}:next:#{round + 1}:#{buff}:#{mark}"
             end
-    return if contest_settled?(book, from, stats, items, fight)
-    return if dragged_off?(book, from, stats, items, fight)
+    return if aftermath?(book, from, stats, items, fight, hurt: hurt)
 
     remember(book, params[:from], stats, items, fight)
     redirect_to games_section_path(book: book['id'], section: params[:from],
                                    rn: number, foe: foe_loss, you: hurt)
+  end
+
+  # Everything a round can end besides the enemy: a contest settled, a wound the book
+  # acts on, a victory judged by its speed, a fight the book cuts short.
+  def aftermath?(book, from, stats, items, fight, hurt:)
+    contest_settled?(book, from, stats, items, fight) ||
+      on_wound?(book, from, stats, items, hurt) ||
+      win_routed?(book, from, stats, items, fight) ||
+      dragged_off?(book, from, stats, items, fight)
+  end
+
+  # The wound that ends the fight by itself — a Kalkoth's paralysing sting: any
+  # endurance lost drags the living reader straight to the section the book names.
+  def on_wound?(book, from, stats, items, hurt)
+    to = from['combat']['on_wound']
+    return false unless to && hurt.positive? && stats.fetch(loss_stat(book), 0).positive?
+
+    travel(book, to, stats, items)
+    true
+  end
+
+  # A victory the book judges by its speed: won inside the stated rounds it goes one
+  # way, slower it goes the other.
+  def win_routed?(book, from, stats, items, fight)
+    rule = from['combat']['win_within']
+    return false unless rule && standing(from, fight).nil? && stats.fetch(loss_stat(book), 0).positive?
+
+    _, _, round, = fight_parts(fight)
+    travel(book, round <= rule['rounds'] ? rule['to'] : rule['else'], stats, items)
+    true
   end
 
   # One throw of the table, with everything the book lays on the wounds: the bane of
@@ -338,7 +382,18 @@ class GamesController < ApplicationController
     foe_loss *= 2 if combat['undead'] && foe_loss < LoneWolf::KILLED &&
                      battle_arms(book, combat, items).first == book['undead_bane']
     hurt = wolf_loss == LoneWolf::KILLED ? stats.fetch(loss_stat(book), 0) : wolf_loss
+    hurt = temper(book, combat, stats, fight, hurt)
     [number, foe_loss, hurt + mindforce_toll(combat, items), foe_loss >= remaining ? 0 : remaining - foe_loss]
+  end
+
+  # What softens or sharpens a wound: the surprise that spares the first rounds
+  # entirely, or fangs whose merest scratch is a throw between nothing and death.
+  def temper(book, combat, stats, fight, hurt)
+    _, _, round, = fight_parts(fight)
+    return 0 if combat['shielded_rounds'] && round < combat['shielded_rounds']
+    return hurt unless (fangs = combat['fangs']) && hurt.positive?
+
+    rand(0..9) == fangs['die_on'] ? stats.fetch(loss_stat(book), 0) + hurt : 0
   end
 
   def mindforce_toll(combat, items)
@@ -390,6 +445,7 @@ class GamesController < ApplicationController
 
   # The attack ratio, with everything the book lays on it: the flat modifier, the
   # surprise that lasts one round, a battle draught's virtue, and the satchel's part.
+  # A helper too: the combat panel prints it, so every modifier is visibly applied.
   def combat_ratio(book, from, stats, items, fight)
     combat = from['combat']
     foe, = standing(from, fight)
@@ -399,6 +455,7 @@ class GamesController < ApplicationController
     ratio += combat['surprise'].to_i if round.zero?
     ratio + kit_ratio(book, combat, items)
   end
+  helper_method :combat_ratio
 
   # What the satchel adds: the weapon in hand, Mindblast unless this enemy shrugs it,
   # penalties without a named item (a torch in the dark, Mindshield against a
@@ -406,7 +463,10 @@ class GamesController < ApplicationController
   def kit_ratio(book, combat, items)
     # Books without a weapons table — the trial rigs — fight unarmed and unpenalised.
     bonus = (battle_arms(book, combat, items) || [nil, 0]).last
-    bonus += 2 if items.include?('mindblast') && !Array(combat['immune']).include?('mindblast')
+    if items.include?('mindblast') && !Array(combat['immune']).include?('mindblast')
+      # A partially immune enemy states what the mind is worth against it.
+      bonus += combat.fetch('mindblast', 2)
+    end
     bonus + hindrances(combat, items) + trinkets(book, items)
   end
 
@@ -522,24 +582,53 @@ class GamesController < ApplicationController
   end
 
   # needs bars a choice without the named item; without bars it while the item is
-  # held (the "if you do not possess" branch of a paper fork); when bars it by stat.
+  # held (the "if you do not possess" branch of a paper fork); when bars it by stat;
+  # rank bars it below a count of disciplines (the Kai ranks are nothing more).
   def satisfied?(choice, stats, items)
     kit_allows?(choice, items) && within?(choice['when'], stats) &&
       (choice['cost'] || {}).all? { |stat, price| stats.fetch(stat, 0) >= price }
   end
 
   def kit_allows?(choice, items)
-    return false if choice['needs'] && !items.include?(choice['needs'])
-    return false if choice['needs_any'] && (choice['needs_any'] & items).empty?
+    return false if choice['needs'] && !holds?(items, choice['needs'])
+    return false if choice['needs_any']&.none? { |name| holds?(items, name) }
 
-    unhindered?(choice, items)
+    ranked?(choice, items) && unhindered?(choice, items)
+  end
+
+  def ranked?(choice, items)
+    return false if choice['rank'] && rank_of(items) < choice['rank']
+
+    choice['rank_below'].nil? || rank_of(items) < choice['rank_below']
   end
 
   def unhindered?(choice, items)
-    return false if choice['without_any'] && (choice['without_any'] & items).any?
+    return false if choice['without_any']&.any? { |name| holds?(items, name) }
 
-    choice['without'].nil? || !items.include?(choice['without'])
+    choice['without'].nil? || !holds?(items, choice['without'])
   end
+
+  # Whether the satchel holds a thing, by any of the ways it can: as itself, as a
+  # counted pile ("meal:3"), or — for Weaponskill — as the typed entry it rides as.
+  def holds?(items, name)
+    return items.any? { |held| held.start_with?('weaponskill in ') } if name == 'weaponskill'
+
+    items.include?(name) || count_of(items, name).positive?
+  end
+  helper_method :holds?
+
+  # The Kai rank, which is only the count of disciplines mastered: five to set out,
+  # one more for each book survived.
+  def rank_of(items)
+    items.count do |held|
+      DISCIPLINE_NAMES.include?(held) || held.start_with?('weaponskill in ')
+    end
+  end
+  helper_method :rank_of
+
+  DISCIPLINE_NAMES = ['camouflage', 'hunting', 'sixth sense', 'tracking', 'healing',
+                      'weaponskill', 'mindshield', 'mindblast', 'animal kinship',
+                      'mind over matter'].freeze
 
   def apply_effects(book, section, stats, items)
     effects = section && section['effects']
@@ -552,7 +641,7 @@ class GamesController < ApplicationController
   # is a stat and its delta — a plain number, or a dice string ('3d10', '-1d10') the
   # server throws on arrival.
   KIT_EFFECTS = %w[take drop gain steal drop_weapons drop_backpack drop_specials
-                   must_eat risk unless recover].freeze
+                   must_eat risk unless boon recover].freeze
 
   def apply_effect_hash(effects, book, stats, items)
     notices = shift_kit(effects, book, items)
@@ -574,6 +663,7 @@ class GamesController < ApplicationController
     notices[:ate] = eat(book, stats, items, effects['must_eat']) if effects['must_eat']
     risk(effects['risk'], book, stats, items, notices) if effects['risk']
     spare(effects['unless'], book, stats, items, notices) if effects['unless']
+    boon(effects['boon'], book, stats, items, notices) if effects['boon']
     recover(book, stats, items, effects['recover']) if effects['recover']
   end
 
@@ -585,10 +675,17 @@ class GamesController < ApplicationController
     delta.start_with?('-') ? -Dice.roll(delta[1..]) : Dice.roll(delta)
   end
 
-  # An effect the named item wards off entirely — Mindshield against a one-off
-  # Mindforce blast.
+  # An effect the named things ward off entirely — Mindshield against a one-off
+  # Mindforce blast, Baknar oil against the cold — and its mirror: a boon that lands
+  # only while one of them is held.
   def spare(rule, book, stats, items, notices)
-    return if items.include?(rule['item'])
+    return if Array(rule['any'] || rule['item']).any? { |name| holds?(items, name) }
+
+    merge_notices(notices, apply_effect_hash(rule['then'], book, stats, items))
+  end
+
+  def boon(rule, book, stats, items, notices)
+    return unless Array(rule['any'] || rule['item']).any? { |name| holds?(items, name) }
 
     merge_notices(notices, apply_effect_hash(rule['then'], book, stats, items))
   end
@@ -624,7 +721,8 @@ class GamesController < ApplicationController
 
   def swap_kit(effects, items)
     notices = {}
-    notices[:got] = take_item(effects['take'], items)
+    got = Array(effects['take']).filter_map { |item| take_item(item, items) }
+    notices[:got] = got.join(' and the ') if got.any?
     Array(effects['drop']).each { |gone| items.delete(gone) }
     gains = (effects['gain'] || {}).map do |name, extra|
       add_count(items, name, extra)
@@ -641,17 +739,26 @@ class GamesController < ApplicationController
     item
   end
 
-  # All the weapons, or — for 'one' — just the plainest of them: the skilled arm is
-  # spared, as any reader given the choice would spare it.
+  # All the weapons; 'one' breaks the plainest of them — the skilled arm is spared,
+  # as any reader given the choice would spare it; 'wielded' takes the one in hand.
   def shed_weapons(book, items, rule, notices)
-    return items.reject! { |held| weapons_list(book).include?(held) } unless rule == 'one'
+    return items.reject! { |held| weapons_list(book).include?(held) } if rule == true
 
     held = items & weapons_list(book)
     return if held.empty?
 
-    broken = (held - [skilled_in(items)]).first || held.first
+    broken = breakable(book, items, held, rule)
     items.delete(broken)
     notices[:lost] = broken
+  end
+
+  def breakable(book, items, held, rule)
+    if rule == 'wielded'
+      arm = (armament(book, items) || []).first
+      held.include?(arm) ? arm : held.first
+    else
+      (held - [skilled_in(items)]).first || held.first
+    end
   end
 
   # The weapon Weaponskill was learned in, off the satchel's own entry.
@@ -674,12 +781,23 @@ class GamesController < ApplicationController
   # satchel costs the hungry what the rules say — three points, or the rule's own.
   def eat(book, stats, items, rule)
     rule = {} unless rule.is_a?(Hash)
+    return sit_down_meal(book, stats, items, rule) if rule['meals']
     return 'hunting' if items.include?('hunting') && rule['hunting'] != false
     return 'meal' if spend(items, 'meal')
+
+    eat_laumspur(book, stats, items, rule)
+  end
+
+  def eat_laumspur(book, stats, items, rule)
     return famine(book, stats, rule) unless spend(items, 'laumspur')
 
     laumspur_virtue(book).each { |stat, delta| credit(stats, stat, delta) }
     'laumspur'
+  end
+
+  # The page that demands more than one meal at a sitting.
+  def sit_down_meal(book, stats, items, rule)
+    Array.new(rule['meals']) { eat(book, stats, items, rule.except('meals')) }.last
   end
 
   def laumspur_virtue(book)
@@ -828,15 +946,16 @@ class GamesController < ApplicationController
   # one further discipline learned on the road, and a fresh purse thrown and added.
   # Only a bookmark standing on the named final page counts as finished.
   def inherit(book)
-    legacy = book['sequel_of']
-    return nil if legacy.nil?
+    legacies = book['sequel_of'].is_a?(Hash) ? [book['sequel_of']] : Array(book['sequel_of'])
+    legacies.each do |legacy|
+      stats, items = finished_legacy(book, legacy)
+      next if stats.nil?
 
-    stats, items = finished_legacy(book, legacy)
-    return nil if stats.nil?
-
-    stats['gold_max'] = book.dig('stats', 'gold', 'cap') if book.dig('stats', 'gold', 'cap')
-    credit(stats, 'gold', Dice.roll(legacy['purse'] || '1d10+9')) if legacy['purse']
-    [stats, items + [new_discipline(book, items)].compact + Array(book['items'])]
+      stats['gold_max'] = book.dig('stats', 'gold', 'cap') if book.dig('stats', 'gold', 'cap')
+      credit(stats, 'gold', Dice.roll(legacy['purse'] || '1d10+9')) if legacy['purse']
+      return [stats, items + [new_discipline(book, items)].compact + Array(book['items'])]
+    end
+    nil
   end
 
   # The previous book's character, if its bookmark stands on the named final page

@@ -83,6 +83,8 @@
 <% weapon, worth = arm %>
 <%= glyph_text "Fighting #{weapon == 'bare hands' ? 'bare-handed' : "with the #{weapon}"}#{worth.zero? ? '' : " (skill #{format('%+d', worth)})"}." %><br />
 <% end %>
+<%# The worked-out ratio, so every bonus and penalty the book lays on is visible. %>
+<%= glyph_text "Attack ratio #{format('%+d', combat_ratio(@book, @section, @stats || {}, Array(@items), @fight))}." %><br />
 <br />
 <%= choice_button 'Fight a round of combat', games_turn_path,
                   { book: @book['id'], from: params[:section], choice: 'fight' } %><br />
@@ -127,11 +129,13 @@
 <% if choice['to'].nil? && choice['test'].nil? && choice['pick'].nil? %>
 <%= choice['label'] %><br /><br />
 <% elsif !within?(choice['when'], @stats) %>
-<% elsif choice['without'] && Array(@items).include?(choice['without']) %>
-<% elsif choice['without_any'] && (choice['without_any'] & Array(@items)).any? %>
-<% elsif choice['needs'] && !Array(@items).include?(choice['needs']) %>
+<% elsif choice['without'] && holds?(Array(@items), choice['without']) %>
+<% elsif choice['without_any'] && choice['without_any'].any? { |name| holds?(Array(@items), name) } %>
+<% elsif choice['rank'] && rank_of(Array(@items)) < choice['rank'] %>
+<% elsif choice['rank_below'] && rank_of(Array(@items)) >= choice['rank_below'] %>
+<% elsif choice['needs'] && !holds?(Array(@items), choice['needs']) %>
 <span class='error'><%= glyph_text "#{choice['label']} (needs the #{choice['needs']})", error: true %></span><br /><br />
-<% elsif choice['needs_any'] && (choice['needs_any'] & Array(@items)).empty? %>
+<% elsif choice['needs_any'] && choice['needs_any'].none? { |name| holds?(Array(@items), name) } %>
 <span class='error'><%= glyph_text "#{choice['label']} (needs the #{choice['needs_any'].join(' or ')})", error: true %></span><br /><br />
 <% elsif (choice['cost'] || {}).any? { |stat, price| (@stats || {}).fetch(stat, 0) < price } %>
 <span class='error'><%= glyph_text "#{choice['label']} (#{choice['cost'].map { |stat, price| "#{stat} #{price}" }.join(', ')} - not enough)", error: true %></span><br /><br />
