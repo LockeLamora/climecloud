@@ -254,6 +254,7 @@ tr:
       secret: "Bu bir anahtara benzemiyor: A-Z harfleri ve 2-7 rakamları, en az 16."
       full: "En fazla %{count} hesap. Önce birini unutun."
   games:
+    veteran_waiting: "%{book} kitabından Kai Lordunuz bekliyor. Bu karakter yeniden yaratıldı, oradan hiçbir şey getirmiyor. Veteranı getirmek için yeniden başlayın."
     title: "Oyunlar"
     begin: "Başla"
     restart: "Baştan başla"

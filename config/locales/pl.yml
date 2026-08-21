@@ -254,6 +254,7 @@ pl:
       secret: "To nie wygląda na klucz: litery A-Z i cyfry 2-7, co najmniej 16."
       full: "Maksymalnie %{count} kont. Najpierw jedno zapomnij."
   games:
+    veteran_waiting: "Twój Władca Kai z %{book} czeka. Ta postać została stworzona od nowa i nic stamtąd nie przynosi. Zacznij od nowa, aby przenieść weterana."
     title: "Gry"
     begin: "Rozpocznij"
     restart: "Zacznij od nowa"

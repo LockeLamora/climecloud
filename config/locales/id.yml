@@ -254,6 +254,7 @@ id:
       secret: "Ini tidak tampak seperti kunci: huruf A-Z dan angka 2-7, minimal 16."
       full: "Maksimal %{count} akun. Lupakan satu dulu."
   games:
+    veteran_waiting: "Kai Lord Anda dari %{book} sedang menunggu. Karakter ini dibuat baru, jadi tidak membawa apa pun dari sana. Mulai lagi untuk membawa sang veteran."
     title: "Permainan"
     begin: "Mulai"
     restart: "Mulai ulang"

@@ -52,6 +52,24 @@ class GamesController < ApplicationController
 
     saved = bookmarks[@book['id']].to_s.split('|').first
     @bookmark = saved if saved != @book['start'] && @book['sections'].key?(saved)
+    @waiting = veteran_waiting(@book)
+  end
+
+  # A Kai Lord standing in an earlier book's last page who is not the one being played
+  # here. It happens to a reader who took a turn in this book before finishing the one
+  # before it: the character was rolled fresh, and no later finish can reach back into
+  # a game already begun. So the title page says so, and offers the crossing.
+  def veteran_waiting(book)
+    return nil if book['sequel_of'].nil?
+
+    _, items = unpack(bookmarks[book['id']])
+    return nil if items.blank?
+
+    legacies = book['sequel_of'].is_a?(Hash) ? [book['sequel_of']] : Array(book['sequel_of'])
+    ready = legacies.find { |legacy| finished_legacy(book, legacy) }
+    return nil if ready.nil? || items.include?("carried from #{ready['book']}")
+
+    Gamebooks.find(ready['book'])
   end
 
   # The character sheet built a step at a time. The book rolls for the scores, the
@@ -1316,7 +1334,8 @@ class GamesController < ApplicationController
 
   # An entry that records something rather than carrying it.
   def tally?(held)
-    held.start_with?('been to ', 'circle:') || held.split(':').first.end_with?(' choice')
+    held.start_with?('been to ', 'circle:', 'carried from ') ||
+      held.split(':').first.end_with?(' choice')
   end
 
   # The whole pack, or — given a number — that many things crushed out of it.
@@ -1489,7 +1508,11 @@ class GamesController < ApplicationController
       # "You may choose one extra Kai Discipline" — a choice, so it is offered as one
       # (see the book's own newskill section), not rolled behind the reader's back.
       chits = "#{book['learns'] || 'discipline'} choice:#{legacy['learns'] || 1}"
-      return [rested(book, stats, legacy), carried + [chits] + Array(book['items'])]
+      # Which adventure this Kai Lord walked out of, so the title page can tell a
+      # veteran from a fresh roll and offer the crossing to a reader who has since
+      # finished the earlier book.
+      return [rested(book, stats, legacy),
+              carried + ["carried from #{legacy['book']}", chits] + Array(book['items'])]
     end
     nil
   end

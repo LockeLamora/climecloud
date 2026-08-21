@@ -254,6 +254,7 @@ pt:
       secret: "Isto não parece uma chave: letras A-Z e algarismos 2-7, pelo menos 16."
       full: "%{count} contas é o máximo. Esqueça uma primeiro."
   games:
+    veteran_waiting: "O teu Senhor Kai de %{book} espera. Esta personagem foi criada de novo, por isso não traz nada de lá. Recomeça para trazer o veterano."
     title: "Jogos"
     begin: "Começar"
     restart: "Começar de novo"

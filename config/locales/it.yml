@@ -254,6 +254,7 @@ it:
       secret: "Non sembra una chiave: lettere A-Z e cifre 2-7, almeno 16."
       full: "%{count} account al massimo. Prima dimenticane uno."
   games:
+    veteran_waiting: "Il tuo Signore Kai di %{book} attende. Questo personaggio è stato tirato a nuovo e non porta nulla da lì. Ricomincia per far passare il veterano."
     title: "Giochi"
     begin: "Inizia"
     restart: "Ricomincia"

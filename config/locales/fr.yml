@@ -254,6 +254,7 @@ fr:
       secret: "Ceci ne ressemble pas à une clé : lettres A-Z et chiffres 2-7, au moins 16."
       full: "%{count} comptes au maximum. Oubliez-en un d'abord."
   games:
+    veteran_waiting: "Votre Seigneur Kai de %{book} attend. Ce personnage a été tiré au sort et ne rapporte rien de ce livre. Recommencez pour faire venir le vétéran."
     title: "Jeux"
     begin: "Commencer"
     restart: "Recommencer"

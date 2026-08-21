@@ -254,6 +254,7 @@ es:
       secret: "Eso no parece una clave: letras A-Z y cifras 2-7, al menos 16."
       full: "%{count} cuentas es el máximo. Olvida una primero."
   games:
+    veteran_waiting: "Tu Señor Kai de %{book} espera. Este personaje se creó de nuevo, así que no trae nada de allí. Empieza de nuevo para traer al veterano."
     title: "Juegos"
     begin: "Empezar"
     restart: "Empezar de nuevo"

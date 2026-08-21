@@ -254,6 +254,7 @@ nl:
       secret: "Dit lijkt geen sleutel: letters A-Z en cijfers 2-7, minstens 16."
       full: "%{count} accounts is het maximum. Vergeet er eerst een."
   games:
+    veteran_waiting: "Je Kai-heer uit %{book} wacht. Dit personage is nieuw gegooid en neemt daar niets van mee. Begin opnieuw om de veteraan mee te nemen."
     title: "Spellen"
     begin: "Beginnen"
     restart: "Opnieuw beginnen"
