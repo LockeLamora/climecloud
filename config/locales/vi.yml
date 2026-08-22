@@ -254,6 +254,8 @@ vi:
       secret: "Đây không giống một khóa: chữ A-Z và số 2-7, ít nhất 16 ký tự."
       full: "Tối đa %{count} tài khoản. Hãy quên một cái trước."
   games:
+    reading_now: "đang đọc"
+    finished: "đã xong"
     veteran_waiting: "Kai Lord của bạn từ %{book} đang chờ. Nhân vật này được tạo mới nên không mang theo gì từ đó. Bắt đầu lại để đưa cựu binh sang."
     title: "Trò chơi"
     begin: "Bắt đầu"

@@ -34,10 +34,36 @@ class GamesController < ApplicationController
   end
 
   # A series' own page: its volumes in order, each led by its number in the series.
+  # A shelf of six books asks the reader to remember which one they are in the middle
+  # of, so the page says it instead.
   def series
     books = Gamebooks.all.reject { |book| book['hidden'] }
     @books = books.select { |book| book['series'].to_s.parameterize == params[:name] }
     redirect_to games_path if @books.empty?
+
+    @reading, @finished = shelf_state(@books)
+  end
+
+  # Which volume is being read, and which are done with. The cookie keeps its books in
+  # the order they were last written, so the last one still mid-story is the current
+  # one; a book whose bookmark stands on a page with nowhere left to go is finished.
+  def shelf_state(books)
+    # Walked in cookie order, not shelf order: the order is the whole point.
+    shelf = books.index_by { |book| book['id'] }
+    open_at = bookmarks.filter_map do |id, entry|
+      book = shelf[id]
+      section, = entry.to_s.split('|')
+      next if book.nil? || section.blank? || section == book['start'] ||
+              book['sections'][section].nil?
+
+      [id, book['sections'][section]]
+    end.to_h
+    done = open_at.select { |_, section| ending?(section) }.keys
+    [(open_at.keys - done).last, done]
+  end
+
+  def ending?(section)
+    Array(section['choices']).empty? && section['combat'].nil?
   end
 
   # The book's own title page: begin a first read, or continue/restart one already
@@ -1611,7 +1637,9 @@ class GamesController < ApplicationController
             else
               destination
             end
-    cookies.permanent['CYOA'] = bookmarks.merge(book['id'] => entry).to_json
+    # The book just read moves to the end of the cookie, so the entries stand in the
+    # order they were last opened and the series page can say which one is current.
+    cookies.permanent['CYOA'] = bookmarks.except(book['id']).merge(book['id'] => entry).to_json
   end
 
   # Reading progress lives in the CYOA cookie, one entry per book, client side like

@@ -254,6 +254,8 @@ de:
       secret: "Das sieht nicht wie ein Schlüssel aus: Buchstaben A-Z und Ziffern 2-7, mindestens 16."
       full: "Mehr als %{count} Konten passen nicht. Vergessen Sie zuerst eines."
   games:
+    reading_now: "gerade dabei"
+    finished: "abgeschlossen"
     veteran_waiting: "Dein Kai-Lord aus %{book} wartet. Diese Figur wurde neu ausgewürfelt und bringt nichts von dort mit. Beginne neu, um den Veteranen zu übernehmen."
     title: "Spiele"
     begin: "Beginnen"

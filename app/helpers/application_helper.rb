@@ -43,10 +43,10 @@ module ApplicationHelper
   # heading is marked as one, for the styles that write their headings in a colour of
   # their own; a barred line — a choice whose kit or toll is missing — takes the error
   # colour the same way. Anything else, or any other theme, comes back as it went in.
-  def glyph_text(text, heading: false, error: false)
+  def glyph_text(text, heading: false, error: false, good: false)
     return text unless glyph_theme
 
-    glyph_image(text, role: (:emphasis if heading) || (:error if error))
+    glyph_image(text, role: (:emphasis if heading) || (:error if error) || (:good if good))
   end
 
   # The alt is the label, so a failed image degrades to the plain text link it replaced.
@@ -137,6 +137,7 @@ module ApplicationHelper
       body{#{tokens};background:#{palette[:paper]};color:#{palette[:ink]}}
       a,a:visited,a.change-settings,form.inline-action button{color:#{palette[:link]}}
       form.inline-action button.provision{color:#{palette[:good]}}
+      a.current,a.current:visited,.good{color:#{palette[:good]}}
       .error{color:#{palette[:error]}}
       .credit,.credit a,.credit a:visited{color:#{palette[:quiet]}}
       input[type="text"],input[type="submit"],select{background:#{palette[:paper]};color:#{palette[:ink]};border:1px solid #{palette[:quiet]}}

@@ -11,7 +11,19 @@
 <b><%= glyph_text arc, heading: true %></b><br /><br />
 <% end %>
 <% end %>
-<%= link_to "#{index + 1} #{book['volume']} - #{book['title']}", games_book_path(book: book['id']), accesskey: (index + 1).to_s %><br /><br />
+<%# Six volumes is too many to hold in your head. The one you are in the middle of is %>
+<%# written in the theme's own good colour and says so underneath, and the ones you %>
+<%# have finished say that — a reader deciding what to open next wants both, and the %>
+<%# finished ones are what a new book carries its Kai Lord over from. %>
+<% current = @reading == book['id'] %>
+<%= link_to "#{index + 1} #{book['volume']} - #{book['title']}", games_book_path(book: book['id']),
+            accesskey: (index + 1).to_s, class: ('current' if current) %><br />
+<% if current %>
+<span class='good'><%= glyph_text t('games.reading_now'), good: true %></span><br />
+<% elsif @finished&.include?(book['id']) %>
+<span class='credit'><%= glyph_text t('games.finished') %></span><br />
+<% end %>
+<br />
 <% end %>
 <%= link_to "9 #{t('games.title')}", games_path, accesskey: "9" %><br />
 <%= link_to "0 #{t('common.back_to_menu')}", root_path, accesskey: "0" %>

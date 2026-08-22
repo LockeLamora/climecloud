@@ -30,6 +30,47 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # Six volumes on one page is more than anyone should have to hold in their head.
+  test 'the series page says which volume is being read and which are done' do
+    stats = 'skill:15,endurance:25,endurance_max:25,gold:5,gold_max:50'
+    # Written in the order they were last opened: Book One finished, then Book Two
+    # finished, then Book Three left in the middle.
+    cookies['CYOA'] = { 'flight-from-the-dark' => "350|#{stats}|sword|",
+                        'fire-on-the-water' => "350|#{stats}|sword|",
+                        'the-caverns-of-kalte' => "200|#{stats}|sword|" }.to_json
+
+    get '/games/series/lone-wolf'
+    assert_response :success
+
+    marked = @response.body[%r{Book Three[^<]*</a><br />\s*<span class='good'>[^<]*}]
+    assert_includes marked.to_s, I18n.t('games.reading_now'),
+                    'the volume in the middle of being read says so'
+    assert_match(/class="current"[^>]*>3 Book Three/, @response.body,
+                 'and is written in the theme\'s own good colour')
+
+    %w[One Two].each do |done|
+      assert_match(%r{Book #{done}[^<]*</a><br />\s*<span class='credit'>#{I18n.t('games.finished')}},
+                   @response.body, "Book #{done} is marked finished")
+    end
+    assert_no_match(%r{Book Four[^<]*</a><br />\s*<span}, @response.body,
+                    'an unopened volume carries no mark at all')
+  end
+
+  # The cookie's own order is what makes "which one am I reading" answerable, so a page
+  # turn must move its book to the end rather than leave it where it was.
+  test 'reading a book moves it to the front of the queue' do
+    stats = 'skill:15,endurance:25,endurance_max:25,gold:5,gold_max:50'
+    cookies['CYOA'] = { 'fire-on-the-water' => "200|#{stats}|sword|",
+                        'the-caverns-of-kalte' => "200|#{stats}|sword|" }.to_json
+
+    post '/games/turn', params: { book: 'fire-on-the-water', from: '200', choice: 0 }
+    assert_equal 'fire-on-the-water', JSON.parse(cookies['CYOA']).keys.last
+
+    get '/games/series/lone-wolf'
+    assert_match(/class="current"[^>]*>2 Book Two/, @response.body,
+                 'the book just read is the current one')
+  end
+
   test 'offers to begin a book not yet started' do
     get '/games/treasure-hunt'
 

@@ -253,6 +253,8 @@ en:
       secret: "That does not look like a setup key: letters A-Z and digits 2-7, at least 16 of them."
       full: "%{count} accounts is the most this can hold. Forget one first."
   games:
+    reading_now: "reading now"
+    finished: "finished"
     veteran_waiting: "Your Kai Lord from %{book} is waiting. This character was rolled fresh, so they carry nothing from it. Start again to bring the veteran across."
     title: "Games"
     begin: "Begin"
