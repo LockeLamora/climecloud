@@ -540,7 +540,7 @@ class GamesController < ApplicationController
   # written back as one cookie entry.
   def resolve(book, choice)
     stats, items = character(book)
-    unless satisfied?(choice, stats, items)
+    unless satisfied?(book, choice, stats, items)
       redirect_to games_section_path(book: book['id'], section: params[:from])
       return
     end
@@ -613,14 +613,22 @@ class GamesController < ApplicationController
     return 0 if plus.nil?
     return skilled_pick(book, plus, items) if plus['skilled']
 
-    earned?(plus, items) ? plus['add'] : 0
+    earned?(book, plus, items) ? plus['add'] : 0
   end
 
-  def earned?(plus, items)
-    return plus['all'].all? { |name| holds?(items, name) } if plus['all']
+  # 'any' and 'item' are alternatives — "if you have Hunting, OR have reached the rank
+  # of Guardian" — while 'all' means every condition named, rank included: "if you
+  # possess Huntmastery AND have reached the rank of Primate".
+  def earned?(book, plus, items)
+    return every_one_of(book, plus, items) if plus['all']
 
     Array(plus['any'] || plus['item']).any? { |name| holds?(items, name) } ||
-      (plus['rank'] && rank_of(items) >= plus['rank'])
+      (plus['rank'] && rank_of(book, items) >= plus['rank'])
+  end
+
+  def every_one_of(book, plus, items)
+    plus['all'].all? { |name| holds?(items, name) } &&
+      (plus['rank'].nil? || rank_of(book, items) >= plus['rank'])
   end
 
   def skilled_pick(book, plus, items)
@@ -782,8 +790,20 @@ class GamesController < ApplicationController
     end
     hurt = wolf_loss == LoneWolf::KILLED ? stats.fetch(loss_stat(book), 0) : wolf_loss
     hurt = temper(book, combat, stats, fight, hurt)
+    hurt *= hurt_multiplier(combat, items)
     [number, foe_loss, hurt + mindforce_toll(combat, items, fight),
      foe_loss >= remaining ? 0 : remaining - foe_loss]
+  end
+
+  # A wound that tells twice, or three times: a venomous bite, or a fight fought with
+  # no air to spare. The book usually names the skill that answers it, and holding
+  # that skill spares the reader entirely.
+  def hurt_multiplier(combat, items)
+    rule = combat['double_hurt']
+    return 1 if rule.nil?
+    return 1 if rule.is_a?(Hash) && rule['unless'] && holds?(items, rule['unless'])
+
+    rule.is_a?(Hash) ? rule.fetch('times', 2) : 2
   end
 
   # What softens or sharpens a wound: the surprise that spares the first rounds
@@ -871,6 +891,9 @@ class GamesController < ApplicationController
   # penalties without a named item (a torch in the dark, Mindshield against a
   # Mindforce), and anything — a Shield — the book says helps while carried.
   def kit_ratio(book, combat, items, round = 0)
+    # "You cannot make use of a shield or any two-handed weapon during the combat":
+    # what the book bars is, for this fight, simply not in hand.
+    items -= Array(combat['barred'])
     # Books without a weapons table — the trial rigs — fight unarmed and unpenalised.
     bonus = (battle_arms(book, combat, items) || [nil, 0]).last
     # The mind as a weapon: Mindblast to a Kai Lord, Psi-surge to a Kai Master. The
@@ -982,6 +1005,7 @@ class GamesController < ApplicationController
     # more than a sword in a chamber the sun never reaches. It is still a sword: the
     # book's `kin` says what an unpowered one counts as.
     plain = Array(combat['suppress'])
+    items -= Array(combat['barred'])
     forced = combat['arms']
     return armament(book, items, plain: plain) if forced.nil?
     # A contest of strength — an arm-wrestle — is not fought bare-handed; it is
@@ -1041,6 +1065,11 @@ class GamesController < ApplicationController
     end
 
     spend(items, params[:item])
+    # A draught that may cost more than it gives — Adgana is addictive, and the book
+    # throws for it. The book throws once the fight is resolved; the engine has no hook
+    # there, so it throws as the dose goes down. Same odds, same permanent loss.
+    notices = {}
+    risk(provision['risk'], book, stats, items, notices) if provision['risk']
     index, left, round, buff, mark = fight_parts(fight)
     if fight.blank?
       left = standing(book['sections'][section], fight).last
@@ -1048,7 +1077,8 @@ class GamesController < ApplicationController
     end
     fight = "#{index}:#{left}:#{round}:#{buff + provision['battle'].values.sum}:#{mark}"
     remember(book, section, stats, items, fight)
-    redirect_to games_section_path(book: book['id'], section: section, used: params[:item])
+    redirect_to games_section_path(book: book['id'], section: section, used: params[:item],
+                                   **notices.slice(:fx))
   end
 
   def loss_stat(book)
@@ -1058,16 +1088,16 @@ class GamesController < ApplicationController
   # needs bars a choice without the named item; without bars it while the item is
   # held (the "if you do not possess" branch of a paper fork); when bars it by stat;
   # rank bars it below a count of disciplines (the Kai ranks are nothing more).
-  def satisfied?(choice, stats, items)
-    kit_allows?(choice, items) && within?(choice['when'], stats) &&
+  def satisfied?(book, choice, stats, items)
+    kit_allows?(book, choice, items) && within?(choice['when'], stats) &&
       (choice['cost'] || {}).all? { |stat, price| stats.fetch(stat, 0) >= price }
   end
 
-  def kit_allows?(choice, items)
+  def kit_allows?(book, choice, items)
     return false if choice['needs'] && !holds?(items, choice['needs'])
     return false if choice['needs_any']&.none? { |name| any_of(items, name) }
 
-    ranked?(choice, items) && unhindered?(choice, items)
+    ranked?(book, choice, items) && unhindered?(choice, items)
   end
 
   # An entry in needs_any may itself be a list, meaning all of those together: a
@@ -1079,10 +1109,10 @@ class GamesController < ApplicationController
   end
   helper_method :any_of
 
-  def ranked?(choice, items)
-    return false if choice['rank'] && rank_of(items) < choice['rank']
+  def ranked?(book, choice, items)
+    return false if choice['rank'] && rank_of(book, items) < choice['rank']
 
-    choice['rank_below'].nil? || rank_of(items) < choice['rank_below']
+    choice['rank_below'].nil? || rank_of(book, items) < choice['rank_below']
   end
 
   def unhindered?(choice, items)
@@ -1100,12 +1130,13 @@ class GamesController < ApplicationController
   end
   helper_method :holds?
 
-  # The Kai rank, which is only the count of disciplines mastered: five to set out,
-  # one more for each book survived.
-  def rank_of(items)
-    items.count do |held|
-      DISCIPLINE_NAMES.include?(held) || held.start_with?('weaponskill in ')
-    end
+  # Rank is only the count of disciplines mastered, and each arc counts its own: a Kai
+  # Lord sets out with five and gains one a book (Initiate, Aspirant, Guardian...), a
+  # Kai Master sets out with three of the Magnakai and climbs the same way (Superior,
+  # Primate, Tutelary...). Counting the Kai names for a Magnakai reader gave every one
+  # of them a rank of nothing.
+  def rank_of(book, items)
+    items.count { |held| discipline?(book, held) }
   end
   helper_method :rank_of
 

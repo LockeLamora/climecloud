@@ -147,11 +147,13 @@ class LoneWolfThreeTest < ActionDispatch::IntegrationTest
   # ends there rather than being fought out.
   test 'a wound the book acts on ends the fight where it stands' do
     # Armed and hale, so the sting is what ends this, never a killing blow.
-    pack '123', stats: 'skill:15,endurance:90,endurance_max:90,gold:5,gold_max:50',
-                items: 'sword'
+    # The enemy is given endurance it cannot lose inside the loop: if it died first the
+    # fight would end the ordinary way and the sting would never get its chance.
+    pack '123', stats: 'skill:15,endurance:900,endurance_max:900,gold:5,gold_max:50',
+                items: 'sword', fight: '0:900:0:0:900'
 
     landed = nil
-    20.times do
+    60.times do
       post '/games/turn', params: { book: BOOK, from: '123', choice: 'fight' }
       path, query = landing
       landed = path

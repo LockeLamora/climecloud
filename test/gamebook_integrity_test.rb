@@ -12,7 +12,8 @@ require 'gamebooks'
 class GamebookIntegrityTest < ActiveSupport::TestCase
   # In series order: an item found in an earlier book may be asked for in a later one.
   SERIES = %w[flight-from-the-dark fire-on-the-water the-caverns-of-kalte
-              the-chasm-of-doom shadow-on-the-sand the-kingdoms-of-terror].freeze
+              the-chasm-of-doom shadow-on-the-sand the-kingdoms-of-terror
+              castle-death].freeze
 
   # Everything a reader can come to hold in this book.
   def obtainable(book)

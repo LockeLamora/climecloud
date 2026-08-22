@@ -156,8 +156,8 @@
 <% elsif !within?(choice['when'], @stats) %>
 <% elsif choice['without'] && holds?(Array(@items), choice['without']) %>
 <% elsif choice['without_any'] && choice['without_any'].any? { |name| holds?(Array(@items), name) } %>
-<% elsif choice['rank'] && rank_of(Array(@items)) < choice['rank'] %>
-<% elsif choice['rank_below'] && rank_of(Array(@items)) >= choice['rank_below'] %>
+<% elsif choice['rank'] && rank_of(@book, Array(@items)) < choice['rank'] %>
+<% elsif choice['rank_below'] && rank_of(@book, Array(@items)) >= choice['rank_below'] %>
 <%# A memory of somewhere the reader has never been is nothing they can go and %>
 <%# fetch, so that branch simply is not theirs: hidden, like a stat fork. %>
 <%# A quiet requirement is one the reader was never promised — a lesson already taken, %>
